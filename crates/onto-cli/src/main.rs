@@ -7,6 +7,7 @@ use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, 
 
 mod ask;
 mod run;
+mod why;
 
 #[global_allocator]
 static ALLOC: onto_runtime::mem::CountingAlloc = onto_runtime::mem::CountingAlloc;
@@ -59,6 +60,8 @@ enum Cmd {
         #[arg(long, default_value = "")]
         goal: String,
     },
+    /// Explain every decision in a disposition file (from `run --dispositions`).
+    Why(why::WhyArgs),
     /// Try a case as the person raising it: one live walk, answered in plain terms.
     Ask(ask::AskArgs),
     /// Run many walks concurrently against live models (Jev + OpenRouter) or mocks.
@@ -70,6 +73,7 @@ fn main() -> ExitCode {
     let result = match cli.cmd {
         Cmd::Run(args) => run::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Why(args) => why::main(args).map(|()| ExitCode::SUCCESS),
         cmd => run(Cli { cmd }),
     };
     result.unwrap_or_else(|e| {
@@ -233,7 +237,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
             }
             println!("path: {}", walk.state.path.display_typed(&cat));
         }
-        Cmd::Run(_) | Cmd::Ask(_) => unreachable!("handled in main"),
+        Cmd::Run(_) | Cmd::Ask(_) | Cmd::Why(_) => unreachable!("handled in main"),
     }
     Ok(ExitCode::SUCCESS)
 }

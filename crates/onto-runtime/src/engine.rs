@@ -8,7 +8,9 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use onto_core::category::Closure;
-use onto_core::walk::{Answer, Decision, Escalation, Proposal, candidates, decide};
+use onto_core::walk::{
+    Answer, Decision, Disposition, Escalation, Proposal, candidates, decide, dispose,
+};
 use onto_core::{ArrowId, Category, ObjId, Path, Primitive};
 use serde::Serialize;
 use serde_json::Value;
@@ -20,6 +22,7 @@ use crate::mem::{self, MemSample};
 use crate::model::{
     Candidate, FrameRequest, Hop, Judge, ModelError, Pending, ProposalRequest, Proposer, Usage,
 };
+use crate::record::{self, ClaimRecord, FrameRecord, JudgeRecord, Outcome};
 
 #[derive(Clone, Debug)]
 pub struct Job {
@@ -115,6 +118,8 @@ pub struct WalkReport {
     pub from: String,
     pub path: String,
     pub steps: Vec<StepRecord>,
+    /// One disposition record per frame visit (the provenance artifact).
+    pub frames: Vec<FrameRecord>,
     pub elapsed_ms: f64,
 }
 
@@ -167,6 +172,8 @@ struct Seed {
     depth: usize,
     /// Extra branches this job may still spawn, shared by its lineage.
     budget: Arc<AtomicUsize>,
+    /// The frame record this walk's first visit follows (a branch's fork).
+    after: Option<String>,
 }
 
 pub struct Engine<J, P> {
@@ -241,6 +248,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 hops: Vec::new(),
                 depth: 0,
                 budget: Arc::new(AtomicUsize::new(self.cfg.max_branches)),
+                after: None,
             };
             running.spawn(self.clone().walk(seed, branch_tx.clone()));
         }
@@ -325,6 +333,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             mut hops,
             depth,
             budget,
+            mut after,
         } = seed;
         tracing::info!(
             target: "onto",
@@ -335,8 +344,9 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             goal = %job.goal,
         );
         let mut steps = Vec::new();
+        let mut frames: Vec<FrameRecord> = Vec::new();
 
-        'steps: for _ in 0..self.cfg.max_steps {
+        'steps: for n in 1..=self.cfg.max_steps {
             let at = path.dst;
             let object = cat.object(at);
             let closed = object.closure == Closure::Closed;
@@ -356,16 +366,45 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             };
             let mut guard = self.locks.acquire(cat, Claim::new(cat, id, at, mode)).await;
             let wait_ms = ms(guard.waited);
+            let rec_id = format!("w{id}.{n}");
+            let record = |judge, candidates, outcome| FrameRecord {
+                id: rec_id.clone(),
+                after: after.clone(),
+                walk: id,
+                at: at_name.clone(),
+                primitive,
+                closure: if closed { "closed" } else { "open" },
+                claim: ClaimRecord { mode, wait_ms },
+                judge,
+                candidates,
+                outcome,
+                proposals: Vec::new(),
+            };
 
             let mut speculative = None;
             let reason = 'judged: {
                 if frame.is_empty() {
                     // No arrows, or every arrow's `require` failed.
-                    break 'judged if closed {
+                    let reason = if closed {
                         Escalation::NoneOfThese
                     } else {
                         Escalation::OpenFrame
                     };
+                    let ds = dispose(
+                        cat,
+                        at,
+                        &frame,
+                        None,
+                        &Decision::Escalate(reason),
+                        self.cfg.threshold,
+                        false,
+                    );
+                    frames.push(record(
+                        None,
+                        record::candidates(cat, ds),
+                        Outcome::Escalated { reason },
+                    ));
+                    break 'judged reason;
                 }
                 if self.cfg.speculate {
                     let engine = self.clone();
@@ -383,23 +422,57 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     && budget.load(Relaxed) > 0
                     && frame.len() > 1;
                 let req = self.frame_request(&job, &path, &hops, &frame, can_fork);
-                let answer = match self.call_judge(id, req).await {
+                let (answer, judge_rec) = match self.call_judge(id, req).await {
                     Ok(a) => a,
                     Err(e) => {
                         if let Some(h) = speculative {
                             h.abort();
                         }
+                        let mut ds = dispose(
+                            cat,
+                            at,
+                            &frame,
+                            None,
+                            &Decision::Escalate(Escalation::LowConfidence),
+                            self.cfg.threshold,
+                            false,
+                        );
+                        for d in ds
+                            .iter_mut()
+                            .filter(|d| d.disposition == Disposition::Deferred)
+                        {
+                            d.reason = "not judged: the judge call failed".into();
+                        }
+                        frames.push(record(
+                            None,
+                            record::candidates(cat, ds),
+                            Outcome::Failed {
+                                error: e.to_string(),
+                            },
+                        ));
                         steps.push(self.failed(id, &at_name, e));
                         break 'steps;
                     }
                 };
-                let (index, p, alternatives) = match decide(
-                    object.closure,
+                let decision = decide(object.closure, Some(&answer), self.cfg.threshold, can_fork);
+                let mut ds = dispose(
+                    cat,
+                    at,
+                    &frame,
                     Some(&answer),
+                    &decision,
                     self.cfg.threshold,
                     can_fork,
-                ) {
-                    Decision::Escalate(reason) => break 'judged reason,
+                );
+                let (index, p, alternatives) = match decision {
+                    Decision::Escalate(reason) => {
+                        frames.push(record(
+                            Some(judge_rec),
+                            record::candidates(cat, ds),
+                            Outcome::Escalated { reason },
+                        ));
+                        break 'judged reason;
+                    }
                     Decision::Follow {
                         index,
                         p,
@@ -426,6 +499,11 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                                 branch_p,
                             );
                             spawned.push(child);
+                            if let Some(d) = ds.iter_mut().find(|d| d.arrow == frame[index]) {
+                                d.disposition = Disposition::Forked {
+                                    branch: Some(child),
+                                };
+                            }
                             let _ = branch_tx.send(Seed {
                                 id: child,
                                 parent: Some(id),
@@ -434,8 +512,23 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                                 hops: child_hops,
                                 depth: depth + 1,
                                 budget: budget.clone(),
+                                after: Some(rec_id.clone()),
                             });
                         }
+                        for &(index, _) in &rest[granted..] {
+                            if let Some(d) = ds.iter_mut().find(|d| d.arrow == frame[index]) {
+                                d.disposition = Disposition::Alternative;
+                                d.reason.push_str("; not pursued: branch budget exhausted");
+                            }
+                        }
+                        frames.push(record(
+                            Some(judge_rec.clone()),
+                            record::candidates(cat, std::mem::take(&mut ds)),
+                            Outcome::Forked {
+                                continued: cat.arrow(frame[first.0]).name.clone(),
+                                spawned: spawned.clone(),
+                            },
+                        ));
                         self.counters.forks.fetch_add(1, Relaxed);
                         self.counters.branches.fetch_add(granted as u64, Relaxed);
                         let name = |i: usize| cat.arrow(frame[i]).name.as_str();
@@ -479,6 +572,18 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 }
                 let arrow = frame[index];
                 let a = cat.arrow(arrow);
+                if !ds.is_empty() {
+                    // A plain step (a fork's record was already written).
+                    frames.push(record(
+                        Some(judge_rec),
+                        record::candidates(cat, ds),
+                        Outcome::Followed {
+                            arrow: a.name.clone(),
+                            to: cat.object(a.dst).name.clone(),
+                        },
+                    ));
+                }
+                after = Some(rec_id.clone());
                 tracing::info!(
                     target: "onto",
                     event = "step",
@@ -527,6 +632,9 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             // Record before releasing the claim, so a walk waiting on this
             // frame sees these proposals when its own proposer runs.
             if let Ok(proposals) = &proposals {
+                if let Some(last) = frames.last_mut() {
+                    last.proposals = proposals.clone();
+                }
                 self.note_concepts(id, at, proposals);
                 self.pending
                     .lock()
@@ -557,6 +665,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             from: job.from,
             path: path.display_typed(cat),
             steps,
+            frames,
             elapsed_ms: ms(t0.elapsed()),
         };
         tracing::info!(
@@ -614,7 +723,11 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         }
     }
 
-    async fn call_judge(&self, walk: u64, req: FrameRequest) -> Result<Answer, ModelError> {
+    async fn call_judge(
+        &self,
+        walk: u64,
+        req: FrameRequest,
+    ) -> Result<(Answer, JudgeRecord), ModelError> {
         let _slot = self.judge_slots.acquire().await.expect("semaphore open");
         let at = req.at.clone();
         let primitive = req.primitive;
@@ -680,7 +793,25 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 error = %e,
             ),
         }
-        result.map(|r| r.0)
+        result.map(|(answer, u)| {
+            let rec = JudgeRecord {
+                model: self.judge.name(),
+                latency_ms: ms(latency),
+                questions: u.questions,
+                confidence: answer.confidence(),
+                none_of_these: match &answer {
+                    Answer::Choice(d) => Some(d.none_of_these),
+                    _ => None,
+                },
+                fork_p: match &answer {
+                    Answer::Noul { fork, .. } => *fork,
+                    _ => None,
+                },
+                input_tokens: u.input_tokens,
+                output_tokens: u.output_tokens,
+            };
+            (answer, rec)
+        })
     }
 
     async fn call_proposer(

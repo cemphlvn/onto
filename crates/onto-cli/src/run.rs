@@ -39,6 +39,9 @@ pub struct RunArgs {
     /// Write telemetry as JSON lines to this file.
     #[arg(long)]
     telemetry: Option<PathBuf>,
+    /// Write one disposition record per frame visit (JSON lines).
+    #[arg(long)]
+    dispositions: Option<PathBuf>,
     /// Write the full run report as JSON to this file.
     #[arg(long)]
     report: Option<PathBuf>,
@@ -132,6 +135,10 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
     let report = rt.block_on(Engine::new(cat, judge, proposer, cfg).run(jobs))?;
 
     print_summary(&report, args.telemetry.as_deref());
+    if let Some(path) = &args.dispositions {
+        let n = write_dispositions(&report, path)?;
+        println!("dispositions: {} ({n} frame records)", path.display());
+    }
     if let Some(path) = &args.report {
         std::fs::write(path, serde_json::to_string_pretty(&report)?)?;
         println!("report: {}", path.display());
@@ -170,6 +177,21 @@ pub fn models(
         )
     };
     Ok((judge, proposer))
+}
+
+/// Every frame record of the run, walks in id order, as JSON lines.
+pub fn write_dispositions(report: &RunReport, path: &std::path::Path) -> Result<usize, BoxError> {
+    let mut walks: Vec<_> = report.walks.iter().collect();
+    walks.sort_by_key(|w| w.walk);
+    let mut out = String::new();
+    let mut n = 0;
+    for r in walks.iter().flat_map(|w| &w.frames) {
+        out.push_str(&serde_json::to_string(r)?);
+        out.push('\n');
+        n += 1;
+    }
+    std::fs::write(path, out)?;
+    Ok(n)
 }
 
 fn read_jobs(path: &PathBuf) -> Result<Vec<Job>, BoxError> {

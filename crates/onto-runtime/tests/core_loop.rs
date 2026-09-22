@@ -307,3 +307,140 @@ async fn later_proposers_reuse_pending_proposals_at_the_frame() {
             .any(|p| p.kind == PotentialityKind::Conceptual)
     );
 }
+
+mod dispositions {
+    use super::*;
+    use onto_core::walk::Disposition;
+
+    fn kinds(r: &onto_runtime::record::FrameRecord) -> Vec<(String, Disposition)> {
+        r.candidates
+            .iter()
+            .map(|c| (c.arrow.clone(), c.disposition.clone()))
+            .collect()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn every_arrow_at_every_visit_gets_one_disposition() {
+        let cat = onto_core::parse(TRIAGE).unwrap();
+        let r = run(Policy::Shared, false, &[FIX]).await;
+        let frames = &r.walks[0].frames;
+        assert_eq!(frames.len(), 3, "Request, Bug, Fix");
+        for f in frames {
+            let at = cat.object_id(&f.at).unwrap();
+            assert_eq!(f.candidates.len(), cat.out(at).len(), "{}", f.at);
+            assert_eq!(
+                f.candidates
+                    .iter()
+                    .filter(|c| c.disposition == Disposition::Selected)
+                    .count(),
+                1
+            );
+        }
+        assert_eq!(frames[0].after, None);
+        assert_eq!(frames[1].after.as_deref(), Some(frames[0].id.as_str()));
+        let rejected = frames[0]
+            .candidates
+            .iter()
+            .find(|c| c.arrow == "ask")
+            .unwrap();
+        assert_eq!(rejected.disposition, Disposition::Rejected);
+        assert!(
+            rejected.reason.contains("below `report`"),
+            "{}",
+            rejected.reason
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn forks_link_branches_to_their_origin() {
+        // Both branches keep walking after the fork, so each has records.
+        let src = r#"category C {
+            objects: Alert, Latency, Security, Db, Keys;
+            frame Alert: noul;
+            latency:  Alert -> Latency  "slow responses";
+            security: Alert -> Security "leaked credentials";
+            db:   Latency -> Db    "database";
+            keys: Security -> Keys "credentials";
+            closed: Alert, Latency, Security, Db, Keys;
+        }"#;
+        let cat = Arc::new(onto_core::parse(src).unwrap());
+        let cfg = Config {
+            policy: Policy::Shared,
+            ..Config::default()
+        };
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            cfg,
+        );
+        let job = Job {
+            from: "Alert".into(),
+            goal: "slow database and leaked credentials".into(),
+            case: json!({}),
+        };
+        let r = engine.run(vec![job]).await.unwrap();
+
+        let (root, branch) = (&r.walks[0], &r.walks[1]);
+        let fork = &root.frames[0];
+        assert!(
+            kinds(fork).contains(&(
+                if branch.path.contains("Latency") {
+                    "latency"
+                } else {
+                    "security"
+                }
+                .to_owned(),
+                Disposition::Forked {
+                    branch: Some(branch.walk)
+                }
+            ))
+        );
+        assert!(
+            kinds(fork)
+                .iter()
+                .any(|(_, d)| *d == Disposition::Forked { branch: None })
+        );
+        assert!(
+            matches!(fork.outcome, onto_runtime::record::Outcome::Forked { ref spawned, .. } if spawned == &[branch.walk])
+        );
+        // Causal links: the branch's first visit follows the fork; the root's
+        // next visit follows it too.
+        assert_eq!(branch.frames[0].after.as_deref(), Some(fork.id.as_str()));
+        assert_eq!(root.frames[1].after.as_deref(), Some(fork.id.as_str()));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn competing_readings_are_alternatives_with_a_reason() {
+        let r = run_parts(
+            4,
+            "Alert",
+            "slow responses, maybe leaked credentials",
+            json!({}),
+        )
+        .await;
+        let alt = r.walks[0].frames[0]
+            .candidates
+            .iter()
+            .find(|c| c.disposition == Disposition::Alternative)
+            .expect("one alternative");
+        assert!(alt.reason.contains("competing reading"), "{}", alt.reason);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn require_failures_are_recorded_without_a_judge() {
+        let r = run_parts(4, "Consented", "send me offers", json!({})).await;
+        let f = &r.walks[0].frames[0];
+        assert!(f.judge.is_none());
+        assert_eq!(f.candidates[0].disposition, Disposition::FilteredByRequire);
+        assert!(
+            f.candidates[0].reason.contains("consent.marketing == true"),
+            "{}",
+            f.candidates[0].reason
+        );
+        assert_eq!(
+            f.candidates[0].require.as_deref(),
+            Some("consent.marketing == true")
+        );
+    }
+}

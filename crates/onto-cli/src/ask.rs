@@ -36,6 +36,10 @@ pub struct AskArgs {
     threshold: f32,
     #[arg(long)]
     telemetry: Option<PathBuf>,
+    /// Also show why: every option considered at each step and what
+    /// happened to it.
+    #[arg(long)]
+    why: bool,
 }
 
 pub fn main(args: AskArgs) -> Result<(), BoxError> {
@@ -66,6 +70,16 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
         };
         let report = rt.block_on(engine.run(vec![job]))?;
         print_answer(&cat, &report);
+        if args.why {
+            println!();
+            println!("  Why:");
+            for w in &report.walks {
+                for f in &w.frames {
+                    println!();
+                    crate::why::print_record(&serde_json::to_value(f)?, "    ");
+                }
+            }
+        }
         Ok(())
     };
 
@@ -173,6 +187,19 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
             println!(
                 "{pad}  so it will not guess. This is recorded as a case it cannot handle yet."
             );
+            if let Some(last) = w.frames.last() {
+                for c in last
+                    .candidates
+                    .iter()
+                    .filter(|c| c.disposition == onto_core::walk::Disposition::FilteredByRequire)
+                {
+                    println!(
+                        "{pad}  {} is not allowed for this case: it requires `{}`, which your case does not show.",
+                        c.to,
+                        c.require.as_deref().unwrap_or("?")
+                    );
+                }
+            }
             if !proposals.is_empty() {
                 println!();
                 println!("{pad}Behind the scenes (NOT active, does not affect your case):");

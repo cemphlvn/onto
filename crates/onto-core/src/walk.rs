@@ -434,3 +434,175 @@ impl<P: Proposer + ?Sized> Proposer for Box<P> {
         (**self).propose(cat, state)
     }
 }
+
+/// What happened to one candidate arrow at a frame visit.
+#[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize),
+    serde(tag = "kind", rename_all = "snake_case")
+)]
+pub enum Disposition {
+    /// Followed by this walk.
+    Selected,
+    /// Pursued as a branch: `branch` is the spawned walk, or `None` when
+    /// this walk itself continued along it.
+    Forked { branch: Option<u64> },
+    /// Held (noul) but not pursued.
+    Alternative,
+    /// Judged and not taken.
+    Rejected,
+    /// The frame escalated; the arrow was neither taken nor ruled out.
+    Deferred,
+    /// Removed by its `require` before any model was asked.
+    FilteredByRequire,
+}
+
+/// One candidate's judgment, disposition and the reason for it.
+#[derive(Clone, Debug, PartialEq)]
+pub struct CandidateDisposition {
+    pub arrow: ArrowId,
+    /// The judge's number for this arrow: choice probability, noul P(holds)
+    /// or score level probability. `None` if it was never judged.
+    pub judgment: Option<f32>,
+    pub disposition: Disposition,
+    pub reason: String,
+}
+
+/// Explains a frame visit candidate by candidate: every arrow out of `at`,
+/// whether `require` let it through, what the judge said, and why the
+/// decision treated it as it did. Deterministic: reasons are built from the
+/// numbers, not generated.
+pub fn dispose(
+    cat: &Category,
+    at: ObjId,
+    eligible: &[ArrowId],
+    answer: Option<&Answer>,
+    decision: &Decision,
+    threshold: f32,
+    can_fork: bool,
+) -> Vec<CandidateDisposition> {
+    let primitive = cat.object(at).frame.primitive;
+    let judgment = |i: usize| -> Option<f32> {
+        match answer? {
+            Answer::Choice(d) => d.arrows.get(i).copied(),
+            Answer::Noul { holds, .. } => holds.get(i).copied(),
+            Answer::Score { levels, .. } => levels.get(i).copied(),
+        }
+    };
+    let confidence = answer.and_then(Answer::confidence);
+    let fork_p = match answer {
+        Some(Answer::Noul { fork, .. }) => *fork,
+        _ => None,
+    };
+    let name = |a: ArrowId| cat.arrow(a).name.as_str();
+    let level = |a: ArrowId| cat.arrow(a).level.unwrap_or_default();
+    let gate = |p: f32| match confidence {
+        Some(c) => format!("confidence {c:.2} ≥ threshold {threshold}"),
+        None => format!("p {p:.2} ≥ threshold {threshold}"),
+    };
+
+    let mut out = Vec::new();
+    for &a in cat.out(at) {
+        if eligible.contains(&a) {
+            continue;
+        }
+        let req = cat
+            .arrow(a)
+            .require
+            .as_ref()
+            .map_or(String::new(), |r| r.to_string());
+        out.push(CandidateDisposition {
+            arrow: a,
+            judgment: None,
+            disposition: Disposition::FilteredByRequire,
+            reason: format!("require `{req}` did not hold for this case"),
+        });
+    }
+
+    let selected = match decision {
+        Decision::Follow { index, .. } => Some(eligible[*index]),
+        _ => None,
+    };
+    for (i, &a) in eligible.iter().enumerate() {
+        let p = judgment(i);
+        let pv = p.unwrap_or(0.0);
+        let (disposition, reason) = match decision {
+            Decision::Follow { index, .. } if *index == i => {
+                let reason = match primitive {
+                    Primitive::Choice => format!("most probable option (p {pv:.2}); {}", gate(pv)),
+                    Primitive::Noul => format!("condition holds (p {pv:.2} ≥ {threshold})"),
+                    Primitive::Score => format!(
+                        "level {} is the most probable (p {pv:.2}); {}",
+                        level(a),
+                        gate(pv)
+                    ),
+                };
+                (Disposition::Selected, reason)
+            }
+            Decision::Follow { alternatives, .. } if alternatives.iter().any(|(j, _)| *j == i) => {
+                let why = match (can_fork, fork_p) {
+                    (true, Some(f)) => {
+                        format!("judged a competing reading of the same case (fork p {f:.2} < 0.5)")
+                    }
+                    _ => "no fork allowed here (branch budget or depth)".to_owned(),
+                };
+                (
+                    Disposition::Alternative,
+                    format!("condition also holds (p {pv:.2}), but {why}"),
+                )
+            }
+            Decision::Fork { branches, fork_p } if branches.iter().any(|(j, _)| *j == i) => (
+                Disposition::Forked { branch: None },
+                format!(
+                    "condition holds (p {pv:.2}); an independent aspect of the case (fork p {fork_p:.2})"
+                ),
+            ),
+            Decision::Follow { .. } | Decision::Fork { .. } => {
+                let reason = match (primitive, selected) {
+                    (Primitive::Choice, Some(s)) => format!("p {pv:.2}, below `{}`", name(s)),
+                    (Primitive::Noul, _) => {
+                        format!("condition does not hold (p {pv:.2} < {threshold})")
+                    }
+                    (Primitive::Score, _) => {
+                        format!("level {} less probable (p {pv:.2})", level(a))
+                    }
+                    (Primitive::Choice, None) => format!("p {pv:.2}"),
+                };
+                (Disposition::Rejected, reason)
+            }
+            Decision::Escalate(e) => {
+                let why = match (e, primitive, answer) {
+                    (Escalation::LowConfidence, _, Some(_)) if confidence.is_some() => {
+                        format!(
+                            "the judge was unsure (confidence {:.2} < {threshold})",
+                            confidence.unwrap_or(0.0)
+                        )
+                    }
+                    (Escalation::LowConfidence, Primitive::Noul, _) => {
+                        "no condition clearly held or clearly failed".to_owned()
+                    }
+                    (Escalation::LowConfidence, _, _) => "the judge was unsure".to_owned(),
+                    (_, Primitive::Choice, Some(Answer::Choice(d))) => {
+                        format!("none_of_these was more likely (p {:.2})", d.none_of_these)
+                    }
+                    (Escalation::OpenFrame, _, _) => {
+                        "nothing fit, and this frame is known to be incomplete".to_owned()
+                    }
+                    _ => "no condition held".to_owned(),
+                };
+                (
+                    Disposition::Deferred,
+                    format!("p {pv:.2}; escalated because {why}"),
+                )
+            }
+        };
+        out.push(CandidateDisposition {
+            arrow: a,
+            judgment: p,
+            disposition,
+            reason,
+        });
+    }
+    out
+}

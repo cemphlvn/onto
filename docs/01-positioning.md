@@ -1,7 +1,7 @@
 # onto — Scientific Positioning
 
-Status: **draft 1 — 2026-09-23.** Where onto sits among research fields,
-ranked by what the runtime **demonstrably does today** (commit `cd3abf8`,
+Status: **draft 2 — 2026-09-23.** Where onto sits among research fields,
+ranked by what the runtime **demonstrably does today** (disposition records included,
 live runs in `demos/`), separated from what it could become. Update this
 file when a capability lands; do not promote a field on intention alone.
 
@@ -16,13 +16,14 @@ file when a capability lands; do not promote a field on intention alone.
 Short form: *a model-judged, provenance-carrying, concurrent transition
 runtime with open-world escalation.*
 
-**After explicit dispositions and M2 (not yet):**
+**After M2 (not yet):**
 
 > a potentiality-preserving supervisory runtime that governs both the
 > execution and the extension of an open transition system.
 
-"Judgment–disposition graph runtime" is a good name for that second stage;
-the disposition graph does not exist yet (§4).
+"Judgment–disposition graph runtime" now describes half of it: the
+disposition graph exists (frame records linked by `after`, §4); the
+supervisory half (M2) does not.
 
 ## 2. What the runtime is, precisely
 
@@ -41,7 +42,7 @@ flowchart TD
     E --> P[System 2 proposer<br/>sees pending proposals at this frame]
     P --> V[provisional proposals<br/>never promoted yet]
     C -.intersections.-> Q[potentialities<br/>node · conceptual · alternative]
-    N & K & A & V & Q --> T[provenance trace<br/>JSONL events + run report]
+    N & K & A & V & Q --> T[provenance<br/>disposition records (DAG) + JSONL events + report]
 ```
 
 Two corrections to the flow diagram we were sent:
@@ -63,12 +64,12 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 |---|---|---|---|---|
 | 1 | Guarded transition systems | **direct** | objects = states, arrows = labelled transitions, walks = traces; guards of four kinds: `require` (Boolean), Choice (competitive), Noul (independent), Score (ordinal) | guards are not composable formulas; no temporal-logic properties checked |
 | 2 | Selective prediction, learning to defer, model cascades | **direct** | calibrated System 1 abstains (`none_of_these`, low confidence) and defers to a larger model; threshold gates on the model's own confidence | deferral target is a *generator of structure*, not a better answerer: that twist is onto's, and is untested against deferral theory (no cost model, no deferral policy learned) |
-| 3 | Decision provenance | **strong, real** | every question, judgment, confidence, step, fork, escalation, proposal, wait, intersection and resource sample is recorded (JSONL + report) | no explicit disposition record per candidate (§4); records are logs, not a queryable provenance graph (W3C PROV shape) |
+| 3 | Decision provenance | **direct** | every frame visit is a disposition record: every candidate with judgment, disposition and a deterministic reason; judge call and claim metadata; causal `after` links forming a DAG across forks (`--dispositions`, `onto why`) | not yet in W3C PROV vocabulary; records written at run end, not streamed |
 | 4 | Local closed-world reasoning (open/closed-world KR) | **strong** | `closed:` is a local closed-world assertion ("these arrows are all the cases"); open frames are open-world; `none_of_these` at a closed frame is evidence the assertion failed, `open_frame` an expected gap | assertions are not revised on evidence; no aggregation of LCW violations into taxonomy repair |
 | 5 | Workflow nets / Petri nets | **strong analogy** | walk ≈ token, object ≈ place, arrow ≈ transition, `require` ≈ enabling condition, noul fork ≈ token split, frame claim ≈ shared-resource constraint | no marking or capacity, **no joins** (branches never synchronise), no soundness / deadlock analysis |
 | 6 | Neurosymbolic AI | **strong (classification)** | Kautz's *Symbolic[Neuro]*: a symbolic control loop (typed graph, code guards, path equality) that calls neural judgments as subroutines | no learning flows back into the symbolic side yet (M2 promotion would be the first) |
 | 7 | Category theory and rewriting | **structural foundation** | a category presented by generators and relations; typed composition; path equality by equality saturation (egg), answering Unknown where the word problem is undecidable | no functors or universal constructions; categorical semantics of the *dynamics* is open |
-| 8 | Event structures / concurrency semantics | **emerging** | causality (hops, branch parent links), concurrency (coexisted claims), and one mechanism that is exactly the conflict/concurrency split: the **fork Noul judges whether two enabled transitions are independent (concurrent) or competing (in conflict)** | node intersection is not formal conflict; no event-structure semantics defined or checked |
+| 8 | Event structures / concurrency semantics | **emerging** | causality (the `after` DAG of frame records, across forks), concurrency (coexisted claims), and one mechanism that is exactly the conflict/concurrency split: the **fork Noul judges whether two enabled transitions are independent (concurrent) or competing (in conflict)** | node intersection is not formal conflict; no event-structure semantics defined or checked |
 | 9 | Supervisory control of discrete-event systems | **emerging** | `require` disables transitions, claims restrict interleavings, low confidence withholds a transition, proposals are not admitted | no supervisor proves anything; the consent runs show unsafe proposals (`Collected → Marketing` twice) held back only by *non-promotion*. M2 makes this real, and adds a rare twist: supervising the **extension** of the plant, not only its execution |
 | 10 | Agent-workflow frameworks (graph-of-LLM-calls orchestrators) | **practical neighbour** | graph of nodes, model-driven conditional edges, parallel branches | not a research field; onto's differences are the positioning: typed paths + equations, calibrated abstention, frame-level concurrency claims, potentiality log, governed open-world extension |
 | 11 | Planning under uncertainty | **analogy** | probabilities steer traversal | no reward, utility, transition model or objective; not decision-theoretic |
@@ -98,7 +99,7 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 
 | claim | earned by | field it upgrades |
 |---|---|---|
-| decisions are fully accountable | **disposition records**: for every frame, every candidate with its judgment and a disposition (selected · forked · alternative · rejected · deferred · filtered-by-require) and a reason, as a first-class artifact, not reconstructed from telemetry | #3 → direct; groundwork for #12 |
+| decisions are fully accountable | **disposition records** — **done** (`a2128ae` + this change): every candidate, judgment, disposition, reason; first-class artifact | #3 → direct ✓; groundwork for #12 |
 | unsafe structure cannot enter | **M2 supervisor**: typing and composition → declared invariants (e.g. every path to Marketing passes Consented) → reachability restrictions → semantic duplicate/overlap (Jev Noul) → admit · reject · unknown | #9 → strong; #4 gains revision |
 | concurrent branches are a process, not just parallel walks | **joins** (synchronise branches at an object) and a marking | #5 → direct; #8 gains a semantics |
 | potentialities have a theory | define conflict and concurrency over events (not nodes) and check them | #8 → strong |

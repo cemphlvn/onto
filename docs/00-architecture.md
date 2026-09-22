@@ -31,6 +31,8 @@ propose new structure.
 | judge | the System-1 model interface (was "chooser"): answers a frame with the frame's primitive | `walk::Judge`, `model::Judge` |
 | fork | a noul frame where several arrows hold and the judge says they are independent aspects: the walk splits into parallel branches | `Decision::Fork` |
 | parallel arrows | several arrows with the same endpoints and different meaning or preconditions (e.g. two legal bases) | — |
+| disposition | what happened to one candidate arrow at a frame visit: selected · forked · alternative · rejected · deferred · filtered_by_require, with the judge's number and a reason built from the numbers | `walk::Disposition`, `walk::dispose` |
+| frame record | one frame visit: claim, judge call, every candidate's disposition, outcome, proposals; `after` links records into a causal DAG | `record::FrameRecord` |
 | footprint | a frame's object plus its arrows' targets: every node one decision could touch | `frames::Claim` |
 | claim | a walk's hold on a footprint while deciding, `read` (System 1) or `write` (System 2) | `frames::Claim` |
 | potentiality | a logged place where two concurrent walks could meet (node or conceptual) | `frames::Potentiality` |
@@ -192,7 +194,24 @@ installs (`mem::CountingAlloc`); RSS comes from the OS (`memory-stats`).
 `--report` writes the whole run (walks, steps, proposals, potentialities,
 memory) as one JSON document.
 
-### 5.4 Measured (2026-09-23, 6 walks, `examples/triage.jobs`, release build)
+### 5.4 Disposition records
+
+Every frame visit produces a `FrameRecord`: the claim (mode, wait), the
+judge call (model, latency, questions, confidence, none_of_these, fork p,
+tokens), **every** outgoing arrow with its judgment, disposition and a
+deterministic reason, the outcome (followed · forked · escalated ·
+failed) and any provisional proposals. Records chain through `after`: the
+previous visit of the same walk, or, for a branch's first visit, the fork
+that spawned it. A run's records are the disposition graph.
+
+- `onto run … --dispositions run.dispositions.jsonl` writes them (one
+  record per line), separately from telemetry.
+- `onto why run.dispositions.jsonl [--walk N]` prints them as
+  explanations; `--walk` follows a branch's lineage back through its fork.
+- `onto ask … --why` shows them to the beneficiary; options closed by
+  `require` are named in the answer itself.
+
+### 5.5 Measured (2026-09-23, 6 walks, `examples/triage.jobs`, release build)
 
 | run | wall | model time | parallelism | waited | peak RSS | peak heap |
 |---|---|---|---|---|---|---|
@@ -271,6 +290,7 @@ snapshot. No database until live multi-writer editing is needed.
 | D14 | System-1 interface renamed Chooser → Judge; telemetry `chooser.call` → `judge.call` | it no longer only chooses |
 | D15 | open frames are judged; `open_frame` now means "nothing fit in a frame known to be incomplete" | an arrow that fits should be followed; the two gap kinds stay distinguishable |
 | D16 | proposers see the provisional proposals pending at their frame and reuse fitting ones | turns waiting on a frame into deduplication; fixes name-based grouping |
+| D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |
 
 ## 10. Milestones
 
@@ -310,6 +330,12 @@ snapshot. No database until live multi-writer editing is needed.
   format needs declared invariants (e.g. "every path to Marketing passes
   Consented", checkable with `Category::paths(.., avoid, ..)`) that every
   proposal must preserve before promotion.
+- **Branches inherit the whole goal.** After a fork, each branch's judge and
+  proposer see the full case, so the latency branch proposed a credentials
+  arrow (the other branch's aspect). Branches should carry their focus
+  (the arrow and condition that spawned them).
+- **Dispositions are written at the end of a run.** A crash loses them;
+  streaming each record as it is made would make the artifact durable.
 - **Legal bases are evidence, not inference** (consent-paths): judged from
   the intended use alone, Jev rightly declines to assume consent or
   contract. Bases belong in `require` against case facts.
