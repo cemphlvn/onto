@@ -25,6 +25,9 @@ pub struct WalkState {
 pub struct Distribution {
     pub arrows: Vec<f32>,
     pub none_of_these: f32,
+    /// The model's own certainty, when it reports one (Jev does). Gates the
+    /// fast path instead of the raw top probability.
+    pub confidence: Option<f32>,
 }
 
 impl Distribution {
@@ -50,6 +53,7 @@ pub trait Chooser {
 /// A new arrow suggested by the System-2 proposer. The target may be an
 /// existing object or a new one.
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub struct Proposal {
     pub arrow: String,
     pub src: String,
@@ -63,6 +67,11 @@ pub trait Proposer {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize),
+    serde(rename_all = "snake_case")
+)]
 pub enum Escalation {
     OpenFrame,
     NoneOfThese,
@@ -140,23 +149,45 @@ impl<C: Chooser, P: Proposer> Walker<'_, C, P> {
 
     pub fn step(&mut self, state: &WalkState) -> Step {
         let frame = self.cat.out(state.at);
-        let reason = match self.cat.object(state.at).closure {
-            Closure::Open => Escalation::OpenFrame,
-            Closure::Closed => {
-                let d = self.chooser.choose(self.cat, state, frame);
-                match d.top() {
-                    Some((i, p)) if p >= self.threshold => {
-                        return Step::Followed { arrow: frame[i], p };
-                    }
-                    Some(_) => Escalation::LowConfidence,
-                    None => Escalation::NoneOfThese,
-                }
+        let closure = self.cat.object(state.at).closure;
+        let d = (closure == Closure::Closed).then(|| self.chooser.choose(self.cat, state, frame));
+        let reason = match decide(closure, d.as_ref(), self.threshold) {
+            Decision::Follow { index, p } => {
+                return Step::Followed {
+                    arrow: frame[index],
+                    p,
+                };
             }
+            Decision::Escalate(reason) => reason,
         };
         Step::Escalated {
             reason,
             proposals: self.proposer.propose(self.cat, state),
         }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Decision {
+    /// Follow the frame arrow at `index`; `p` is its probability.
+    Follow {
+        index: usize,
+        p: f32,
+    },
+    Escalate(Escalation),
+}
+
+/// The System-1 gate, shared by every walker. `d` is the chooser's answer
+/// for a closed frame (`None` for an open one). The model's confidence gates
+/// when present, the top probability otherwise.
+pub fn decide(closure: Closure, d: Option<&Distribution>, threshold: f32) -> Decision {
+    let Some(d) = d.filter(|_| closure == Closure::Closed) else {
+        return Decision::Escalate(Escalation::OpenFrame);
+    };
+    match d.top() {
+        Some((index, p)) if d.confidence.unwrap_or(p) >= threshold => Decision::Follow { index, p },
+        Some(_) => Decision::Escalate(Escalation::LowConfidence),
+        None => Decision::Escalate(Escalation::NoneOfThese),
     }
 }
 
@@ -186,6 +217,7 @@ impl Chooser for ScriptedChooser {
         Distribution {
             arrows,
             none_of_these,
+            confidence: None,
         }
     }
 }
@@ -201,6 +233,7 @@ impl Chooser for UniformChooser {
         Distribution {
             arrows: vec![p; candidates.len()],
             none_of_these: p,
+            confidence: None,
         }
     }
 }

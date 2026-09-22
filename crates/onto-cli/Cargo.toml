@@ -11,5 +11,9 @@ name = "onto"
 path = "src/main.rs"
 
 [dependencies]
-onto-core.workspace = true
 clap.workspace = true
+onto-core = { workspace = true, features = ["serde"] }
+onto-runtime.workspace = true
+reqwest.workspace = true
+serde_json.workspace = true
+tokio.workspace = true

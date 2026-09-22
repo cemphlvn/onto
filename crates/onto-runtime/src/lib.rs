@@ -1,0 +1,18 @@
+//! onto-runtime: the async core loop.
+//!
+//! Many walks run at once. Each step claims its decision frame
+//! ([`frames`]), asks a System-1 [`model::Chooser`] (Jev) and, when the frame
+//! runs out, a System-2 [`model::Proposer`] (an OpenRouter model). Calls
+//! from different walks run in parallel; walks whose frames could intersect
+//! wait for each other, and every intersection is logged as a potentiality.
+//! See `docs/00-architecture.md` §5.
+
+pub mod engine;
+pub mod frames;
+pub mod mem;
+pub mod model;
+pub mod providers;
+pub mod telemetry;
+
+pub use engine::{Config, Engine, Job, RunReport};
+pub use frames::Policy;

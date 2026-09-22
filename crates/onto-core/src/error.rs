@@ -8,7 +8,9 @@ pub enum Error {
     UnknownArrow(String),
     #[error("`{0}` is declared twice")]
     Duplicate(String),
-    #[error("`{0}` is not a valid name (letters, digits, `_`; `o` and `id` are reserved)")]
+    #[error(
+        "`{0}` is not a valid name (letters, digits, `_`; `o`, `id` and `none_of_these` are reserved)"
+    )]
     InvalidName(String),
     #[error("empty path; write `id(Object)` for an identity")]
     EmptyPath,

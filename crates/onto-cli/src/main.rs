@@ -7,6 +7,11 @@ use onto_core::walk::{
 };
 use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, parse::path_spec};
 
+mod run;
+
+#[global_allocator]
+static ALLOC: onto_runtime::mem::CountingAlloc = onto_runtime::mem::CountingAlloc;
+
 /// Navigate categories defined in `.onto` files.
 #[derive(Parser)]
 #[command(name = "onto", version)]
@@ -44,10 +49,22 @@ enum Cmd {
         #[arg(long, default_value = "")]
         goal: String,
     },
+    /// Run many walks concurrently against live models (Jev + OpenRouter) or mocks.
+    Run(run::RunArgs),
 }
 
 fn main() -> ExitCode {
-    match run(Cli::parse()) {
+    let cli = Cli::parse();
+    if let Cmd::Run(args) = cli.cmd {
+        return match run::main(args) {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(e) => {
+                eprintln!("error: {e}");
+                ExitCode::FAILURE
+            }
+        };
+    }
+    match run(cli) {
         Ok(code) => code,
         Err(e) => {
             eprintln!("error: {e}");
@@ -165,6 +182,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
             }
             println!("path: {}", walk.state.path.display_typed(&cat));
         }
+        Cmd::Run(_) => unreachable!("handled in main"),
     }
     Ok(ExitCode::SUCCESS)
 }

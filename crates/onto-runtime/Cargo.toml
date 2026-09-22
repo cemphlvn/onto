@@ -1,0 +1,18 @@
+[package]
+name = "onto-runtime"
+description = "Async core loop: parallel System-1 (Jev) and System-2 (OpenRouter) calls over frame claims, with telemetry"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+memory-stats.workspace = true
+onto-core = { workspace = true, features = ["serde"] }
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

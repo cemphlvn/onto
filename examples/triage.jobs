@@ -1,0 +1,7 @@
+# One walk per line: `StartObject: goal`. Walks run concurrently.
+Request: The login page crashes with a 500 error when I submit the form
+Request: Could you add dark mode to the dashboard?
+Request: How do I export my data to CSV?
+Request: Please refund my last invoice, I was charged twice
+Request: I want a refund for the duplicate charge on my card
+Bug: Checkout button does nothing on Safari

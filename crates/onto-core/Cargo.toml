@@ -8,4 +8,8 @@ repository.workspace = true
 
 [dependencies]
 egg.workspace = true
+serde = { workspace = true, optional = true }
 thiserror.workspace = true
+
+[features]
+serde = ["dep:serde"]

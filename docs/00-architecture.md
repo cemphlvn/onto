@@ -1,6 +1,6 @@
 # onto — Architecture
 
-Status: **draft 0 — 2026-09-23.** Single source of truth for how onto is
+Status: **draft 1 — 2026-09-23.** Single source of truth for how onto is
 built. Code follows this document; change it here first.
 
 ## 1. What onto is
@@ -24,6 +24,9 @@ propose new structure.
 | closed frame | outgoing arrows verified MECE (mutually exclusive, collectively exhaustive) | `Closure::Closed` |
 | open frame | known to be incomplete | `Closure::Open` |
 | equation | two parallel paths declared equal | `Equation` |
+| footprint | a frame's object plus its arrows' targets: every node one decision could touch | `frames::Claim` |
+| claim | a walk's hold on a footprint while deciding, `read` (System 1) or `write` (System 2) | `frames::Claim` |
+| potentiality | a logged place where two concurrent walks could meet (node or conceptual) | `frames::Potentiality` |
 
 ## 3. Layers
 
@@ -31,6 +34,12 @@ propose new structure.
         Jev / OpenJev  (System 1, RLCD-calibrated)      LLM (System 2)
                 │ Chooser: p(arrow | state) + none_of_these    │ Proposer
                 ▼                                               ▼
+┌──────────────────── onto-runtime (Rust, tokio) ────────────────────┐
+│ engine     one task per walk, parallel model calls    [M1.5 ✓]    │
+│ frames     footprint claims, policies, potentialities [M1.5 ✓]    │
+│ providers  Jev (TypeSafe) chooser, OpenRouter proposer [M1.5 ✓]   │
+│ telemetry  JSON lines · mem: heap counter + RSS       [M1.5 ✓]    │
+└───────────────────────────────┬───────────────────────────────────┘
 ┌──────────────────────── onto-core (Rust) ─────────────────────────┐
 │ category   objects + arrows, u32 ids, CSR frames      [M1 ✓]      │
 │ path       type-checked composition                   [M1 ✓]      │
@@ -44,7 +53,9 @@ propose new structure.
      C/C++ consumers         Jev SDK users        osil-opt (shared egg)
 ```
 
-`onto-cli` (the `onto` binary) is a thin shell over `onto-core`.
+`onto-core` stays synchronous and light (egg, thiserror; serde optional)
+so it can sit behind a C ABI. `onto-runtime` adds the async loop and the
+network clients. `onto-cli` (the `onto` binary) is a thin shell over both.
 
 ## 4. The two-tier step
 
@@ -53,7 +64,7 @@ step(state, A):
   frame = out(A)
   if A is closed:
       d = Chooser(state, frame ∪ {none_of_these})
-      if d.top is an arrow and p ≥ threshold:  follow it          (fast path)
+      if d.top is an arrow and confidence ≥ threshold:  follow it (fast path)
       else: escalate (NoneOfThese | LowConfidence)
   else: escalate (OpenFrame)
   escalate → Proposer(state) → proposals, recorded as provisional
@@ -70,6 +81,9 @@ Rules:
 3. **Verified proposals close gaps permanently**, so the fast path covers
    more over time. (Mechanism: M2 delta log.)
 4. A closed frame with no outgoing arrows is a **terminal**; the walk stops.
+5. **The gate is the model's own confidence** when it reports one (Jev
+   does), else the top probability. One function, `walk::decide`, holds
+   this rule for every walker.
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -78,7 +92,80 @@ graph runs out. Everett's claim that Pirahã lacks recursion is disputed
 (Nevins, Pesetsky & Rodrigues 2009); the design depends only on recursion
 being separable, not on that claim.
 
-## 5. Path equality
+## 5. The core loop (onto-runtime)
+
+Many walks run at once, one tokio task each. Model calls from different
+walks run in parallel, bounded per provider (default 16 in flight for the
+chooser, 4 for the proposer). Each step:
+
+```
+claim footprint(A)            read at a closed frame, write at an open one
+  closed: Chooser (Jev)       → follow, release, next step
+          else escalate:      upgrade read → write, Proposer (OpenRouter)
+  open:   Proposer
+release; record proposals (provisional) and conceptual intersections
+```
+
+### 5.1 Claims and policies
+
+A walk holds at most one claim, taken all-or-nothing over the footprint,
+so claims cannot deadlock. Whether two intersecting claims wait:
+
+| policy | waits when | use |
+|---|---|---|
+| `exclusive` (default) | footprints share any node | decision frames that could converge are decided one after another |
+| `shared` | same frame, and one claim is a write | readers of an unchanged frame run together; only frame edits serialize |
+
+Every intersection is logged as a **potentiality**, waited on or not:
+
+- `node`: two footprints share nodes (`resolution`: `waited` or `coexisted`).
+- `conceptual`: two walks proposed the same new concept (name-normalized:
+  `Password_Reset` = `passwordreset`), or the same arrow into an existing
+  object. These are candidates for merging during verification (M2).
+
+### 5.2 Speculation
+
+`--speculate` starts the System-2 call alongside System 1 at every closed
+frame and aborts it when System 1 is confident. It saves one round trip on
+escalation but claims every frame as a write, so under `shared` it gives up
+reader parallelism. Measured below.
+
+### 5.3 Telemetry
+
+JSON lines, one event per line, only the `onto` target (no dependency
+logs). Every line has `timestamp`, `level`, `event`:
+
+| event | fields |
+|---|---|
+| `run.start` | category, walks, chooser, proposer, policy, speculate, threshold |
+| `walk.start` / `walk.end` | walk, from, goal / path, steps, elapsed_ms |
+| `chooser.call` | walk, at, latency_ms, top_p, none_of_these, confidence, input_tokens, output_tokens, attempts, ok (error on failure) |
+| `proposer.call` | walk, at, speculative, latency_ms, proposals, input_tokens, output_tokens, attempts, ok |
+| `proposer.discarded` | walk, at (speculative call aborted) |
+| `step` / `escalate` | walk, from, arrow, to, p, confidence / walk, at, reason |
+| `potentiality` | kind, resolution, mode, walk, with, at, nodes (comma-joined), wait_ms |
+| `mem.sample` | rss_bytes, heap_bytes, heap_peak_bytes (every 250 ms) |
+| `run.end` | wall_ms, model_ms_sum, calls, tokens, potentialities, peak_rss_bytes, heap_peak_bytes |
+
+Memory: heap bytes are exact, from a counting global allocator the binary
+installs (`mem::CountingAlloc`); RSS comes from the OS (`memory-stats`).
+`--report` writes the whole run (walks, steps, proposals, potentialities,
+memory) as one JSON document.
+
+### 5.4 Measured (2026-09-23, 6 walks, `examples/triage.jobs`, release build)
+
+| run | wall | model time | parallelism | waited | peak RSS | peak heap |
+|---|---|---|---|---|---|---|
+| exclusive | 16.9 s | 18.7 s | 1.11x | 19 | 13.9 MiB | 0.34 MiB |
+| shared | 9.2 s | 22.9 s | 2.50x | 2 | 14.8 MiB | 0.45 MiB |
+| shared + speculate | 10.5 s | 19.8 s | 1.89x | 10 | 14.1 MiB | 0.46 MiB |
+
+Chooser `jev-latest` (~0.7 s/call), proposer `~openai/gpt-luna-latest`
+(~1.7–3 s/call). All six walks start at `Request`, so `exclusive`
+serializes them almost fully. The engine itself is small; RSS growth is
+mostly the TLS/HTTP stack.
+
+## 6. Path equality
 
 Paths become egg terms: `g.f` is `(o g f)`, identities are `(id A)`.
 Rewrites: associativity (both directions), left/right identity, and every
@@ -89,7 +176,7 @@ The word problem for finitely presented categories is undecidable, so
 `Equality::check` returns `Equal`, `Distinct` (saturated without merging),
 or `Unknown` (limits hit). It never guesses.
 
-## 6. The `.onto` format
+## 7. The `.onto` format
 
 ```
 category Name {
@@ -104,10 +191,10 @@ category Name {
 ```
 
 Statements end with `;`, `#` starts a comment, objects are declared before
-use. `o` and `id` are reserved names. Object and arrow names share one
+use. `o`, `id` and `none_of_these` are reserved names. Object and arrow names share one
 namespace.
 
-## 7. Storage
+## 8. Storage
 
 The hot operation is a step: read one frame, choose, compose. Frames are
 stored CSR (one contiguous slice per object). M1 keeps the category in
@@ -115,7 +202,7 @@ memory. M2 adds an immutable rkyv snapshot loaded by mmap, plus an
 append-only delta log for verified additions, compacted into a new
 snapshot. No database until live multi-writer editing is needed.
 
-## 8. Decisions
+## 9. Decisions
 
 | # | decision | why |
 |---|---|---|
@@ -124,21 +211,38 @@ snapshot. No database until live multi-writer editing is needed.
 | D3 | standalone project, OSIL bridge later | separate release cycle; share egg-level machinery |
 | D4 | MIT + DCO, no CLA | matches OSIL; OSI-approved (no explicit patent grant; revisit before foundation submission) |
 | D5 | in-memory CSR now, rkyv/mmap snapshot next | the step is the hot path |
+| D6 | async runtime in its own crate (tokio, reqwest+rustls) | keeps `onto-core` sync and C-ABI friendly |
+| D7 | Jev over the plain HTTP API, OpenRouter via chat completions with JSON-schema output | no SDK in Rust; both are one POST |
+| D8 | default policy `exclusive`; `shared` opt-in | follows the stated method (intersecting frames wait); `shared` measured faster |
+| D9 | proposer default `~openai/gpt-luna-latest`, `reasoning.effort = low` | reasoning models otherwise spend the token budget and return no content |
+| D10 | telemetry as JSON lines via `tracing`; heap via counting allocator | greppable, `jq`-able, exact heap numbers |
 
-## 9. Milestones
+## 10. Milestones
 
 - **M1 (done):** core store, typed paths, egg equality, two-tier walker with
   scripted/uniform choosers, `.onto` parser, `onto` CLI.
+- **M1.5 (done):** async core loop, frame claims + potentialities, Jev
+  and OpenRouter clients, speculation, JSON-lines telemetry, memory
+  measurement, `onto run`.
 - **M2:** delta log + proposal verification pipeline; rkyv/mmap snapshot.
 - **M3:** functors between categories; multi-category files.
 - **M4:** C ABI (cbindgen) and Python bindings (PyO3); Jev `Chooser` adapter
   (Choice primitive over the frame) in Python.
 - **M5:** OSIL bridge: onto categories as OSIL category-level requirements.
 
-## 10. Open questions
+## 11. Open questions
 
 - How frames should treat arrows that are *derived* by an equation (should
   a defined composite appear as a choice?).
 - What the pairwise MECE verifier asks the System-1 model, exactly.
-- The confidence measure: raw top probability (M1) vs. the model's own
-  concentration-based confidence.
+- Fairness under `shared`: a steady stream of readers can delay a writer
+  at the same frame. No starvation seen at this scale; a writer-preference
+  queue is the fix if it appears.
+- Conceptual intersection is name-based. A Jev Noul ("do these two
+  proposals denote the same concept?") would catch synonyms (`Refund` vs
+  `ChargeDispute`).
+- Proposers sometimes re-propose arrows that already exist (`plan`,
+  `specify` from `Feature`); M2 verification must drop them. Frames that
+  keep attracting such proposals are candidates for closing.
+- Jev Choice holds at most 255 options; wider frames need hierarchical
+  (beam) choice.

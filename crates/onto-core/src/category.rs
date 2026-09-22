@@ -140,8 +140,12 @@ pub enum PathSpec {
     Arrows(Vec<String>),
 }
 
-/// Names the engine reserves for its own path terms.
-const RESERVED: &[&str] = &["o", "id"];
+/// Names the engine reserves: path terms (`o`, `id`) and the chooser's
+/// no-match option.
+pub const RESERVED: &[&str] = &["o", "id", NONE_OF_THESE];
+
+/// The option every System-1 choice carries besides the frame's arrows.
+pub const NONE_OF_THESE: &str = "none_of_these";
 
 impl CategoryBuilder {
     pub fn new(name: impl Into<String>) -> Self {

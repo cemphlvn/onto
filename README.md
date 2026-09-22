@@ -5,7 +5,7 @@ declare which paths are equal, and let a fast System-1 model (such as Jev)
 route through the graph. Where the graph doesn't enumerate the options well
 enough, the walk escalates to a language model that can propose new structure.
 
-> Early stage (M1). Design: [`docs/00-architecture.md`](docs/00-architecture.md).
+> Early stage (M1.5). Design: [`docs/00-architecture.md`](docs/00-architecture.md).
 
 ## Try it
 
@@ -19,9 +19,27 @@ $onto walk    examples/triage.onto --from Request --script report,patch,ship
 $onto walk    examples/triage.onto --from Request --script ask     # escalates: open frame
 ```
 
+## The core loop
+
+Run many walks concurrently. System 1 is Jev (`TYPESAFE_API_KEY`); System 2
+is any OpenRouter model (`OPENROUTER_API_KEY`).
+
+```sh
+$onto run examples/triage.onto --jobs examples/triage.jobs --mock           # offline
+$onto run examples/triage.onto --jobs examples/triage.jobs --mock-proposer  # live Jev only
+$onto run examples/triage.onto --jobs examples/triage.jobs \
+    --policy shared --telemetry run.jsonl --report run.json               # both live
+```
+
+`--policy exclusive` (default) makes walks whose decision frames could
+intersect wait for each other; `shared` only serializes edits to the same
+frame. Every intersection is logged as a potentiality. `--speculate` starts
+System 2 alongside System 1. Telemetry is JSON lines (`jq -r .event run.jsonl`).
+
 ## Layout
 
 `crates/onto-core` engine (category, path, equality, walk, parse) ·
+`crates/onto-runtime` async core loop (engine, frames, providers, telemetry, mem) ·
 `crates/onto-cli` the `onto` binary · `examples/` `.onto` files ·
 `docs/` design (start at `00-architecture.md`).
 
