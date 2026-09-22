@@ -53,7 +53,7 @@ enum PolicyArg {
     Shared,
 }
 
-enum AnyChooser {
+pub enum AnyChooser {
     Jev(Jev),
     Mock(MockChooser),
 }
@@ -73,7 +73,7 @@ impl Chooser for AnyChooser {
     }
 }
 
-enum AnyProposer {
+pub enum AnyProposer {
     OpenRouter(OpenRouter),
     Mock(MockProposer),
 }
@@ -93,7 +93,7 @@ impl Proposer for AnyProposer {
     }
 }
 
-type BoxError = Box<dyn std::error::Error>;
+pub type BoxError = Box<dyn std::error::Error>;
 
 pub fn main(args: RunArgs) -> Result<(), BoxError> {
     let src =
@@ -104,29 +104,12 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         telemetry::init_jsonl(path)?;
     }
 
-    let http = reqwest::Client::builder()
-        .timeout(Duration::from_secs(60))
-        .build()?;
-    let chooser = if args.mock {
-        AnyChooser::Mock(MockChooser {
-            latency: Duration::from_millis(150),
-        })
-    } else {
-        AnyChooser::Jev(
-            Jev::from_env(http.clone(), args.chooser_model.clone())
-                .ok_or("TYPESAFE_API_KEY is not set (or pass --mock)")?,
-        )
-    };
-    let proposer = if args.mock || args.mock_proposer {
-        AnyProposer::Mock(MockProposer {
-            latency: Duration::from_millis(600),
-        })
-    } else {
-        AnyProposer::OpenRouter(
-            OpenRouter::from_env(http, args.proposer_model.clone())
-                .ok_or("OPENROUTER_API_KEY is not set (or pass --mock-proposer)")?,
-        )
-    };
+    let (chooser, proposer) = models(
+        args.mock,
+        args.mock_proposer,
+        args.chooser_model.clone(),
+        args.proposer_model.clone(),
+    )?;
     let cfg = Config {
         threshold: args.threshold,
         policy: match args.policy {
@@ -149,6 +132,39 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         println!("report: {}", path.display());
     }
     Ok(())
+}
+
+/// Live Jev + OpenRouter, or mocks.
+pub fn models(
+    mock: bool,
+    mock_proposer: bool,
+    chooser_model: Option<String>,
+    proposer_model: Option<String>,
+) -> Result<(AnyChooser, AnyProposer), BoxError> {
+    let http = reqwest::Client::builder()
+        .timeout(Duration::from_secs(60))
+        .build()?;
+    let chooser = if mock {
+        AnyChooser::Mock(MockChooser {
+            latency: Duration::from_millis(150),
+        })
+    } else {
+        AnyChooser::Jev(
+            Jev::from_env(http.clone(), chooser_model)
+                .ok_or("TYPESAFE_API_KEY is not set (or pass --mock)")?,
+        )
+    };
+    let proposer = if mock || mock_proposer {
+        AnyProposer::Mock(MockProposer {
+            latency: Duration::from_millis(600),
+        })
+    } else {
+        AnyProposer::OpenRouter(
+            OpenRouter::from_env(http, proposer_model)
+                .ok_or("OPENROUTER_API_KEY is not set (or pass --mock-proposer)")?,
+        )
+    };
+    Ok((chooser, proposer))
 }
 
 fn read_jobs(path: &PathBuf) -> Result<Vec<Job>, BoxError> {

@@ -1,0 +1,36 @@
+# Consent Paths: where personal data may go, and on what authority.
+# Each arrow is a processing step with a legal basis (noted beside it).
+# A data use is authorized only if a path reaches it. Equations record
+# routes that end in the same authorized state.
+
+category Consent {
+    objects: Collected, Consented, Contract, Pseudonymized, Anonymized,
+             Aggregated, Research, Processor, Marketing, Published;
+
+    consent:  Collected -> Consented;       # explicit consent (GDPR 6(1)(a))
+    contract: Collected -> Contract;        # necessary for the contract (6(1)(b))
+    closed: Collected;                      # the only two bases this org relies on
+
+    pseudonymize:   Consented -> Pseudonymized;
+    market:         Consented -> Marketing; # consent covers marketing
+    closed: Consented;
+
+    fulfil_pseudonymize: Contract -> Pseudonymized;
+    # Contract stays open: other contract-necessary uses are not enumerated.
+
+    anonymize:    Pseudonymized -> Anonymized;
+    research_use: Pseudonymized -> Research;   # research exemption with safeguards (89)
+    share_dpa:    Pseudonymized -> Processor;  # data processing agreement (28)
+    closed: Pseudonymized;
+
+    aggregate: Anonymized -> Aggregated;
+    closed: Anonymized;
+
+    publish: Aggregated -> Published;
+    closed: Aggregated;
+
+    closed: Research, Processor, Marketing, Published;
+
+    # Pseudonymizing under either basis leads to the same anonymized state.
+    anonymize.pseudonymize.consent = anonymize.fulfil_pseudonymize.contract;
+}

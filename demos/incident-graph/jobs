@@ -1,0 +1,10 @@
+# One incident agent per line: `StartObject: what it is investigating`.
+# Agents start at different symptoms; several converge on Database and Network.
+Alert: p99 latency on checkout jumped from 200ms to 4s
+Alert: 5xx error rate spiked to 12% right after the 14:02 deploy
+Alert: an API key was found in a public GitHub repository
+Latency: slow queries on the orders database, replication lag growing
+Latency: packet loss between us-east and eu-west
+ErrorSpike: database connection pool exhausted, requests failing
+SecurityEvent: unusual outbound traffic from a build server
+Network: traffic flood from thousands of IPs hitting the login endpoint

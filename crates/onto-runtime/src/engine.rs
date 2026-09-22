@@ -129,6 +129,9 @@ pub struct Engine<C, P> {
     /// Proposed concept key -> walks that proposed it.
     concepts: Mutex<HashMap<String, Vec<u64>>>,
     counters: Counters,
+    /// Walk ids are unique across `run` calls on one engine, so conceptual
+    /// intersections are detected between runs too.
+    next_walk: AtomicU64,
 }
 
 impl<C: Chooser, P: Proposer> Engine<C, P> {
@@ -139,6 +142,7 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
             proposer_slots: Semaphore::new(cfg.proposer_concurrency),
             concepts: Mutex::new(HashMap::new()),
             counters: Counters::default(),
+            next_walk: AtomicU64::new(1),
             cat,
             chooser,
             proposer,
@@ -169,10 +173,10 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
         let handles: Vec<_> = jobs
             .into_iter()
             .zip(starts)
-            .enumerate()
-            .map(|(i, (job, from))| {
+            .map(|(job, from)| {
                 let engine = self.clone();
-                tokio::spawn(async move { engine.walk(i as u64 + 1, job, from).await })
+                let id = self.next_walk.fetch_add(1, Relaxed);
+                tokio::spawn(async move { engine.walk(id, job, from).await })
             })
             .collect();
         let mut walks = Vec::with_capacity(handles.len());

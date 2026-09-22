@@ -7,6 +7,7 @@ use onto_core::walk::{
 };
 use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, parse::path_spec};
 
+mod ask;
 mod run;
 
 #[global_allocator]
@@ -34,6 +35,17 @@ enum Cmd {
         lhs: String,
         rhs: String,
     },
+    /// List every route between two objects, grouped by path equality.
+    Reach {
+        file: PathBuf,
+        from: String,
+        to: String,
+        /// Objects no route may pass through, comma separated.
+        #[arg(long, value_delimiter = ',')]
+        avoid: Vec<String>,
+        #[arg(long, default_value_t = 8)]
+        max_len: usize,
+    },
     /// Walk from an object, System 1 first, escalating when the frame runs out.
     Walk {
         file: PathBuf,
@@ -49,28 +61,23 @@ enum Cmd {
         #[arg(long, default_value = "")]
         goal: String,
     },
+    /// Try a case as the person raising it: one live walk, answered in plain terms.
+    Ask(ask::AskArgs),
     /// Run many walks concurrently against live models (Jev + OpenRouter) or mocks.
     Run(run::RunArgs),
 }
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
-    if let Cmd::Run(args) = cli.cmd {
-        return match run::main(args) {
-            Ok(()) => ExitCode::SUCCESS,
-            Err(e) => {
-                eprintln!("error: {e}");
-                ExitCode::FAILURE
-            }
-        };
-    }
-    match run(cli) {
-        Ok(code) => code,
-        Err(e) => {
-            eprintln!("error: {e}");
-            ExitCode::FAILURE
-        }
-    }
+    let result = match cli.cmd {
+        Cmd::Run(args) => run::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
+        cmd => run(Cli { cmd }),
+    };
+    result.unwrap_or_else(|e| {
+        eprintln!("error: {e}");
+        ExitCode::FAILURE
+    })
 }
 
 fn load(file: &PathBuf) -> Result<Category, Box<dyn std::error::Error>> {
@@ -130,6 +137,52 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
                 return Ok(ExitCode::from(1));
             }
         }
+        Cmd::Reach {
+            file,
+            from,
+            to,
+            avoid,
+            max_len,
+        } => {
+            let cat = load(&file)?;
+            let avoid = avoid
+                .iter()
+                .map(|n| cat.object_id(n))
+                .collect::<Result<Vec<_>, _>>()?;
+            let paths = cat.paths(cat.object_id(&from)?, cat.object_id(&to)?, &avoid, max_len);
+            if paths.is_empty() {
+                let via = if avoid.is_empty() {
+                    String::new()
+                } else {
+                    let names: Vec<_> =
+                        avoid.iter().map(|o| cat.object(*o).name.as_str()).collect();
+                    format!(" avoiding {}", names.join(", "))
+                };
+                println!("no path {from} -> {to}{via} (max {max_len} arrows)");
+                return Ok(ExitCode::from(1));
+            }
+            // Group routes the declared equations prove equal.
+            let eq = Equality::new(&cat)?;
+            let mut classes: Vec<Vec<&onto_core::Path>> = Vec::new();
+            for p in &paths {
+                match classes
+                    .iter_mut()
+                    .find(|c| eq.check(c[0], p) == Verdict::Equal)
+                {
+                    Some(c) => c.push(p),
+                    None => classes.push(vec![p]),
+                }
+            }
+            println!(
+                "{} path(s) {from} -> {to}, {} distinct up to equations:",
+                paths.len(),
+                classes.len()
+            );
+            for c in classes {
+                let routes: Vec<_> = c.iter().map(|p| p.display(&cat)).collect();
+                println!("  {}", routes.join("  ≡  "));
+            }
+        }
         Cmd::Walk {
             file,
             from,
@@ -182,7 +235,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
             }
             println!("path: {}", walk.state.path.display_typed(&cat));
         }
-        Cmd::Run(_) => unreachable!("handled in main"),
+        Cmd::Run(_) | Cmd::Ask(_) => unreachable!("handled in main"),
     }
     Ok(ExitCode::SUCCESS)
 }

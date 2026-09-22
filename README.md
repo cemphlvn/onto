@@ -36,11 +36,17 @@ intersect wait for each other; `shared` only serializes edits to the same
 frame. Every intersection is logged as a potentiality. `--speculate` starts
 System 2 alongside System 1. Telemetry is JSON lines (`jq -r .event run.jsonl`).
 
+## Demos
+
+[`demos/`](demos/) holds Onto Commons, runnable demo projects: support
+taxonomies (support-commons), concurrent incident agents (incident-graph),
+authorization paths (consent-paths).
+
 ## Layout
 
 `crates/onto-core` engine (category, path, equality, walk, parse) ·
 `crates/onto-runtime` async core loop (engine, frames, providers, telemetry, mem) ·
-`crates/onto-cli` the `onto` binary · `examples/` `.onto` files ·
+`crates/onto-cli` the `onto` binary · `examples/` `.onto` files · `demos/` Onto Commons demo projects ·
 `docs/` design (start at `00-architecture.md`).
 
 ## License

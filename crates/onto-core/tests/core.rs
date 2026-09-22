@@ -159,3 +159,23 @@ fn walk_escalates_when_system1_declines() {
         }
     ));
 }
+
+#[test]
+fn paths_enumerates_routes_and_respects_avoid() {
+    let cat = parse(TRIAGE).unwrap();
+    let id = |n: &str| cat.object_id(n).unwrap();
+    let shown = |ps: Vec<onto_core::Path>| ps.iter().map(|p| p.display(&cat)).collect::<Vec<_>>();
+    assert_eq!(
+        shown(cat.paths(id("Feature"), id("Done"), &[], 8)),
+        ["build.plan", "implement.specify"]
+    );
+    assert_eq!(
+        shown(cat.paths(id("Feature"), id("Done"), &[id("Spec")], 8)),
+        ["build.plan"]
+    );
+    assert!(cat.paths(id("Bug"), id("Feature"), &[], 8).is_empty());
+    assert_eq!(
+        shown(cat.paths(id("Request"), id("Done"), &[], 2)),
+        ["answer.ask", "wontfix.report"]
+    );
+}

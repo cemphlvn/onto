@@ -1,0 +1,43 @@
+# Incident Graph: investigation paths that concurrent incident agents walk.
+# Different symptoms lead into shared components (Database, Network), so
+# agents starting from different alerts meet there.
+
+category Incident {
+    objects: Alert, Latency, ErrorSpike, SecurityEvent,
+             Database, Network, Deploy, Credentials,
+             Failover, Rollback, Rotate, Mitigated;
+
+    latency:  Alert -> Latency;
+    errors:   Alert -> ErrorSpike;
+    security: Alert -> SecurityEvent;
+    closed: Alert;
+
+    slow_db:  Latency -> Database;
+    slow_net: Latency -> Network;
+    closed: Latency;
+
+    bad_deploy: ErrorSpike -> Deploy;
+    failing_db: ErrorSpike -> Database;
+    closed: ErrorSpike;
+
+    leaked:    SecurityEvent -> Credentials;
+    intrusion: SecurityEvent -> Network;
+    closed: SecurityEvent;
+
+    failover:           Database -> Failover;
+    rollback_migration: Database -> Rollback;
+    closed: Database;
+
+    # Network stays open: DDoS, BGP, DNS and peering faults are not enumerated.
+
+    rollback: Deploy -> Rollback;
+    closed: Deploy;
+
+    rotate: Credentials -> Rotate;
+    closed: Credentials;
+
+    recover: Failover -> Mitigated;
+    verify:  Rollback -> Mitigated;
+    confirm: Rotate -> Mitigated;
+    closed: Failover, Rollback, Rotate, Mitigated;
+}

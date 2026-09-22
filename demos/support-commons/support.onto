@@ -1,0 +1,35 @@
+# Support Commons: a routing taxonomy for incoming support tickets.
+# Closed frames are the taxonomy's claim "these are all the cases".
+# Open frames admit they are incomplete. Tickets that fit nowhere
+# escalate, and those escalations are the missing intents.
+
+category Support {
+    objects: Ticket, Billing, Technical, Account, Product,
+             Refund, Invoice, Outage, HowTo, Login, FeatureRequest, Resolved;
+
+    billing:   Ticket -> Billing;
+    technical: Ticket -> Technical;
+    account:   Ticket -> Account;
+    product:   Ticket -> Product;
+    closed: Ticket;                      # the taxonomy claims these four cover every ticket
+
+    refund:  Billing -> Refund;
+    invoice: Billing -> Invoice;
+    closed: Billing;
+
+    outage: Technical -> Outage;
+    howto:  Technical -> HowTo;
+    closed: Technical;
+
+    login: Account -> Login;             # Account stays open: known to be incomplete
+
+    request: Product -> FeatureRequest;  # Product stays open
+
+    issue_refund: Refund -> Resolved;
+    send_invoice: Invoice -> Resolved;
+    status_page:  Outage -> Resolved;
+    answer:       HowTo -> Resolved;
+    reset:        Login -> Resolved;
+    log:          FeatureRequest -> Resolved;
+    closed: Refund, Invoice, Outage, HowTo, Login, FeatureRequest, Resolved;
+}

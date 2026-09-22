@@ -224,6 +224,9 @@ snapshot. No database until live multi-writer editing is needed.
 - **M1.5 (done):** async core loop, frame claims + potentialities, Jev
   and OpenRouter clients, speculation, JSON-lines telemetry, memory
   measurement, `onto run`.
+- **Demos:** `demos/` (Onto Commons); wave 1 runnable: support-commons,
+  incident-graph, consent-paths. `onto reach` lists routes grouped by
+  equality, with `--avoid`.
 - **M2:** delta log + proposal verification pipeline; rkyv/mmap snapshot.
 - **M3:** functors between categories; multi-category files.
 - **M4:** C ABI (cbindgen) and Python bindings (PyO3); Jev `Chooser` adapter
@@ -244,5 +247,13 @@ snapshot. No database until live multi-writer editing is needed.
 - Proposers sometimes re-propose arrows that already exist (`plan`,
   `specify` from `Feature`); M2 verification must drop them. Frames that
   keep attracting such proposals are candidates for closing.
+- **Invariants for M2 verification** (from the consent-paths demo): a
+  proposer suggested `Collected -> Marketing`, bypassing consent. The
+  format needs declared invariants (e.g. "every path to Marketing passes
+  Consented", checkable with `Category::paths(.., avoid, ..)`) that every
+  proposal must preserve before promotion.
+- **Arrow descriptions**: Jev sees only arrow and object names; misroutes
+  in the demos (CSV, SSO, aggregate statistics) point to adding optional
+  descriptions to the `.onto` format and passing them as Choice criteria.
 - Jev Choice holds at most 255 options; wider frames need hierarchical
   (beam) choice.

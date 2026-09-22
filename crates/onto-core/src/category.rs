@@ -108,6 +108,56 @@ impl Category {
         &self.out_arrows[lo..hi]
     }
 
+    /// Every path from `from` to `to` that visits no object twice, skips the
+    /// objects in `avoid`, and has at most `max_len` arrows. Shortest first.
+    pub fn paths(&self, from: ObjId, to: ObjId, avoid: &[ObjId], max_len: usize) -> Vec<Path> {
+        fn go(
+            cat: &Category,
+            to: ObjId,
+            avoid: &[ObjId],
+            max_len: usize,
+            path: &mut Path,
+            seen: &mut Vec<ObjId>,
+            out: &mut Vec<Path>,
+        ) {
+            if path.dst == to && !path.is_id() {
+                out.push(path.clone());
+                return;
+            }
+            if path.arrows.len() == max_len {
+                return;
+            }
+            for &a in cat.out(path.dst) {
+                let next = cat.arrow(a).dst;
+                if avoid.contains(&next) || (seen.contains(&next) && next != to) {
+                    continue;
+                }
+                let mut longer = path.clone();
+                longer
+                    .push(cat, a)
+                    .expect("frame arrows leave the current object");
+                seen.push(next);
+                go(cat, to, avoid, max_len, &mut longer, seen, out);
+                seen.pop();
+            }
+        }
+        let mut out = Vec::new();
+        if avoid.contains(&from) {
+            return out;
+        }
+        go(
+            self,
+            to,
+            avoid,
+            max_len,
+            &mut Path::id(from),
+            &mut vec![from],
+            &mut out,
+        );
+        out.sort_by_key(|p| p.arrows.len());
+        out
+    }
+
     /// Composes arrows given in application order (`[f, g]` is `g ∘ f`).
     pub fn path(&self, arrows: &[ArrowId]) -> Result<Path, Error> {
         let (first, rest) = arrows.split_first().ok_or(Error::EmptyPath)?;
