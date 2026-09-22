@@ -27,6 +27,10 @@ pub enum Error {
     EquationNotParallel { lhs: String, rhs: String },
     #[error("line {line}: {msg}")]
     Parse { line: usize, msg: String },
+    #[error("frame `{object}`: {msg}")]
+    Frame { object: String, msg: String },
+    #[error("require {0}")]
+    Require(String),
     #[error("rewrite construction failed: {0}")]
     Rewrite(String),
 }

@@ -101,6 +101,8 @@ pub enum PotentialityKind {
     Node,
     /// Two walks proposed the same new concept.
     Conceptual,
+    /// An arrow that held (noul) but was not followed.
+    Alternative,
 }
 
 impl PotentialityKind {
@@ -108,6 +110,7 @@ impl PotentialityKind {
         match self {
             Self::Node => "node",
             Self::Conceptual => "conceptual",
+            Self::Alternative => "alternative",
         }
     }
 }
@@ -119,6 +122,8 @@ pub enum Resolution {
     Waited,
     /// Both proceeded; the intersection is only recorded.
     Coexisted,
+    /// A possible step was seen and left untaken.
+    NotFollowed,
 }
 
 impl Resolution {
@@ -126,6 +131,7 @@ impl Resolution {
         match self {
             Self::Waited => "waited",
             Self::Coexisted => "coexisted",
+            Self::NotFollowed => "not_followed",
         }
     }
 }
@@ -138,7 +144,8 @@ pub struct Potentiality {
     /// The claim that met the intersection (`None` for conceptual ones).
     pub mode: Option<Mode>,
     pub walk: u64,
-    pub with: u64,
+    /// The other walk, for intersections between two walks.
+    pub with: Option<u64>,
     pub at: String,
     pub nodes: Vec<String>,
     pub wait_ms: f64,
@@ -270,7 +277,7 @@ impl FrameLocks {
             resolution,
             mode: Some(mode),
             walk,
-            with,
+            with: Some(with),
             at: cat.object(at).name.clone(),
             nodes: names,
             wait_ms: (wait.as_secs_f64() * 1e6).round() / 1e3,

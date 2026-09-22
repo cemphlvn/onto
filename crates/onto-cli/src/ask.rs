@@ -2,7 +2,8 @@
 //!
 //! The operator view (`onto run`) shows walks, claims and potentialities.
 //! This view shows what the person who raised the case would be told:
-//! handled, or needs a person and why, with any AI suggestion clearly
+//! handled, or needs a person and why. When the case has independent parts
+//! the walk forks, and each part is reported on its own. AI suggestions are
 //! marked as not active.
 
 use std::io::{BufRead, IsTerminal, Write};
@@ -16,7 +17,7 @@ use onto_runtime::engine::{StepRecord, WalkReport};
 use onto_runtime::frames::PotentialityKind;
 use onto_runtime::{Config, Engine, Job, Policy, RunReport, telemetry};
 
-use crate::run::{BoxError, models};
+use crate::run::{BoxError, case, models};
 
 #[derive(Args)]
 pub struct AskArgs {
@@ -24,7 +25,8 @@ pub struct AskArgs {
     /// Where the case enters the graph (e.g. `Ticket`).
     #[arg(long)]
     from: String,
-    /// The situation in your own words. Omit to type several, one per line.
+    /// The situation in your own words, or a JSON object with a "goal" and
+    /// structured facts. Omit to type several, one per line.
     text: Option<String>,
     #[arg(long)]
     mock: bool,
@@ -44,28 +46,30 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
     if let Some(path) = &args.telemetry {
         telemetry::init_jsonl(path)?;
     }
-    let (chooser, proposer) = models(args.mock, args.mock_proposer, None, None)?;
+    let (judge, proposer) = models(args.mock, args.mock_proposer, None, None)?;
     let cfg = Config {
         threshold: args.threshold,
         policy: Policy::Shared,
         ..Config::default()
     };
-    let engine = Engine::new(cat.clone(), chooser, proposer, cfg);
+    let engine = Engine::new(cat.clone(), judge, proposer, cfg);
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?;
 
-    let ask = |text: String| -> Result<(), BoxError> {
+    let ask = |text: &str| -> Result<(), BoxError> {
+        let (goal, case) = case(text)?;
         let job = Job {
             from: args.from.clone(),
-            goal: text,
+            goal,
+            case,
         };
         let report = rt.block_on(engine.run(vec![job]))?;
         print_answer(&cat, &report);
         Ok(())
     };
 
-    if let Some(text) = args.text.clone() {
+    if let Some(text) = &args.text {
         return ask(text);
     }
     let stdin = std::io::stdin();
@@ -82,16 +86,33 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
         if stdin.lock().read_line(&mut line)? == 0 || line.trim().is_empty() {
             return Ok(());
         }
-        ask(line.trim().to_owned())?;
+        ask(line.trim())?;
     }
 }
 
 fn print_answer(cat: &Category, r: &RunReport) {
-    let w: &WalkReport = &r.walks[0];
+    let root = &r.walks[0];
     println!();
-    println!("  You: \"{}\"", w.goal);
-    println!();
+    println!("  You: \"{}\"", root.goal);
+    let parts: Vec<&WalkReport> = r.walks.iter().filter(|w| w.parent.is_some()).collect();
+    if parts.is_empty() {
+        print_walk(cat, r, root, "  ");
+    } else {
+        println!();
+        println!(
+            "  Your case has {} independent parts; each is handled on its own.",
+            parts.len() + 1
+        );
+        for (i, w) in std::iter::once(root).chain(parts).enumerate() {
+            println!();
+            println!("  Part {}:", i + 1);
+            print_walk(cat, r, w, "    ");
+        }
+    }
+}
 
+fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
+    println!();
     let mut n = 0;
     let mut outcome = None;
     for s in &w.steps {
@@ -101,82 +122,82 @@ fn print_answer(cat: &Category, r: &RunReport) {
                 to,
                 confidence,
                 p,
+                alternatives,
                 ..
             } => {
                 n += 1;
                 let sure = confidence.unwrap_or(*p) * 100.0;
-                println!("  {n}. {from} → {to}   ({sure:.0}% sure)");
+                println!("{pad}{n}. {from} → {to}   ({sure:.0}% sure)");
+                for a in alternatives {
+                    println!("{pad}   (also possible: {}, not pursued)", a.to);
+                }
             }
+            StepRecord::Forked { .. } => {}
             StepRecord::Escalated {
                 at,
                 reason,
                 proposals,
                 ..
-            } => outcome = Some((at.clone(), Some(*reason), proposals.clone())),
+            } => outcome = Some((at.clone(), *reason, proposals.clone())),
             StepRecord::Failed { at, error } => {
-                println!("  ✗ Something went wrong at {at}: {error}");
+                println!("{pad}✗ Something went wrong at {at}: {error}");
                 return;
             }
         }
     }
+    if n == 0 {
+        println!("{pad}(no existing option matched, even at the first step)");
+    }
 
-    let end = cat
-        .object_id(w.path.split(" -> ").last().unwrap_or_default())
-        .ok();
+    let end_name = w.path.rsplit(" -> ").next().unwrap_or_default();
+    let end = cat.object_id(end_name).ok();
     let terminal =
         end.is_some_and(|o| cat.object(o).closure == Closure::Closed && cat.out(o).is_empty());
     println!();
     match outcome {
         None if terminal => {
             let route = w.path.split(" : ").next().unwrap_or_default();
-            println!(
-                "  ✓ Handled. Your case follows an existing route and reached {}.",
-                cat.object(end.unwrap()).name
-            );
-            println!("    Route: {route}");
+            println!("{pad}✓ Handled. This follows an existing route and reached {end_name}.");
+            println!("{pad}  Route: {route}");
         }
-        None => println!("  … Stopped before reaching an outcome (step limit)."),
+        None => println!("{pad}… Stopped before reaching an outcome (step limit)."),
         Some((at, reason, proposals)) => {
             let why = match reason {
-                Some(Escalation::NoneOfThese) => {
-                    format!("none of the known options at {at} fits your case")
-                }
-                Some(Escalation::LowConfidence) => {
+                Escalation::NoneOfThese => format!("none of the known options at {at} fits"),
+                Escalation::LowConfidence => {
                     format!("at {at}, it was not sure enough which option fits")
                 }
-                Some(Escalation::OpenFrame) => format!("{at} is an area known to be incomplete"),
-                None => String::new(),
+                Escalation::OpenFrame => format!("{at} is an area known to be incomplete"),
             };
-            println!("  ⚠ Needs a person. The system stopped because {why},");
+            println!("{pad}⚠ Needs a person. The system stopped because {why},");
             println!(
-                "    so it will not guess. Your case is recorded as one it cannot handle yet."
+                "{pad}  so it will not guess. This is recorded as a case it cannot handle yet."
             );
             if !proposals.is_empty() {
                 println!();
-                println!("  Behind the scenes (NOT active, does not affect your case):");
+                println!("{pad}Behind the scenes (NOT active, does not affect your case):");
                 for p in &proposals {
                     println!(
-                        "    an AI suggested a new option \"{}\" leading to {}",
+                        "{pad}  an AI suggested a new option \"{}\" leading to {}",
                         p.arrow, p.dst
                     );
-                    println!("      because: {}", p.rationale);
+                    println!("{pad}    for: {}", p.about);
                 }
                 println!(
-                    "    Suggestions stay provisional until someone validates them (coming in M2)."
+                    "{pad}  Suggestions stay provisional until someone validates them (coming in M2)."
                 );
             }
         }
     }
 
-    let earlier: Vec<_> = r
+    for p in r
         .potentialities
         .iter()
         .filter(|p| p.kind == PotentialityKind::Conceptual && p.walk == w.walk)
-        .collect();
-    for p in earlier {
+    {
         println!();
         println!(
-            "  ↔ Someone earlier in this session raised a similar case (\"{}\"); the two would be reviewed together.",
+            "{pad}↔ Someone earlier in this session raised a similar case (\"{}\"); the two would be reviewed together.",
             p.nodes.join(", ")
         );
     }

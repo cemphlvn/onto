@@ -5,3 +5,7 @@ Collected: give pseudonymized records to our analytics vendor under contract
 Collected: share raw customer records with an advertising partner
 Collected: train an internal churn model on customer histories
 Collected: use purchase history for an academic study on shopping habits
+# Added with preconditions: the same intent, with and without evidence.
+Collected: {"goal": "send personalised product offers by email", "consent": {"marketing": true}}
+Collected: {"goal": "give pseudonymized records to our analytics vendor", "processor": {"region": "US", "scc": true}}
+Collected: {"goal": "give pseudonymized records to our analytics vendor", "processor": {"region": "US", "scc": false}}

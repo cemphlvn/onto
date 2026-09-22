@@ -1,40 +1,49 @@
 //! The core loop: many walks at once, each step claiming its frame,
-//! System-1 calls first, System-2 calls on escalation.
+//! System-1 judgments first, System-2 proposals on escalation. Noul frames
+//! may fork a walk into parallel branches.
 
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicU64, Ordering::Relaxed};
+use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use onto_core::category::Closure;
-use onto_core::walk::{Decision, Escalation, Proposal, decide};
-use onto_core::{Category, ObjId, Path};
+use onto_core::walk::{Answer, Decision, Escalation, Proposal, candidates, decide};
+use onto_core::{ArrowId, Category, ObjId, Path, Primitive};
 use serde::Serialize;
-use tokio::sync::Semaphore;
+use serde_json::Value;
+use tokio::sync::{Semaphore, mpsc};
+use tokio::task::JoinSet;
 
 use crate::frames::{Claim, FrameLocks, Mode, Policy, Potentiality, PotentialityKind, Resolution};
 use crate::mem::{self, MemSample};
 use crate::model::{
-    Candidate, ChoiceRequest, Chooser, ModelError, ProposalRequest, Proposer, Usage,
+    Candidate, FrameRequest, Hop, Judge, ModelError, ProposalRequest, Proposer, Usage,
 };
 
 #[derive(Clone, Debug)]
 pub struct Job {
     pub goal: String,
     pub from: String,
+    /// Structured facts about the case; `require` clauses read it.
+    pub case: Value,
 }
 
 #[derive(Clone, Debug)]
 pub struct Config {
-    /// Minimum System-1 confidence to follow an arrow without escalating.
+    /// Minimum System-1 confidence to act without escalating.
     pub threshold: f32,
     pub policy: Policy,
     /// Start the System-2 call alongside System 1 at every closed frame and
     /// cancel it if System 1 is confident. Lower latency, more tokens.
     pub speculate: bool,
     pub max_steps: usize,
+    /// Extra branches one job may fork into, across all its forks.
+    pub max_branches: usize,
+    /// Forks along one lineage (a branch of a branch of …).
+    pub max_fork_depth: usize,
     /// In-flight call limits per provider.
-    pub chooser_concurrency: usize,
+    pub judge_concurrency: usize,
     pub proposer_concurrency: usize,
     pub mem_sample_every: Duration,
 }
@@ -46,11 +55,21 @@ impl Default for Config {
             policy: Policy::default(),
             speculate: false,
             max_steps: 16,
-            chooser_concurrency: 16,
+            max_branches: 4,
+            max_fork_depth: 2,
+            judge_concurrency: 16,
             proposer_concurrency: 4,
             mem_sample_every: Duration::from_millis(250),
         }
     }
+}
+
+/// An arrow with its probability, for reports.
+#[derive(Clone, Debug, Serialize)]
+pub struct Alt {
+    pub arrow: String,
+    pub to: String,
+    pub p: f32,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -60,8 +79,19 @@ pub enum StepRecord {
         from: String,
         arrow: String,
         to: String,
+        decided_by: Primitive,
         p: f32,
         confidence: Option<f32>,
+        /// Arrows that also held (noul) but were not pursued.
+        alternatives: Vec<Alt>,
+        wait_ms: f64,
+    },
+    Forked {
+        at: String,
+        /// The first branch continues this walk; the others are `spawned`.
+        branches: Vec<Alt>,
+        fork_p: f32,
+        spawned: Vec<u64>,
         wait_ms: f64,
     },
     Escalated {
@@ -79,6 +109,8 @@ pub enum StepRecord {
 #[derive(Clone, Debug, Serialize)]
 pub struct WalkReport {
     pub walk: u64,
+    /// The walk this one branched from, if it is a branch.
+    pub parent: Option<u64>,
     pub goal: String,
     pub from: String,
     pub path: String,
@@ -88,19 +120,23 @@ pub struct WalkReport {
 
 #[derive(Clone, Debug, Serialize)]
 pub struct RunReport {
-    pub chooser: String,
+    pub judge: String,
     pub proposer: String,
     pub policy: Policy,
     pub speculate: bool,
+    /// Roots first, then branches, each in id order.
     pub walks: Vec<WalkReport>,
     pub potentialities: Vec<Potentiality>,
     pub wall_ms: f64,
     /// Sum of every model call's latency; `model_ms_sum / wall_ms` is the
     /// effective parallelism.
     pub model_ms_sum: f64,
-    pub chooser_calls: u64,
+    pub judge_calls: u64,
+    pub judge_questions: u64,
     pub proposer_calls: u64,
     pub speculative_discarded: u64,
+    pub forks: u64,
+    pub branches: u64,
     pub tokens_in: u64,
     pub tokens_out: u64,
     pub mem_start: MemSample,
@@ -111,20 +147,35 @@ pub struct RunReport {
 #[derive(Default)]
 struct Counters {
     model_us: AtomicU64,
-    chooser_calls: AtomicU64,
+    judge_calls: AtomicU64,
+    judge_questions: AtomicU64,
     proposer_calls: AtomicU64,
     speculative_discarded: AtomicU64,
+    forks: AtomicU64,
+    branches: AtomicU64,
     tokens_in: AtomicU64,
     tokens_out: AtomicU64,
 }
 
-pub struct Engine<C, P> {
+/// Where a walk starts: a job's root, or a branch from a fork.
+struct Seed {
+    id: u64,
+    parent: Option<u64>,
+    job: Job,
+    path: Path,
+    hops: Vec<Hop>,
+    depth: usize,
+    /// Extra branches this job may still spawn, shared by its lineage.
+    budget: Arc<AtomicUsize>,
+}
+
+pub struct Engine<J, P> {
     cat: Arc<Category>,
-    chooser: C,
+    judge: J,
     proposer: P,
     cfg: Config,
     locks: FrameLocks,
-    chooser_slots: Semaphore,
+    judge_slots: Semaphore,
     proposer_slots: Semaphore,
     /// Proposed concept key -> walks that proposed it.
     concepts: Mutex<HashMap<String, Vec<u64>>>,
@@ -134,23 +185,24 @@ pub struct Engine<C, P> {
     next_walk: AtomicU64,
 }
 
-impl<C: Chooser, P: Proposer> Engine<C, P> {
-    pub fn new(cat: Arc<Category>, chooser: C, proposer: P, cfg: Config) -> Arc<Self> {
+impl<J: Judge, P: Proposer> Engine<J, P> {
+    pub fn new(cat: Arc<Category>, judge: J, proposer: P, cfg: Config) -> Arc<Self> {
         Arc::new(Self {
             locks: FrameLocks::new(cfg.policy),
-            chooser_slots: Semaphore::new(cfg.chooser_concurrency),
+            judge_slots: Semaphore::new(cfg.judge_concurrency),
             proposer_slots: Semaphore::new(cfg.proposer_concurrency),
             concepts: Mutex::new(HashMap::new()),
             counters: Counters::default(),
             next_walk: AtomicU64::new(1),
             cat,
-            chooser,
+            judge,
             proposer,
             cfg,
         })
     }
 
-    /// Runs every job concurrently and reports once all have finished.
+    /// Runs every job, and every branch they fork, concurrently; reports
+    /// once all have finished.
     pub async fn run(self: &Arc<Self>, jobs: Vec<Job>) -> Result<RunReport, onto_core::Error> {
         let starts = jobs
             .iter()
@@ -163,32 +215,59 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
             event = "run.start",
             category = self.cat.name(),
             walks = jobs.len(),
-            chooser = %self.chooser.name(),
+            judge = %self.judge.name(),
             proposer = %self.proposer.name(),
             policy = self.cfg.policy.as_str(),
             speculate = self.cfg.speculate,
             threshold = r4(self.cfg.threshold),
+            max_branches = self.cfg.max_branches,
+            max_fork_depth = self.cfg.max_fork_depth,
         );
         let t0 = Instant::now();
-        let handles: Vec<_> = jobs
-            .into_iter()
-            .zip(starts)
-            .map(|(job, from)| {
-                let engine = self.clone();
-                let id = self.next_walk.fetch_add(1, Relaxed);
-                tokio::spawn(async move { engine.walk(id, job, from).await })
-            })
-            .collect();
-        let mut walks = Vec::with_capacity(handles.len());
-        for h in handles {
-            walks.push(h.await.expect("walk task panicked"));
+
+        // Walks send branch seeds here when they fork; this loop spawns
+        // them, so walks never spawn themselves.
+        let (branch_tx, mut branch_rx) = mpsc::unbounded_channel::<Seed>();
+        let mut running = JoinSet::new();
+        for (job, from) in jobs.into_iter().zip(starts) {
+            let seed = Seed {
+                id: self.next_walk.fetch_add(1, Relaxed),
+                parent: None,
+                job,
+                path: Path::id(from),
+                hops: Vec::new(),
+                depth: 0,
+                budget: Arc::new(AtomicUsize::new(self.cfg.max_branches)),
+            };
+            running.spawn(self.clone().walk(seed, branch_tx.clone()));
         }
+        let mut walks = Vec::new();
+        loop {
+            tokio::select! {
+                Some(seed) = branch_rx.recv() => {
+                    running.spawn(self.clone().walk(seed, branch_tx.clone()));
+                }
+                done = running.join_next() => match done {
+                    Some(report) => walks.push(report.expect("walk task panicked")),
+                    // Every seed is sent before its parent finishes, so an
+                    // empty set plus an empty queue means all walks are done.
+                    None => match branch_rx.try_recv() {
+                        Ok(seed) => {
+                            running.spawn(self.clone().walk(seed, branch_tx.clone()));
+                        }
+                        Err(_) => break,
+                    },
+                },
+            }
+        }
+        walks.sort_by_key(|w| (w.parent.is_some(), w.walk));
+
         let wall = t0.elapsed();
         let mem_end = mem::sample();
         let peak_rss_bytes = sampler.stop().max(mem_end.rss_bytes);
         let c = &self.counters;
         let report = RunReport {
-            chooser: self.chooser.name(),
+            judge: self.judge.name(),
             proposer: self.proposer.name(),
             policy: self.cfg.policy,
             speculate: self.cfg.speculate,
@@ -196,9 +275,12 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
             potentialities: self.locks.potentialities(),
             wall_ms: ms(wall),
             model_ms_sum: c.model_us.load(Relaxed) as f64 / 1e3,
-            chooser_calls: c.chooser_calls.load(Relaxed),
+            judge_calls: c.judge_calls.load(Relaxed),
+            judge_questions: c.judge_questions.load(Relaxed),
             proposer_calls: c.proposer_calls.load(Relaxed),
             speculative_discarded: c.speculative_discarded.load(Relaxed),
+            forks: c.forks.load(Relaxed),
+            branches: c.branches.load(Relaxed),
             tokens_in: c.tokens_in.load(Relaxed),
             tokens_out: c.tokens_out.load(Relaxed),
             mem_start,
@@ -210,9 +292,12 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
             event = "run.end",
             wall_ms = report.wall_ms,
             model_ms_sum = report.model_ms_sum,
-            chooser_calls = report.chooser_calls,
+            judge_calls = report.judge_calls,
+            judge_questions = report.judge_questions,
             proposer_calls = report.proposer_calls,
             speculative_discarded = report.speculative_discarded,
+            forks = report.forks,
+            branches = report.branches,
             potentialities = report.potentialities.len(),
             tokens_in = report.tokens_in,
             tokens_out = report.tokens_out,
@@ -222,21 +307,42 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
         Ok(report)
     }
 
-    async fn walk(self: Arc<Self>, id: u64, job: Job, from: ObjId) -> WalkReport {
+    async fn walk(
+        self: Arc<Self>,
+        seed: Seed,
+        branch_tx: mpsc::UnboundedSender<Seed>,
+    ) -> WalkReport {
         let cat = &*self.cat;
         let t0 = Instant::now();
-        tracing::info!(target: "onto", event = "walk.start", walk = id, from = %job.from, goal = %job.goal);
-        let mut path = Path::id(from);
+        let Seed {
+            id,
+            parent,
+            job,
+            mut path,
+            mut hops,
+            depth,
+            budget,
+        } = seed;
+        tracing::info!(
+            target: "onto",
+            event = "walk.start",
+            walk = id,
+            parent,
+            from = %cat.object(path.dst).name,
+            goal = %job.goal,
+        );
         let mut steps = Vec::new();
 
-        for _ in 0..self.cfg.max_steps {
+        'steps: for _ in 0..self.cfg.max_steps {
             let at = path.dst;
-            let closed = cat.object(at).closure == Closure::Closed;
-            let frame = cat.out(at);
-            if closed && frame.is_empty() {
+            let object = cat.object(at);
+            let closed = object.closure == Closure::Closed;
+            if closed && cat.out(at).is_empty() {
                 break; // terminal
             }
-            let at_name = cat.object(at).name.clone();
+            let at_name = object.name.clone();
+            let primitive = object.frame.primitive;
+            let frame = candidates(cat, at, &job.case);
 
             // Claim the frame. With speculation the System-2 call may start
             // right away, so the claim is a write from the start.
@@ -249,7 +355,14 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
             let wait_ms = ms(guard.waited);
 
             let mut speculative = None;
-            let reason = if closed {
+            let reason = 'judged: {
+                if !closed {
+                    break 'judged Escalation::OpenFrame;
+                }
+                if frame.is_empty() {
+                    // Every arrow's `require` failed: nothing may be followed.
+                    break 'judged Escalation::NoneOfThese;
+                }
                 if self.cfg.speculate {
                     let engine = self.clone();
                     let req = self.proposal_request(
@@ -261,58 +374,137 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
                         engine.call_proposer(id, req, true).await
                     }));
                 }
-                let d = match self
-                    .call_chooser(id, self.choice_request(&job, &path))
-                    .await
-                {
-                    Ok(d) => d,
+                let can_fork = primitive == Primitive::Noul
+                    && depth < self.cfg.max_fork_depth
+                    && budget.load(Relaxed) > 0
+                    && frame.len() > 1;
+                let req = self.frame_request(&job, &path, &hops, &frame, can_fork);
+                let answer = match self.call_judge(id, req).await {
+                    Ok(a) => a,
                     Err(e) => {
                         if let Some(h) = speculative {
                             h.abort();
                         }
                         steps.push(self.failed(id, &at_name, e));
-                        break;
+                        break 'steps;
                     }
                 };
-                match decide(Closure::Closed, Some(&d), self.cfg.threshold) {
-                    Decision::Follow { index, p } => {
-                        if let Some(h) = speculative {
-                            h.abort();
-                            self.counters.speculative_discarded.fetch_add(1, Relaxed);
-                            tracing::info!(target: "onto", event = "proposer.discarded", walk = id, at = %at_name);
-                        }
+                let (index, p, alternatives) = match decide(
+                    Closure::Closed,
+                    Some(&answer),
+                    self.cfg.threshold,
+                    can_fork,
+                ) {
+                    Decision::Escalate(reason) => break 'judged reason,
+                    Decision::Follow {
+                        index,
+                        p,
+                        alternatives,
+                    } => {
+                        self.discard(speculative.take(), id, &at_name);
                         drop(guard);
-                        let arrow = frame[index];
-                        path.push(cat, arrow)
-                            .expect("frame arrows leave the current object");
-                        let a = cat.arrow(arrow);
+                        (index, p, alternatives)
+                    }
+                    Decision::Fork { branches, fork_p } => {
+                        self.discard(speculative.take(), id, &at_name);
+                        drop(guard);
+                        let (first, rest) = branches.split_first().expect("a fork has branches");
+                        let granted = reserve(&budget, rest.len());
+                        let mut spawned = Vec::new();
+                        for &(index, branch_p) in &rest[..granted] {
+                            let child = self.next_walk.fetch_add(1, Relaxed);
+                            let (mut child_path, mut child_hops) = (path.clone(), hops.clone());
+                            self.advance(
+                                &mut child_path,
+                                &mut child_hops,
+                                frame[index],
+                                primitive,
+                                branch_p,
+                            );
+                            spawned.push(child);
+                            let _ = branch_tx.send(Seed {
+                                id: child,
+                                parent: Some(id),
+                                job: job.clone(),
+                                path: child_path,
+                                hops: child_hops,
+                                depth: depth + 1,
+                                budget: budget.clone(),
+                            });
+                        }
+                        self.counters.forks.fetch_add(1, Relaxed);
+                        self.counters.branches.fetch_add(granted as u64, Relaxed);
+                        let name = |i: usize| cat.arrow(frame[i]).name.as_str();
                         tracing::info!(
                             target: "onto",
-                            event = "step",
+                            event = "fork",
                             walk = id,
-                            from = %at_name,
-                            arrow = %a.name,
-                            to = %cat.object(a.dst).name,
-                            p = r4(p),
-                            confidence = d.confidence.map(r4),
+                            at = %at_name,
+                            fork_p = r4(fork_p),
+                            branches = %branches.iter().map(|b| name(b.0)).collect::<Vec<_>>().join(","),
+                            spawned = %spawned.iter().map(u64::to_string).collect::<Vec<_>>().join(","),
                         );
-                        steps.push(StepRecord::Followed {
-                            from: at_name,
-                            arrow: a.name.clone(),
-                            to: cat.object(a.dst).name.clone(),
-                            p,
-                            confidence: d.confidence,
+                        steps.push(StepRecord::Forked {
+                            at: at_name.clone(),
+                            branches: branches
+                                .iter()
+                                .map(|&(i, p)| self.alt(frame[i], p))
+                                .collect(),
+                            fork_p,
+                            spawned,
                             wait_ms,
                         });
-                        continue;
+                        // Over budget: the remaining branches are logged
+                        // as alternatives, not pursued.
+                        (first.0, first.1, rest[granted..].to_vec())
                     }
-                    Decision::Escalate(reason) => reason,
+                };
+
+                // Follow `index`: a plain step, or this walk's own branch of a fork.
+                for &(i, _) in &alternatives {
+                    self.locks.push(Potentiality {
+                        kind: PotentialityKind::Alternative,
+                        resolution: Resolution::NotFollowed,
+                        mode: None,
+                        walk: id,
+                        with: None,
+                        at: at_name.clone(),
+                        nodes: vec![cat.object(cat.arrow(frame[i]).dst).name.clone()],
+                        wait_ms: 0.0,
+                    });
                 }
-            } else {
-                Escalation::OpenFrame
+                let arrow = frame[index];
+                let a = cat.arrow(arrow);
+                tracing::info!(
+                    target: "onto",
+                    event = "step",
+                    walk = id,
+                    from = %at_name,
+                    arrow = %a.name,
+                    to = %cat.object(a.dst).name,
+                    decided_by = primitive.as_str(),
+                    p = r4(p),
+                    confidence = answer.confidence().map(r4),
+                    alternatives = alternatives.len(),
+                );
+                steps.push(StepRecord::Followed {
+                    from: at_name,
+                    arrow: a.name.clone(),
+                    to: cat.object(a.dst).name.clone(),
+                    decided_by: primitive,
+                    p,
+                    confidence: answer.confidence(),
+                    alternatives: alternatives
+                        .iter()
+                        .map(|&(i, p)| self.alt(frame[i], p))
+                        .collect(),
+                    wait_ms,
+                });
+                self.advance(&mut path, &mut hops, arrow, primitive, p);
+                continue 'steps;
             };
 
-            tracing::info!(target: "onto", event = "escalate", walk = id, at = %at_name, reason = escalation_str(reason));
+            tracing::info!(target: "onto", event = "escalate", walk = id, at = %at_name, reason = reason.as_str());
             let proposals = match speculative {
                 Some(h) => h.await.expect("proposer task panicked"),
                 None => {
@@ -324,7 +516,7 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
                             .acquire(cat, Claim::new(cat, id, at, Mode::Write))
                             .await;
                     }
-                    let req = self.proposal_request(&job, &path, escalation_str(reason));
+                    let req = self.proposal_request(&job, &path, reason.as_str());
                     self.call_proposer(id, req, false).await
                 }
             };
@@ -346,6 +538,7 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
 
         let report = WalkReport {
             walk: id,
+            parent,
             goal: job.goal,
             from: job.from,
             path: path.display_typed(cat),
@@ -356,6 +549,7 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
             target: "onto",
             event = "walk.end",
             walk = id,
+            parent = report.parent,
             path = %report.path,
             steps = report.steps.len(),
             elapsed_ms = report.elapsed_ms,
@@ -363,38 +557,110 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
         report
     }
 
-    async fn call_chooser(
+    fn advance(
         &self,
+        path: &mut Path,
+        hops: &mut Vec<Hop>,
+        arrow: ArrowId,
+        decided_by: Primitive,
+        p: f32,
+    ) {
+        let cat = &*self.cat;
+        let a = cat.arrow(arrow);
+        hops.push(Hop {
+            from: cat.object(a.src).name.clone(),
+            arrow: a.name.clone(),
+            to: cat.object(a.dst).name.clone(),
+            decided_by,
+            p,
+        });
+        path.push(cat, arrow)
+            .expect("frame arrows leave the current object");
+    }
+
+    fn alt(&self, arrow: ArrowId, p: f32) -> Alt {
+        let a = self.cat.arrow(arrow);
+        Alt {
+            arrow: a.name.clone(),
+            to: self.cat.object(a.dst).name.clone(),
+            p,
+        }
+    }
+
+    fn discard(
+        &self,
+        speculative: Option<tokio::task::JoinHandle<Result<Vec<Proposal>, ModelError>>>,
         walk: u64,
-        req: ChoiceRequest,
-    ) -> Result<onto_core::walk::Distribution, ModelError> {
-        let _slot = self.chooser_slots.acquire().await.expect("semaphore open");
+        at: &str,
+    ) {
+        if let Some(h) = speculative {
+            h.abort();
+            self.counters.speculative_discarded.fetch_add(1, Relaxed);
+            tracing::info!(target: "onto", event = "proposer.discarded", walk, at);
+        }
+    }
+
+    async fn call_judge(&self, walk: u64, req: FrameRequest) -> Result<Answer, ModelError> {
+        let _slot = self.judge_slots.acquire().await.expect("semaphore open");
         let at = req.at.clone();
+        let primitive = req.primitive;
         let t0 = Instant::now();
-        let result = self.chooser.choose(req).await;
+        let result = self.judge.judge(req).await;
         let latency = t0.elapsed();
         self.count(latency, result.as_ref().ok().map(|r| r.1));
-        self.counters.chooser_calls.fetch_add(1, Relaxed);
+        self.counters.judge_calls.fetch_add(1, Relaxed);
         match &result {
-            Ok((d, u)) => tracing::info!(
-                target: "onto",
-                event = "chooser.call",
-                walk,
-                at = %at,
-                latency_ms = ms(latency),
-                top_p = d.top().map(|t| r4(t.1)),
-                none_of_these = r4(d.none_of_these),
-                confidence = d.confidence.map(r4),
-                input_tokens = u.input_tokens,
-                output_tokens = u.output_tokens,
-                attempts = u.attempts,
-                ok = true,
-            ),
+            Ok((a, u)) => {
+                self.counters
+                    .judge_questions
+                    .fetch_add(u64::from(u.questions), Relaxed);
+                let (top_p, holds, fork_p) = match a {
+                    Answer::Choice(d) => (d.top().map(|t| r4(t.1)), None, None),
+                    Answer::Noul { holds, fork } => (
+                        None,
+                        Some(
+                            holds
+                                .iter()
+                                .map(|p| r4(*p).to_string())
+                                .collect::<Vec<_>>()
+                                .join(","),
+                        ),
+                        fork.map(r4),
+                    ),
+                    Answer::Score { levels, .. } => (
+                        levels
+                            .iter()
+                            .copied()
+                            .fold(None, |m: Option<f32>, p| Some(m.map_or(p, |m| m.max(p))))
+                            .map(r4),
+                        None,
+                        None,
+                    ),
+                };
+                tracing::info!(
+                    target: "onto",
+                    event = "judge.call",
+                    walk,
+                    at = %at,
+                    primitive = primitive.as_str(),
+                    questions = u.questions,
+                    latency_ms = ms(latency),
+                    top_p,
+                    holds,
+                    fork_p,
+                    confidence = a.confidence().map(r4),
+                    input_tokens = u.input_tokens,
+                    output_tokens = u.output_tokens,
+                    attempts = u.attempts,
+                    ok = true,
+                );
+            }
             Err(e) => tracing::warn!(
                 target: "onto",
-                event = "chooser.call",
+                event = "judge.call",
                 walk,
                 at = %at,
+                primitive = primitive.as_str(),
                 latency_ms = ms(latency),
                 ok = false,
                 error = %e,
@@ -475,7 +741,7 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
                     resolution: Resolution::Coexisted,
                     mode: None,
                     walk,
-                    with,
+                    with: Some(with),
                     at: cat.object(at).name.clone(),
                     nodes: vec![p.dst.clone()],
                     wait_ms: 0.0,
@@ -492,47 +758,69 @@ impl<C: Chooser, P: Proposer> Engine<C, P> {
         }
     }
 
-    fn frame(&self, at: ObjId) -> Vec<Candidate> {
+    fn candidate(&self, arrow: ArrowId) -> Candidate {
         let cat = &*self.cat;
-        cat.out(at)
-            .iter()
-            .map(|a| {
-                let a = cat.arrow(*a);
-                Candidate {
-                    arrow: a.name.clone(),
-                    to: cat.object(a.dst).name.clone(),
-                }
-            })
-            .collect()
+        let a = cat.arrow(arrow);
+        Candidate {
+            arrow: a.name.clone(),
+            to: cat.object(a.dst).name.clone(),
+            instructions: a.instructions.clone(),
+            level: a.level,
+        }
     }
 
-    fn choice_request(&self, job: &Job, path: &Path) -> ChoiceRequest {
-        ChoiceRequest {
+    fn frame_request(
+        &self,
+        job: &Job,
+        path: &Path,
+        hops: &[Hop],
+        frame: &[ArrowId],
+        can_fork: bool,
+    ) -> FrameRequest {
+        let object = self.cat.object(path.dst);
+        FrameRequest {
             goal: job.goal.clone(),
-            at: self.cat.object(path.dst).name.clone(),
+            case: job.case.clone(),
+            at: object.name.clone(),
+            about_at: object.about.clone(),
             path_so_far: path.display(&self.cat),
-            frame: self.frame(path.dst),
+            hops: hops.to_vec(),
+            primitive: object.frame.primitive,
+            instructions: object.frame.instructions.clone(),
+            candidates: frame.iter().map(|a| self.candidate(*a)).collect(),
+            can_fork,
         }
     }
 
     fn proposal_request(&self, job: &Job, path: &Path, reason: &str) -> ProposalRequest {
+        let object = self.cat.object(path.dst);
         ProposalRequest {
             goal: job.goal.clone(),
-            at: self.cat.object(path.dst).name.clone(),
+            case: job.case.clone(),
+            at: object.name.clone(),
+            about_at: object.about.clone(),
             path_so_far: path.display(&self.cat),
-            frame: self.frame(path.dst),
+            primitive: object.frame.primitive,
+            frame: self
+                .cat
+                .out(path.dst)
+                .iter()
+                .map(|a| self.candidate(*a))
+                .collect(),
             reason: reason.to_owned(),
             known_objects: self.cat.objects().iter().map(|o| o.name.clone()).collect(),
         }
     }
 }
 
-fn escalation_str(e: Escalation) -> &'static str {
-    match e {
-        Escalation::OpenFrame => "open_frame",
-        Escalation::NoneOfThese => "none_of_these",
-        Escalation::LowConfidence => "low_confidence",
-    }
+/// Takes up to `want` from the shared branch budget; returns how many.
+fn reserve(budget: &AtomicUsize, want: usize) -> usize {
+    let mut granted = 0;
+    let _ = budget.fetch_update(Relaxed, Relaxed, |left| {
+        granted = left.min(want);
+        Some(left - granted)
+    });
+    granted
 }
 
 /// f32 probabilities as clean decimals in logs (0.95, not 0.949999988).

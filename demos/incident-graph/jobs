@@ -8,3 +8,7 @@ Latency: packet loss between us-east and eu-west
 ErrorSpike: database connection pool exhausted, requests failing
 SecurityEvent: unusual outbound traffic from a build server
 Network: traffic flood from thousands of IPs hitting the login endpoint
+# Added with descriptions: a noul fork, and the score entry point.
+Alert: checkout is slow for everyone, and separately an API key was posted on a public forum
+Report: customers say the whole checkout page is down and nobody can pay
+Report: a button label is misaligned on the settings page

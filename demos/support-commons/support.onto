@@ -2,34 +2,38 @@
 # Closed frames are the taxonomy's claim "these are all the cases".
 # Open frames admit they are incomplete. Tickets that fit nowhere
 # escalate, and those escalations are the missing intents.
+# Descriptions (the quoted text) are what the judge model reads.
 
 category Support {
     objects: Ticket, Billing, Technical, Account, Product,
              Refund, Invoice, Outage, HowTo, Login, FeatureRequest, Resolved;
 
-    billing:   Ticket -> Billing;
-    technical: Ticket -> Technical;
-    account:   Ticket -> Account;
-    product:   Ticket -> Product;
+    about Ticket: "a message a customer sent to support";
+
+    frame Ticket: choice "Which team should handle this ticket?";
+    billing:   Ticket -> Billing   "money: charges, double charges, refunds, invoices, receipts, payment methods, prices";
+    technical: Ticket -> Technical "the product misbehaves or someone needs help using it: errors, outages, slowness, crashes, how-to questions";
+    account:   Ticket -> Account   "access and identity: signing in, passwords, account settings, deleting or transferring an account, personal data held about the person";
+    product:   Ticket -> Product   "a request to change what the product can do: new features, integrations such as single sign-on, improvements";
     closed: Ticket;                      # the taxonomy claims these four cover every ticket
 
-    refund:  Billing -> Refund;
-    invoice: Billing -> Invoice;
+    refund:  Billing -> Refund  "the customer wants money back";
+    invoice: Billing -> Invoice "the customer needs an invoice, receipt or other billing document";
     closed: Billing;
 
-    outage: Technical -> Outage;
-    howto:  Technical -> HowTo;
+    outage: Technical -> Outage "something is broken or unavailable: errors, failures, downtime, crashes";
+    howto:  Technical -> HowTo  "the customer asks how to do something the product already supports";
     closed: Technical;
 
-    login: Account -> Login;             # Account stays open: known to be incomplete
+    login: Account -> Login "cannot sign in: passwords, reset emails, two-factor codes";   # Account stays open
 
-    request: Product -> FeatureRequest;  # Product stays open
+    request: Product -> FeatureRequest "a capability or integration the product does not have yet";   # Product stays open
 
-    issue_refund: Refund -> Resolved;
-    send_invoice: Invoice -> Resolved;
-    status_page:  Outage -> Resolved;
-    answer:       HowTo -> Resolved;
-    reset:        Login -> Resolved;
-    log:          FeatureRequest -> Resolved;
+    issue_refund: Refund -> Resolved  "refund the unwanted or duplicate charge";
+    send_invoice: Invoice -> Resolved "send the requested billing document";
+    status_page:  Outage -> Resolved  "acknowledge the problem on the status page while engineers fix it";
+    answer:       HowTo -> Resolved   "explain how to do it";
+    reset:        Login -> Resolved   "restore access to the account";
+    log:          FeatureRequest -> Resolved "record the request for the product team";
     closed: Refund, Invoice, Outage, HowTo, Login, FeatureRequest, Resolved;
 }

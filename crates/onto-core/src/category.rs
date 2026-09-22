@@ -1,10 +1,13 @@
 //! The category store: objects, arrows, path equations and the
 //! per-object decision frames (outgoing arrows, laid out as CSR).
 
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
+
+use serde_json::Value;
 
 use crate::error::Error;
 use crate::path::Path;
+use crate::require::Require;
 
 /// Index of an object. Dense, `0..category.objects().len()`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -26,10 +29,48 @@ pub enum Closure {
     Open,
 }
 
+/// Which System-1 primitive decides an object's frame.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize),
+    serde(rename_all = "snake_case")
+)]
+pub enum Primitive {
+    /// Exactly one arrow (or none of these): exclusive frames.
+    #[default]
+    Choice,
+    /// Each arrow's condition judged on its own; several may hold.
+    Noul,
+    /// One ordered scale; each arrow is a level on it.
+    Score,
+}
+
+impl Primitive {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Choice => "choice",
+            Self::Noul => "noul",
+            Self::Score => "score",
+        }
+    }
+}
+
+/// How an object's frame is decided: the primitive, and optionally the
+/// question put to the model (text or structured JSON).
+#[derive(Clone, Debug, Default)]
+pub struct Frame {
+    pub primitive: Primitive,
+    pub instructions: Option<Value>,
+}
+
 #[derive(Clone, Debug)]
 pub struct Object {
     pub name: String,
     pub closure: Closure,
+    /// What this object means (text or structured JSON).
+    pub about: Option<Value>,
+    pub frame: Frame,
 }
 
 #[derive(Clone, Debug)]
@@ -37,6 +78,21 @@ pub struct Arrow {
     pub name: String,
     pub src: ObjId,
     pub dst: ObjId,
+    /// When to follow this arrow (text or structured JSON). Rendered by
+    /// each model adapter as a Choice option, a Noul condition, or a Score level.
+    pub instructions: Option<Value>,
+    /// Position on the source's Score scale (score frames only).
+    pub level: Option<u32>,
+    /// Checked in code against the walk's state before any model call.
+    pub require: Option<Require>,
+}
+
+/// Optional meaning attached to an arrow at declaration.
+#[derive(Clone, Debug, Default)]
+pub struct ArrowMeta {
+    pub instructions: Option<Value>,
+    pub level: Option<u32>,
+    pub require: Option<Require>,
 }
 
 /// A declared equation between two parallel paths.
@@ -106,6 +162,20 @@ impl Category {
         let lo = self.out_offsets[obj.0 as usize] as usize;
         let hi = self.out_offsets[obj.0 as usize + 1] as usize;
         &self.out_arrows[lo..hi]
+    }
+
+    /// The frame's arrows whose `require` holds in `state`, in frame order.
+    pub fn eligible(&self, obj: ObjId, state: &Value) -> Vec<ArrowId> {
+        self.out(obj)
+            .iter()
+            .copied()
+            .filter(|a| {
+                self.arrow(*a)
+                    .require
+                    .as_ref()
+                    .is_none_or(|r| r.eval(state))
+            })
+            .collect()
     }
 
     /// Every path from `from` to `to` that visits no object twice, skips the
@@ -214,12 +284,24 @@ impl CategoryBuilder {
         self.objects.push(Object {
             name: name.to_owned(),
             closure: Closure::Open,
+            about: None,
+            frame: Frame::default(),
         });
         self.object_index.insert(name.to_owned(), id);
         Ok(id)
     }
 
     pub fn arrow(&mut self, name: &str, src: &str, dst: &str) -> Result<ArrowId, Error> {
+        self.arrow_with(name, src, dst, ArrowMeta::default())
+    }
+
+    pub fn arrow_with(
+        &mut self,
+        name: &str,
+        src: &str,
+        dst: &str,
+        meta: ArrowMeta,
+    ) -> Result<ArrowId, Error> {
         check_name(name)?;
         if self.object_index.contains_key(name) || self.arrow_index.contains_key(name) {
             return Err(Error::Duplicate(name.to_owned()));
@@ -231,6 +313,9 @@ impl CategoryBuilder {
             name: name.to_owned(),
             src,
             dst,
+            instructions: meta.instructions,
+            level: meta.level,
+            require: meta.require,
         });
         self.arrow_index.insert(name.to_owned(), id);
         Ok(id)
@@ -242,12 +327,58 @@ impl CategoryBuilder {
         Ok(())
     }
 
+    /// Sets how `object`'s frame is decided.
+    pub fn frame(&mut self, object: &str, frame: Frame) -> Result<(), Error> {
+        let id = self.lookup_object(object)?;
+        self.objects[id.0 as usize].frame = frame;
+        Ok(())
+    }
+
+    /// Describes what `object` means.
+    pub fn about(&mut self, object: &str, about: Value) -> Result<(), Error> {
+        let id = self.lookup_object(object)?;
+        self.objects[id.0 as usize].about = Some(about);
+        Ok(())
+    }
+
     pub fn equation(&mut self, lhs: PathSpec, rhs: PathSpec) {
         self.equations.push((lhs, rhs));
     }
 
     pub fn build(self) -> Result<Category, Error> {
         let n = self.objects.len();
+
+        // Levels belong to score frames, and a score frame's arrows each
+        // hold a distinct level.
+        let mut levels: Vec<BTreeSet<u32>> = vec![BTreeSet::new(); n];
+        for a in &self.arrows {
+            let src = &self.objects[a.src.0 as usize];
+            let bad = |msg: String| Error::Frame {
+                object: src.name.clone(),
+                msg,
+            };
+            match (src.frame.primitive, a.level) {
+                (Primitive::Score, None) => {
+                    return Err(bad(format!(
+                        "score frame: arrow `{}` needs `level N`",
+                        a.name
+                    )));
+                }
+                (Primitive::Score, Some(l)) => {
+                    if !levels[a.src.0 as usize].insert(l) {
+                        return Err(bad(format!("score frame: level {l} is used twice")));
+                    }
+                }
+                (p, Some(_)) => {
+                    return Err(bad(format!(
+                        "arrow `{}` has a level, but the frame is decided by {}",
+                        a.name,
+                        p.as_str()
+                    )));
+                }
+                (_, None) => {}
+            }
+        }
 
         // CSR: count per source, prefix-sum, then scatter in declaration order.
         let mut out_offsets = vec![0u32; n + 1];

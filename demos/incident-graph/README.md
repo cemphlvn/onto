@@ -38,6 +38,20 @@ onto run demos/incident-graph/incident.onto --jobs demos/incident-graph/jobs --p
 - Gaps found: application-level latency, queueing, replication lag,
   connection-pool capacity, outbound-traffic anomalies, rate limiting.
 
+## With descriptions, a noul frame and a score frame (2026-09-23, live)
+
+`Alert` is now a **noul** frame and `Report` a **score** entry point.
+
+- **Fork:** "checkout is slow for everyone, and separately an API key was
+  posted" → fork p=0.92: `security` (0.90) and `latency` (0.85); walk 12
+  branched off and investigated latency in parallel.
+- **Score:** "whole checkout page is down" → `declare` (level 2, conf 1.00)
+  → Major → Alert; "button label misaligned" → `watch` (level 0, conf 0.98).
+- Deploy spike now reaches **✓ `verify.rollback.bad_deploy.errors`**
+  (before: stopped unsure at Rollback); outbound traffic now reaches Network
+  (before: unsure at SecurityEvent).
+- 12 walks incl. 1 branch, 3.67x parallel, 25 judge calls carrying 40 questions.
+
 ## What it does not do yet
 
 - No actions are taken; walks model the investigation, not remediation.

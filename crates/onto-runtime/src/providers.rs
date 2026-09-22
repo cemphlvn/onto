@@ -1,14 +1,14 @@
 //! Live model clients: Jev (TypeSafe System One) as the chooser, any
 //! OpenRouter chat model as the proposer.
 
-use std::collections::BTreeMap;
 use std::time::Duration;
 
+use onto_core::Primitive;
 use onto_core::category::NONE_OF_THESE;
-use onto_core::walk::{Distribution, Proposal};
+use onto_core::walk::{Answer, Distribution, Proposal};
 use serde_json::{Value, json};
 
-use crate::model::{ChoiceRequest, Chooser, ModelError, ProposalRequest, Proposer, Usage};
+use crate::model::{Candidate, FrameRequest, Judge, ModelError, ProposalRequest, Proposer, Usage};
 
 const MAX_ATTEMPTS: u32 = 4;
 
@@ -66,62 +66,149 @@ impl Jev {
     }
 }
 
-impl Chooser for Jev {
+impl Judge for Jev {
     fn name(&self) -> String {
         format!("jev:{}", self.model)
     }
 
-    async fn choose(&self, req: ChoiceRequest) -> Result<(Distribution, Usage), ModelError> {
-        if req.frame.len() > 254 {
-            return Err(ModelError::FrameTooWide(req.frame.len()));
-        }
-        let mut criteria: BTreeMap<&str, String> = req
-            .frame
-            .iter()
-            .map(|c| {
-                (
-                    c.arrow.as_str(),
-                    format!("follow `{}` to {}", c.arrow, c.to),
-                )
-            })
-            .collect();
-        criteria.insert(
-            NONE_OF_THESE,
-            "none of the listed arrows fits the goal from here".into(),
-        );
+    async fn judge(&self, req: FrameRequest) -> Result<(Answer, Usage), ModelError> {
+        let questions = render(&req)?;
+        let n_questions = questions.as_object().map_or(0, |q| q.len() as u32);
         let body = json!({
             "model": self.model,
             "state": {
                 "goal": req.goal,
+                "case": req.case,
                 "at": req.at,
+                "about_at": req.about_at,
                 "path_so_far": req.path_so_far,
+                "hops": req.hops,
             },
-            "questions": {
-                "next": {
-                    "type": "choice",
-                    "instructions": "The walk is at `at`, working toward `goal`. Which arrow should it follow next? Choose none_of_these if no listed arrow fits the goal.",
-                    "criteria": criteria,
-                }
-            }
+            "questions": questions,
         });
         let (v, attempts) = post_json(&self.http, &self.url, &self.key, &body).await?;
-        let answer = &v["answers"]["next"];
-        let probs = answer["probabilities"]
-            .as_object()
-            .ok_or_else(|| ModelError::Decode(clip(&format!("no probabilities in {v}"))))?;
-        let p = |k: &str| probs.get(k).and_then(Value::as_f64).unwrap_or(0.0) as f32;
-        let d = Distribution {
-            arrows: req.frame.iter().map(|c| p(&c.arrow)).collect(),
-            none_of_these: p(NONE_OF_THESE),
-            confidence: answer["confidence"].as_f64().map(|c| c as f32),
-        };
+        let answers = &v["answers"];
+        let answer = read_answer(&req, answers)
+            .ok_or_else(|| ModelError::Decode(clip(&format!("unexpected answers: {answers}"))))?;
         let usage = Usage {
             input_tokens: v["usage"]["input_tokens"].as_u64().unwrap_or(0),
             output_tokens: v["usage"]["output_tokens"].as_u64().unwrap_or(0),
             attempts,
+            questions: n_questions,
         };
-        Ok((d, usage))
+        Ok((answer, usage))
     }
+}
+
+/// How an arrow reads as an option, condition or level: its instructions
+/// when declared (text gets the target appended; JSON is wrapped with it),
+/// else a sentence built from its name.
+fn describe(c: &Candidate) -> Value {
+    match &c.instructions {
+        Some(Value::String(t)) => json!(format!("{t} (leads to {})", c.to)),
+        Some(structured) => json!({"leads_to": c.to, "description": structured}),
+        None => json!(format!("follow `{}` to {}", c.arrow, c.to)),
+    }
+}
+
+/// The frame as TypeSafe questions, one request per frame.
+fn render(req: &FrameRequest) -> Result<Value, ModelError> {
+    let question = |default: &str| match &req.instructions {
+        Some(i) => json!({"question": i, "context": default}),
+        None => json!(default),
+    };
+    Ok(match req.primitive {
+        Primitive::Choice => {
+            if req.candidates.len() > 254 {
+                return Err(ModelError::FrameTooWide(req.candidates.len()));
+            }
+            let mut criteria: serde_json::Map<String, Value> = req
+                .candidates
+                .iter()
+                .map(|c| (c.arrow.clone(), describe(c)))
+                .collect();
+            criteria.insert(
+                NONE_OF_THESE.into(),
+                json!("none of the listed options fits the goal from here"),
+            );
+            json!({"next": {
+                "type": "choice",
+                "instructions": question("The walk is at `at`, working toward `goal`. Which option should it follow next? Choose none_of_these if no listed option fits."),
+                "criteria": criteria,
+            }})
+        }
+        Primitive::Noul => {
+            let mut qs = serde_json::Map::new();
+            for (i, c) in req.candidates.iter().enumerate() {
+                let mut instructions = json!({
+                    "condition": describe(c),
+                    "question": "Given `goal`, the case, and the walk so far (`hops`), does `condition` hold for this case?",
+                });
+                if let Some(frame_question) = &req.instructions {
+                    instructions["frame_question"] = frame_question.clone();
+                }
+                qs.insert(
+                    format!("holds_{i}"),
+                    json!({"type": "noul", "instructions": instructions}),
+                );
+            }
+            if req.can_fork && req.candidates.len() > 1 {
+                let options: Vec<Value> = req.candidates.iter().map(describe).collect();
+                qs.insert("fork".into(), json!({
+                    "type": "noul",
+                    "instructions": {
+                        "options": options,
+                        "question": "Suppose more than one of `options` holds for this case. Given `goal` and the walk so far (`hops`), should each holding option be pursued as its own parallel line of work?",
+                    },
+                    "criteria": {
+                        "true": "They are independent aspects of the case; each needs its own handling.",
+                        "false": "They are competing readings of the same thing; only the most likely should be followed.",
+                    },
+                }));
+            }
+            Value::Object(qs)
+        }
+        Primitive::Score => {
+            let levels: Vec<Value> = req.candidates.iter().map(describe).collect();
+            json!({"level": {
+                "type": "score",
+                "instructions": question("Where does this case fall on the scale, given `goal`?"),
+                "criteria": levels,
+            }})
+        }
+    })
+}
+
+fn read_answer(req: &FrameRequest, answers: &Value) -> Option<Answer> {
+    let f = |v: &Value| v.as_f64().map(|x| x as f32);
+    Some(match req.primitive {
+        Primitive::Choice => {
+            let a = &answers["next"];
+            let probs = a["probabilities"].as_object()?;
+            let p = |k: &str| probs.get(k).and_then(f).unwrap_or(0.0);
+            Answer::Choice(Distribution {
+                arrows: req.candidates.iter().map(|c| p(&c.arrow)).collect(),
+                none_of_these: p(NONE_OF_THESE),
+                confidence: f(&a["confidence"]),
+            })
+        }
+        Primitive::Noul => Answer::Noul {
+            holds: (0..req.candidates.len())
+                .map(|i| f(&answers[format!("holds_{i}")]["noul"]))
+                .collect::<Option<Vec<_>>>()?,
+            fork: f(&answers["fork"]["noul"]),
+        },
+        Primitive::Score => {
+            let a = &answers["level"];
+            let probs = a["probabilities"].as_object()?;
+            Answer::Score {
+                levels: (0..req.candidates.len())
+                    .map(|i| probs.get(&i.to_string()).and_then(f).unwrap_or(0.0))
+                    .collect(),
+                confidence: f(&a["confidence"]),
+            }
+        }
+    })
 }
 
 pub struct OpenRouter {
@@ -151,8 +238,9 @@ const PROPOSER_SYSTEM: &str = "You extend a category (objects and arrows) that a
 The walk is stuck at object `at`: its outgoing arrows (`frame`) do not cover the goal, for the stated `reason`. \
 Propose 1 to 3 new arrows leaving `at` that would let the walk continue toward the goal. \
 Each target is an existing object from `known_objects` when one fits, otherwise a new object name in PascalCase. \
-Arrow names are short snake_case verbs. New arrows must not overlap each other or the existing frame \
-(the frame should stay mutually exclusive). Reply with JSON only.";
+Arrow names are short snake_case verbs. Give each arrow an `about`: one sentence saying which cases it is for. \
+New arrows must not overlap each other or the existing frame (read each existing arrow's instructions), \
+and must not re-propose an existing arrow. Reply with JSON only.";
 
 impl Proposer for OpenRouter {
     fn name(&self) -> String {
@@ -170,10 +258,11 @@ impl Proposer for OpenRouter {
                     "items": {
                         "type": "object",
                         "additionalProperties": false,
-                        "required": ["arrow", "target", "rationale"],
+                        "required": ["arrow", "target", "about", "rationale"],
                         "properties": {
                             "arrow": {"type": "string"},
                             "target": {"type": "string"},
+                            "about": {"type": "string"},
                             "rationale": {"type": "string"}
                         }
                     }
@@ -213,6 +302,7 @@ impl Proposer for OpenRouter {
                 arrow: p["arrow"].as_str().unwrap_or_default().to_owned(),
                 src: req.at.clone(),
                 dst: p["target"].as_str().unwrap_or_default().to_owned(),
+                about: p["about"].as_str().unwrap_or_default().to_owned(),
                 rationale: p["rationale"].as_str().unwrap_or_default().to_owned(),
             })
             .collect();
@@ -220,6 +310,7 @@ impl Proposer for OpenRouter {
             input_tokens: v["usage"]["prompt_tokens"].as_u64().unwrap_or(0),
             output_tokens: v["usage"]["completion_tokens"].as_u64().unwrap_or(0),
             attempts,
+            questions: 1,
         };
         Ok((proposals, usage))
     }

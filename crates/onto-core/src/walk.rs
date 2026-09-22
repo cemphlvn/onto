@@ -1,14 +1,20 @@
 //! Two-tier walks.
 //!
-//! At each object the walker reads its decision frame (outgoing arrows).
-//! If the frame is `Closed` (a verified MECE enumeration), a System-1
-//! [`Chooser`] picks among the arrows plus an explicit "none of these".
-//! If the frame is `Open`, the chooser answers "none of these", or its top
-//! probability is below the threshold, the step escalates to a System-2
-//! [`Proposer`], which may suggest new structure. Proposals are recorded as
-//! provisional; they never enter the category without verification.
+//! At each object the walker reads its decision frame: the outgoing arrows
+//! whose `require` holds in the walk's state. The frame's primitive says how
+//! a System-1 [`Judge`] decides it:
+//!
+//! - **choice**: one arrow, or "none of these";
+//! - **noul**: each arrow's condition on its own; when several hold, a fork
+//!   judgment says whether to pursue them all in parallel or only the best;
+//! - **score**: one ordered scale; the level reached picks the arrow.
+//!
+//! An open frame, a declined choice, or low confidence escalates to a
+//! System-2 [`Proposer`], whose suggestions stay provisional.
 
-use crate::category::{ArrowId, Category, Closure, ObjId};
+use serde_json::Value;
+
+use crate::category::{ArrowId, Category, Closure, ObjId, Primitive};
 use crate::path::Path;
 
 /// What the models see at each step.
@@ -16,6 +22,8 @@ use crate::path::Path;
 pub struct WalkState {
     /// Free-text goal or context for the models.
     pub goal: String,
+    /// Structured facts about the case; `require` clauses read it.
+    pub state: Value,
     pub at: ObjId,
     pub path: Path,
 }
@@ -44,26 +52,33 @@ impl Distribution {
     }
 }
 
-/// System 1: a fast, calibrated choice over a closed frame.
-pub trait Chooser {
-    fn choose(&mut self, cat: &Category, state: &WalkState, candidates: &[ArrowId])
-    -> Distribution;
+/// A System-1 answer for one frame, shaped by the frame's primitive.
+/// Indices refer to the candidate arrows in the order they were given.
+#[derive(Clone, Debug)]
+pub enum Answer {
+    Choice(Distribution),
+    Noul {
+        /// P(condition holds) per candidate.
+        holds: Vec<f32>,
+        /// P(several holding arrows are independent aspects to pursue in
+        /// parallel, rather than competing readings). `None` if not asked.
+        fork: Option<f32>,
+    },
+    Score {
+        /// Probability per level, candidates ordered by level.
+        levels: Vec<f32>,
+        confidence: Option<f32>,
+    },
 }
 
-/// A new arrow suggested by the System-2 proposer. The target may be an
-/// existing object or a new one.
-#[derive(Clone, Debug, PartialEq, Eq)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize))]
-pub struct Proposal {
-    pub arrow: String,
-    pub src: String,
-    pub dst: String,
-    pub rationale: String,
-}
-
-/// System 2: generates structure the frame is missing.
-pub trait Proposer {
-    fn propose(&mut self, cat: &Category, state: &WalkState) -> Vec<Proposal>;
+impl Answer {
+    pub fn confidence(&self) -> Option<f32> {
+        match self {
+            Self::Choice(d) => d.confidence,
+            Self::Score { confidence, .. } => *confidence,
+            Self::Noul { .. } => None,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -76,6 +91,147 @@ pub enum Escalation {
     OpenFrame,
     NoneOfThese,
     LowConfidence,
+}
+
+impl Escalation {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::OpenFrame => "open_frame",
+            Self::NoneOfThese => "none_of_these",
+            Self::LowConfidence => "low_confidence",
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Decision {
+    /// Follow candidate `index`. `alternatives` are other candidates that
+    /// also held (noul) but were not pursued.
+    Follow {
+        index: usize,
+        p: f32,
+        alternatives: Vec<(usize, f32)>,
+    },
+    /// Pursue every listed candidate as its own branch.
+    Fork {
+        branches: Vec<(usize, f32)>,
+        fork_p: f32,
+    },
+    Escalate(Escalation),
+}
+
+/// The System-1 gate, shared by every walker. `answer` is the judge's
+/// answer for a closed frame (`None` for an open one). `can_fork` is the
+/// code-side guard (branch budget, depth); the model's fork judgment only
+/// counts when it is true.
+pub fn decide(
+    closure: Closure,
+    answer: Option<&Answer>,
+    threshold: f32,
+    can_fork: bool,
+) -> Decision {
+    let Some(answer) = answer.filter(|_| closure == Closure::Closed) else {
+        return Decision::Escalate(Escalation::OpenFrame);
+    };
+    match answer {
+        Answer::Choice(d) => match d.top() {
+            Some((index, p)) if d.confidence.unwrap_or(p) >= threshold => Decision::Follow {
+                index,
+                p,
+                alternatives: Vec::new(),
+            },
+            Some(_) => Decision::Escalate(Escalation::LowConfidence),
+            None => Decision::Escalate(Escalation::NoneOfThese),
+        },
+        Answer::Noul { holds, fork } => {
+            let mut held: Vec<(usize, f32)> = holds
+                .iter()
+                .copied()
+                .enumerate()
+                .filter(|(_, p)| *p >= threshold)
+                .collect();
+            held.sort_by(|a, b| b.1.total_cmp(&a.1));
+            match held.len() {
+                0 if holds.iter().any(|p| *p > 1.0 - threshold) => {
+                    Decision::Escalate(Escalation::LowConfidence)
+                }
+                0 => Decision::Escalate(Escalation::NoneOfThese),
+                1 => Decision::Follow {
+                    index: held[0].0,
+                    p: held[0].1,
+                    alternatives: Vec::new(),
+                },
+                _ => {
+                    let fork_p = fork.unwrap_or(0.0);
+                    if can_fork && fork_p >= 0.5 {
+                        Decision::Fork {
+                            branches: held,
+                            fork_p,
+                        }
+                    } else {
+                        let (index, p) = held.remove(0);
+                        Decision::Follow {
+                            index,
+                            p,
+                            alternatives: held,
+                        }
+                    }
+                }
+            }
+        }
+        Answer::Score { levels, confidence } => {
+            let Some((index, p)) = levels
+                .iter()
+                .copied()
+                .enumerate()
+                .max_by(|a, b| a.1.total_cmp(&b.1))
+            else {
+                return Decision::Escalate(Escalation::NoneOfThese);
+            };
+            if confidence.unwrap_or(p) >= threshold {
+                Decision::Follow {
+                    index,
+                    p,
+                    alternatives: Vec::new(),
+                }
+            } else {
+                Decision::Escalate(Escalation::LowConfidence)
+            }
+        }
+    }
+}
+
+/// Candidates for a frame in the order judges see them: eligible arrows in
+/// frame order, or by level for score frames.
+pub fn candidates(cat: &Category, at: ObjId, state: &Value) -> Vec<ArrowId> {
+    let mut c = cat.eligible(at, state);
+    if cat.object(at).frame.primitive == Primitive::Score {
+        c.sort_by_key(|a| cat.arrow(*a).level);
+    }
+    c
+}
+
+/// System 1: a fast, calibrated judgment over a closed frame.
+pub trait Judge {
+    fn judge(&mut self, cat: &Category, state: &WalkState, candidates: &[ArrowId]) -> Answer;
+}
+
+/// A new arrow suggested by the System-2 proposer. The target may be an
+/// existing object or a new one.
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
+pub struct Proposal {
+    pub arrow: String,
+    pub src: String,
+    pub dst: String,
+    /// What the proposed arrow means: when to follow it.
+    pub about: String,
+    pub rationale: String,
+}
+
+/// System 2: generates structure the frame is missing.
+pub trait Proposer {
+    fn propose(&mut self, cat: &Category, state: &WalkState) -> Vec<Proposal>;
 }
 
 #[derive(Clone, Debug)]
@@ -106,21 +262,24 @@ impl Walk {
     }
 }
 
-pub struct Walker<'a, C, P> {
+/// A single-line walker. It never forks: where a noul frame could fork,
+/// it follows the most probable arrow. `onto-runtime` runs branching walks.
+pub struct Walker<'a, J, P> {
     pub cat: &'a Category,
-    pub chooser: C,
+    pub judge: J,
     pub proposer: P,
-    /// Minimum top probability for System 1 to act alone.
+    /// Minimum System-1 confidence to act alone.
     pub threshold: f32,
 }
 
-impl<C: Chooser, P: Proposer> Walker<'_, C, P> {
+impl<J: Judge, P: Proposer> Walker<'_, J, P> {
     /// Walks up to `max_steps`, stopping at the first escalation or at a
     /// closed object with no outgoing arrows (a terminal).
-    pub fn walk(&mut self, goal: &str, from: ObjId, max_steps: usize) -> Walk {
+    pub fn walk(&mut self, goal: &str, state: Value, from: ObjId, max_steps: usize) -> Walk {
         let mut walk = Walk {
             state: WalkState {
                 goal: goal.to_owned(),
+                state,
                 at: from,
                 path: Path::id(from),
             },
@@ -148,11 +307,23 @@ impl<C: Chooser, P: Proposer> Walker<'_, C, P> {
     }
 
     pub fn step(&mut self, state: &WalkState) -> Step {
-        let frame = self.cat.out(state.at);
+        let frame = candidates(self.cat, state.at, &state.state);
         let closure = self.cat.object(state.at).closure;
-        let d = (closure == Closure::Closed).then(|| self.chooser.choose(self.cat, state, frame));
-        let reason = match decide(closure, d.as_ref(), self.threshold) {
-            Decision::Follow { index, p } => {
+        let answer = (closure == Closure::Closed && !frame.is_empty())
+            .then(|| self.judge.judge(self.cat, state, &frame));
+        let decision = match (&answer, closure) {
+            (None, Closure::Closed) => Decision::Escalate(Escalation::NoneOfThese),
+            _ => decide(closure, answer.as_ref(), self.threshold, false),
+        };
+        let reason = match decision {
+            Decision::Follow { index, p, .. } => {
+                return Step::Followed {
+                    arrow: frame[index],
+                    p,
+                };
+            }
+            Decision::Fork { branches, .. } => {
+                let (index, p) = branches[0];
                 return Step::Followed {
                     arrow: frame[index],
                     p,
@@ -167,37 +338,14 @@ impl<C: Chooser, P: Proposer> Walker<'_, C, P> {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum Decision {
-    /// Follow the frame arrow at `index`; `p` is its probability.
-    Follow {
-        index: usize,
-        p: f32,
-    },
-    Escalate(Escalation),
-}
-
-/// The System-1 gate, shared by every walker. `d` is the chooser's answer
-/// for a closed frame (`None` for an open one). The model's confidence gates
-/// when present, the top probability otherwise.
-pub fn decide(closure: Closure, d: Option<&Distribution>, threshold: f32) -> Decision {
-    let Some(d) = d.filter(|_| closure == Closure::Closed) else {
-        return Decision::Escalate(Escalation::OpenFrame);
-    };
-    match d.top() {
-        Some((index, p)) if d.confidence.unwrap_or(p) >= threshold => Decision::Follow { index, p },
-        Some(_) => Decision::Escalate(Escalation::LowConfidence),
-        None => Decision::Escalate(Escalation::NoneOfThese),
-    }
-}
-
-/// Picks arrows in a fixed order by name; answers "none of these" when the
-/// next scripted name is not in the frame. Deterministic, for tests and demos.
-pub struct ScriptedChooser {
+/// Answers from a fixed script of arrow names, one per step, whatever the
+/// primitive: the named arrow gets probability 1. Deterministic, for tests
+/// and demos.
+pub struct ScriptedJudge {
     script: std::vec::IntoIter<String>,
 }
 
-impl ScriptedChooser {
+impl ScriptedJudge {
     pub fn new(names: impl IntoIterator<Item = impl Into<String>>) -> Self {
         let script: Vec<String> = names.into_iter().map(Into::into).collect();
         Self {
@@ -206,34 +354,57 @@ impl ScriptedChooser {
     }
 }
 
-impl Chooser for ScriptedChooser {
-    fn choose(&mut self, cat: &Category, _: &WalkState, candidates: &[ArrowId]) -> Distribution {
+impl Judge for ScriptedJudge {
+    fn judge(&mut self, cat: &Category, state: &WalkState, candidates: &[ArrowId]) -> Answer {
         let want = self.script.next();
-        let arrows: Vec<f32> = candidates
+        let hits: Vec<f32> = candidates
             .iter()
             .map(|a| f32::from(want.as_deref() == Some(cat.arrow(*a).name.as_str())))
             .collect();
-        let none_of_these = if arrows.contains(&1.0) { 0.0 } else { 1.0 };
-        Distribution {
-            arrows,
-            none_of_these,
-            confidence: None,
+        let hit = hits.contains(&1.0);
+        match cat.object(state.at).frame.primitive {
+            Primitive::Choice => Answer::Choice(Distribution {
+                arrows: hits,
+                none_of_these: if hit { 0.0 } else { 1.0 },
+                confidence: None,
+            }),
+            Primitive::Noul => Answer::Noul {
+                holds: hits,
+                fork: None,
+            },
+            Primitive::Score => Answer::Score {
+                confidence: Some(if hit { 1.0 } else { 0.0 }),
+                levels: hits,
+            },
         }
     }
 }
 
-/// Spreads probability evenly over the frame and "none of these". The tie
-/// means no arrow wins, so every step escalates; useful for exercising the
-/// System-2 path.
-pub struct UniformChooser;
+/// Spreads probability evenly. For a choice frame the arrows tie with
+/// "none of these", so no arrow wins and every step escalates: useful for
+/// exercising the System-2 path.
+pub struct UniformJudge;
 
-impl Chooser for UniformChooser {
-    fn choose(&mut self, _: &Category, _: &WalkState, candidates: &[ArrowId]) -> Distribution {
-        let p = 1.0 / (candidates.len() as f32 + 1.0);
-        Distribution {
-            arrows: vec![p; candidates.len()],
-            none_of_these: p,
-            confidence: None,
+impl Judge for UniformJudge {
+    fn judge(&mut self, cat: &Category, state: &WalkState, candidates: &[ArrowId]) -> Answer {
+        let n = candidates.len();
+        match cat.object(state.at).frame.primitive {
+            Primitive::Choice => {
+                let p = 1.0 / (n as f32 + 1.0);
+                Answer::Choice(Distribution {
+                    arrows: vec![p; n],
+                    none_of_these: p,
+                    confidence: None,
+                })
+            }
+            Primitive::Noul => Answer::Noul {
+                holds: vec![0.5; n],
+                fork: None,
+            },
+            Primitive::Score => Answer::Score {
+                levels: vec![1.0 / n as f32; n],
+                confidence: None,
+            },
         }
     }
 }
@@ -247,14 +418,9 @@ impl Proposer for NullProposer {
     }
 }
 
-impl<C: Chooser + ?Sized> Chooser for Box<C> {
-    fn choose(
-        &mut self,
-        cat: &Category,
-        state: &WalkState,
-        candidates: &[ArrowId],
-    ) -> Distribution {
-        (**self).choose(cat, state, candidates)
+impl<J: Judge + ?Sized> Judge for Box<J> {
+    fn judge(&mut self, cat: &Category, state: &WalkState, candidates: &[ArrowId]) -> Answer {
+        (**self).judge(cat, state, candidates)
     }
 }
 

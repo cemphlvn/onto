@@ -2,9 +2,7 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
-use onto_core::walk::{
-    Chooser, Escalation, NullProposer, ScriptedChooser, Step, UniformChooser, Walker,
-};
+use onto_core::walk::{Escalation, Judge, NullProposer, ScriptedJudge, Step, UniformJudge, Walker};
 use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, parse::path_spec};
 
 mod ask;
@@ -193,17 +191,17 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         } => {
             let cat = load(&file)?;
             let from = cat.object_id(&from)?;
-            let chooser: Box<dyn Chooser> = match script {
-                Some(names) => Box::new(ScriptedChooser::new(names)),
-                None => Box::new(UniformChooser),
+            let judge: Box<dyn Judge> = match script {
+                Some(names) => Box::new(ScriptedJudge::new(names)),
+                None => Box::new(UniformJudge),
             };
             let mut walker = Walker {
                 cat: &cat,
-                chooser,
+                judge,
                 proposer: NullProposer,
                 threshold,
             };
-            let walk = walker.walk(&goal, from, steps);
+            let walk = walker.walk(&goal, serde_json::json!({}), from, steps);
             let mut at = from;
             for step in &walk.steps {
                 match step {
@@ -220,7 +218,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
                     Step::Escalated { reason, proposals } => {
                         let why = match reason {
                             Escalation::OpenFrame => "frame is open (not MECE)",
-                            Escalation::NoneOfThese => "System 1 chose none-of-these",
+                            Escalation::NoneOfThese => "System 1 found no option that fits",
                             Escalation::LowConfidence => "System 1 below threshold",
                         };
                         println!("{} ⇒ escalate to System 2: {why}", cat.object(at).name);

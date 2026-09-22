@@ -5,14 +5,15 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use clap::{Args, ValueEnum};
-use onto_core::walk::{Distribution, Proposal};
+use onto_core::walk::{Answer, Proposal};
 use onto_runtime::engine::StepRecord;
 use onto_runtime::frames::{Mode, PotentialityKind, Resolution};
 use onto_runtime::model::{
-    ChoiceRequest, Chooser, MockChooser, MockProposer, ModelError, ProposalRequest, Proposer, Usage,
+    FrameRequest, Judge, MockJudge, MockProposer, ModelError, ProposalRequest, Proposer, Usage,
 };
 use onto_runtime::providers::{Jev, OpenRouter};
 use onto_runtime::{Config, Engine, Job, Policy, RunReport, telemetry};
+use serde_json::{Value, json};
 
 #[derive(Args)]
 pub struct RunArgs {
@@ -41,8 +42,11 @@ pub struct RunArgs {
     /// Write the full run report as JSON to this file.
     #[arg(long)]
     report: Option<PathBuf>,
+    /// Extra branches one job may fork into (noul frames).
+    #[arg(long, default_value_t = 4)]
+    max_branches: usize,
     #[arg(long)]
-    chooser_model: Option<String>,
+    judge_model: Option<String>,
     #[arg(long)]
     proposer_model: Option<String>,
 }
@@ -53,22 +57,22 @@ enum PolicyArg {
     Shared,
 }
 
-pub enum AnyChooser {
+pub enum AnyJudge {
     Jev(Jev),
-    Mock(MockChooser),
+    Mock(MockJudge),
 }
 
-impl Chooser for AnyChooser {
+impl Judge for AnyJudge {
     fn name(&self) -> String {
         match self {
-            Self::Jev(c) => c.name(),
-            Self::Mock(c) => c.name(),
+            Self::Jev(j) => j.name(),
+            Self::Mock(j) => j.name(),
         }
     }
-    async fn choose(&self, req: ChoiceRequest) -> Result<(Distribution, Usage), ModelError> {
+    async fn judge(&self, req: FrameRequest) -> Result<(Answer, Usage), ModelError> {
         match self {
-            Self::Jev(c) => c.choose(req).await,
-            Self::Mock(c) => c.choose(req).await,
+            Self::Jev(j) => j.judge(req).await,
+            Self::Mock(j) => j.judge(req).await,
         }
     }
 }
@@ -104,10 +108,10 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         telemetry::init_jsonl(path)?;
     }
 
-    let (chooser, proposer) = models(
+    let (judge, proposer) = models(
         args.mock,
         args.mock_proposer,
-        args.chooser_model.clone(),
+        args.judge_model.clone(),
         args.proposer_model.clone(),
     )?;
     let cfg = Config {
@@ -118,13 +122,14 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         },
         speculate: args.speculate,
         max_steps: args.max_steps,
+        max_branches: args.max_branches,
         ..Config::default()
     };
 
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?;
-    let report = rt.block_on(Engine::new(cat, chooser, proposer, cfg).run(jobs))?;
+    let report = rt.block_on(Engine::new(cat, judge, proposer, cfg).run(jobs))?;
 
     print_summary(&report, args.telemetry.as_deref());
     if let Some(path) = &args.report {
@@ -138,19 +143,19 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
 pub fn models(
     mock: bool,
     mock_proposer: bool,
-    chooser_model: Option<String>,
+    judge_model: Option<String>,
     proposer_model: Option<String>,
-) -> Result<(AnyChooser, AnyProposer), BoxError> {
+) -> Result<(AnyJudge, AnyProposer), BoxError> {
     let http = reqwest::Client::builder()
         .timeout(Duration::from_secs(60))
         .build()?;
-    let chooser = if mock {
-        AnyChooser::Mock(MockChooser {
+    let judge = if mock {
+        AnyJudge::Mock(MockJudge {
             latency: Duration::from_millis(150),
         })
     } else {
-        AnyChooser::Jev(
-            Jev::from_env(http.clone(), chooser_model)
+        AnyJudge::Jev(
+            Jev::from_env(http.clone(), judge_model)
                 .ok_or("TYPESAFE_API_KEY is not set (or pass --mock)")?,
         )
     };
@@ -164,7 +169,7 @@ pub fn models(
                 .ok_or("OPENROUTER_API_KEY is not set (or pass --mock-proposer)")?,
         )
     };
-    Ok((chooser, proposer))
+    Ok((judge, proposer))
 }
 
 fn read_jobs(path: &PathBuf) -> Result<Vec<Job>, BoxError> {
@@ -178,60 +183,49 @@ fn read_jobs(path: &PathBuf) -> Result<Vec<Job>, BoxError> {
         let (from, goal) = line
             .split_once(':')
             .ok_or_else(|| format!("{}:{}: expected `StartObject: goal`", path.display(), i + 1))?;
+        let (goal, case) =
+            case(goal.trim()).map_err(|e| format!("{}:{}: {e}", path.display(), i + 1))?;
         jobs.push(Job {
             from: from.trim().to_owned(),
-            goal: goal.trim().to_owned(),
+            goal,
+            case,
         });
     }
     Ok(jobs)
 }
 
+/// A case is plain text, or a JSON object with a `goal` string plus any
+/// structured facts (read by `require` clauses).
+pub fn case(text: &str) -> Result<(String, Value), String> {
+    if !text.starts_with('{') {
+        return Ok((text.to_owned(), json!({})));
+    }
+    let v: Value = serde_json::from_str(text).map_err(|e| format!("invalid case JSON: {e}"))?;
+    let goal = v["goal"]
+        .as_str()
+        .ok_or("case JSON needs a \"goal\" string")?
+        .to_owned();
+    Ok((goal, v))
+}
+
 fn print_summary(r: &RunReport, telemetry: Option<&std::path::Path>) {
     println!(
-        "run: {} walks · chooser {} · proposer {} · policy {:?} · speculate {}",
+        "run: {} walks ({} branches) · judge {} · proposer {} · policy {} · speculate {}",
         r.walks.len(),
-        r.chooser,
+        r.branches,
+        r.judge,
         r.proposer,
-        r.policy,
+        r.policy.as_str(),
         if r.speculate { "on" } else { "off" }
     );
     println!();
     for w in &r.walks {
-        println!("walk {} [{:.0}ms] {}", w.walk, w.elapsed_ms, w.goal);
+        let branch = w
+            .parent
+            .map_or(String::new(), |p| format!(" (branch of walk {p})"));
+        println!("walk {}{branch} [{:.0}ms] {}", w.walk, w.elapsed_ms, w.goal);
         for s in &w.steps {
-            match s {
-                StepRecord::Followed {
-                    from,
-                    arrow,
-                    to,
-                    p,
-                    confidence,
-                    wait_ms,
-                } => {
-                    let conf = confidence.map_or(String::new(), |c| format!(" conf={c:.2}"));
-                    let wait = if *wait_ms >= 1.0 {
-                        format!("  waited {wait_ms:.0}ms")
-                    } else {
-                        String::new()
-                    };
-                    println!("  {from} --{arrow}--> {to}   p={p:.2}{conf}{wait}");
-                }
-                StepRecord::Escalated {
-                    at,
-                    reason,
-                    proposals,
-                    ..
-                } => {
-                    println!("  {at} ⇒ System 2 ({reason:?})");
-                    for p in proposals {
-                        println!(
-                            "    provisional {}: {} -> {}  — {}",
-                            p.arrow, p.src, p.dst, p.rationale
-                        );
-                    }
-                }
-                StepRecord::Failed { at, error } => println!("  {at} ✗ {error}"),
-            }
+            print_step(s);
         }
         println!("  = {}", w.path);
     }
@@ -250,23 +244,24 @@ fn print_summary(r: &RunReport, telemetry: Option<&std::path::Path>) {
     for p in &r.potentialities {
         let kind = match (p.kind, p.resolution) {
             (PotentialityKind::Node, Resolution::Waited) => "node, waited   ",
-            (PotentialityKind::Node, Resolution::Coexisted) => "node, coexisted",
+            (PotentialityKind::Node, _) => "node, coexisted",
             (PotentialityKind::Conceptual, _) => "conceptual     ",
+            (PotentialityKind::Alternative, _) => "alternative    ",
         };
         let mode = match p.mode {
             Some(Mode::Read) => "read ",
             Some(Mode::Write) => "write",
             None => "     ",
         };
+        let with = p.with.map_or("         ".into(), |w| format!("⟂ walk {w}"));
         let wait = if p.wait_ms > 0.0 {
             format!("  {:.0}ms", p.wait_ms)
         } else {
             String::new()
         };
         println!(
-            "  {kind} {mode}  walk {} ⟂ walk {} at {}  [{}]{wait}",
+            "  {kind} {mode}  walk {} {with} at {}  [{}]{wait}",
             p.walk,
-            p.with,
             p.at,
             p.nodes.join(", ")
         );
@@ -280,8 +275,14 @@ fn print_summary(r: &RunReport, telemetry: Option<&std::path::Path>) {
         r.model_ms_sum / r.wall_ms.max(1e-9)
     );
     println!(
-        "calls: chooser {} · proposer {} ({} speculative discarded) · tokens {} in / {} out",
-        r.chooser_calls, r.proposer_calls, r.speculative_discarded, r.tokens_in, r.tokens_out
+        "calls: judge {} ({} questions) · proposer {} ({} speculative discarded) · forks {} · tokens {} in / {} out",
+        r.judge_calls,
+        r.judge_questions,
+        r.proposer_calls,
+        r.speculative_discarded,
+        r.forks,
+        r.tokens_in,
+        r.tokens_out
     );
     println!(
         "memory: rss {} → {} (peak {}) · heap {} → {} (peak {})",
@@ -294,6 +295,71 @@ fn print_summary(r: &RunReport, telemetry: Option<&std::path::Path>) {
     );
     if let Some(path) = telemetry {
         println!("telemetry: {}", path.display());
+    }
+}
+
+fn print_step(s: &StepRecord) {
+    match s {
+        StepRecord::Followed {
+            from,
+            arrow,
+            to,
+            decided_by,
+            p,
+            confidence,
+            alternatives,
+            wait_ms,
+        } => {
+            let conf = confidence.map_or(String::new(), |c| format!(" conf={c:.2}"));
+            let wait = if *wait_ms >= 1.0 {
+                format!("  waited {wait_ms:.0}ms")
+            } else {
+                String::new()
+            };
+            println!(
+                "  {from} --{arrow}--> {to}   [{}] p={p:.2}{conf}{wait}",
+                decided_by.as_str()
+            );
+            for a in alternatives {
+                println!(
+                    "      also held, not followed: {} -> {} (p={:.2})",
+                    a.arrow, a.to, a.p
+                );
+            }
+        }
+        StepRecord::Forked {
+            at,
+            branches,
+            fork_p,
+            spawned,
+            ..
+        } => {
+            let names: Vec<_> = branches
+                .iter()
+                .map(|b| format!("{} (p={:.2})", b.arrow, b.p))
+                .collect();
+            let ids: Vec<_> = spawned.iter().map(|w| format!("walk {w}")).collect();
+            println!(
+                "  {at} ⑂ fork p={fork_p:.2}: {} → spawned {}",
+                names.join(", "),
+                ids.join(", ")
+            );
+        }
+        StepRecord::Escalated {
+            at,
+            reason,
+            proposals,
+            ..
+        } => {
+            println!("  {at} ⇒ System 2 ({})", reason.as_str());
+            for p in proposals {
+                println!(
+                    "    provisional {}: {} -> {}  — {}",
+                    p.arrow, p.src, p.dst, p.about
+                );
+            }
+        }
+        StepRecord::Failed { at, error } => println!("  {at} ✗ {error}"),
     }
 }
 

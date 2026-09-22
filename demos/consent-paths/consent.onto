@@ -1,32 +1,41 @@
 # Consent Paths: where personal data may go, and on what authority.
-# Each arrow is a processing step with a legal basis (noted beside it).
-# A data use is authorized only if a path reaches it. Equations record
-# routes that end in the same authorized state.
+# Each arrow is a processing step; its description names the legal basis.
+# `require` clauses are checked in code against the case's facts before
+# any model is asked: evidence, not judgment. A data use is authorized only
+# if a path reaches it. Equations record routes that end in the same state.
 
 category Consent {
     objects: Collected, Consented, Contract, Pseudonymized, Anonymized,
              Aggregated, Research, Processor, Marketing, Published;
 
-    consent:  Collected -> Consented;       # explicit consent (GDPR 6(1)(a))
-    contract: Collected -> Contract;        # necessary for the contract (6(1)(b))
-    closed: Collected;                      # the only two bases this org relies on
+    about Collected: "personal data the organization holds about a person";
 
-    pseudonymize:   Consented -> Pseudonymized;
-    market:         Consented -> Marketing; # consent covers marketing
+    frame Collected: choice "On which legal basis would this intended use rest?";
+    consent:  Collected -> Consented "the person explicitly agreed to this kind of use (GDPR 6(1)(a))";
+    contract: Collected -> Contract  "the use is necessary to deliver the service the person signed up for (GDPR 6(1)(b))";
+    closed: Collected;                      # the only two bases this organization relies on
+
+    pseudonymize: Consented -> Pseudonymized "remove direct identifiers before further use: analytics, research, sharing";
+    market:       Consented -> Marketing "send marketing to the person"
+                  require consent.marketing == true;
     closed: Consented;
 
-    fulfil_pseudonymize: Contract -> Pseudonymized;
+    fulfil_pseudonymize: Contract -> Pseudonymized "pseudonymize data used to deliver the contracted service";
     # Contract stays open: other contract-necessary uses are not enumerated.
 
-    anonymize:    Pseudonymized -> Anonymized;
-    research_use: Pseudonymized -> Research;   # research exemption with safeguards (89)
-    share_dpa:    Pseudonymized -> Processor;  # data processing agreement (28)
+    anonymize:    Pseudonymized -> Anonymized "irreversibly remove identity so the data no longer relates to a person";
+    research_use: Pseudonymized -> Research   "scientific or academic research with safeguards (GDPR 89)";
+    # Parallel arrows: same endpoints, different legal basis, told apart by evidence.
+    share_dpa: Pseudonymized -> Processor "give data to a processor in the EU under a data processing agreement (GDPR 28)"
+               require processor.region == "EU";
+    share_scc: Pseudonymized -> Processor "give data to a processor outside the EU under standard contractual clauses (GDPR 46)"
+               require processor.region != "EU" and processor.scc == true;
     closed: Pseudonymized;
 
-    aggregate: Anonymized -> Aggregated;
+    aggregate: Anonymized -> Aggregated "combine records into statistics";
     closed: Anonymized;
 
-    publish: Aggregated -> Published;
+    publish: Aggregated -> Published "publish the statistics";
     closed: Aggregated;
 
     closed: Research, Processor, Marketing, Published;

@@ -54,6 +54,24 @@ avoids `Consented`. Detecting that a proposal *would* break such an
 invariant, and rejecting it, is M2 work: invariants declared in the
 `.onto` file and checked on every proposal.
 
+## With descriptions, parallel arrows and `require` (2026-09-23, live)
+
+- **Evidence gates judgment.** "Send personalised offers" *with*
+  `{"consent": {"marketing": true}}` → **✓ `market.consent`** (conf 0.99).
+  The same request *without* that evidence → Consented, where `market` is
+  closed by `require` → no route. The model was never asked to guess.
+- **Parallel arrows:** `share_dpa` (EU, GDPR 28) and `share_scc` (outside
+  EU, GDPR 46) share endpoints; `require` on `processor.region` and
+  `processor.scc` keeps them exclusive. `onto reach` lists both routes.
+- **Stricter, and more correct:** with legal descriptions, Jev no longer
+  assumes consent or contract from the intended use alone: 6 of 6 original
+  uses escalate at Collected (before: 2 were "authorized" on names only).
+  Lesson: the legal basis is a fact of the case; it should be `require`d,
+  not inferred.
+- The proposer again suggested a basis this organization does not use
+  (`legitimate_interest: Collected -> Marketing`). Still provisional;
+  invariant checking remains M2.
+
 ## What it does not do yet
 
 - No invariant checking of proposals (above). No provenance beyond the

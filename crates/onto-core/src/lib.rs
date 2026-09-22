@@ -7,10 +7,15 @@ pub mod equality;
 pub mod error;
 pub mod parse;
 pub mod path;
+pub mod require;
 pub mod walk;
 
-pub use category::{Arrow, ArrowId, Category, CategoryBuilder, Closure, ObjId, Object, PathSpec};
+pub use category::{
+    Arrow, ArrowId, ArrowMeta, Category, CategoryBuilder, Closure, Frame, ObjId, Object, PathSpec,
+    Primitive,
+};
 pub use equality::{Equality, Verdict};
 pub use error::Error;
 pub use parse::parse;
 pub use path::Path;
+pub use require::Require;

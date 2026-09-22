@@ -1,43 +1,58 @@
 # Incident Graph: investigation paths that concurrent incident agents walk.
 # Different symptoms lead into shared components (Database, Network), so
 # agents starting from different alerts meet there.
+#
+# Alert is a noul frame: an alert can show several symptoms at once. When
+# several hold, the judge also decides whether they are independent aspects
+# (the walk forks into parallel branches) or competing readings (follow the
+# most likely, log the rest). Report is a score frame: severity picks the path.
 
 category Incident {
-    objects: Alert, Latency, ErrorSpike, SecurityEvent,
+    objects: Report, Watch, Major, Alert, Latency, ErrorSpike, SecurityEvent,
              Database, Network, Deploy, Credentials,
              Failover, Rollback, Rotate, Mitigated;
 
-    latency:  Alert -> Latency;
-    errors:   Alert -> ErrorSpike;
-    security: Alert -> SecurityEvent;
+    frame Report: score "How badly are users affected right now?";
+    watch:       Report -> Watch level 0 "no user-visible impact; cosmetic or internal only";
+    investigate: Report -> Alert level 1 "degraded for some users; a workaround exists";
+    declare:     Report -> Major level 2 "blocking for many users; no workaround";
+    closed: Report, Watch;
+
+    mobilize: Major -> Alert "open a major-incident channel, then investigate";
+    closed: Major;
+
+    frame Alert: noul "Which kinds of symptom does this alert show? Several may apply.";
+    latency:  Alert -> Latency       "responses are slow: high latency, timeouts, lag";
+    errors:   Alert -> ErrorSpike    "requests fail: 5xx errors, exceptions, failed jobs";
+    security: Alert -> SecurityEvent "possible compromise: leaked secrets or keys, unauthorized access, suspicious traffic";
     closed: Alert;
 
-    slow_db:  Latency -> Database;
-    slow_net: Latency -> Network;
+    slow_db:  Latency -> Database "the slowness comes from the database: slow queries, locks, replication lag";
+    slow_net: Latency -> Network  "the slowness comes from the network: packet loss, congestion between regions";
     closed: Latency;
 
-    bad_deploy: ErrorSpike -> Deploy;
-    failing_db: ErrorSpike -> Database;
+    bad_deploy: ErrorSpike -> Deploy   "errors started with a recent deploy or configuration change";
+    failing_db: ErrorSpike -> Database "errors come from the database: connection failures, pool exhaustion";
     closed: ErrorSpike;
 
-    leaked:    SecurityEvent -> Credentials;
-    intrusion: SecurityEvent -> Network;
+    leaked:    SecurityEvent -> Credentials "a credential, token or key has been exposed";
+    intrusion: SecurityEvent -> Network     "unauthorized access or suspicious network activity";
     closed: SecurityEvent;
 
-    failover:           Database -> Failover;
-    rollback_migration: Database -> Rollback;
+    failover:           Database -> Failover "the primary database is unhealthy; switch to a replica";
+    rollback_migration: Database -> Rollback "a recent schema migration caused it; roll the migration back";
     closed: Database;
 
     # Network stays open: DDoS, BGP, DNS and peering faults are not enumerated.
 
-    rollback: Deploy -> Rollback;
+    rollback: Deploy -> Rollback "revert the deploy";
     closed: Deploy;
 
-    rotate: Credentials -> Rotate;
+    rotate: Credentials -> Rotate "revoke and reissue the exposed credential";
     closed: Credentials;
 
-    recover: Failover -> Mitigated;
-    verify:  Rollback -> Mitigated;
-    confirm: Rotate -> Mitigated;
+    recover: Failover -> Mitigated "confirm service recovered on the replica";
+    verify:  Rollback -> Mitigated "confirm errors stopped after the rollback";
+    confirm: Rotate -> Mitigated   "confirm the old credential no longer works";
     closed: Failover, Rollback, Rotate, Mitigated;
 }

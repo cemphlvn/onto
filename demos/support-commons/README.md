@@ -43,11 +43,24 @@ onto ls  demos/support-commons/support.onto Ticket
 Wall 10.7 s for 32.5 s of model time (3.04x parallel); 17 waits, all
 System-2 edits at the same frame; peak RSS 15.3 MiB.
 
+## With descriptions (2026-09-23, live, same 9 tickets)
+
+Only meaning was added (the arrows are unchanged). Mean confidence of
+followed steps 0.81 → 0.94; walks that escalated 8 → 7.
+
+- CSV export: escalated at Ticket → **✓ `answer.howto.technical`**.
+- Okta SSO: misrouted to HowTo → **Product** (correct team; Product is open,
+  so it still escalates, see below).
+- Subscription transfer: unsure at Ticket → **Account**.
+- Unchanged, rightly: delivery (no team covers it), data deletion (Account
+  is open), screen reader (no accessibility route).
+- New gap exposed: "password reset email never arrives" reaches Account,
+  where `login` fits exactly, but open frames always escalate. Judging open
+  frames too is the proposed fix.
+
 ## What it does not do yet
 
 - Proposals are **provisional**: nothing is added to the taxonomy (M2).
 - Some proposals point backwards (`Outage -> Ticket`) or duplicate existing
   arrows; M2 verification must reject those.
-- Arrows carry names only. Jev sees `follow technical to Technical`, not
-  what "technical" covers, which likely explains the CSV and SSO misroutes.
-  Arrow descriptions in the `.onto` format are the fix.
+- Open frames (Account, Product) escalate even when an existing arrow fits.
