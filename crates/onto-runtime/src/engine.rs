@@ -18,7 +18,7 @@ use tokio::task::JoinSet;
 use crate::frames::{Claim, FrameLocks, Mode, Policy, Potentiality, PotentialityKind, Resolution};
 use crate::mem::{self, MemSample};
 use crate::model::{
-    Candidate, FrameRequest, Hop, Judge, ModelError, ProposalRequest, Proposer, Usage,
+    Candidate, FrameRequest, Hop, Judge, ModelError, Pending, ProposalRequest, Proposer, Usage,
 };
 
 #[derive(Clone, Debug)]
@@ -179,6 +179,8 @@ pub struct Engine<J, P> {
     proposer_slots: Semaphore,
     /// Proposed concept key -> walks that proposed it.
     concepts: Mutex<HashMap<String, Vec<u64>>>,
+    /// Provisional proposals per frame, shown to later proposers there.
+    pending: Mutex<HashMap<ObjId, Vec<(u64, Proposal)>>>,
     counters: Counters,
     /// Walk ids are unique across `run` calls on one engine, so conceptual
     /// intersections are detected between runs too.
@@ -192,6 +194,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             judge_slots: Semaphore::new(cfg.judge_concurrency),
             proposer_slots: Semaphore::new(cfg.proposer_concurrency),
             concepts: Mutex::new(HashMap::new()),
+            pending: Mutex::new(HashMap::new()),
             counters: Counters::default(),
             next_walk: AtomicU64::new(1),
             cat,
@@ -346,7 +349,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
 
             // Claim the frame. With speculation the System-2 call may start
             // right away, so the claim is a write from the start.
-            let mode = if self.cfg.speculate || !closed {
+            let mode = if self.cfg.speculate {
                 Mode::Write
             } else {
                 Mode::Read
@@ -356,12 +359,13 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
 
             let mut speculative = None;
             let reason = 'judged: {
-                if !closed {
-                    break 'judged Escalation::OpenFrame;
-                }
                 if frame.is_empty() {
-                    // Every arrow's `require` failed: nothing may be followed.
-                    break 'judged Escalation::NoneOfThese;
+                    // No arrows, or every arrow's `require` failed.
+                    break 'judged if closed {
+                        Escalation::NoneOfThese
+                    } else {
+                        Escalation::OpenFrame
+                    };
                 }
                 if self.cfg.speculate {
                     let engine = self.clone();
@@ -390,7 +394,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     }
                 };
                 let (index, p, alternatives) = match decide(
-                    Closure::Closed,
+                    object.closure,
                     Some(&answer),
                     self.cfg.threshold,
                     can_fork,
@@ -520,10 +524,20 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     self.call_proposer(id, req, false).await
                 }
             };
+            // Record before releasing the claim, so a walk waiting on this
+            // frame sees these proposals when its own proposer runs.
+            if let Ok(proposals) = &proposals {
+                self.note_concepts(id, at, proposals);
+                self.pending
+                    .lock()
+                    .unwrap()
+                    .entry(at)
+                    .or_default()
+                    .extend(proposals.iter().map(|p| (id, p.clone())));
+            }
             drop(guard);
             match proposals {
                 Ok(proposals) => {
-                    self.note_concepts(id, at, &proposals);
                     steps.push(StepRecord::Escalated {
                         at: at_name,
                         reason,
@@ -677,6 +691,11 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
     ) -> Result<Vec<Proposal>, ModelError> {
         let _slot = self.proposer_slots.acquire().await.expect("semaphore open");
         let at = req.at.clone();
+        let pending: Vec<(String, String)> = req
+            .pending_here
+            .iter()
+            .map(|p| (p.arrow.clone(), p.target.clone()))
+            .collect();
         let t0 = Instant::now();
         let result = self.proposer.propose(req).await;
         let latency = t0.elapsed();
@@ -691,6 +710,11 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 speculative,
                 latency_ms = ms(latency),
                 proposals = p.len(),
+                pending_here = pending.len(),
+                reused = p
+                    .iter()
+                    .filter(|x| pending.contains(&(x.arrow.clone(), x.dst.clone())))
+                    .count(),
                 input_tokens = u.input_tokens,
                 output_tokens = u.output_tokens,
                 attempts = u.attempts,
@@ -809,6 +833,22 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 .collect(),
             reason: reason.to_owned(),
             known_objects: self.cat.objects().iter().map(|o| o.name.clone()).collect(),
+            pending_here: self
+                .pending
+                .lock()
+                .unwrap()
+                .get(&path.dst)
+                .map(|ps| {
+                    ps.iter()
+                        .map(|(walk, p)| Pending {
+                            walk: *walk,
+                            arrow: p.arrow.clone(),
+                            target: p.dst.clone(),
+                            about: p.about.clone(),
+                        })
+                        .collect()
+                })
+                .unwrap_or_default(),
         }
     }
 }

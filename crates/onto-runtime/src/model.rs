@@ -70,6 +70,17 @@ pub struct ProposalRequest {
     pub frame: Vec<Candidate>,
     pub reason: String,
     pub known_objects: Vec<String>,
+    /// Provisional arrows other walks already proposed at this frame. A
+    /// proposer should reuse one unchanged when it fits.
+    pub pending_here: Vec<Pending>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct Pending {
+    pub walk: u64,
+    pub arrow: String,
+    pub target: String,
+    pub about: String,
 }
 
 /// Call metadata reported alongside every answer, for telemetry.
@@ -190,8 +201,9 @@ impl Judge for MockJudge {
     }
 }
 
-/// Offline proposer: suggests one arrow to a new object named after the
-/// goal's last word, after a fixed latency.
+/// Offline proposer: reuses a pending proposal whose target the goal
+/// mentions; otherwise suggests one arrow to a new object named after the
+/// goal's last word. After a fixed latency.
 pub struct MockProposer {
     pub latency: Duration,
 }
@@ -203,6 +215,28 @@ impl Proposer for MockProposer {
 
     async fn propose(&self, req: ProposalRequest) -> Result<(Vec<Proposal>, Usage), ModelError> {
         tokio::time::sleep(self.latency).await;
+        let goal = req.goal.to_lowercase();
+        if let Some(p) = req
+            .pending_here
+            .iter()
+            .find(|p| goal.contains(&p.target.to_lowercase()))
+        {
+            let reused = Proposal {
+                arrow: p.arrow.clone(),
+                src: req.at.clone(),
+                dst: p.target.clone(),
+                about: p.about.clone(),
+                rationale: format!("same kind of case as walk {}'s proposal", p.walk),
+            };
+            return Ok((
+                vec![reused],
+                Usage {
+                    attempts: 1,
+                    questions: 1,
+                    ..Usage::default()
+                },
+            ));
+        }
         let word: String = req
             .goal
             .split_whitespace()

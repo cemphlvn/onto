@@ -9,8 +9,9 @@
 //!   judgment says whether to pursue them all in parallel or only the best;
 //! - **score**: one ordered scale; the level reached picks the arrow.
 //!
-//! An open frame, a declined choice, or low confidence escalates to a
-//! System-2 [`Proposer`], whose suggestions stay provisional.
+//! Open and closed frames are judged alike. When nothing fits (or the judge
+//! is unsure) the step escalates to a System-2 [`Proposer`], whose
+//! suggestions stay provisional.
 
 use serde_json::Value;
 
@@ -121,17 +122,25 @@ pub enum Decision {
 }
 
 /// The System-1 gate, shared by every walker. `answer` is the judge's
-/// answer for a closed frame (`None` for an open one). `can_fork` is the
-/// code-side guard (branch budget, depth); the model's fork judgment only
-/// counts when it is true.
+/// answer for the frame, `None` when no arrow was eligible to ask about.
+/// Open frames are judged like closed ones: an existing arrow that fits is
+/// followed. When nothing fits, the reason says which kind of gap it is:
+/// `none_of_these` for a closed frame (its MECE claim failed), `open_frame`
+/// for a frame already known to be incomplete. `can_fork` is the code-side
+/// guard (branch budget, depth); the model's fork judgment only counts when
+/// it is true.
 pub fn decide(
     closure: Closure,
     answer: Option<&Answer>,
     threshold: f32,
     can_fork: bool,
 ) -> Decision {
-    let Some(answer) = answer.filter(|_| closure == Closure::Closed) else {
-        return Decision::Escalate(Escalation::OpenFrame);
+    let nothing_fits = match closure {
+        Closure::Closed => Escalation::NoneOfThese,
+        Closure::Open => Escalation::OpenFrame,
+    };
+    let Some(answer) = answer else {
+        return Decision::Escalate(nothing_fits);
     };
     match answer {
         Answer::Choice(d) => match d.top() {
@@ -141,7 +150,7 @@ pub fn decide(
                 alternatives: Vec::new(),
             },
             Some(_) => Decision::Escalate(Escalation::LowConfidence),
-            None => Decision::Escalate(Escalation::NoneOfThese),
+            None => Decision::Escalate(nothing_fits),
         },
         Answer::Noul { holds, fork } => {
             let mut held: Vec<(usize, f32)> = holds
@@ -155,7 +164,7 @@ pub fn decide(
                 0 if holds.iter().any(|p| *p > 1.0 - threshold) => {
                     Decision::Escalate(Escalation::LowConfidence)
                 }
-                0 => Decision::Escalate(Escalation::NoneOfThese),
+                0 => Decision::Escalate(nothing_fits),
                 1 => Decision::Follow {
                     index: held[0].0,
                     p: held[0].1,
@@ -186,7 +195,7 @@ pub fn decide(
                 .enumerate()
                 .max_by(|a, b| a.1.total_cmp(&b.1))
             else {
-                return Decision::Escalate(Escalation::NoneOfThese);
+                return Decision::Escalate(nothing_fits);
             };
             if confidence.unwrap_or(p) >= threshold {
                 Decision::Follow {
@@ -309,12 +318,8 @@ impl<J: Judge, P: Proposer> Walker<'_, J, P> {
     pub fn step(&mut self, state: &WalkState) -> Step {
         let frame = candidates(self.cat, state.at, &state.state);
         let closure = self.cat.object(state.at).closure;
-        let answer = (closure == Closure::Closed && !frame.is_empty())
-            .then(|| self.judge.judge(self.cat, state, &frame));
-        let decision = match (&answer, closure) {
-            (None, Closure::Closed) => Decision::Escalate(Escalation::NoneOfThese),
-            _ => decide(closure, answer.as_ref(), self.threshold, false),
-        };
+        let answer = (!frame.is_empty()).then(|| self.judge.judge(self.cat, state, &frame));
+        let decision = decide(closure, answer.as_ref(), self.threshold, false);
         let reason = match decision {
             Decision::Follow { index, p, .. } => {
                 return Step::Followed {

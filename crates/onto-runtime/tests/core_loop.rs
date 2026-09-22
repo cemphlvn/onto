@@ -259,3 +259,51 @@ async fn require_blocks_arrows_without_evidence() {
         "no model is asked when code already rules the arrow out"
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn open_frames_follow_an_arrow_that_fits() {
+    // Question is open, but its `answer` arrow fits this goal.
+    let r = run(Policy::Shared, false, &["ask a question and get an answer"]).await;
+    assert_eq!(r.walks[0].path, "answer.ask : Request -> Done");
+    assert_eq!(r.proposer_calls, 0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn later_proposers_reuse_pending_proposals_at_the_frame() {
+    let cat = Arc::new(onto_core::parse(TRIAGE).unwrap());
+    let cfg = Config {
+        policy: Policy::Shared,
+        ..Config::default()
+    };
+    let engine = Engine::new(
+        cat,
+        MockJudge { latency: LATENCY },
+        MockProposer { latency: LATENCY },
+        cfg,
+    );
+    let job = |goal: &str| Job {
+        from: "Request".into(),
+        goal: goal.into(),
+        case: json!({}),
+    };
+
+    engine.run(vec![job("please refund")]).await.unwrap();
+    // Without the pending list this would propose `Now`; with it, the
+    // proposer sees `Refund` pending at Request and reuses it.
+    let r = engine
+        .run(vec![job("refund this double charge now")])
+        .await
+        .unwrap();
+    let StepRecord::Escalated { proposals, .. } = &r.walks[0].steps[0] else {
+        panic!("{:?}", r.walks[0].steps)
+    };
+    assert_eq!(
+        (proposals[0].arrow.as_str(), proposals[0].dst.as_str()),
+        ("to_refund", "Refund")
+    );
+    assert!(
+        r.potentialities
+            .iter()
+            .any(|p| p.kind == PotentialityKind::Conceptual)
+    );
+}

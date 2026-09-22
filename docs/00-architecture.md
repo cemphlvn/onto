@@ -69,8 +69,8 @@ network clients. `onto-cli` (the `onto` binary) is a thin shell over both.
 ```
 step(case, A):
   frame = arrows out of A whose `require` holds in case     (code, no model)
-  if A is open:                     escalate (open_frame)
-  if frame is empty:                escalate (none_of_these)
+  if frame is empty:                escalate (none_of_these if A is closed,
+                                              open_frame if A is open)
   answer = Judge(frame, A.frame.primitive, hops so far)     (one request)
     choice: one arrow or none_of_these      → follow, or escalate
     noul:   P(holds) per arrow (+ P(fork))  → none: escalate; one: follow;
@@ -78,8 +78,11 @@ step(case, A):
             aspects" and the branch budget allows, else follow the best and
             log the rest as alternatives
     score:  P(level)                        → follow the level's arrow
+  nothing fits: none_of_these (closed: its MECE claim failed)
+                or open_frame (open: an expected gap)
   low confidence                    → escalate (low_confidence)
-  escalate → Proposer → proposals (with `about`), recorded as provisional
+  escalate → Proposer, shown the provisional proposals already pending at A
+           → proposals (with `about`), recorded as provisional
 ```
 
 Rules:
@@ -113,6 +116,13 @@ Rules:
 8. **Evidence before judgment.** `require` runs in code first; a missing
    field fails its clause, so an arrow never opens on absent evidence, and
    no model is asked when code has already ruled every arrow out.
+9. **Open frames are judged too.** "Open" means the enumeration is known
+   to be incomplete, not that no arrow can fit: an existing arrow that fits
+   is followed. Open frames take a read claim like closed ones.
+10. **Waiting at a frame deduplicates.** Proposals are recorded per frame
+    before the claim is released, and the next proposer at that frame is
+   shown them (`pending_here`) and asked to reuse one unchanged when it
+   fits. Same-named proposals then group as conceptual potentialities.
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -170,7 +180,7 @@ logs). Every line has `timestamp`, `level`, `event`:
 | `walk.start` / `walk.end` | walk, parent, from, goal / path, steps, elapsed_ms |
 | `judge.call` | walk, at, primitive, questions, latency_ms, top_p, holds, fork_p, confidence, input_tokens, output_tokens, attempts, ok (error on failure) |
 | `fork` | walk, at, fork_p, branches, spawned |
-| `proposer.call` | walk, at, speculative, latency_ms, proposals, input_tokens, output_tokens, attempts, ok |
+| `proposer.call` | walk, at, speculative, latency_ms, proposals, pending_here, reused, input_tokens, output_tokens, attempts, ok |
 | `proposer.discarded` | walk, at (speculative call aborted) |
 | `step` / `escalate` | walk, from, arrow, to, decided_by, p, confidence, alternatives / walk, at, reason |
 | `potentiality` | kind (node, conceptual, alternative), resolution (waited, coexisted, not_followed), mode, walk, with, at, nodes (comma-joined), wait_ms |
@@ -259,6 +269,8 @@ snapshot. No database until live multi-writer editing is needed.
 | D12 | fork vs follow-best decided per frame by a Noul over state and hops, guarded by a code budget | the case decides, within limits code enforces |
 | D13 | `require` preconditions evaluated in code over case JSON | known rules stay deterministic; evidence gates judgment |
 | D14 | System-1 interface renamed Chooser → Judge; telemetry `chooser.call` → `judge.call` | it no longer only chooses |
+| D15 | open frames are judged; `open_frame` now means "nothing fit in a frame known to be incomplete" | an arrow that fits should be followed; the two gap kinds stay distinguishable |
+| D16 | proposers see the provisional proposals pending at their frame and reuse fitting ones | turns waiting on a frame into deduplication; fixes name-based grouping |
 
 ## 10. Milestones
 
@@ -298,14 +310,6 @@ snapshot. No database until live multi-writer editing is needed.
   format needs declared invariants (e.g. "every path to Marketing passes
   Consented", checkable with `Category::paths(.., avoid, ..)`) that every
   proposal must preserve before promotion.
-- **Open frames always escalate**, even when an existing arrow fits (with
-  descriptions, "password reset email never arrives" matched `login`
-  exactly and still escalated). Proposal: judge open frames too; escalate
-  when the judge declines, is unsure, or the frame has no arrows.
-- **Waiting at a frame buys nothing yet**: a walk waits for another walk's
-  System-2 call at the same frame, but never sees its proposals. Passing
-  the frame's pending provisional proposals to the next proposer would turn
-  the wait into deduplication at the source (and fix name-based grouping).
 - **Legal bases are evidence, not inference** (consent-paths): judged from
   the intended use alone, Jev rightly declines to assume consent or
   contract. Bases belong in `require` against case facts.

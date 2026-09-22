@@ -240,7 +240,9 @@ Propose 1 to 3 new arrows leaving `at` that would let the walk continue toward t
 Each target is an existing object from `known_objects` when one fits, otherwise a new object name in PascalCase. \
 Arrow names are short snake_case verbs. Give each arrow an `about`: one sentence saying which cases it is for. \
 New arrows must not overlap each other or the existing frame (read each existing arrow's instructions), \
-and must not re-propose an existing arrow. Reply with JSON only.";
+and must not re-propose an existing arrow. `pending_here` lists provisional arrows other cases already \
+proposed at this object: when one of them fits this case, return it unchanged (same arrow name, target and about) \
+instead of inventing a new name; propose new arrows only for what pending ones do not cover. Reply with JSON only.";
 
 impl Proposer for OpenRouter {
     fn name(&self) -> String {

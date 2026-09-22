@@ -55,12 +55,21 @@ followed steps 0.81 → 0.94; walks that escalated 8 → 7.
 - Unchanged, rightly: delivery (no team covers it), data deletion (Account
   is open), screen reader (no accessibility route).
 - New gap exposed: "password reset email never arrives" reaches Account,
-  where `login` fits exactly, but open frames always escalate. Judging open
-  frames too is the proposed fix.
+  where `login` fits exactly, but open frames always escalated.
+
+## Open frames judged, pending proposals shared (2026-09-23, live)
+
+- Password reset: **✓ `reset.login.account`** (open Account frame, `login` fits, conf 0.91).
+- Okta SSO: Product → **FeatureRequest**.
+- Escalated 5 of 9 (was 7); 4.12x parallel (was 2.65x); 2 waits (was 10).
+- Two delivery complaints in one `onto ask` session: the second proposer
+  saw the first's pending `delivery → Delivery` and reused it, so the
+  cases group ("someone earlier raised a similar case").
 
 ## What it does not do yet
 
 - Proposals are **provisional**: nothing is added to the taxonomy (M2).
 - Some proposals point backwards (`Outage -> Ticket`) or duplicate existing
   arrows; M2 verification must reject those.
-- Open frames (Account, Product) escalate even when an existing arrow fits.
+- Grouping relies on the proposer reusing a pending proposal's name; two
+  proposals for the same case written independently can still differ.

@@ -332,13 +332,37 @@ fn score_follows_the_level_reached() {
         decide(Closure::Closed, Some(&torn), 0.6, true),
         Decision::Escalate(Escalation::LowConfidence)
     );
-    let choice = Answer::Choice(Distribution {
-        arrows: vec![0.9],
-        none_of_these: 0.1,
-        confidence: Some(0.9),
-    });
+}
+
+#[test]
+fn open_frames_are_judged_and_name_their_gap() {
+    let answer = |fit: f32| {
+        Answer::Choice(Distribution {
+            arrows: vec![fit],
+            none_of_these: 1.0 - fit,
+            confidence: Some(0.9),
+        })
+    };
+    let (fits, nothing) = (answer(0.9), answer(0.1));
+    assert!(matches!(
+        decide(Closure::Open, Some(&fits), 0.6, true),
+        Decision::Follow { index: 0, .. }
+    ));
+    let gap = |c, a| decide(c, a, 0.6, true);
     assert_eq!(
-        decide(Closure::Open, Some(&choice), 0.6, true),
+        gap(Closure::Open, Some(&nothing)),
         Decision::Escalate(Escalation::OpenFrame)
+    );
+    assert_eq!(
+        gap(Closure::Closed, Some(&nothing)),
+        Decision::Escalate(Escalation::NoneOfThese)
+    );
+    assert_eq!(
+        gap(Closure::Open, None),
+        Decision::Escalate(Escalation::OpenFrame)
+    );
+    assert_eq!(
+        gap(Closure::Closed, None),
+        Decision::Escalate(Escalation::NoneOfThese)
     );
 }
