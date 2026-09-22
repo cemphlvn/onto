@@ -1,0 +1,15 @@
+[package]
+name = "onto-cli"
+description = "Command-line navigator for onto categories"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "onto"
+path = "src/main.rs"
+
+[dependencies]
+onto-core.workspace = true
+clap.workspace = true

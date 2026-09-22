@@ -1,0 +1,16 @@
+//! onto-core: a category engine that System-1 decision models walk.
+//!
+//! See `docs/00-architecture.md` for the design.
+
+pub mod category;
+pub mod equality;
+pub mod error;
+pub mod parse;
+pub mod path;
+pub mod walk;
+
+pub use category::{Arrow, ArrowId, Category, CategoryBuilder, Closure, ObjId, Object, PathSpec};
+pub use equality::{Equality, Verdict};
+pub use error::Error;
+pub use parse::parse;
+pub use path::Path;

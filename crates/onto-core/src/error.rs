@@ -1,0 +1,30 @@
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("unknown object `{0}`")]
+    UnknownObject(String),
+    #[error("unknown arrow `{0}`")]
+    UnknownArrow(String),
+    #[error("`{0}` is declared twice")]
+    Duplicate(String),
+    #[error("`{0}` is not a valid name (letters, digits, `_`; `o` and `id` are reserved)")]
+    InvalidName(String),
+    #[error("empty path; write `id(Object)` for an identity")]
+    EmptyPath,
+    #[error(
+        "cannot compose `{arrow}` after `{path}`: expected an arrow from `{expected}`, found one from `{found}`"
+    )]
+    NotComposable {
+        path: String,
+        arrow: String,
+        expected: String,
+        found: String,
+    },
+    #[error("equation `{lhs} = {rhs}` relates paths with different endpoints")]
+    EquationNotParallel { lhs: String, rhs: String },
+    #[error("line {line}: {msg}")]
+    Parse { line: usize, msg: String },
+    #[error("rewrite construction failed: {0}")]
+    Rewrite(String),
+}

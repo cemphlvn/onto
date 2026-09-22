@@ -1,0 +1,28 @@
+# A small routing category: where does an incoming request go?
+# Closed frames are verified MECE enumerations: System 1 decides alone there.
+# Open frames are known to be incomplete: every step from them escalates.
+
+category Triage {
+    objects: Request, Question, Bug, Feature, Fix, Spec, Backlog, Done;
+
+    ask:    Request -> Question;
+    report: Request -> Bug;
+    wish:   Request -> Feature;
+    closed: Request;
+
+    answer: Question -> Done;         # Question stays open: kinds of questions not enumerated yet
+
+    patch:   Bug -> Fix;
+    wontfix: Bug -> Done;
+    closed:  Bug;
+
+    ship: Fix -> Done;
+    closed: Fix, Done;                # Done has no outgoing arrows: a terminal
+
+    # Two routes for a feature that must end in the same place.
+    plan:      Feature -> Backlog;
+    build:     Backlog -> Done;
+    specify:   Feature -> Spec;
+    implement: Spec -> Done;
+    build.plan = implement.specify;
+}

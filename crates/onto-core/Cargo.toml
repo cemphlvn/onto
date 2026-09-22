@@ -1,0 +1,11 @@
+[package]
+name = "onto-core"
+description = "Category engine: objects, arrows, path equality (e-graphs) and two-tier walks"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+egg.workspace = true
+thiserror.workspace = true
