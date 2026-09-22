@@ -411,6 +411,54 @@ mod dispositions {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn branches_carry_their_focus_to_judges_and_proposers() {
+        // Latency and Security are open with no arrows: each branch escalates
+        // there, and its proposer must work on its own aspect only.
+        let src = r#"category C {
+            objects: Alert, Latency, Security;
+            frame Alert: noul;
+            latency:  Alert -> Latency  "slow responses";
+            security: Alert -> Security "leaked credentials";
+            closed: Alert;
+        }"#;
+        let cat = Arc::new(onto_core::parse(src).unwrap());
+        let cfg = Config {
+            policy: Policy::Shared,
+            ..Config::default()
+        };
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            cfg,
+        );
+        let job = Job {
+            from: "Alert".into(),
+            goal: "slow checkout and leaked credentials".into(),
+            case: json!({}),
+        };
+        let r = engine.run(vec![job]).await.unwrap();
+        assert_eq!(r.walks.len(), 2);
+        for w in &r.walks {
+            let visit = w.frames.last().unwrap();
+            let focus = visit
+                .focus
+                .as_deref()
+                .expect("both walks are branches after the fork");
+            assert_eq!(
+                visit.proposals[0].arrow,
+                format!("to_{focus}"),
+                "walk {} proposed off-focus",
+                w.walk
+            );
+        }
+        assert_eq!(
+            r.walks[0].frames[0].focus, None,
+            "the fork itself was visited before any focus"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn competing_readings_are_alternatives_with_a_reason() {
         let r = run_parts(
             4,

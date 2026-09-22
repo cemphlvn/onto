@@ -83,6 +83,7 @@ impl Judge for Jev {
                 "about_at": req.about_at,
                 "path_so_far": req.path_so_far,
                 "hops": req.hops,
+                "focus": req.focus,
             },
             "questions": questions,
         });
@@ -113,9 +114,15 @@ fn describe(c: &Candidate) -> Value {
 
 /// The frame as TypeSafe questions, one request per frame.
 fn render(req: &FrameRequest) -> Result<Value, ModelError> {
+    // After a fork, each branch handles one aspect of the case.
+    let scope = if req.focus.is_some() {
+        " This walk handles only the aspect in `focus`; judge for that aspect and ignore the case's other aspects."
+    } else {
+        ""
+    };
     let question = |default: &str| match &req.instructions {
-        Some(i) => json!({"question": i, "context": default}),
-        None => json!(default),
+        Some(i) => json!({"question": i, "context": format!("{default}{scope}")}),
+        None => json!(format!("{default}{scope}")),
     };
     Ok(match req.primitive {
         Primitive::Choice => {
@@ -142,7 +149,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
             for (i, c) in req.candidates.iter().enumerate() {
                 let mut instructions = json!({
                     "condition": describe(c),
-                    "question": "Given `goal`, the case, and the walk so far (`hops`), does `condition` hold for this case?",
+                    "question": format!("Given `goal`, the case, and the walk so far (`hops`), does `condition` hold for this case?{scope}"),
                 });
                 if let Some(frame_question) = &req.instructions {
                     instructions["frame_question"] = frame_question.clone();
@@ -240,7 +247,8 @@ Propose 1 to 3 new arrows leaving `at` that would let the walk continue toward t
 Each target is an existing object from `known_objects` when one fits, otherwise a new object name in PascalCase. \
 Arrow names are short snake_case verbs. Give each arrow an `about`: one sentence saying which cases it is for. \
 New arrows must not overlap each other or the existing frame (read each existing arrow's instructions), \
-and must not re-propose an existing arrow. `pending_here` lists provisional arrows other cases already \
+and must not re-propose an existing arrow. When `focus` is set, this walk is one branch of a case with several \
+independent aspects: propose arrows for the aspect in `focus` only. `pending_here` lists provisional arrows other cases already \
 proposed at this object: when one of them fits this case, return it unchanged (same arrow name, target and about) \
 instead of inventing a new name; propose new arrows only for what pending ones do not cover. Reply with JSON only.";
 

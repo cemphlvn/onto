@@ -114,7 +114,8 @@ Rules:
    only asked while the job's branch budget (`max_branches`, default 4)
    and fork depth (`max_fork_depth`, default 2) allow. Branches run as
    their own walks with their own claims; their intersections are logged
-   like any other.
+   like any other. Each branch carries its **focus** (the arrow and
+   condition that spawned it), so it judges and proposes for its own aspect.
 8. **Evidence before judgment.** `require` runs in code first; a missing
    field fails its clause, so an arrow never opens on absent evidence, and
    no model is asked when code has already ruled every arrow out.
@@ -290,6 +291,7 @@ snapshot. No database until live multi-writer editing is needed.
 | D14 | System-1 interface renamed Chooser → Judge; telemetry `chooser.call` → `judge.call` | it no longer only chooses |
 | D15 | open frames are judged; `open_frame` now means "nothing fit in a frame known to be incomplete" | an arrow that fits should be followed; the two gap kinds stay distinguishable |
 | D16 | proposers see the provisional proposals pending at their frame and reuse fitting ones | turns waiting on a frame into deduplication; fixes name-based grouping |
+| D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
 | D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |
 
 ## 10. Milestones
@@ -330,10 +332,6 @@ snapshot. No database until live multi-writer editing is needed.
   format needs declared invariants (e.g. "every path to Marketing passes
   Consented", checkable with `Category::paths(.., avoid, ..)`) that every
   proposal must preserve before promotion.
-- **Branches inherit the whole goal.** After a fork, each branch's judge and
-  proposer see the full case, so the latency branch proposed a credentials
-  arrow (the other branch's aspect). Branches should carry their focus
-  (the arrow and condition that spawned them).
 - **Dispositions are written at the end of a run.** A crash loses them;
   streaming each record as it is made would make the artifact durable.
 - **Legal bases are evidence, not inference** (consent-paths): judged from

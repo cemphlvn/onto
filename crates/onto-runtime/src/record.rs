@@ -18,6 +18,8 @@ pub struct FrameRecord {
     /// The visit this one follows causally.
     pub after: Option<String>,
     pub walk: u64,
+    /// The aspect this walk handles, if it is (or continued) a fork branch.
+    pub focus: Option<String>,
     pub at: String,
     pub primitive: Primitive,
     /// `closed` (the frame claims to be complete) or `open`.

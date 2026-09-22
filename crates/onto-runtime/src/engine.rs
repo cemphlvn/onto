@@ -20,7 +20,8 @@ use tokio::task::JoinSet;
 use crate::frames::{Claim, FrameLocks, Mode, Policy, Potentiality, PotentialityKind, Resolution};
 use crate::mem::{self, MemSample};
 use crate::model::{
-    Candidate, FrameRequest, Hop, Judge, ModelError, Pending, ProposalRequest, Proposer, Usage,
+    Candidate, Focus, FrameRequest, Hop, Judge, ModelError, Pending, ProposalRequest, Proposer,
+    Usage,
 };
 use crate::record::{self, ClaimRecord, FrameRecord, JudgeRecord, Outcome};
 
@@ -174,6 +175,8 @@ struct Seed {
     budget: Arc<AtomicUsize>,
     /// The frame record this walk's first visit follows (a branch's fork).
     after: Option<String>,
+    /// The aspect a branch handles.
+    focus: Option<Focus>,
 }
 
 pub struct Engine<J, P> {
@@ -249,6 +252,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 depth: 0,
                 budget: Arc::new(AtomicUsize::new(self.cfg.max_branches)),
                 after: None,
+                focus: None,
             };
             running.spawn(self.clone().walk(seed, branch_tx.clone()));
         }
@@ -334,6 +338,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             depth,
             budget,
             mut after,
+            mut focus,
         } = seed;
         tracing::info!(
             target: "onto",
@@ -367,10 +372,13 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             let mut guard = self.locks.acquire(cat, Claim::new(cat, id, at, mode)).await;
             let wait_ms = ms(guard.waited);
             let rec_id = format!("w{id}.{n}");
+            // The focus this visit was made under (a fork below may change it).
+            let visit_focus = focus.as_ref().map(|f| f.arrow.clone());
             let record = |judge, candidates, outcome| FrameRecord {
                 id: rec_id.clone(),
                 after: after.clone(),
                 walk: id,
+                focus: visit_focus.clone(),
                 at: at_name.clone(),
                 primitive,
                 closure: if closed { "closed" } else { "open" },
@@ -411,6 +419,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     let req = self.proposal_request(
                         &job,
                         &path,
+                        &focus,
                         "speculative: started alongside System 1",
                     );
                     speculative = Some(tokio::spawn(async move {
@@ -421,7 +430,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     && depth < self.cfg.max_fork_depth
                     && budget.load(Relaxed) > 0
                     && frame.len() > 1;
-                let req = self.frame_request(&job, &path, &hops, &frame, can_fork);
+                let req = self.frame_request(&job, &path, &hops, &focus, &frame, can_fork);
                 let (answer, judge_rec) = match self.call_judge(id, req).await {
                     Ok(a) => a,
                     Err(e) => {
@@ -513,6 +522,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                                 depth: depth + 1,
                                 budget: budget.clone(),
                                 after: Some(rec_id.clone()),
+                                focus: Some(self.focus(frame[index])),
                             });
                         }
                         for &(index, _) in &rest[granted..] {
@@ -521,6 +531,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                                 d.reason.push_str("; not pursued: branch budget exhausted");
                             }
                         }
+                        // This walk continues as the first branch.
+                        focus = Some(self.focus(frame[first.0]));
                         frames.push(record(
                             Some(judge_rec.clone()),
                             record::candidates(cat, std::mem::take(&mut ds)),
@@ -625,7 +637,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                             .acquire(cat, Claim::new(cat, id, at, Mode::Write))
                             .await;
                     }
-                    let req = self.proposal_request(&job, &path, reason.as_str());
+                    let req = self.proposal_request(&job, &path, &focus, reason.as_str());
                     self.call_proposer(id, req, false).await
                 }
             };
@@ -924,11 +936,21 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         }
     }
 
+    fn focus(&self, arrow: ArrowId) -> Focus {
+        let a = self.cat.arrow(arrow);
+        Focus {
+            arrow: a.name.clone(),
+            to: self.cat.object(a.dst).name.clone(),
+            condition: a.instructions.clone(),
+        }
+    }
+
     fn frame_request(
         &self,
         job: &Job,
         path: &Path,
         hops: &[Hop],
+        focus: &Option<Focus>,
         frame: &[ArrowId],
         can_fork: bool,
     ) -> FrameRequest {
@@ -940,6 +962,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             about_at: object.about.clone(),
             path_so_far: path.display(&self.cat),
             hops: hops.to_vec(),
+            focus: focus.clone(),
             primitive: object.frame.primitive,
             instructions: object.frame.instructions.clone(),
             candidates: frame.iter().map(|a| self.candidate(*a)).collect(),
@@ -947,7 +970,13 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         }
     }
 
-    fn proposal_request(&self, job: &Job, path: &Path, reason: &str) -> ProposalRequest {
+    fn proposal_request(
+        &self,
+        job: &Job,
+        path: &Path,
+        focus: &Option<Focus>,
+        reason: &str,
+    ) -> ProposalRequest {
         let object = self.cat.object(path.dst);
         ProposalRequest {
             goal: job.goal.clone(),
@@ -955,6 +984,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             at: object.name.clone(),
             about_at: object.about.clone(),
             path_so_far: path.display(&self.cat),
+            focus: focus.clone(),
             primitive: object.frame.primitive,
             frame: self
                 .cat

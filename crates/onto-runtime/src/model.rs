@@ -34,6 +34,16 @@ pub struct Candidate {
     pub level: Option<u32>,
 }
 
+/// The one aspect of a case a branch handles after a fork: the arrow that
+/// spawned it and that arrow's condition.
+#[derive(Clone, Debug, Serialize)]
+pub struct Focus {
+    pub arrow: String,
+    pub to: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub condition: Option<Value>,
+}
+
 /// What a System-1 judge sees for one frame.
 #[derive(Clone, Debug, Serialize)]
 pub struct FrameRequest {
@@ -45,6 +55,9 @@ pub struct FrameRequest {
     pub about_at: Option<Value>,
     pub path_so_far: String,
     pub hops: Vec<Hop>,
+    /// Set after a fork: judge only this aspect of the case.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub focus: Option<Focus>,
     pub primitive: Primitive,
     /// The frame's own question, if declared.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -66,6 +79,9 @@ pub struct ProposalRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub about_at: Option<Value>,
     pub path_so_far: String,
+    /// Set after a fork: propose only for this aspect of the case.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub focus: Option<Focus>,
     pub primitive: Primitive,
     pub frame: Vec<Candidate>,
     pub reason: String,
@@ -238,7 +254,9 @@ impl Proposer for MockProposer {
             ));
         }
         let word: String = req
-            .goal
+            .focus
+            .as_ref()
+            .map_or(req.goal.as_str(), |f| f.arrow.as_str())
             .split_whitespace()
             .last()
             .unwrap_or("Other")
