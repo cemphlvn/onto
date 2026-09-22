@@ -492,3 +492,133 @@ mod dispositions {
         );
     }
 }
+
+mod supervisor {
+    use onto_core::supervise::{Admission, Outcome};
+    use onto_core::walk::Proposal;
+    use onto_runtime::model::MockCritic;
+    use onto_runtime::supervisor::review;
+
+    const CONSENT: &str = r#"
+    category Consent {
+        objects: Collected, Consented, Contract, Marketing;
+        consent:  Collected -> Consented "explicit consent";
+        contract: Collected -> Contract "necessary for the contract";
+        market:   Consented -> Marketing "send offers";
+        closed: Collected;
+        invariant via: Collected -> Marketing through Consented;
+        invariant rule "no arrow may introduce another legal basis such as legitimate interest";
+    }"#;
+
+    fn p(arrow: &str, src: &str, dst: &str, about: &str) -> Proposal {
+        Proposal {
+            arrow: arrow.into(),
+            src: src.into(),
+            dst: dst.into(),
+            about: about.into(),
+            rationale: String::new(),
+        }
+    }
+
+    #[tokio::test]
+    async fn proven_rejects_never_ask_the_critic() {
+        let cat = onto_core::parse(CONSENT).unwrap();
+        let r = review(
+            &cat,
+            "r1".into(),
+            vec![],
+            &p("ads", "Collected", "Marketing", "ads"),
+            &[],
+            &MockCritic,
+        )
+        .await;
+        assert_eq!(r.admission, Admission::Reject);
+        assert!(r.critic.is_none());
+        assert_eq!(
+            r.checks
+                .iter()
+                .find(|c| c.outcome == Outcome::Fail)
+                .unwrap()
+                .witness
+                .as_deref(),
+            Some("ads")
+        );
+    }
+
+    #[tokio::test]
+    async fn rule_violations_are_rejected_by_the_critic() {
+        let cat = onto_core::parse(CONSENT).unwrap();
+        let r = review(
+            &cat,
+            "r1".into(),
+            vec![],
+            &p(
+                "assess",
+                "Collected",
+                "Assessment",
+                "legitimate interest assessment",
+            ),
+            &[],
+            &MockCritic,
+        )
+        .await;
+        assert_eq!(r.admission, Admission::Reject);
+        assert!(
+            r.checks
+                .iter()
+                .any(|c| c.check == "rule" && c.outcome == Outcome::Fail)
+        );
+        assert_eq!(r.critic.as_deref(), Some("mock-critic"));
+    }
+
+    #[tokio::test]
+    async fn duplicates_of_earlier_proposals_are_rejected() {
+        let cat = onto_core::parse(CONSENT).unwrap();
+        let first = p("delivery", "Collected", "Delivery", "shipping data");
+        let r = review(
+            &cat,
+            "r2".into(),
+            vec![],
+            &p("shipping", "Collected", "Delivery", "shipping data"),
+            &[first],
+            &MockCritic,
+        )
+        .await;
+        assert_eq!(r.admission, Admission::Reject, "{:?}", r.checks);
+        assert!(
+            r.checks
+                .iter()
+                .any(|c| c.check == "duplicate" && c.subject.contains("proposed earlier"))
+        );
+    }
+
+    #[tokio::test]
+    async fn safe_proposals_are_admitted_with_every_check_recorded() {
+        let cat = onto_core::parse(CONSENT).unwrap();
+        let r = review(
+            &cat,
+            "r1".into(),
+            vec!["w1.1".into()],
+            &p(
+                "newsletter",
+                "Consented",
+                "Newsletter",
+                "send the newsletter",
+            ),
+            &[],
+            &MockCritic,
+        )
+        .await;
+        assert_eq!(r.admission, Admission::Admit, "{:?}", r.checks);
+        let kinds: Vec<&str> = r.checks.iter().map(|c| c.check.as_str()).collect();
+        assert!(
+            kinds.contains(&"well_formed")
+                && kinds.contains(&"invariant")
+                && kinds.contains(&"rule")
+        );
+        assert!(kinds.contains(&"duplicate"));
+        // Consented is a choice frame (the default), so overlap with its
+        // sibling `market` is checked: overlap would break its MECE claim.
+        assert!(kinds.contains(&"overlap"));
+    }
+}

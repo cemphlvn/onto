@@ -1,6 +1,6 @@
 # onto — Scientific Positioning
 
-Status: **draft 2 — 2026-09-23.** Where onto sits among research fields,
+Status: **draft 3 — 2026-09-23.** Where onto sits among research fields,
 ranked by what the runtime **demonstrably does today** (disposition records included,
 live runs in `demos/`), separated from what it could become. Update this
 file when a capability lands; do not promote a field on intention alone.
@@ -16,14 +16,16 @@ file when a capability lands; do not promote a field on intention alone.
 Short form: *a model-judged, provenance-carrying, concurrent transition
 runtime with open-world escalation.*
 
-**After M2 (not yet):**
+**Earned in part (M2):**
 
 > a potentiality-preserving supervisory runtime that governs both the
 > execution and the extension of an open transition system.
 
-"Judgment–disposition graph runtime" now describes half of it: the
-disposition graph exists (frame records linked by `after`, §4); the
-supervisory half (M2) does not.
+The disposition graph exists (frame records linked by `after`), and the
+extension is now supervised: every proposal is proved against structural
+invariants or judged against rules before a person may promote it.
+"Potentiality-preserving" is still partial: alternatives and proposals
+are recorded, not maintained as assumption environments (#12).
 
 ## 2. What the runtime is, precisely
 
@@ -70,7 +72,7 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 | 6 | Neurosymbolic AI | **strong (classification)** | Kautz's *Symbolic[Neuro]*: a symbolic control loop (typed graph, code guards, path equality) that calls neural judgments as subroutines | no learning flows back into the symbolic side yet (M2 promotion would be the first) |
 | 7 | Category theory and rewriting | **structural foundation** | a category presented by generators and relations; typed composition; path equality by equality saturation (egg), answering Unknown where the word problem is undecidable | no functors or universal constructions; categorical semantics of the *dynamics* is open |
 | 8 | Event structures / concurrency semantics | **emerging** | causality (the `after` DAG of frame records, across forks), concurrency (coexisted claims), and one mechanism that is exactly the conflict/concurrency split: the **fork Noul judges whether two enabled transitions are independent (concurrent) or competing (in conflict)** | node intersection is not formal conflict; no event-structure semantics defined or checked |
-| 9 | Supervisory control of discrete-event systems | **emerging** | `require` disables transitions, claims restrict interleavings, low confidence withholds a transition, proposals are not admitted | no supervisor proves anything; the consent runs show unsafe proposals (`Collected → Marketing` twice) held back only by *non-promotion*. M2 makes this real, and adds a rare twist: supervising the **extension** of the plant, not only its execution |
+| 9 | Supervisory control of discrete-event systems | **strong** | execution: `require` disables transitions, claims restrict interleavings, low confidence withholds a transition; **extension**: a supervisor admits, rejects or defers each proposed transition, proving `via`/`never` invariants with counter-paths and judging rules; a person promotes (live: legitimate-interest and legal-basis bypasses rejected) | no synthesis of a maximally permissive supervisor; invariants are reachability properties only (no temporal logic); semantic checks are conservative |
 | 10 | Agent-workflow frameworks (graph-of-LLM-calls orchestrators) | **practical neighbour** | graph of nodes, model-driven conditional edges, parallel branches | not a research field; onto's differences are the positioning: typed paths + equations, calibrated abstention, frame-level concurrency claims, potentiality log, governed open-world extension |
 | 11 | Planning under uncertainty | **analogy** | probabilities steer traversal | no reward, utility, transition model or objective; not decision-theoretic |
 | 12 | Truth maintenance (ATMS) | **weak today** | provisional proposals are assumptions; alternatives are logged | no maintained assumption environments or consistent "possible worlds"; would matter for the potentiality-preserving stage |
@@ -100,7 +102,7 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 | claim | earned by | field it upgrades |
 |---|---|---|
 | decisions are fully accountable | **disposition records** — **done** (`a2128ae` + this change): every candidate, judgment, disposition, reason; first-class artifact | #3 → direct ✓; groundwork for #12 |
-| unsafe structure cannot enter | **M2 supervisor**: typing and composition → declared invariants (e.g. every path to Marketing passes Consented) → reachability restrictions → semantic duplicate/overlap (Jev Noul) → admit · reject · unknown | #9 → strong; #4 gains revision |
+| unsafe structure cannot enter | **M2 supervisor** — **done**: well-formedness → `via`/`never` proofs → rules, duplicates, overlap (Jev) → admit · reject · unknown → human promotion | #9 → strong ✓; #4 gains revision |
 | concurrent branches are a process, not just parallel walks | **joins** (synchronise branches at an object) and a marking | #5 → direct; #8 gains a semantics |
 | potentialities have a theory | define conflict and concurrency over events (not nodes) and check them | #8 → strong |
 | legal questions get proofs | map the question to a target use (judge), then prove reachability / non-reachability with `reach --avoid` over `require`-filtered structure | #1, #4, #9 together; fixes the consent regression below |

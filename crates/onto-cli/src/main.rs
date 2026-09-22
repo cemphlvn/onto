@@ -7,6 +7,7 @@ use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, 
 
 mod ask;
 mod run;
+mod supervise;
 mod why;
 
 #[global_allocator]
@@ -60,6 +61,10 @@ enum Cmd {
         #[arg(long, default_value = "")]
         goal: String,
     },
+    /// Review provisional proposals: structural proofs, then semantic checks.
+    Review(supervise::ReviewArgs),
+    /// Promote one reviewed proposal into the category file (the human step).
+    Promote(supervise::PromoteArgs),
     /// Explain every decision in a disposition file (from `run --dispositions`).
     Why(why::WhyArgs),
     /// Try a case as the person raising it: one live walk, answered in plain terms.
@@ -74,6 +79,8 @@ fn main() -> ExitCode {
         Cmd::Run(args) => run::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Why(args) => why::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Review(args) => supervise::review_main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Promote(args) => supervise::promote_main(args).map(|()| ExitCode::SUCCESS),
         cmd => run(Cli { cmd }),
     };
     result.unwrap_or_else(|e| {
@@ -104,6 +111,9 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
                 cat.arrows().len(),
                 cat.equations().len()
             );
+            for inv in cat.invariants() {
+                println!("  invariant {inv}");
+            }
             Equality::new(&cat)?;
             println!("ok");
         }
@@ -237,7 +247,9 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
             }
             println!("path: {}", walk.state.path.display_typed(&cat));
         }
-        Cmd::Run(_) | Cmd::Ask(_) | Cmd::Why(_) => unreachable!("handled in main"),
+        Cmd::Run(_) | Cmd::Ask(_) | Cmd::Why(_) | Cmd::Review(_) | Cmd::Promote(_) => {
+            unreachable!("handled in main")
+        }
     }
     Ok(ExitCode::SUCCESS)
 }

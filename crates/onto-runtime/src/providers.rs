@@ -8,7 +8,10 @@ use onto_core::category::NONE_OF_THESE;
 use onto_core::walk::{Answer, Distribution, Proposal};
 use serde_json::{Value, json};
 
-use crate::model::{Candidate, FrameRequest, Judge, ModelError, ProposalRequest, Proposer, Usage};
+use crate::model::{
+    Candidate, Critic, FrameRequest, Judge, ModelError, NoulQuestion, ProposalRequest, Proposer,
+    Usage,
+};
 
 const MAX_ATTEMPTS: u32 = 4;
 
@@ -98,6 +101,50 @@ impl Judge for Jev {
             questions: n_questions,
         };
         Ok((answer, usage))
+    }
+}
+
+impl Critic for Jev {
+    fn name(&self) -> String {
+        format!("jev:{}", self.model)
+    }
+
+    async fn nouls(
+        &self,
+        state: Value,
+        questions: Vec<NoulQuestion>,
+    ) -> Result<(Vec<f32>, Usage), ModelError> {
+        let n = questions.len();
+        let qs: serde_json::Map<String, Value> = questions
+            .into_iter()
+            .enumerate()
+            .map(|(i, q)| {
+                let mut v = json!({"type": "noul", "instructions": q.instructions});
+                if let Some(c) = q.criteria {
+                    v["criteria"] = c;
+                }
+                (format!("q{i}"), v)
+            })
+            .collect();
+        let body = json!({"model": self.model, "state": state, "questions": qs});
+        let (v, attempts) = post_json(&self.http, &self.url, &self.key, &body).await?;
+        let ps = (0..n)
+            .map(|i| {
+                v["answers"][format!("q{i}")]["noul"]
+                    .as_f64()
+                    .map(|x| x as f32)
+            })
+            .collect::<Option<Vec<_>>>()
+            .ok_or_else(|| {
+                ModelError::Decode(clip(&format!("unexpected answers: {}", v["answers"])))
+            })?;
+        let usage = Usage {
+            input_tokens: v["usage"]["input_tokens"].as_u64().unwrap_or(0),
+            output_tokens: v["usage"]["output_tokens"].as_u64().unwrap_or(0),
+            attempts,
+            questions: n as u32,
+        };
+        Ok((ps, usage))
     }
 }
 

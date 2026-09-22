@@ -40,6 +40,16 @@ category Consent {
 
     closed: Research, Processor, Marketing, Published;
 
+    # Invariants: what no extension of this graph may break (checked by
+    # `onto review` on every proposal; via/never are proved, rules judged).
+    invariant via: Collected -> Marketing through Consented;       # marketing only with consent
+    invariant via: Collected -> Processor through Pseudonymized;   # processors never get raw data
+    invariant never: Collected -> Advertiser;                      # data is never sold to advertisers
+    invariant via: Collected -> Pseudonymized through Consented | Contract;   # every use rests on a legal basis
+    invariant via: Collected -> Research through Consented | Contract;
+    invariant via: Collected -> Aggregated through Consented | Contract;
+    invariant rule "This organization relies only on explicit consent (GDPR 6(1)(a)) and contract (GDPR 6(1)(b)). No arrow may introduce any other legal basis, such as legitimate interest or legal obligation.";
+
     # Pseudonymizing under either basis leads to the same anonymized state.
     anonymize.pseudonymize.consent = anonymize.fulfil_pseudonymize.contract;
 }

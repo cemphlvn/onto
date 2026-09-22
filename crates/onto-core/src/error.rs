@@ -29,6 +29,8 @@ pub enum Error {
     Parse { line: usize, msg: String },
     #[error("frame `{object}`: {msg}")]
     Frame { object: String, msg: String },
+    #[error("invariant `{invariant}` is violated by `{witness}`")]
+    InvariantViolated { invariant: String, witness: String },
     #[error("require {0}")]
     Require(String),
     #[error("rewrite construction failed: {0}")]

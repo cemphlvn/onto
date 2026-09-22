@@ -144,6 +144,91 @@ pub trait Proposer: Send + Sync + 'static {
     ) -> impl Future<Output = Result<(Vec<Proposal>, Usage), ModelError>> + Send;
 }
 
+/// One yes/no question for a [`Critic`]: instructions (text or JSON) and
+/// optional descriptions of what yes and no mean.
+#[derive(Clone, Debug, Serialize)]
+pub struct NoulQuestion {
+    pub instructions: Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub criteria: Option<Value>,
+}
+
+/// Yes/no judgments for the supervisor: P(yes) per question, all asked in
+/// one request.
+pub trait Critic: Send + Sync + 'static {
+    fn name(&self) -> String;
+    fn nouls(
+        &self,
+        state: Value,
+        questions: Vec<NoulQuestion>,
+    ) -> impl Future<Output = Result<(Vec<f32>, Usage), ModelError>> + Send;
+}
+
+/// Offline critic, deterministic, reading the structured instructions the
+/// supervisor sends: duplicate when the targets or arrow names match
+/// (case- and separator-insensitive); overlap never; a rule is violated
+/// when the rule and the proposal share a word longer than five letters.
+pub struct MockCritic;
+
+impl Critic for MockCritic {
+    fn name(&self) -> String {
+        "mock-critic".into()
+    }
+
+    async fn nouls(
+        &self,
+        _: Value,
+        questions: Vec<NoulQuestion>,
+    ) -> Result<(Vec<f32>, Usage), ModelError> {
+        let key = |v: &Value| -> String {
+            v.as_str()
+                .unwrap_or_default()
+                .chars()
+                .filter(|c| c.is_alphanumeric())
+                .flat_map(char::to_lowercase)
+                .collect()
+        };
+        let words = |v: &Value| -> Vec<String> {
+            v.to_string()
+                .split(|c: char| !c.is_alphanumeric())
+                .filter(|w| w.len() > 5)
+                .map(str::to_lowercase)
+                .collect()
+        };
+        let ps = questions
+            .iter()
+            .map(|q| {
+                let i = &q.instructions;
+                let (p, e) = (&i["proposal"], &i["existing"]);
+                match i["check"].as_str() {
+                    Some("duplicate") => {
+                        let same =
+                            key(&p["to"]) == key(&e["to"]) || key(&p["arrow"]) == key(&e["arrow"]);
+                        if same { 0.9 } else { 0.1 }
+                    }
+                    Some("rule") => {
+                        let rule = words(&i["rule"]);
+                        if words(p).iter().any(|w| rule.contains(w)) {
+                            0.9
+                        } else {
+                            0.1
+                        }
+                    }
+                    _ => 0.1,
+                }
+            })
+            .collect();
+        Ok((
+            ps,
+            Usage {
+                attempts: 1,
+                questions: questions.len() as u32,
+                ..Usage::default()
+            },
+        ))
+    }
+}
+
 /// Offline judge: an arrow applies when its name, target or instruction
 /// text appears in the goal. Several arrows applying and the goal saying
 /// "and" means independent aspects (fork). After a fixed latency.

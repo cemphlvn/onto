@@ -70,10 +70,39 @@ invariant, and rejecting it, is M2 work: invariants declared in the
   not inferred.
 - The proposer again suggested a basis this organization does not use
   (`legitimate_interest: Collected -> Marketing`). Still provisional;
-  invariant checking remains M2.
+  since M2 the supervisor rejects it (see below).
+
+## The supervisor (M2, 2026-09-23, live)
+
+The category now declares what no extension may break:
+
+```
+invariant via: Collected -> Marketing through Consented;
+invariant via: Collected -> Processor through Pseudonymized;
+invariant never: Collected -> Advertiser;
+invariant via: Collected -> Pseudonymized through Consented | Contract;
+invariant via: Collected -> Research through Consented | Contract;
+invariant via: Collected -> Aggregated through Consented | Contract;
+invariant rule "…only explicit consent and contract… no other legal basis…";
+```
+
+`onto review` on one live run's proposals:
+
+| proposal | verdict | why |
+|---|---|---|
+| `legitimate_interest: Collected -> LegitimateInterest` | **reject** | violates the legal-basis rule (Jev, p 0.96) |
+| `research: Collected -> Research` | **reject** | proof: counter-path `research` skips consent and contract |
+| `pseudonymize: Collected -> Pseudonymized` | **reject** | reused name, and proofs: it would open Pseudonymized, Research and Aggregated without a legal basis |
+| `email_offers: Consented -> Marketing` | **reject** | overlaps `market` (p 0.71): would break Consented's MECE claim |
+| `personalize_offers`, `verify_disclosure` | unknown | overlap judgments in the unsure band |
+
+`onto promote` refused the rejected proposal, required
+`--override-unknown` for an unknown one, wrote it with a provenance
+comment, and refused the same review once it was stale.
 
 ## What it does not do yet
 
-- No invariant checking of proposals (above). No provenance beyond the
-  comments beside each arrow.
-- Proposals are provisional (M2).
+- Semantic checks are conservative: no proposal from this run was
+  admitted without a person.
+- No question-to-target mapping yet: "can you sell my data?" is still
+  answered by walking, not by proving non-reachability.

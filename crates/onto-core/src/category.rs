@@ -95,6 +95,37 @@ pub struct ArrowMeta {
     pub require: Option<Require>,
 }
 
+/// A rule the graph must keep, checked on load and on every proposal.
+/// Names are kept as written: an invariant may name an object that does
+/// not exist yet (e.g. `never: Collected -> Advertiser`), so that a
+/// proposal introducing it is caught.
+#[derive(Clone, Debug, PartialEq)]
+pub enum Invariant {
+    /// Every path from `from` to `to` passes through at least one of
+    /// `through` (written `through A | B`).
+    Via {
+        from: String,
+        to: String,
+        through: Vec<String>,
+    },
+    /// No path from `from` to `to`.
+    Never { from: String, to: String },
+    /// A natural-language rule, judged by a model (text or JSON).
+    Rule(Value),
+}
+
+impl std::fmt::Display for Invariant {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Via { from, to, through } => {
+                write!(f, "via: {from} -> {to} through {}", through.join(" | "))
+            }
+            Self::Never { from, to } => write!(f, "never: {from} -> {to}"),
+            Self::Rule(v) => write!(f, "rule {v}"),
+        }
+    }
+}
+
 /// A declared equation between two parallel paths.
 #[derive(Clone, Debug)]
 pub struct Equation {
@@ -112,6 +143,7 @@ pub struct Category {
     objects: Vec<Object>,
     arrows: Vec<Arrow>,
     equations: Vec<Equation>,
+    invariants: Vec<Invariant>,
     out_offsets: Vec<u32>,
     out_arrows: Vec<ArrowId>,
     object_index: HashMap<String, ObjId>,
@@ -133,6 +165,129 @@ impl Category {
 
     pub fn equations(&self) -> &[Equation] {
         &self.equations
+    }
+
+    pub fn invariants(&self) -> &[Invariant] {
+        &self.invariants
+    }
+
+    /// A shortest path from `from` to `to` that never visits `avoid`, if
+    /// one exists. `None` proves there is none.
+    pub fn reachable(&self, from: ObjId, to: ObjId, avoid: &[ObjId]) -> Option<Path> {
+        if avoid.contains(&from) || avoid.contains(&to) {
+            return None;
+        }
+        // Breadth-first, so the witness is a shortest path. `prev` holds
+        // the arrow each object was first reached by.
+        let mut prev: HashMap<ObjId, ArrowId> = HashMap::new();
+        let mut seen = BTreeSet::from([from]);
+        let mut queue = std::collections::VecDeque::from([from]);
+        'search: while let Some(o) = queue.pop_front() {
+            for &a in self.out(o) {
+                let next = self.arrow(a).dst;
+                if avoid.contains(&next) {
+                    continue;
+                }
+                if next == to {
+                    prev.insert(to, a);
+                    break 'search;
+                }
+                if seen.insert(next) {
+                    prev.insert(next, a);
+                    queue.push_back(next);
+                }
+            }
+        }
+        let mut arrows = vec![*prev.get(&to)?];
+        let mut cursor = self.arrow(arrows[0]).src;
+        while cursor != from {
+            let a = prev[&cursor];
+            arrows.push(a);
+            cursor = self.arrow(a).src;
+        }
+        arrows.reverse();
+        self.path(&arrows).ok()
+    }
+
+    /// The first invariant this graph violates, with a counter-path.
+    /// Rules are skipped: they are judged by models, not proved.
+    pub fn violation(&self) -> Option<(&Invariant, Path)> {
+        self.invariants.iter().find_map(|inv| {
+            let id = |n: &str| self.object_id(n).ok();
+            let witness = match inv {
+                Invariant::Via { from, to, through } => {
+                    let avoid: Vec<ObjId> = through.iter().filter_map(|n| id(n)).collect();
+                    self.reachable(id(from)?, id(to)?, &avoid)
+                }
+                Invariant::Never { from, to } => self.reachable(id(from)?, id(to)?, &[]),
+                Invariant::Rule(_) => None,
+            }?;
+            Some((inv, witness))
+        })
+    }
+
+    /// This category plus one more arrow (and its target, if new): the
+    /// graph a proposal would produce. The new object is open.
+    pub fn extend(
+        &self,
+        arrow: &str,
+        src: &str,
+        dst: &str,
+        instructions: Option<Value>,
+    ) -> Result<Category, Error> {
+        let mut b = CategoryBuilder::new(self.name.clone());
+        for o in &self.objects {
+            b.object(&o.name)?;
+            b.frame(&o.name, o.frame.clone())?;
+            if let Some(about) = &o.about {
+                b.about(&o.name, about.clone())?;
+            }
+            if o.closure == Closure::Closed {
+                b.close(&o.name)?;
+            }
+        }
+        if self.object_id(dst).is_err() {
+            b.object(dst)?;
+        }
+        for a in &self.arrows {
+            let meta = ArrowMeta {
+                instructions: a.instructions.clone(),
+                level: a.level,
+                require: a.require.clone(),
+            };
+            let (s, d) = (&self.object(a.src).name, &self.object(a.dst).name);
+            b.arrow_with(&a.name, s, d, meta)?;
+        }
+        b.arrow_with(
+            arrow,
+            src,
+            dst,
+            ArrowMeta {
+                instructions,
+                ..ArrowMeta::default()
+            },
+        )?;
+        let spec = |p: &Path| {
+            if p.is_id() {
+                PathSpec::Id(self.object(p.src).name.clone())
+            } else {
+                PathSpec::Arrows(
+                    p.arrows
+                        .iter()
+                        .map(|a| self.arrow(*a).name.clone())
+                        .collect(),
+                )
+            }
+        };
+        for e in &self.equations {
+            b.equation(spec(&e.lhs), spec(&e.rhs));
+        }
+        for inv in &self.invariants {
+            b.invariant(inv.clone());
+        }
+        // Not validated: the caller (the supervisor) checks invariants on
+        // the result itself, so a violation is reported with its proof.
+        b.build_unchecked()
     }
 
     pub fn object(&self, id: ObjId) -> &Object {
@@ -247,6 +402,7 @@ pub struct CategoryBuilder {
     objects: Vec<Object>,
     arrows: Vec<Arrow>,
     equations: Vec<(PathSpec, PathSpec)>,
+    invariants: Vec<Invariant>,
     object_index: HashMap<String, ObjId>,
     arrow_index: HashMap<String, ArrowId>,
 }
@@ -341,11 +497,29 @@ impl CategoryBuilder {
         Ok(())
     }
 
+    pub fn invariant(&mut self, invariant: Invariant) {
+        self.invariants.push(invariant);
+    }
+
     pub fn equation(&mut self, lhs: PathSpec, rhs: PathSpec) {
         self.equations.push((lhs, rhs));
     }
 
+    /// Validates and freezes the category; fails if a structural invariant
+    /// is violated.
     pub fn build(self) -> Result<Category, Error> {
+        let cat = self.build_unchecked()?;
+        if let Some((inv, witness)) = cat.violation() {
+            return Err(Error::InvariantViolated {
+                invariant: inv.to_string(),
+                witness: witness.display_typed(&cat),
+            });
+        }
+        Ok(cat)
+    }
+
+    /// As [`build`](Self::build), without checking invariants.
+    pub fn build_unchecked(self) -> Result<Category, Error> {
         let n = self.objects.len();
 
         // Levels belong to score frames, and a score frame's arrows each
@@ -401,6 +575,7 @@ impl CategoryBuilder {
             objects: self.objects,
             arrows: self.arrows,
             equations: Vec::new(),
+            invariants: self.invariants,
             out_offsets,
             out_arrows,
             object_index: self.object_index,
@@ -417,6 +592,14 @@ impl CategoryBuilder {
                 });
             }
             cat.equations.push(Equation { lhs, rhs });
+        }
+        // Structural invariants must hold for the graph as written.
+        for inv in &cat.invariants {
+            if let Invariant::Via { from, to, through } = inv {
+                for n in [from, to].into_iter().chain(through) {
+                    cat.object_id(n)?;
+                }
+            }
         }
         Ok(cat)
     }

@@ -1,6 +1,6 @@
 # onto — Architecture
 
-Status: **draft 2 — 2026-09-23.** Single source of truth for how onto is
+Status: **draft 3 — 2026-09-23.** Single source of truth for how onto is
 built. Code follows this document; change it here first.
 
 ## 1. What onto is
@@ -32,6 +32,9 @@ propose new structure.
 | fork | a noul frame where several arrows hold and the judge says they are independent aspects: the walk splits into parallel branches | `Decision::Fork` |
 | parallel arrows | several arrows with the same endpoints and different meaning or preconditions (e.g. two legal bases) | — |
 | disposition | what happened to one candidate arrow at a frame visit: selected · forked · alternative · rejected · deferred · filtered_by_require, with the judge's number and a reason built from the numbers | `walk::Disposition`, `walk::dispose` |
+| invariant | a rule every extension must keep: `via` (every path passes one of a set), `never` (no path) — proved; `rule` (natural language) — judged | `Invariant` |
+| review | the supervisor's verdict on a proposal: every check (well_formed, invariant, rule, duplicate, overlap) with outcome and reason, then admit · reject · unknown | `supervise::Check`, `supervisor::Review` |
+| promotion | the human step: writing a reviewed proposal into the `.onto` file with a provenance comment | `onto promote` |
 | frame record | one frame visit: claim, judge call, every candidate's disposition, outcome, proposals; `after` links records into a causal DAG | `record::FrameRecord` |
 | footprint | a frame's object plus its arrows' targets: every node one decision could touch | `frames::Claim` |
 | claim | a walk's hold on a footprint while deciding, `read` (System 1) or `write` (System 2) | `frames::Claim` |
@@ -212,7 +215,40 @@ that spawned it. A run's records are the disposition graph.
 - `onto ask … --why` shows them to the beneficiary; options closed by
   `require` are named in the answer itself.
 
-### 5.5 Measured (2026-09-23, 6 walks, `examples/triage.jobs`, release build)
+### 5.5 The supervisor (M2)
+
+Proposals are reviewed before anything may enter the graph:
+
+```
+proposal ─▶ well_formed   names, types, target new or existing         (code)
+         ─▶ invariants    via / never, on the graph WITH the proposal  (code: proof,
+                          failure carries a counter-path)                or witness)
+         ─▶ rules         natural-language invariants                   (critic: Noul)
+         ─▶ duplicate     same kind of case as a sibling arrow, committed
+                          or proposed earlier in the batch              (critic: Noul)
+         ─▶ overlap       could one case fit both (choice frames only:
+                          would break the MECE claim)                   (critic: Noul)
+         ─▶ admit · reject · unknown
+```
+
+- Structural checks run first; a proven reject asks no model. A reused
+  arrow name does not hide a bypass: invariants are still evaluated under
+  a temporary name and reported.
+- All semantic checks for one proposal go to the critic (Jev) in one
+  request. Fail at P ≥ 0.7, pass at P ≤ 0.3, unknown between: the
+  supervisor does not guess.
+- The base graph must satisfy its own `via`/`never` invariants to load.
+- `onto review FILE DISPOSITIONS --out reviews.jsonl` reviews every
+  provisional proposal (identical ones merged, sources kept).
+- `onto promote FILE reviews.jsonl rN` is the human step. Only `admit`
+  promotes; `unknown` needs `--override-unknown`; `reject` never does. The
+  structural checks are re-proved against the current file (a stale
+  review is refused), the arrow (and a new, open object) is written into
+  the `.onto` file with a provenance comment (date, review, verdict,
+  override, sources), and the edit is rolled back if the file would not
+  load. Git is the delta log.
+
+### 5.6 Measured (2026-09-23, 6 walks, `examples/triage.jobs`, release build)
 
 | run | wall | model time | parallelism | waited | peak RSS | peak heap |
 |---|---|---|---|---|---|---|
@@ -252,6 +288,9 @@ category Name {
     high: C -> D level 1 "blocking";
     g2.f = h2;                                 # path equation
     inv.f = id(A);                             # identities
+    invariant via: A -> D through B | C;       # every path A→D passes B or C (proved)
+    invariant never: A -> Z;                   # no path A→Z, even to a future Z (proved)
+    invariant rule "no arrow may …";           # judged by the critic
 }
 ```
 
@@ -291,6 +330,10 @@ snapshot. No database until live multi-writer editing is needed.
 | D14 | System-1 interface renamed Chooser → Judge; telemetry `chooser.call` → `judge.call` | it no longer only chooses |
 | D15 | open frames are judged; `open_frame` now means "nothing fit in a frame known to be incomplete" | an arrow that fits should be followed; the two gap kinds stay distinguishable |
 | D16 | proposers see the provisional proposals pending at their frame and reuse fitting ones | turns waiting on a frame into deduplication; fixes name-based grouping |
+| D19 | invariants: structural (`via`, `never`) are proved with counter-paths; `rule` is judged | proofs where possible, judgment where not; mirrors `require` vs instructions |
+| D20 | promotion is a human step that edits the `.onto` file; git is the delta log | one source of truth; reviewable diffs; unsafe proposals were seen live |
+| D21 | semantic checks have an unknown band (0.3 < P < 0.7) that blocks automatic admission | the supervisor must not guess |
+| D22 | the rkyv/mmap snapshot moves out of M2 | performance, not governance |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
 | D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |
 
@@ -307,7 +350,10 @@ snapshot. No database until live multi-writer editing is needed.
 - **Demos:** `demos/` (Onto Commons); wave 1 runnable: support-commons,
   incident-graph, consent-paths. `onto reach` lists routes grouped by
   equality, with `--avoid`.
-- **M2:** delta log + proposal verification pipeline; rkyv/mmap snapshot.
+- **M2 (done):** invariants (via with alternatives, never, rule), the
+  supervisor (structural proofs + one-request semantic checks), `onto
+  review`, `onto promote` with human approval; git as the delta log.
+- **Next:** snapshot (rkyv/mmap), joins, streaming records.
 - **M3:** functors between categories; multi-category files.
 - **M4:** C ABI (cbindgen) and Python bindings (PyO3); Jev `Chooser` adapter
   (Choice primitive over the frame) in Python.
@@ -332,6 +378,13 @@ snapshot. No database until live multi-writer editing is needed.
   format needs declared invariants (e.g. "every path to Marketing passes
   Consented", checkable with `Category::paths(.., avoid, ..)`) that every
   proposal must preserve before promotion.
+- **Semantic checks are conservative to the point of blocking** (live
+  consent review: 0 admit, 5 reject, 2 unknown; many overlap judgments
+  landed in 0.4–0.6). The overlap question needs better wording, or
+  calibration on labelled pairs, before admissions become routine.
+- **Proposers reuse existing arrow names** (`pseudonymize`, `aggregate`);
+  the prompt should require new names, and the supervisor now reports
+  what such a proposal would do anyway.
 - **Dispositions are written at the end of a run.** A crash loses them;
   streaming each record as it is made would make the artifact durable.
 - **Legal bases are evidence, not inference** (consent-paths): judged from

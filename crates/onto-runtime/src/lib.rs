@@ -13,6 +13,7 @@ pub mod mem;
 pub mod model;
 pub mod providers;
 pub mod record;
+pub mod supervisor;
 pub mod telemetry;
 
 pub use engine::{Config, Engine, Job, RunReport};

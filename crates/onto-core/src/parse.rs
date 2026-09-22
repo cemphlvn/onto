@@ -29,7 +29,9 @@
 
 use serde_json::Value;
 
-use crate::category::{ArrowMeta, Category, CategoryBuilder, Frame, PathSpec, Primitive};
+use crate::category::{
+    ArrowMeta, Category, CategoryBuilder, Frame, Invariant, PathSpec, Primitive,
+};
 use crate::error::Error;
 use crate::require::Require;
 
@@ -185,6 +187,10 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
             },
         );
     }
+    if let Some(rest) = stmt.strip_prefix("invariant ") {
+        b.invariant(invariant(rest.trim())?);
+        return Ok(());
+    }
     if let Some(rest) = stmt.strip_prefix("about ") {
         let (object, rest) = rest
             .split_once(':')
@@ -263,6 +269,40 @@ fn json_value(s: &str) -> Result<(Value, &str), Error> {
         )),
         Some(Err(e)) => Err(perr(format!("invalid instruction: {e}"))),
         None => Err(perr("missing instruction")),
+    }
+}
+
+/// `via: A -> B through C`, `never: A -> B`, or `rule "text"` / `rule {json}`.
+fn invariant(s: &str) -> Result<Invariant, Error> {
+    let bad = || {
+        perr(format!(
+            "cannot read invariant `{s}` (via: A -> B through C · never: A -> B · rule \"…\")"
+        ))
+    };
+    if let Some(rest) = s.strip_prefix("rule") {
+        let (value, tail) = json_value(rest.trim())?;
+        if !tail.trim().is_empty() {
+            return Err(bad());
+        }
+        return Ok(Invariant::Rule(value));
+    }
+    let (kind, rest) = s.split_once(':').ok_or_else(bad)?;
+    let (from, rest) = rest.split_once("->").ok_or_else(bad)?;
+    let from = from.trim().to_owned();
+    match kind.trim() {
+        "never" => Ok(Invariant::Never {
+            from,
+            to: rest.trim().to_owned(),
+        }),
+        "via" => {
+            let (to, through) = rest.split_once(" through ").ok_or_else(bad)?;
+            Ok(Invariant::Via {
+                from,
+                to: to.trim().to_owned(),
+                through: through.split('|').map(|t| t.trim().to_owned()).collect(),
+            })
+        }
+        _ => Err(bad()),
     }
 }
 

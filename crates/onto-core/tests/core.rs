@@ -366,3 +366,160 @@ fn open_frames_are_judged_and_name_their_gap() {
         Decision::Escalate(Escalation::NoneOfThese)
     );
 }
+
+mod supervisor {
+    use super::*;
+    use onto_core::supervise::{Admission, Outcome, admission, structural};
+    use onto_core::walk::Proposal;
+
+    const CONSENT: &str = r#"
+    category Consent {
+        objects: Collected, Consented, Contract, Marketing, Research;
+        consent:  Collected -> Consented;
+        contract: Collected -> Contract;
+        market:   Consented -> Marketing;
+        study:    Consented -> Research;
+        invariant via: Collected -> Marketing through Consented;
+        invariant never: Collected -> Advertiser;
+        invariant rule "no new legal basis beyond consent and contract";
+    }"#;
+
+    fn proposal(arrow: &str, src: &str, dst: &str) -> Proposal {
+        Proposal {
+            arrow: arrow.into(),
+            src: src.into(),
+            dst: dst.into(),
+            about: String::new(),
+            rationale: String::new(),
+        }
+    }
+
+    #[test]
+    fn invariants_parse_and_hold_on_load() {
+        let cat = parse(CONSENT).unwrap();
+        assert_eq!(cat.invariants().len(), 3);
+        let broken = CONSENT.replace(
+            "study:    Consented -> Research;",
+            "study: Consented -> Research; direct: Contract -> Marketing;",
+        );
+        let err = parse(&broken).unwrap_err();
+        assert!(
+            matches!(err, Error::InvariantViolated { ref witness, .. } if witness.starts_with("direct.contract")),
+            "{err}"
+        );
+    }
+
+    #[test]
+    fn a_consent_bypass_is_rejected_with_a_counter_path() {
+        let cat = parse(CONSENT).unwrap();
+        let (checks, _) = structural(
+            &cat,
+            &proposal("legitimate_interest", "Collected", "Marketing"),
+        );
+        assert_eq!(admission(&checks), Admission::Reject);
+        let failed = checks.iter().find(|c| c.outcome == Outcome::Fail).unwrap();
+        assert_eq!(
+            failed.subject,
+            "via: Collected -> Marketing through Consented"
+        );
+        assert_eq!(failed.witness.as_deref(), Some("legitimate_interest"));
+    }
+
+    #[test]
+    fn a_new_object_can_break_a_never_invariant() {
+        let cat = parse(CONSENT).unwrap();
+        let (checks, _) = structural(&cat, &proposal("sell", "Contract", "Advertiser"));
+        let failed = checks
+            .iter()
+            .find(|c| c.outcome == Outcome::Fail)
+            .expect("never: Collected -> Advertiser");
+        assert_eq!(failed.witness.as_deref(), Some("sell.contract"));
+    }
+
+    #[test]
+    fn a_safe_proposal_passes_structural_checks() {
+        let cat = parse(CONSENT).unwrap();
+        let (checks, extended) =
+            structural(&cat, &proposal("newsletter", "Consented", "Newsletter"));
+        assert_eq!(admission(&checks), Admission::Admit, "{checks:?}");
+        assert!(extended.unwrap().object_id("Newsletter").is_ok());
+        assert!(checks[0].reason.contains("new object Newsletter"));
+    }
+
+    #[test]
+    fn malformed_proposals_fail_well_formedness() {
+        let cat = parse(CONSENT).unwrap();
+        for (arrow, src) in [
+            ("market", "Consented"),
+            ("x", "Nowhere"),
+            ("id", "Collected"),
+        ] {
+            let (checks, extended) = structural(&cat, &proposal(arrow, src, "Somewhere"));
+            assert!(extended.is_none(), "{arrow}");
+            assert_eq!(
+                (checks[0].check.as_str(), checks[0].outcome),
+                ("well_formed", Outcome::Fail)
+            );
+        }
+    }
+
+    #[test]
+    fn a_reused_name_does_not_hide_a_bypass() {
+        let cat = parse(CONSENT).unwrap();
+        // `market` already exists (Consented -> Marketing); reusing it for a
+        // direct Collected -> Marketing arrow is malformed *and* a bypass.
+        let (checks, extended) = structural(&cat, &proposal("market", "Collected", "Marketing"));
+        assert!(extended.is_none());
+        let failed: Vec<_> = checks
+            .iter()
+            .filter(|c| c.outcome == Outcome::Fail)
+            .map(|c| c.check.as_str())
+            .collect();
+        assert_eq!(failed, ["well_formed", "invariant"]);
+        let bypass = checks
+            .iter()
+            .find(|c| c.check == "invariant" && c.outcome == Outcome::Fail)
+            .unwrap();
+        assert_eq!(bypass.witness.as_deref(), Some("market"));
+        assert!(!bypass.reason.contains("__proposed"), "{}", bypass.reason);
+    }
+
+    #[test]
+    fn via_accepts_alternatives() {
+        let src = CONSENT.replace(
+            "invariant never: Collected -> Advertiser;",
+            "invariant never: Collected -> Advertiser;\n        invariant via: Collected -> Research through Consented | Contract;",
+        );
+        let cat = parse(&src).unwrap();
+        // Through Contract: allowed. Straight from Collected: a bypass.
+        let (ok, _) = structural(&cat, &proposal("study_contract", "Contract", "Research"));
+        assert_eq!(admission(&ok), Admission::Admit, "{ok:?}");
+        let (bad, _) = structural(&cat, &proposal("skip_basis", "Collected", "Research"));
+        let failed = bad.iter().find(|c| c.outcome == Outcome::Fail).unwrap();
+        assert_eq!(
+            failed.subject,
+            "via: Collected -> Research through Consented | Contract"
+        );
+        assert_eq!(failed.witness.as_deref(), Some("skip_basis"));
+    }
+
+    #[test]
+    fn reachable_returns_a_shortest_witness_or_none() {
+        let cat = parse(CONSENT).unwrap();
+        let id = |n| cat.object_id(n).unwrap();
+        assert_eq!(
+            cat.reachable(id("Collected"), id("Marketing"), &[])
+                .unwrap()
+                .display(&cat),
+            "market.consent"
+        );
+        assert!(
+            cat.reachable(id("Collected"), id("Marketing"), &[id("Consented")])
+                .is_none()
+        );
+        assert!(
+            cat.reachable(id("Marketing"), id("Collected"), &[])
+                .is_none()
+        );
+    }
+}
