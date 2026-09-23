@@ -408,6 +408,10 @@ snapshot. No database until live multi-writer editing is needed.
 - **Capability authority (done):** declarations, strict validation on
   every route, declared roots, proof-producing laws; the `fake_basis`
   minting attack fails on load, in review and at promotion.
+- **Frozen (authority milestone):** trust model, proof scope and snapshot
+  atomicity documented in `docs/04-trust-model.md`: policy declarations
+  are the root of trust; policy changes are a privileged operation (not
+  yet enforced); known snapshot gaps listed with fixes.
 - **Next:** join semantics (All, Gate, Race) documented, then built;
   exact-label behavioural quotient; behavioural difference in review;
   snapshot; streaming records.

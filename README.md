@@ -5,7 +5,7 @@ declare which paths are equal, and let a fast System-1 model (such as Jev)
 route through the graph. Where the graph doesn't enumerate the options well
 enough, the walk escalates to a language model that can propose new structure.
 
-> Early stage (M1.5). Design: [`docs/00-architecture.md`](docs/00-architecture.md) · positioning: [`docs/01-positioning.md`](docs/01-positioning.md) · semantics: [`docs/02-dispositional-semantics.md`](docs/02-dispositional-semantics.md) · joins: [`docs/03-joins.md`](docs/03-joins.md).
+> Early stage (M1.5). Design: [`docs/00-architecture.md`](docs/00-architecture.md) · positioning: [`docs/01-positioning.md`](docs/01-positioning.md) · semantics: [`docs/02-dispositional-semantics.md`](docs/02-dispositional-semantics.md) · joins: [`docs/03-joins.md`](docs/03-joins.md) · **trust model**: [`docs/04-trust-model.md`](docs/04-trust-model.md).
 
 ## Try it
 
