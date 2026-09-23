@@ -236,7 +236,7 @@ pub trait Judge {
 
 /// A new arrow suggested by the System-2 proposer. The target may be an
 /// existing object or a new one.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub struct Proposal {
     pub arrow: String,
@@ -245,6 +245,12 @@ pub struct Proposal {
     /// What the proposed arrow means: when to follow it.
     pub about: String,
     pub rationale: String,
+    /// Capability effects the proposal would have (reviewed against the
+    /// capability declarations like any arrow's).
+    #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Vec::is_empty"))]
+    pub ensures: Vec<String>,
+    #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Vec::is_empty"))]
+    pub revokes: Vec<String>,
 }
 
 /// System 2: generates structure the frame is missing.

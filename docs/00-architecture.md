@@ -1,6 +1,6 @@
 # onto — Architecture
 
-Status: **draft 4 — 2026-09-23.** Single source of truth for how onto is
+Status: **draft 5 — 2026-09-23.** Single source of truth for how onto is
 built. Code follows this document; change it here first.
 
 ## 1. What onto is
@@ -33,6 +33,8 @@ propose new structure.
 | parallel arrows | several arrows with the same endpoints and different meaning or preconditions (e.g. two legal bases) | — |
 | disposition | what happened to one candidate arrow at a frame visit: selected · forked · alternative · rejected · deferred · filtered_by_require, with the judge's number and a reason built from the numbers | `walk::Disposition`, `walk::dispose` |
 | capability token | an on/off property a walk holds, set by `ensures` and cleared by `revokes` on arrows; a capability, not a fact: an arrow standing for a real-world fact must `require` the evidence before it `ensures` the token | `Arrow::ensures`, `WalkState::tokens` |
+| capability declaration | which arrows may issue and revoke a token (`capability T { issuers: …; revokers: …; }`); every token used must be declared | `Capability` |
+| declared root | an application entry point (`start: A;`); starting still counts as entering | `Category::starts` |
 | entry contract | what every walk entering an object must hold (`needs` tokens, `require` over the case); inherited by every incoming arrow, present and future; starting at an object counts as entering it | `Entry`, `Gate` |
 | derived law | a statement implied by contracts and effects, e.g. "every walk into Research has taken consent or contract, and no withdraw since" | `laws::derive`, `onto laws` |
 | invariant | a rule every extension must keep: `via` (every path passes one of a set), `never` (no path) — proved; `rule` (natural language) — judged | `Invariant` |
@@ -145,6 +147,24 @@ Rules:
     some walk may hold on arrival, the derived laws, dead arrows, and
     whether each `via` invariant is enforced for walks (not only for the
     graph). Review notes a proposal no walk could take.
+13. **Capabilities have issuance authority.** A token certifies that
+    evidence was checked by an authorized transition, not that some arrow
+    ran. Every token must be declared; only a declared issuer may
+    `ensures` it and only a declared revoker `revokes` it; no arrow both
+    issues and revokes one; declared starts must be enterable with no
+    tokens. One validator (`Category::validate_capabilities`) serves every
+    route in: loading, the supervisor's hypothetical extension, and
+    promotion (which re-checks and then reloads). Authority is by arrow
+    name and names are unique, so a proposal cannot impersonate an issuer.
+14. **Laws come with proofs, in two scopes.** `onto laws` runs from the
+    declared roots (guarantees of this application) or all startable
+    objects (guarantees of the category itself). Every MUST law carries an
+    exhaustive certificate (all arrival states enumerated, none without
+    the token, the issuers and revokers actually used); `--proofs` adds a
+    shortest path per arrival state, and a witness plus a counterexample
+    for every MAY-but-not-MUST claim; dead arrows say why. The exploration
+    is exact over |objects| × 2^|tokens| states: fine for today's graphs,
+    exponential in tokens (later: bitsets, BDDs, per-capability dataflow).
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -307,6 +327,8 @@ category Name {
     g: B -> C require case.ok == true ensures T;   # checked fact grants capability T
     w: C -> B revokes T;                       # capability withdrawn
     entry D: needs T require case.flag == true;    # entry contract, inherited by every arrow into D
+    capability T { issuers: g; revokers: w; }  # only g may issue T, only w revoke it
+    start: A;                                  # declared application root
     invariant via: A -> D through B | C;       # every path A→D passes B or C (proved)
     invariant never: A -> Z;                   # no path A→Z, even to a future Z (proved)
     invariant rule "no arrow may …";           # judged by the critic
@@ -356,6 +378,10 @@ snapshot. No database until live multi-writer editing is needed.
 | D23 | capability tokens with `ensures`/`revokes` on arrows and `entry … needs` on objects; facts stay in the case | entry contracts need something to make them true; walking an arrow must not make a real-world fact true |
 | D24 | starting at an object is entering it | otherwise a mid-graph start skips contracts (found while deriving laws) |
 | D25 | derived laws by exact exploration of (object, tokens) states, case preconditions assumed satisfiable | exact for tokens, sound over-approximation for cases; small state spaces |
+| D27 | capabilities are declared with issuers and revokers; strict: every token must be declared | without issuance authority an arrow can counterfeit the evidence a contract asks for (`fake_basis … ensures LegalBasis`) |
+| D28 | one capability validator for loading, review and promotion | a governance rule must not behave differently by entry route |
+| D29 | `start:` roots; laws in two scopes (declared roots / all startable) | application guarantees and category guarantees are different claims |
+| D30 | MUST laws carry exhaustive certificates, MAY laws witnesses, failures counterexamples | a single path is not a proof of "every walk" |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
 | D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |
@@ -379,8 +405,12 @@ snapshot. No database until live multi-writer editing is needed.
 - **Capabilities (done):** tokens, entry contracts, starting-is-entering,
   `onto laws` (derived laws, dead arrows, walk-level invariant checks),
   closure challenges and contract notes in review.
-- **Next:** exact-label behavioural quotient (diagnostics), behavioural
-  difference in review, snapshot (rkyv/mmap), joins, streaming records.
+- **Capability authority (done):** declarations, strict validation on
+  every route, declared roots, proof-producing laws; the `fake_basis`
+  minting attack fails on load, in review and at promotion.
+- **Next:** join semantics (All, Gate, Race) documented, then built;
+  exact-label behavioural quotient; behavioural difference in review;
+  snapshot; streaming records.
 - **M3:** functors between categories; multi-category files.
 - **M4:** C ABI (cbindgen) and Python bindings (PyO3); Jev `Chooser` adapter
   (Choice primitive over the frame) in Python.

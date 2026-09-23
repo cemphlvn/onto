@@ -175,6 +175,16 @@ impl std::fmt::Display for Invariant {
     }
 }
 
+/// Which arrows may issue and revoke a capability token. Only these
+/// arrows may `ensures` / `revokes` it: a token certifies that evidence
+/// was checked by an authorized transition, not that some arrow ran.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Capability {
+    pub name: String,
+    pub issuers: Vec<String>,
+    pub revokers: Vec<String>,
+}
+
 /// A declared equation between two parallel paths.
 #[derive(Clone, Debug)]
 pub struct Equation {
@@ -193,6 +203,9 @@ pub struct Category {
     arrows: Vec<Arrow>,
     equations: Vec<Equation>,
     invariants: Vec<Invariant>,
+    capabilities: Vec<Capability>,
+    /// Declared application entry points (`start: A, B;`).
+    starts: Vec<ObjId>,
     out_offsets: Vec<u32>,
     out_arrows: Vec<ArrowId>,
     object_index: HashMap<String, ObjId>,
@@ -218,6 +231,92 @@ impl Category {
 
     pub fn invariants(&self) -> &[Invariant] {
         &self.invariants
+    }
+
+    pub fn capabilities(&self) -> &[Capability] {
+        &self.capabilities
+    }
+
+    pub fn capability(&self, name: &str) -> Option<&Capability> {
+        self.capabilities.iter().find(|c| c.name == name)
+    }
+
+    /// Declared application entry points.
+    pub fn starts(&self) -> &[ObjId] {
+        &self.starts
+    }
+
+    /// The capability rules every route into the graph shares (loading,
+    /// the supervisor's hypothetical extension, promotion): every token
+    /// used is declared once; only a declared issuer may `ensures` it and
+    /// only a declared revoker may `revokes` it; no arrow both issues and
+    /// revokes the same token; declarations name existing arrows; declared
+    /// starts can be entered holding nothing.
+    pub fn validate_capabilities(&self) -> Result<(), Error> {
+        let bad = |msg: String| Err(Error::Capability(msg));
+        let mut seen = BTreeSet::new();
+        for c in &self.capabilities {
+            if !seen.insert(c.name.as_str()) {
+                return bad(format!("capability {} is declared twice", c.name));
+            }
+            for a in c.issuers.iter().chain(&c.revokers) {
+                if self.arrow_id(a).is_err() {
+                    return bad(format!("capability {} names unknown arrow `{a}`", c.name));
+                }
+            }
+        }
+        for a in &self.arrows {
+            for t in &a.ensures {
+                match self.capability(t) {
+                    None => return bad(format!("`{}` ensures undeclared capability {t}", a.name)),
+                    Some(c) if !c.issuers.contains(&a.name) => {
+                        return bad(format!(
+                            "unauthorized issuer of {t}: `{}` (authorized: {})",
+                            a.name,
+                            list(&c.issuers)
+                        ));
+                    }
+                    _ => {}
+                }
+                if a.revokes.contains(t) {
+                    return bad(format!("`{}` both ensures and revokes {t}", a.name));
+                }
+            }
+            for t in &a.revokes {
+                match self.capability(t) {
+                    None => return bad(format!("`{}` revokes undeclared capability {t}", a.name)),
+                    Some(c) if !c.revokers.contains(&a.name) => {
+                        return bad(format!(
+                            "unauthorized revoker of {t}: `{}` (authorized: {})",
+                            a.name,
+                            list(&c.revokers)
+                        ));
+                    }
+                    _ => {}
+                }
+            }
+        }
+        for o in &self.objects {
+            for t in &o.entry.needs {
+                if self.capability(t).is_none() {
+                    return bad(format!(
+                        "entry of {} needs undeclared capability {t}",
+                        o.name
+                    ));
+                }
+            }
+        }
+        for &s in &self.starts {
+            let o = self.object(s);
+            if !o.entry.needs.is_empty() {
+                return bad(format!(
+                    "start {} needs {} on entry; a walk holding nothing cannot start there",
+                    o.name,
+                    o.entry.needs.join(", ")
+                ));
+            }
+        }
+        Ok(())
     }
 
     /// A shortest path from `from` to `to` that never visits `avoid`, if
@@ -282,7 +381,7 @@ impl Category {
         arrow: &str,
         src: &str,
         dst: &str,
-        instructions: Option<Value>,
+        meta: ArrowMeta,
     ) -> Result<Category, Error> {
         let mut b = CategoryBuilder::new(self.name.clone());
         for o in &self.objects {
@@ -312,15 +411,7 @@ impl Category {
             let (s, d) = (&self.object(a.src).name, &self.object(a.dst).name);
             b.arrow_with(&a.name, s, d, meta)?;
         }
-        b.arrow_with(
-            arrow,
-            src,
-            dst,
-            ArrowMeta {
-                instructions,
-                ..ArrowMeta::default()
-            },
-        )?;
+        b.arrow_with(arrow, src, dst, meta)?;
         let spec = |p: &Path| {
             if p.is_id() {
                 PathSpec::Id(self.object(p.src).name.clone())
@@ -338,6 +429,12 @@ impl Category {
         }
         for inv in &self.invariants {
             b.invariant(inv.clone());
+        }
+        for c in &self.capabilities {
+            b.capability(c.clone());
+        }
+        for &s in &self.starts {
+            b.start(&self.object(s).name)?;
         }
         // Not validated: the caller (the supervisor) checks invariants on
         // the result itself, so a violation is reported with its proof.
@@ -479,6 +576,8 @@ pub struct CategoryBuilder {
     arrows: Vec<Arrow>,
     equations: Vec<(PathSpec, PathSpec)>,
     invariants: Vec<Invariant>,
+    capabilities: Vec<Capability>,
+    starts: Vec<ObjId>,
     object_index: HashMap<String, ObjId>,
     arrow_index: HashMap<String, ArrowId>,
 }
@@ -593,6 +692,21 @@ impl CategoryBuilder {
         self.invariants.push(invariant);
     }
 
+    /// Declares a capability; arrows are resolved when the category is
+    /// built, so declarations may come before or after the arrows.
+    pub fn capability(&mut self, capability: Capability) {
+        self.capabilities.push(capability);
+    }
+
+    /// Declares an application entry point.
+    pub fn start(&mut self, object: &str) -> Result<(), Error> {
+        let id = self.lookup_object(object)?;
+        if !self.starts.contains(&id) {
+            self.starts.push(id);
+        }
+        Ok(())
+    }
+
     pub fn equation(&mut self, lhs: PathSpec, rhs: PathSpec) {
         self.equations.push((lhs, rhs));
     }
@@ -601,6 +715,7 @@ impl CategoryBuilder {
     /// is violated.
     pub fn build(self) -> Result<Category, Error> {
         let cat = self.build_unchecked()?;
+        cat.validate_capabilities()?;
         if let Some((inv, witness)) = cat.violation() {
             return Err(Error::InvariantViolated {
                 invariant: inv.to_string(),
@@ -668,6 +783,8 @@ impl CategoryBuilder {
             arrows: self.arrows,
             equations: Vec::new(),
             invariants: self.invariants,
+            capabilities: self.capabilities,
+            starts: self.starts,
             out_offsets,
             out_arrows,
             object_index: self.object_index,
@@ -715,6 +832,14 @@ pub fn resolve(cat: &Category, spec: &PathSpec) -> Result<Path, Error> {
                 .collect::<Result<Vec<_>, _>>()?;
             cat.path(&ids)
         }
+    }
+}
+
+fn list(names: &[String]) -> String {
+    if names.is_empty() {
+        "none".into()
+    } else {
+        names.join(", ")
     }
 }
 

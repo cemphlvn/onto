@@ -117,6 +117,12 @@ equivalent, cycles included.
 
 ### Status
 
+Capability authority, declared roots and proof-producing laws are
+**built** (after A–D): tokens need declared issuers and revokers, checked
+by one validator on every route; the minting attack
+(`fake_basis: Collected -> Pseudonymized ensures LegalBasis`) fails on
+load, in review and at promotion. Next: join semantics.
+
 A, B, A+B and D are **built**. On consent-paths (`onto laws`): one entry
 contract on `Pseudonymized` (needs `LegalBasis`) makes "every walk into
 Research, Processor, Anonymized has taken consent or contract, and no

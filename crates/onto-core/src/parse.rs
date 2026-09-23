@@ -32,7 +32,7 @@
 use serde_json::Value;
 
 use crate::category::{
-    ArrowMeta, Category, CategoryBuilder, Entry, Frame, Invariant, PathSpec, Primitive,
+    ArrowMeta, Capability, Category, CategoryBuilder, Entry, Frame, Invariant, PathSpec, Primitive,
 };
 use crate::error::Error;
 use crate::require::Require;
@@ -121,6 +121,12 @@ fn split(src: &str) -> Result<(String, Vec<(usize, String)>), Error> {
                     closed = true;
                 } else {
                     current.push(c);
+                    // A `capability Name { … }` block is a whole statement;
+                    // its trailing `;` is optional.
+                    if depth == 1 && c == '}' && current.trim_start().starts_with("capability ") {
+                        statements.push((start_line, current.trim().to_owned()));
+                        current.clear();
+                    }
                 }
             }
             ';' if depth == 1 => {
@@ -189,6 +195,10 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
             },
         );
     }
+    if let Some(rest) = stmt.strip_prefix("capability ") {
+        b.capability(capability(rest)?);
+        return Ok(());
+    }
     if let Some(rest) = stmt.strip_prefix("entry ") {
         let (object, rest) = rest
             .split_once(':')
@@ -237,6 +247,7 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
     match (key.trim(), value.split_once("->")) {
         ("objects", None) => list(value).try_for_each(|o| b.object(o).map(drop)),
         ("closed", None) => list(value).try_for_each(|o| b.close(o)),
+        ("start", None) => list(value).try_for_each(|o| b.start(o)),
         (arrow, Some((src, rest))) => {
             let rest = rest.trim_start();
             let end = rest.find(|c: char| c.is_whitespace()).unwrap_or(rest.len());
@@ -344,6 +355,34 @@ fn invariant(s: &str) -> Result<Invariant, Error> {
         }
         _ => Err(bad()),
     }
+}
+
+/// `Name { issuers: a, b; revokers: c; }`
+fn capability(s: &str) -> Result<Capability, Error> {
+    let bad = |msg: &str| perr(format!("capability `{}`: {msg}", s.trim()));
+    let (name, body) = s
+        .split_once('{')
+        .ok_or_else(|| bad("expected `capability Name { issuers: …; revokers: …; }`"))?;
+    let body = body
+        .trim()
+        .strip_suffix('}')
+        .ok_or_else(|| bad("missing `}`"))?;
+    let mut cap = Capability {
+        name: name.trim().to_owned(),
+        ..Capability::default()
+    };
+    for part in body.split(';').map(str::trim).filter(|p| !p.is_empty()) {
+        let (key, value) = part
+            .split_once(':')
+            .ok_or_else(|| bad("expected `issuers: …` or `revokers: …`"))?;
+        let names: Vec<String> = list(value).map(str::to_owned).collect();
+        match key.trim() {
+            "issuers" => cap.issuers.extend(names),
+            "revokers" => cap.revokers.extend(names),
+            other => return Err(bad(&format!("unknown field `{other}` (issuers, revokers)"))),
+        }
+    }
+    Ok(cap)
 }
 
 /// A comma-separated list of names (`A, B, C`); returns the names and

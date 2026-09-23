@@ -331,6 +331,7 @@ impl Proposer for MockProposer {
                 dst: p.target.clone(),
                 about: p.about.clone(),
                 rationale: format!("same kind of case as walk {}'s proposal", p.walk),
+                ..Default::default()
             };
             return Ok((
                 vec![reused],
@@ -361,6 +362,7 @@ impl Proposer for MockProposer {
             dst,
             about: format!("cases about {word}"),
             rationale: format!("goal mentions `{word}`, which no arrow here covers"),
+            ..Default::default()
         };
         Ok((
             vec![proposal],

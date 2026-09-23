@@ -391,6 +391,7 @@ mod supervisor {
             dst: dst.into(),
             about: String::new(),
             rationale: String::new(),
+            ..Default::default()
         }
     }
 
@@ -546,6 +547,8 @@ mod contracts {
         withdraw: Consented -> Collected revokes ConsentGrant, Basis;
         entry Marketing: needs ConsentGrant require consent.marketing == true;
         entry Pseudonymized: needs Basis;
+        capability ConsentGrant { issuers: consent; revokers: withdraw; }
+        capability Basis { issuers: consent, contract; revokers: withdraw; }
         invariant via: Collected -> Marketing through Consented;
     }"#;
 
@@ -663,6 +666,7 @@ mod contracts {
             dst: dst.into(),
             about: String::new(),
             rationale: String::new(),
+            ..Default::default()
         };
 
         let (checks, _) = structural(&cat, &p("ads", "Collected", "Marketing"));
@@ -683,5 +687,147 @@ mod contracts {
             .expect("closure challenge");
         assert_eq!(challenge.outcome, Outcome::Unknown);
         assert_eq!(admission(&checks), Admission::Unknown);
+    }
+}
+
+mod authority {
+    use super::*;
+    use onto_core::laws::{Proof, derive};
+    use onto_core::supervise::{Admission, Outcome, admission, structural};
+    use onto_core::walk::Proposal;
+
+    // Declarations come first, before the arrows they name: order must not matter.
+    const SRC: &str = r#"
+    category C {
+        capability LegalBasis { issuers: consent, contract; revokers: withdraw; }
+        objects: Collected, Consented, Contract, Pseudonymized, Research;
+        start: Collected;
+        consent:  Collected -> Consented require consent.given == true ensures LegalBasis;
+        contract: Collected -> Contract require contract.active == true ensures LegalBasis;
+        pseudo:   Consented -> Pseudonymized;
+        fulfil:   Contract -> Pseudonymized;
+        study:    Pseudonymized -> Research;
+        withdraw: Consented -> Collected revokes LegalBasis;
+        entry Pseudonymized: needs LegalBasis;
+    }"#;
+
+    fn with(extra: &str) -> Result<onto_core::Category, Error> {
+        parse(&SRC.replace(
+            "entry Pseudonymized: needs LegalBasis;",
+            &format!("entry Pseudonymized: needs LegalBasis;\n{extra}"),
+        ))
+    }
+
+    #[test]
+    fn authorized_issuance_loads() {
+        let cat = parse(SRC).unwrap();
+        assert_eq!(
+            cat.capability("LegalBasis").unwrap().issuers,
+            ["consent", "contract"]
+        );
+        assert_eq!(cat.starts(), [cat.object_id("Collected").unwrap()]);
+    }
+
+    #[test]
+    fn unauthorized_minting_fails_to_load() {
+        let err = with("fake_basis: Collected -> Pseudonymized ensures LegalBasis;").unwrap_err();
+        assert_eq!(
+            err.to_string(),
+            "capability: unauthorized issuer of LegalBasis: `fake_basis` (authorized: consent, contract)"
+        );
+    }
+
+    #[test]
+    fn unauthorized_revocation_and_bad_declarations_fail() {
+        assert!(
+            with("forget: Consented -> Collected revokes LegalBasis;")
+                .unwrap_err()
+                .to_string()
+                .contains("unauthorized revoker")
+        );
+        assert!(
+            with("capability LegalBasis { issuers: consent; }")
+                .unwrap_err()
+                .to_string()
+                .contains("declared twice")
+        );
+        assert!(
+            with("capability Other { issuers: nowhere; }")
+                .unwrap_err()
+                .to_string()
+                .contains("unknown arrow `nowhere`")
+        );
+        assert!(
+            with("x: Collected -> Research ensures Undeclared;")
+                .unwrap_err()
+                .to_string()
+                .contains("undeclared capability Undeclared")
+        );
+        assert!(
+            with("start: Pseudonymized;")
+                .unwrap_err()
+                .to_string()
+                .contains("cannot start there")
+        );
+    }
+
+    #[test]
+    fn the_supervisor_uses_the_same_validator() {
+        let cat = parse(SRC).unwrap();
+        let fake = Proposal {
+            arrow: "fake_basis".into(),
+            src: "Collected".into(),
+            dst: "Pseudonymized".into(),
+            ensures: vec!["LegalBasis".into()],
+            ..Default::default()
+        };
+        let (checks, _) = structural(&cat, &fake);
+        let cap = checks.iter().find(|c| c.check == "capability").unwrap();
+        assert_eq!(cap.outcome, Outcome::Fail);
+        assert!(
+            cap.reason
+                .contains("unauthorized issuer of LegalBasis: `fake_basis`"),
+            "{}",
+            cap.reason
+        );
+        assert_eq!(admission(&checks), Admission::Reject);
+    }
+
+    #[test]
+    fn laws_carry_certificates_and_counterexamples() {
+        let cat = parse(SRC).unwrap();
+        let laws = derive(&cat, cat.starts());
+        let o = |n| cat.object_id(n).unwrap();
+        match laws.prove(&cat, o("Research"), "LegalBasis") {
+            Some(Proof::Must {
+                arrival_states,
+                granted_by,
+                revoked_by,
+            }) => {
+                assert!(arrival_states >= 1);
+                let names: Vec<_> = granted_by
+                    .iter()
+                    .map(|a| cat.arrow(*a).name.as_str())
+                    .collect();
+                assert_eq!(names, ["consent", "contract"]);
+                assert_eq!(
+                    revoked_by
+                        .iter()
+                        .map(|a| cat.arrow(*a).name.as_str())
+                        .collect::<Vec<_>>(),
+                    ["withdraw"]
+                );
+            }
+            other => panic!("{other:?}"),
+        }
+        // Collected is re-entered by `withdraw`, without LegalBasis.
+        let w = laws.path_to(o("Collected"), &Default::default()).unwrap();
+        assert_eq!(
+            w.iter()
+                .map(|a| cat.arrow(*a).name.as_str())
+                .collect::<Vec<_>>(),
+            ["consent", "withdraw"]
+        );
+        assert!(laws.witness(o("Research"), "LegalBasis").is_some());
     }
 }

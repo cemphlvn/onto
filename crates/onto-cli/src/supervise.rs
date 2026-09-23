@@ -92,6 +92,8 @@ pub fn review_main(args: ReviewArgs) -> Result<(), BoxError> {
                 dst: s("dst"),
                 about: s("about"),
                 rationale: s("rationale"),
+                ensures: names(&p["ensures"]),
+                revokes: names(&p["revokes"]),
             };
             let key = (
                 proposal.src.clone(),
@@ -275,6 +277,8 @@ pub fn promote_main(args: PromoteArgs) -> Result<(), BoxError> {
         dst: s("dst"),
         about: s("about"),
         rationale: s("rationale"),
+        ensures: names(&review["proposal"]["ensures"]),
+        revokes: names(&review["proposal"]["revokes"]),
     };
 
     // The file may have changed since the review: prove the structure again.
@@ -318,8 +322,15 @@ pub fn promote_main(args: PromoteArgs) -> Result<(), BoxError> {
     } else {
         format!(" {}", serde_json::to_string(&p.about)?)
     };
+    let mut effects = String::new();
+    if !p.ensures.is_empty() {
+        effects.push_str(&format!(" ensures {}", p.ensures.join(", ")));
+    }
+    if !p.revokes.is_empty() {
+        effects.push_str(&format!(" revokes {}", p.revokes.join(", ")));
+    }
     block.push_str(&format!(
-        "    {}: {} -> {}{about};\n",
+        "    {}: {} -> {}{about}{effects};\n",
         p.arrow, p.src, p.dst
     ));
 
@@ -343,6 +354,15 @@ pub fn promote_main(args: PromoteArgs) -> Result<(), BoxError> {
     );
     println!("review the diff and commit it: git is the delta log.");
     Ok(())
+}
+
+fn names(v: &Value) -> Vec<String> {
+    v.as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_str)
+        .map(str::to_owned)
+        .collect()
 }
 
 /// Today's date (UTC) as YYYY-MM-DD, without a date library.

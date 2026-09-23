@@ -34,9 +34,76 @@ pub struct Laws {
     pub reached: BTreeSet<ObjId>,
     /// Arrows taken by at least one walk.
     pub used: BTreeSet<ArrowId>,
+    /// Token sets a walk can be at each object with (started or arrived).
+    pub states: BTreeMap<ObjId, BTreeSet<Tokens>>,
+    /// How each explored state was first reached (breadth-first, so the
+    /// reconstructed paths are shortest). Absent for start states.
+    pred: BTreeMap<(ObjId, Tokens), (ObjId, Tokens, ArrowId)>,
+    /// How each arrival state was first arrived at by an arrow.
+    arrival_pred: BTreeMap<(ObjId, Tokens), (ObjId, Tokens, ArrowId)>,
+}
+
+/// Evidence for a claim about one token on arrival at one object.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Proof {
+    /// Every arrival state holds the token: the exhaustive certificate.
+    Must {
+        arrival_states: usize,
+        /// Issuers of the token some walk actually takes (every holding
+        /// walk took one of them).
+        granted_by: Vec<ArrowId>,
+        /// Revokers some walk takes (every walk that took one re-acquired
+        /// the token before arriving).
+        revoked_by: Vec<ArrowId>,
+    },
+    /// Some arrival lacks the token: a counterexample path.
+    NotAlways { counterexample: Vec<ArrowId> },
 }
 
 impl Laws {
+    /// A shortest path from a start to the state `(o, tokens)`, ending with
+    /// an arrow into `o` when it is an arrival state.
+    pub fn path_to(&self, o: ObjId, tokens: &Tokens) -> Option<Vec<ArrowId>> {
+        let (mut obj, mut tok, last) = self.arrival_pred.get(&(o, tokens.clone())).cloned()?;
+        let mut path = vec![last];
+        while let Some((po, pt, a)) = self.pred.get(&(obj, tok.clone())).cloned() {
+            path.push(a);
+            obj = po;
+            tok = pt;
+        }
+        path.reverse();
+        Some(path)
+    }
+
+    /// A witness that some walk arrives at `o` holding `token`.
+    pub fn witness(&self, o: ObjId, token: &str) -> Option<Vec<ArrowId>> {
+        let t = self.arrivals.get(&o)?.iter().find(|t| t.contains(token))?;
+        self.path_to(o, t)
+    }
+
+    /// Proof or counterexample for "every walk arriving at `o` holds
+    /// `token`". `None` if nothing arrives at `o`.
+    pub fn prove(&self, cat: &Category, o: ObjId, token: &str) -> Option<Proof> {
+        let arrivals = self.arrivals.get(&o)?;
+        if let Some(lacking) = arrivals.iter().find(|t| !t.contains(token)) {
+            return Some(Proof::NotAlways {
+                counterexample: self.path_to(o, lacking).unwrap_or_default(),
+            });
+        }
+        let by = |f: fn(&crate::category::Arrow) -> &Vec<String>| {
+            self.used
+                .iter()
+                .copied()
+                .filter(|a| f(cat.arrow(*a)).iter().any(|t| t == token))
+                .collect()
+        };
+        Some(Proof::Must {
+            arrival_states: arrivals.len(),
+            granted_by: by(|a| &a.ensures),
+            revoked_by: by(|a| &a.revokes),
+        })
+    }
+
     /// Tokens every walk holds on arriving at `o` (`None`: unreachable).
     pub fn must(&self, o: ObjId) -> Option<Tokens> {
         let mut sets = self.arrivals.get(&o)?.iter();
@@ -72,12 +139,15 @@ pub fn derive(cat: &Category, starts: &[ObjId]) -> Laws {
     } else {
         starts.to_vec()
     };
-    let (arrivals, reached, used) = explore(cat, &starts, &[]);
+    let e = explore(cat, &starts, &[]);
     Laws {
         starts,
-        arrivals,
-        reached,
-        used,
+        reached: e.states.keys().copied().collect(),
+        arrivals: e.arrivals,
+        used: e.used,
+        states: e.states,
+        pred: e.pred,
+        arrival_pred: e.arrival_pred,
     }
 }
 
@@ -93,7 +163,7 @@ pub fn startable(cat: &Category) -> Vec<ObjId> {
 /// object `to` without visiting `avoid`, honouring entry contracts and
 /// effects. (`from == to` is never a bypass.)
 pub fn walkable(cat: &Category, from: ObjId, to: ObjId, avoid: &[ObjId]) -> bool {
-    from != to && explore(cat, &[from], avoid).0.contains_key(&to)
+    from != to && explore(cat, &[from], avoid).arrivals.contains_key(&to)
 }
 
 /// For each `via` invariant: `Some(true)` if the contracts enforce it for
@@ -108,22 +178,28 @@ pub fn enforced(cat: &Category, inv: &Invariant) -> Option<bool> {
     Some(!walkable(cat, id(from)?, id(to)?, &avoid))
 }
 
-fn explore(
-    cat: &Category,
-    starts: &[ObjId],
-    avoid: &[ObjId],
-) -> (
-    BTreeMap<ObjId, BTreeSet<Tokens>>,
-    BTreeSet<ObjId>,
-    BTreeSet<ArrowId>,
-) {
-    let mut arrivals: BTreeMap<ObjId, BTreeSet<Tokens>> = BTreeMap::new();
-    let mut seen: BTreeSet<(ObjId, Tokens)> = BTreeSet::new();
-    let mut used = BTreeSet::new();
+struct Exploration {
+    arrivals: BTreeMap<ObjId, BTreeSet<Tokens>>,
+    states: BTreeMap<ObjId, BTreeSet<Tokens>>,
+    used: BTreeSet<ArrowId>,
+    pred: BTreeMap<(ObjId, Tokens), (ObjId, Tokens, ArrowId)>,
+    arrival_pred: BTreeMap<(ObjId, Tokens), (ObjId, Tokens, ArrowId)>,
+}
+
+fn explore(cat: &Category, starts: &[ObjId], avoid: &[ObjId]) -> Exploration {
+    let mut e = Exploration {
+        arrivals: BTreeMap::new(),
+        states: BTreeMap::new(),
+        used: BTreeSet::new(),
+        pred: BTreeMap::new(),
+        arrival_pred: BTreeMap::new(),
+    };
     let mut queue: VecDeque<(ObjId, Tokens)> = VecDeque::new();
     for &s in starts.iter().filter(|s| !avoid.contains(s)) {
         // Starting is entering: only where the contract needs no tokens.
-        if cat.object(s).entry.needs.is_empty() && seen.insert((s, Tokens::new())) {
+        if cat.object(s).entry.needs.is_empty()
+            && e.states.entry(s).or_default().insert(Tokens::new())
+        {
             queue.push_back((s, Tokens::new()));
         }
     }
@@ -144,13 +220,21 @@ fn explore(
             {
                 continue;
             }
-            used.insert(a);
-            arrivals.entry(arrow.dst).or_default().insert(after.clone());
-            if seen.insert((arrow.dst, after.clone())) {
+            e.used.insert(a);
+            if e.arrivals
+                .entry(arrow.dst)
+                .or_default()
+                .insert(after.clone())
+            {
+                e.arrival_pred
+                    .insert((arrow.dst, after.clone()), (o, tokens.clone(), a));
+            }
+            if e.states.entry(arrow.dst).or_default().insert(after.clone()) {
+                e.pred
+                    .insert((arrow.dst, after.clone()), (o, tokens.clone(), a));
                 queue.push_back((arrow.dst, after));
             }
         }
     }
-    let reached = seen.into_iter().map(|(o, _)| o).collect();
-    (arrivals, reached, used)
+    e
 }

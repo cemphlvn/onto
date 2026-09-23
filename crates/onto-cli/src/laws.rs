@@ -1,34 +1,60 @@
-//! `onto laws`: what entry contracts and arrow effects imply.
+//! `onto laws`: what entry contracts and arrow effects imply, with proofs.
 
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
 use clap::Args;
-use onto_core::laws::{derive, enforced};
-use onto_core::{Invariant, ObjId};
+use onto_core::laws::{Proof, derive, enforced, startable};
+use onto_core::{ArrowId, Category, Invariant, ObjId};
 
 use crate::run::BoxError;
 
 #[derive(Args)]
 pub struct LawsArgs {
     file: PathBuf,
-    /// Start objects, comma separated (default: objects with no incoming arrow).
+    /// Guarantees made by this application: walks start at the declared
+    /// `start:` objects (the default when any are declared).
+    #[arg(long, conflicts_with_all = ["all_startable", "from"])]
+    from_declared_roots: bool,
+    /// Guarantees made by the category itself: walks may start at any
+    /// object whose entry contract needs no tokens (the default otherwise).
+    #[arg(long, conflicts_with = "from")]
+    all_startable: bool,
+    /// Start at these objects, comma separated.
     #[arg(long, value_delimiter = ',')]
     from: Vec<String>,
+    /// Print a witness or counterexample path for every claim.
+    #[arg(long)]
+    proofs: bool,
 }
 
 pub fn main(args: LawsArgs) -> Result<(), BoxError> {
     let src =
         std::fs::read_to_string(&args.file).map_err(|e| format!("{}: {e}", args.file.display()))?;
     let cat = onto_core::parse(&src)?;
-    let starts = args
-        .from
-        .iter()
-        .map(|n| cat.object_id(n))
-        .collect::<Result<Vec<_>, _>>()?;
+    let (starts, mode) = if !args.from.is_empty() {
+        let ids = args
+            .from
+            .iter()
+            .map(|n| cat.object_id(n))
+            .collect::<Result<Vec<_>, _>>()?;
+        (ids, "given starts")
+    } else if args.from_declared_roots || (!args.all_startable && !cat.starts().is_empty()) {
+        if cat.starts().is_empty() {
+            return Err("no `start:` declared in this category".into());
+        }
+        (
+            cat.starts().to_vec(),
+            "declared roots: guarantees of this application",
+        )
+    } else {
+        (
+            startable(&cat),
+            "all startable objects: guarantees of the category itself",
+        )
+    };
     let laws = derive(&cat, &starts);
     let name = |o: ObjId| cat.object(o).name.as_str();
-    let arrow = |a: onto_core::ArrowId| cat.arrow(a).name.as_str();
     let set = |t: &BTreeSet<String>| {
         if t.is_empty() {
             "—".to_owned()
@@ -37,37 +63,30 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
         }
     };
 
+    println!("category {} · {mode}", cat.name());
     println!(
-        "category {} · walks start at {} holding no tokens · case preconditions assumed satisfiable",
-        cat.name(),
+        "walks start at {} holding no tokens · case preconditions assumed satisfiable · {} states explored",
         laws.starts
             .iter()
             .map(|o| name(*o))
             .collect::<Vec<_>>()
-            .join(", ")
+            .join(", "),
+        laws.states.values().map(BTreeSet::len).sum::<usize>(),
     );
 
-    let tokens: BTreeSet<String> = cat
-        .arrows()
-        .iter()
-        .flat_map(|a| a.ensures.iter().chain(&a.revokes))
-        .chain(cat.objects().iter().flat_map(|o| &o.entry.needs))
-        .cloned()
-        .collect();
-    if tokens.is_empty() {
-        println!("\nno capability tokens declared (no `ensures`, `revokes` or `entry … needs`)");
+    if cat.capabilities().is_empty() {
+        println!("\nno capabilities declared");
     } else {
-        println!("\ntokens");
-        for t in &tokens {
-            let by = |f: fn(&onto_core::Arrow) -> &Vec<String>| {
-                let v: Vec<&str> = cat
-                    .arrows()
+        println!("\ncapabilities   authorized (declared) · used by some walk");
+        for c in cat.capabilities() {
+            let used = |names: &[String]| -> String {
+                let v: Vec<&str> = names
                     .iter()
-                    .filter(|a| f(a).contains(t))
-                    .map(|a| a.name.as_str())
+                    .filter(|n| cat.arrow_id(n).is_ok_and(|a| laws.used.contains(&a)))
+                    .map(String::as_str)
                     .collect();
                 if v.is_empty() {
-                    "—".to_owned()
+                    "—".into()
                 } else {
                     v.join(", ")
                 }
@@ -75,13 +94,22 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
             let needed: Vec<&str> = cat
                 .objects()
                 .iter()
-                .filter(|o| o.entry.needs.contains(t))
+                .filter(|o| o.entry.needs.contains(&c.name))
                 .map(|o| o.name.as_str())
                 .collect();
+            println!("  {}", c.name);
             println!(
-                "  {t:<18} ensured by {} · revoked by {} · needed on entry to {}",
-                by(|a| &a.ensures),
-                by(|a| &a.revokes),
+                "    issuers   {} · used {}",
+                or_none(&c.issuers),
+                used(&c.issuers)
+            );
+            println!(
+                "    revokers  {} · used {}",
+                or_none(&c.revokers),
+                used(&c.revokers)
+            );
+            println!(
+                "    needed on entry to {}",
                 if needed.is_empty() {
                     "—".to_owned()
                 } else {
@@ -93,7 +121,6 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
 
     println!("\non arrival by an arrow (every walk holds · some walk may hold)");
     for o in &laws.reached {
-        let must = laws.must(*o).unwrap_or_default();
         let entry = &cat.object(*o).entry;
         let contract = if entry.is_empty() {
             String::new()
@@ -107,53 +134,67 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
             }
             format!("   entry: {}", parts.join(" · "))
         };
-        println!(
-            "  {:<16} {:<28} {:<28}{contract}",
-            name(*o),
-            set(&must),
-            set(&laws.may(*o))
-        );
+        let (must, may) = match laws.must(*o) {
+            Some(m) => (set(&m), set(&laws.may(*o))),
+            None => ("(started only)".to_owned(), "—".to_owned()),
+        };
+        println!("  {:<16} {must:<28} {may:<28}{contract}", name(*o));
     }
 
-    let mut derived = Vec::new();
+    println!("\nlaws (each with its certificate)");
+    let mut any = false;
     for o in laws.arrivals.keys() {
         let stated: BTreeSet<&String> = cat.object(*o).entry.needs.iter().collect();
-        for t in laws.must(*o).unwrap_or_default() {
-            let ensurers: Vec<&str> = cat
-                .arrows()
-                .iter()
-                .filter(|a| a.ensures.contains(&t))
-                .map(|a| a.name.as_str())
-                .collect();
-            let revokers: Vec<&str> = cat
-                .arrows()
-                .iter()
-                .filter(|a| a.revokes.contains(&t))
-                .map(|a| a.name.as_str())
-                .collect();
-            let since = if revokers.is_empty() {
-                String::new()
-            } else {
-                format!(", and no {} since", revokers.join(" or "))
-            };
-            let kind = if stated.contains(&t) {
-                "by entry contract"
-            } else {
-                "derived"
-            };
-            derived.push(format!(
-                "  every walk into {} has taken {}{since}   ({kind}: holds {t})",
-                name(*o),
-                ensurers.join(" or "),
-            ));
+        for t in laws.may(*o) {
+            match laws.prove(&cat, *o, &t) {
+                Some(Proof::Must {
+                    arrival_states,
+                    granted_by,
+                    revoked_by,
+                }) => {
+                    any = true;
+                    let kind = if stated.contains(&t) {
+                        "by entry contract"
+                    } else {
+                        "derived"
+                    };
+                    println!("  MUST  every walk into {} holds {t}   ({kind})", name(*o));
+                    println!(
+                        "        certificate: {arrival_states} arrival state(s), 0 without {t}; granted only by {}{}",
+                        arrows(&cat, &granted_by),
+                        if revoked_by.is_empty() {
+                            String::new()
+                        } else {
+                            format!(
+                                "; after {} it is re-granted before arrival",
+                                arrows(&cat, &revoked_by)
+                            )
+                        },
+                    );
+                    if args.proofs {
+                        for tokens in &laws.arrivals[o] {
+                            if let Some(p) = laws.path_to(*o, tokens) {
+                                println!("        · {}", show(&cat, &p));
+                            }
+                        }
+                    }
+                }
+                Some(Proof::NotAlways { counterexample }) if args.proofs => {
+                    println!(
+                        "  MAY   some walk into {} holds {t}, not every walk",
+                        name(*o)
+                    );
+                    if let Some(w) = laws.witness(*o, &t) {
+                        println!("        witness:        {}", show(&cat, &w));
+                    }
+                    println!("        counterexample: {}", show(&cat, &counterexample));
+                }
+                _ => {}
+            }
         }
     }
-    println!("\nlaws");
-    if derived.is_empty() {
+    if !any {
         println!("  none: no object is reached only by token-holding walks");
-    }
-    for l in derived {
-        println!("{l}");
     }
 
     let dead = laws.dead(&cat);
@@ -164,13 +205,22 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
     for a in dead {
         let x = cat.arrow(a);
         let dst = cat.object(x.dst);
+        let held: Vec<String> = laws
+            .states
+            .get(&x.src)
+            .into_iter()
+            .flatten()
+            .map(|t| format!("{{{}}}", set(t)))
+            .collect();
         println!(
-            "  {}: {} -> {}   {} needs {} on entry",
-            arrow(a),
+            "  {}: {} -> {}   {} needs {} on entry; {} is only ever held with {}",
+            x.name,
             name(x.src),
             dst.name,
             dst.name,
-            dst.entry.needs.join(", ")
+            dst.entry.needs.join(", "),
+            name(x.src),
+            held.join(" or ")
         );
     }
 
@@ -180,7 +230,7 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
         .filter(|i| matches!(i, Invariant::Via { .. }))
         .collect();
     if !vias.is_empty() {
-        println!("\ninvariants   graph: no path bypasses · walks: no walk can bypass (contracts)");
+        println!("\ninvariants   graph: proved at load · walks: no walk can bypass (contracts)");
         for inv in vias {
             let walks = match enforced(&cat, inv) {
                 Some(true) => "✓",
@@ -191,4 +241,51 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
         }
     }
     Ok(())
+}
+
+fn or_none(v: &[String]) -> String {
+    if v.is_empty() {
+        "—".into()
+    } else {
+        v.join(", ")
+    }
+}
+
+fn arrows(cat: &Category, v: &[ArrowId]) -> String {
+    if v.is_empty() {
+        "—".into()
+    } else {
+        v.iter()
+            .map(|a| cat.arrow(*a).name.as_str())
+            .collect::<Vec<_>>()
+            .join(" or ")
+    }
+}
+
+/// `Collected --consent [+ConsentGrant +LegalBasis]--> Consented --pseudonymize--> …`
+fn show(cat: &Category, path: &[ArrowId]) -> String {
+    let Some(first) = path.first() else {
+        return "(start)".into();
+    };
+    let mut out = cat.object(cat.arrow(*first).src).name.clone();
+    for a in path {
+        let x = cat.arrow(*a);
+        let effects: Vec<String> = x
+            .revokes
+            .iter()
+            .map(|t| format!("-{t}"))
+            .chain(x.ensures.iter().map(|t| format!("+{t}")))
+            .collect();
+        let effects = if effects.is_empty() {
+            String::new()
+        } else {
+            format!(" [{}]", effects.join(" "))
+        };
+        out.push_str(&format!(
+            " --{}{effects}--> {}",
+            x.name,
+            cat.object(x.dst).name
+        ));
+    }
+    out
 }

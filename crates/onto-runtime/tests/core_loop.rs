@@ -517,6 +517,7 @@ mod supervisor {
             dst: dst.into(),
             about: about.into(),
             rationale: String::new(),
+            ..Default::default()
         }
     }
 
@@ -632,6 +633,7 @@ mod contracts {
         market:  Consented -> Marketing "offers";
         entry Marketing: needs ConsentGrant;
         closed: Collected, Consented, Marketing;
+        capability ConsentGrant { issuers: consent; }
     }"#;
 
     async fn walk(from: &str, goal: &str, case: Value) -> RunReport {

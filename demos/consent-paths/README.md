@@ -118,6 +118,15 @@ every walk into Marketing has taken consent, and no withdraw since             (
 via: Collected -> Marketing through Consented        graph ✓   walks ✓
 ```
 
+Capabilities are **declared with authority**
+(`capability LegalBasis { issuers: consent, contract; revokers: withdraw; }`),
+so an arrow cannot counterfeit the evidence a contract asks for:
+`fake_basis: Collected -> Pseudonymized ensures LegalBasis` fails to load,
+is rejected in review, and cannot be promoted even with a forged verdict.
+`start: Collected` declares the application root: from it, every walk
+into `Aggregated` holds a legal basis (application law); from every
+startable object it does not, since `Anonymized` needs none (category law).
+
 Starting past the evidence check does not help: a case that claims an
 opt-in and starts at `Consented` finds `Marketing` and `Pseudonymized`
 `blocked_by_entry` (it holds neither token).

@@ -31,6 +31,8 @@ pub enum Error {
     Frame { object: String, msg: String },
     #[error("invariant `{invariant}` is violated by `{witness}`")]
     InvariantViolated { invariant: String, witness: String },
+    #[error("capability: {0}")]
+    Capability(String),
     #[error("require {0}")]
     Require(String),
     #[error("rewrite construction failed: {0}")]

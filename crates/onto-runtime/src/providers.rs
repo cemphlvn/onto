@@ -362,6 +362,7 @@ impl Proposer for OpenRouter {
                 dst: p["target"].as_str().unwrap_or_default().to_owned(),
                 about: p["about"].as_str().unwrap_or_default().to_owned(),
                 rationale: p["rationale"].as_str().unwrap_or_default().to_owned(),
+                ..Default::default()
             })
             .collect();
         let usage = Usage {

@@ -22,12 +22,17 @@ category Consent {
     contract: Collected -> Contract  "the use is necessary to deliver the service the person signed up for (GDPR 6(1)(b))"
               require contract.active == true ensures LegalBasis;
     closed: Collected;                      # the only two bases this organization relies on
+    start: Collected;                       # where this application's walks begin
 
     pseudonymize: Consented -> Pseudonymized "remove direct identifiers before further use: analytics, research, sharing";
     market:       Consented -> Marketing "send marketing to the person";
     withdraw:     Consented -> Collected "the person withdraws their consent"
                   revokes ConsentGrant, LegalBasis;
     closed: Consented;
+
+    # Capabilities: only these arrows may issue or revoke each token.
+    capability ConsentGrant { issuers: consent; revokers: withdraw; }
+    capability LegalBasis   { issuers: consent, contract; revokers: withdraw; }
 
     # Entry contracts: stated once, inherited by every arrow in.
     entry Pseudonymized: needs LegalBasis;

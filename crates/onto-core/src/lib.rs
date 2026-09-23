@@ -13,8 +13,8 @@ pub mod supervise;
 pub mod walk;
 
 pub use category::{
-    Arrow, ArrowId, ArrowMeta, Category, CategoryBuilder, Closure, Entry, Frame, Gate, Invariant,
-    ObjId, Object, PathSpec, Primitive,
+    Arrow, ArrowId, ArrowMeta, Capability, Category, CategoryBuilder, Closure, Entry, Frame, Gate,
+    Invariant, ObjId, Object, PathSpec, Primitive,
 };
 pub use equality::{Equality, Verdict};
 pub use error::Error;

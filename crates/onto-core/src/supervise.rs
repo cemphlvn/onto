@@ -68,9 +68,14 @@ pub fn admission(checks: &[Check]) -> Admission {
 /// well-formed, so callers can run further checks on it.
 pub fn structural(cat: &Category, p: &Proposal) -> (Vec<Check>, Option<Category>) {
     let label = format!("{}: {} -> {}", p.arrow, p.src, p.dst);
-    let about = (!p.about.is_empty()).then(|| serde_json::Value::String(p.about.clone()));
+    let meta = || crate::category::ArrowMeta {
+        instructions: (!p.about.is_empty()).then(|| serde_json::Value::String(p.about.clone())),
+        ensures: p.ensures.clone(),
+        revokes: p.revokes.clone(),
+        ..Default::default()
+    };
     let mut checks = Vec::new();
-    let extended = match cat.extend(&p.arrow, &p.src, &p.dst, about.clone()) {
+    let extended = match cat.extend(&p.arrow, &p.src, &p.dst, meta()) {
         Ok(c) => Some(c),
         Err(e) => {
             checks.push(Check {
@@ -89,7 +94,7 @@ pub fn structural(cat: &Category, p: &Proposal) -> (Vec<Check>, Option<Category>
     let probe = match &extended {
         Some(c) => Some(c.clone()),
         None if cat.arrow_id(&p.arrow).is_ok() => cat
-            .extend(&format!("{}__proposed", p.arrow), &p.src, &p.dst, about)
+            .extend(&format!("{}__proposed", p.arrow), &p.src, &p.dst, meta())
             .ok(),
         None => None,
     };
@@ -141,13 +146,35 @@ pub fn structural(cat: &Category, p: &Proposal) -> (Vec<Check>, Option<Category>
     if extended.is_some() {
         checks.push(Check {
             check: "well_formed".into(),
-            subject: label,
+            subject: label.clone(),
             outcome: Outcome::Pass,
             reason: if new_object {
                 format!("valid names and types; introduces the new object {}", p.dst)
             } else {
                 "valid names and types".into()
             },
+            p: None,
+            witness: None,
+        });
+    }
+    // The same capability rules as loading and promotion: no token may be
+    // minted or revoked without declared authority.
+    if let Some(ext) = &extended {
+        let (outcome, reason) = match ext.validate_capabilities() {
+            Ok(()) if p.ensures.is_empty() && p.revokes.is_empty() => {
+                (Outcome::Pass, "no capability effects".to_owned())
+            }
+            Ok(()) => (
+                Outcome::Pass,
+                "capability effects are authorized".to_owned(),
+            ),
+            Err(e) => (Outcome::Fail, e.to_string()),
+        };
+        checks.push(Check {
+            check: "capability".into(),
+            subject: label.clone(),
+            outcome,
+            reason,
             p: None,
             witness: None,
         });
