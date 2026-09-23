@@ -1,0 +1,14 @@
+# One requested use per line: `UseRequested: {case}`. Observations are signed by the declared
+# attesters (public keys in consent.onto; secret keys are not in the repository).
+# C-1: the consent ledger attests current marketing consent.
+UseRequested: {"goal": "send the person our autumn offers by email", "id": "C-1", "observations": [{"at": "2026-09-23T01:05:23Z", "attester": "ConsentLedger", "case": "C-1", "claim": {"consent.marketing": true}, "signature": "rgiv87AKk+8OysDlBegV5kcPJ1n5CvY9EmUPjHA1zDxTEkZSbjiya9dmycDPfiF4pJwhU+VZbeS4+O/ekfzwAw=="}]}
+# C-2: the ledger attests that marketing consent is withdrawn (false).
+UseRequested: {"goal": "send the person our autumn offers by email", "id": "C-2", "observations": [{"at": "2026-09-23T01:05:23Z", "attester": "ConsentLedger", "case": "C-2", "claim": {"consent.marketing": false}, "signature": "bPQtca0O4EFUQHg8VMpzuowkJzkVj5nux5NiMZp2V3mSncfPs4+Fa/aPnVf9xy08Pte7y02hZpKwtBT51WJGDQ=="}]}
+# C-3: nobody attests anything.
+UseRequested: {"goal": "send the person our autumn offers by email", "id": "C-3"}
+# C-4: a study, approved by the ethics board.
+UseRequested: {"goal": "use the person's purchase history in an academic study of shopping habits", "id": "C-4", "observations": [{"at": "2026-09-23T01:05:23Z", "attester": "EthicsBoard", "case": "C-4", "claim": {"ethics.approved": true}, "signature": "R48BPOZgcKOBNwtF2vKLXDRO3SRAc3P9OO8FOBPgr3Ldfgsqi2nm0VSp5bwf0B8TfVyfVwbqBzpT9NnELkquDg=="}]}
+# C-5: forged: claims to be the consent ledger, signed with another key.
+UseRequested: {"goal": "send the person our autumn offers by email", "id": "C-5", "observations": [{"at": "2026-09-23T01:05:23Z", "attester": "ConsentLedger", "case": "C-5", "claim": {"consent.marketing": true}, "signature": "IkQadAtCYE/01otsAM35BA17V4qKclUTJxawHL3JoQafnl/r6sJ5bzHl3WvtCvvtUR15yMZnCzRffJg0afUfBw=="}]}
+# C-6: replay: C-1's genuine observation copied into another case.
+UseRequested: {"goal": "send the person our autumn offers by email", "id": "C-6", "observations": [{"at": "2026-09-23T01:05:23Z", "attester": "ConsentLedger", "case": "C-1", "claim": {"consent.marketing": true}, "signature": "rgiv87AKk+8OysDlBegV5kcPJ1n5CvY9EmUPjHA1zDxTEkZSbjiya9dmycDPfiF4pJwhU+VZbeS4+O/ekfzwAw=="}]}

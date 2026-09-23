@@ -472,17 +472,26 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                             .map(|(w, _)| w.to_string())
                             .collect();
                         completion_attested = unattested.is_empty();
-                        let evidence = if completion_attested {
-                            let by: Vec<String> = arrivals
-                                .iter()
-                                .map(|(w, a)| format!("walk {w}: {}", a.join(", ")))
-                                .collect();
-                            format!("completion attested ({})", by.join("; "))
-                        } else {
-                            format!(
+                        let by: Vec<String> = arrivals
+                            .iter()
+                            .map(|(w, a)| format!("walk {w}: {}", a.join(", ")))
+                            .collect();
+                        let evidence = match (join, completion_attested) {
+                            (onto_core::Join::Gate { .. }, true) => {
+                                format!("authorized by attested evidence ({})", by.join("; "))
+                            }
+                            (onto_core::Join::Gate { .. }, false) => {
+                                "authority NOT attested (the authority branch arrived on judgment alone)".to_owned()
+                            }
+                            (onto_core::Join::Race, true) => format!("winner attested ({})", by.join("; ")),
+                            (onto_core::Join::Race, false) => {
+                                "winner NOT attested (it arrived on judgment alone)".to_owned()
+                            }
+                            (onto_core::Join::All, true) => format!("completion attested ({})", by.join("; ")),
+                            (onto_core::Join::All, false) => format!(
                                 "reached, completion NOT attested (walk {} arrived on judgment alone)",
                                 unattested.join(", ")
-                            )
+                            ),
                         };
                         let detail = format!(
                             "{evidence}; continues holding {{{}}}",

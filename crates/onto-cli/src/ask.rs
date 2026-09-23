@@ -138,6 +138,7 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
             StepRecord::Followed {
                 from,
                 to,
+                decided_by,
                 confidence,
                 p,
                 alternatives,
@@ -145,8 +146,12 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                 ..
             } => {
                 n += 1;
-                let sure = confidence.unwrap_or(*p) * 100.0;
-                println!("{pad}{n}. {from} → {to}   ({sure:.0}% sure)");
+                if *decided_by == onto_core::Primitive::Split {
+                    println!("{pad}{n}. {from} → {to}   (a required step: no judgment)");
+                } else {
+                    let sure = confidence.unwrap_or(*p) * 100.0;
+                    println!("{pad}{n}. {from} → {to}   ({sure:.0}% sure)");
+                }
                 for a in attested {
                     println!("{pad}   attested by {a}");
                 }
@@ -168,7 +173,11 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                     println!(
                         "{pad}   ⤝ the parts of your case came back together at {at} ({detail})"
                     );
-                    attested_join = Some(format!("every check at {at} was attested"));
+                    attested_join = Some(if detail.starts_with("authorized") {
+                        format!("authorized at {at} on attested evidence")
+                    } else {
+                        format!("every check at {at} was attested")
+                    });
                 }
                 "continued" => println!(
                     "{pad}   ⤝ the parts of your case came back together at {at} ({detail})"

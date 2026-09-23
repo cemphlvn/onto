@@ -377,9 +377,12 @@ impl Category {
                         o.name
                     ));
                 };
-                if self.object(self.arrow(a).src).frame.primitive != Primitive::Noul {
+                if !matches!(
+                    self.object(self.arrow(a).src).frame.primitive,
+                    Primitive::Noul | Primitive::Split
+                ) {
                     return bad(format!(
-                        "join at {}: authority `{authority}` must leave a noul frame (only noul frames fork)",
+                        "join at {}: authority `{authority}` must leave a noul or split frame (only those fork)",
                         o.name
                     ));
                 }

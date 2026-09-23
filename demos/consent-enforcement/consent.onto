@@ -1,0 +1,80 @@
+# Consent Enforcement: a requested use of personal data proceeds only when
+# its purpose, the evidence for it, and an authorized capability meet.
+#
+# 1. The judge decides what kind of use is being requested (a choice).
+# 2. The use splits (no judgment) into two parallel lines of work: the
+#    content (drafting a campaign, preparing a dataset) and the authority
+#    check (the consent ledger or the ethics board, attested and signed).
+# 3. They meet at a gate: the content continues only once the authority
+#    branch arrives, and receives only the capability for this purpose
+#    (the export allowlist), nothing else.
+# 4. The protected use has an entry contract that needs that capability,
+#    so no route, present or future, reaches it without the gate.
+#
+# The data subject never uses this system: they are protected at the moment
+# an organization attempts a use, not only when consent was collected.
+
+category ConsentEnforcement {
+    attester ConsentLedger { key: ed25519:uomt7FRWuh7oLTBokozYQ3Ebz95bNUpHixR+LflV3aU=; observes: consent.marketing, consent.research; }
+    attester EthicsBoard   { key: ed25519:dJNNKrEo04whpPuT5JOMdGc2dpS3q8+E1JMLnZGJP7I=;   observes: ethics.approved; }
+
+    capability MarketingGrant { issuers: marketing_consented; }
+    capability ResearchGrant  { issuers: research_consented, ethics_approved; }
+
+    objects: UseRequested, MarketingUse, ResearchUse,
+             Draft, MarketingCheck, MarketingCleared, Sent,
+             Dataset, ResearchCheck, ResearchCleared, Study;
+    start: UseRequested;
+
+    about UseRequested: "someone in the organization wants to use a person's data";
+    about Sent: "marketing is sent to the person";
+    about Study: "the person's data is used in a study";
+
+    frame UseRequested: choice "What kind of use of the person's data is being requested?";
+    marketing: UseRequested -> MarketingUse "sending marketing, offers or newsletters to the person";
+    research:  UseRequested -> ResearchUse  "using the person's data in a scientific or academic study";
+    closed: UseRequested;
+
+    # Marketing: prepare the campaign and check consent, in parallel.
+    frame MarketingUse: split;
+    prepare_campaign: MarketingUse -> Draft;
+    check_marketing:  MarketingUse -> MarketingCheck;
+    closed: MarketingUse;
+
+    # Preparation is mechanical, not a judgment: a one-arrow split proceeds.
+    frame Draft: split;
+    drafted: Draft -> MarketingCleared "draft the campaign";
+    marketing_consented: MarketingCheck -> MarketingCleared "the consent ledger shows current marketing consent"
+                         attested consent.marketing == true ensures MarketingGrant;
+    closed: Draft, MarketingCheck;
+    join MarketingCleared: gate authority check_marketing export MarketingGrant;
+
+    # The purpose was judged once, at the start; once authorized, the use
+    # proceeds without another judgment (onto governs the decision, not
+    # the action). The entry contract on Sent still demands the capability.
+    frame MarketingCleared: split;
+    send: MarketingCleared -> Sent "send the campaign to the person";
+    entry Sent: needs MarketingGrant;
+    closed: MarketingCleared, Sent;
+
+    # Research: prepare the dataset and establish the basis, in parallel.
+    frame ResearchUse: split;
+    pseudonymize:   ResearchUse -> Dataset;
+    check_research: ResearchUse -> ResearchCheck;
+    closed: ResearchUse;
+
+    frame Dataset: split;
+    prepared: Dataset -> ResearchCleared "pseudonymize the dataset";
+    frame ResearchCheck: choice "On which basis may this study use the person's data?";
+    research_consented: ResearchCheck -> ResearchCleared "the person consented to research use"
+                        attested consent.research == true ensures ResearchGrant;
+    ethics_approved:    ResearchCheck -> ResearchCleared "an ethics board approved this study"
+                        attested ethics.approved == true ensures ResearchGrant;
+    closed: Dataset, ResearchCheck;
+    join ResearchCleared: gate authority check_research export ResearchGrant;
+
+    frame ResearchCleared: split;
+    run_study: ResearchCleared -> Study "run the study on the prepared dataset";
+    entry Study: needs ResearchGrant;
+    closed: ResearchCleared, Study;
+}

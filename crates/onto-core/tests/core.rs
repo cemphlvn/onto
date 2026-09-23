@@ -870,7 +870,9 @@ mod joins {
     #[test]
     fn gate_authority_and_exports_are_validated() {
         let err = |j: &str| parse(&SRC.replace("JOIN", j)).unwrap_err().to_string();
-        assert!(err("join Merge: gate authority look;").contains("must leave a noul frame"));
+        assert!(
+            err("join Merge: gate authority look;").contains("must leave a noul or split frame")
+        );
         assert!(err("join Merge: gate authority nope;").contains("unknown authority arrow"));
         assert!(
             err("join Merge: gate authority security export Forged;")

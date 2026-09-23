@@ -293,7 +293,8 @@ fn resolve(
                 return Some(JoinOutcome::Continue {
                     tokens,
                     merged: vec![(auth, a.last_record.clone())],
-                    arrivals: attestations(table),
+                    // For a gate, the evidence that matters is the authority's.
+                    arrivals: vec![(auth, a.attested.clone())],
                 });
             }
             if gone(inner, key, auth) {
