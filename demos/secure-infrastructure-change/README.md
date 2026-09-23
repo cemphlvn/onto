@@ -118,3 +118,12 @@ but a catalogue that lists too much is a policy problem onto cannot see.
 Free text in `change.summary` is shown to the model (it is the change's
 description); injection there can steer the judgment between eligible
 arrows, never past the evidence and capability checks.
+
+## Admission regime (2026-09-24)
+
+`admission: sealed; admission ChangeRequested: assured;`. Live, S-7
+(decommission a region) now stops differently: the proposer's
+`region_migration` was **held for a person** (four overlap checks the
+critic could not decide, p 0.34–0.49), where the open-world regime had
+learned an island. Infrastructure changes are an assured domain: an
+undecided new kind of change is a person's call.

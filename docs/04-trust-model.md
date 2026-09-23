@@ -214,9 +214,17 @@ What changes, stated plainly:
   (recorded "settled by structure"). The catalogue and the functor are
   policy; whoever can edit them decides what is transported. Structural
   proofs, sealed regions and rule invariants still apply.
-- **Critic `unknown` admits.** In the open world, a semantic check the
-  critic cannot decide does not block learning (in review it blocks
-  promotion). Only failures refuse.
+- **Two admission regimes, per frame (D51).** Under `open_world`, a
+  semantic check the critic cannot decide does not block learning (the
+  arrow enters as a hypothesis with provenance). Under `assured`, it
+  holds the proposal for a person (`held for a person …` in the
+  records). Hard failures refuse in both; `sealed` frames learn nothing.
+  Admission is policy: a run can tighten it, never loosen it.
+- **Authority by layer.** Declared structure carries policy authority.
+  Transported structure completes enumerations a catalogue claims and is
+  bounded by the catalogue and the functor. Learned structure (either
+  regime) routes cases but never issues a capability, never bypasses an
+  entry contract, an attested precondition or a sealed region.
 - **Closure claims are extended, not revised.** A learned arrow out of a
   `closed:` frame is a closure challenge that the learned layer accepts;
   the declared claim is unchanged, and `onto learned` / `onto review`

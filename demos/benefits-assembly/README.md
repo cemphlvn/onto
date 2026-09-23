@@ -173,3 +173,12 @@ the benefits office does, and attests it. It does not know every program
 a person could claim; the Circumstances frame is one judged question, and
 a missed circumstance is a missed claim (under-claiming is a harm; a
 wider noul frame over several circumstances is the next step).
+
+## Admission regime (2026-09-24)
+
+`admission: sealed; admission Circumstances: assured;` (eligibility is
+an authorized decision). Live, B-6 with the catalogue: the transported
+`maternity` and `bereavement` still entered, because their duplicate and
+overlap checks are settled by the catalogue's closed frame and every
+other check passed. A trusted catalogue opens the way even under assured
+evolution; an LLM's undecided proposal would not.

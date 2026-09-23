@@ -1675,3 +1675,103 @@ mod functors {
         assert_eq!(r.walks[0].path, "outage : Ticket -> Outage");
     }
 }
+
+/// Two admission regimes over one runtime: open-world learning takes
+/// what no hard check refutes; assured evolution takes only what every
+/// check passed and holds the undecided for a person. Admission is per
+/// frame; a run can tighten it, never loosen it.
+mod loops {
+    use super::*;
+    use onto_core::walk::Answer;
+    use onto_runtime::model::{Critic, FrameRequest, Judge, ModelError, NoulQuestion, Usage};
+
+    /// Judges like the mock; as a critic it is never sure (p 0.5).
+    struct Unsure(MockJudge);
+
+    impl Judge for Unsure {
+        fn name(&self) -> String {
+            "unsure".into()
+        }
+        async fn judge(&self, req: FrameRequest) -> Result<(Answer, Usage), ModelError> {
+            self.0.judge(req).await
+        }
+    }
+
+    impl Critic for Unsure {
+        fn name(&self) -> String {
+            "unsure".into()
+        }
+        async fn nouls(
+            &self,
+            _: Value,
+            questions: Vec<NoulQuestion>,
+        ) -> Result<(Vec<f32>, Usage), ModelError> {
+            Ok((vec![0.5; questions.len()], Usage::default()))
+        }
+    }
+
+    async fn run(src: &str, assured: bool) -> RunReport {
+        let cat = Arc::new(onto_core::parse(src).unwrap());
+        let engine = Engine::new(
+            cat,
+            Unsure(MockJudge { latency: LATENCY }),
+            MockProposer { latency: LATENCY },
+            Config {
+                assured,
+                ..Config::default()
+            },
+        );
+        let job = Job {
+            from: "Request".into(),
+            goal: "please refund".into(),
+            case: json!({}),
+        };
+        engine.run(vec![job]).await.unwrap()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn open_world_learns_the_undecided_assured_holds_it() {
+        let open = run(TRIAGE, false).await;
+        assert!(matches!(
+            open.walks[0].steps[0],
+            StepRecord::Expanded { .. }
+        ));
+        assert_eq!(open.learned.len(), 1);
+
+        let assured = run(TRIAGE, true).await;
+        let StepRecord::Escalated { held, .. } = &assured.walks[0].steps[0] else {
+            panic!("expected a hold: {:?}", assured.walks[0].steps);
+        };
+        assert_eq!(held[0].0, "to_refund");
+        assert!(held[0].1.contains("unsure"), "{held:?}");
+        assert!(assured.learned.is_empty());
+        assert_eq!(assured.walks[0].frames[0].held.len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn admission_is_per_frame() {
+        // Request is assured: the undecided proposal waits for a person,
+        // although the run itself does not force assured admission.
+        let src = TRIAGE.replace(
+            "closed: Request;",
+            "closed: Request;\n    admission Request: assured;",
+        );
+        let r = run(&src, false).await;
+        assert!(r.learned.is_empty());
+        assert!(matches!(r.walks[0].steps[0], StepRecord::Escalated { .. }));
+        // An assured default, with one frame opened, learns there.
+        let src = TRIAGE.replace(
+            "closed: Request;",
+            "closed: Request;\n    admission: assured;\n    admission Request: open_world;",
+        );
+        let r = run(&src, false).await;
+        assert_eq!(r.learned.len(), 1);
+        // Sealed: nothing is learned, nothing is even reviewed.
+        let src = TRIAGE.replace(
+            "closed: Request;",
+            "closed: Request;\n    admission Request: sealed;",
+        );
+        let r = run(&src, false).await;
+        assert!(r.learned.is_empty());
+    }
+}

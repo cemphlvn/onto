@@ -55,6 +55,7 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
         policy: Policy::Shared,
         open_world: !args.world.closed_world,
         max_expansions: args.world.max_expansions,
+        assured: args.world.assured(),
         ..Config::default()
     };
     let precedents = args.world.precedents(&args.file, &cat)?;

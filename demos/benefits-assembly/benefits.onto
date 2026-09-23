@@ -35,10 +35,11 @@ category BenefitsAssembly {
     state { case: statement; }
     invariant unseen: case.applicant;
 
-    # New kinds of circumstance may be learned (they need a person); the
-    # evidence lines, joins and submission are sealed.
-    world: closed;
-    learnable: Circumstances;
+    # New kinds of circumstance may be learned under assured evolution
+    # (eligibility is an authorized decision: undecided structure waits for
+    # a person); the evidence lines, joins and submission are sealed.
+    admission: sealed;
+    admission Circumstances: assured;
 
     about Application: "a person asks for support; their situation may span several programs";
     about Submitted: "one coordinated application is submitted for the person";

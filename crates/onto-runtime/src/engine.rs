@@ -59,6 +59,11 @@ pub struct Config {
     pub open_world: bool,
     /// Frames one walk may extend (open world).
     pub max_expansions: usize,
+    /// Assured evolution everywhere: learn only proposals every check
+    /// passed; one with an undecided semantic check is held for a person.
+    /// Otherwise each frame's declared admission decides (`admission X:
+    /// assured;`); a run can tighten admission, never loosen it.
+    pub assured: bool,
 }
 
 impl Default for Config {
@@ -75,6 +80,7 @@ impl Default for Config {
             mem_sample_every: Duration::from_millis(250),
             open_world: true,
             max_expansions: 3,
+            assured: false,
         }
     }
 }
@@ -121,6 +127,9 @@ pub enum StepRecord {
         /// (none was admitted, so the walk stopped).
         #[serde(skip_serializing_if = "Vec::is_empty")]
         refused: Vec<(String, String)>,
+        /// Assured admission: proposals held for a person (a check undecided).
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        held: Vec<(String, String)>,
         wait_ms: f64,
     },
     Failed {
@@ -138,6 +147,9 @@ pub enum StepRecord {
         learned: Vec<Proposal>,
         /// Proposals the supervisor refused, with the reason.
         refused: Vec<(String, String)>,
+        /// Assured admission: proposals held for a person (a check undecided).
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        held: Vec<(String, String)>,
         wait_ms: f64,
     },
     /// Arrived at a join object and the join resolved for this walk.
@@ -219,6 +231,13 @@ pub struct Learned {
     /// `F:g` when it completed the enumeration from functor F's arrow g.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transported: Option<String>,
+}
+
+/// What one expansion admitted, refused, and (governed loop) held.
+struct Expansion {
+    learned: Vec<Proposal>,
+    refused: Vec<(String, String)>,
+    held: Vec<(String, String)>,
 }
 
 #[derive(Default)]
@@ -670,6 +689,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 );
                 frames.push(FrameRecord {
                     grouped: None,
+                    held: Vec::new(),
                     seen: None,
                     refused: Vec::new(),
                     id: join_id.clone(),
@@ -719,6 +739,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         reason,
                         proposals: Vec::new(),
                         refused: Vec::new(),
+                        held: Vec::new(),
                         wait_ms: ms(waited),
                     });
                 }
@@ -760,6 +781,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let visit_seen = self.state(cat, &job, &path, &hops, &focus, &tokens);
             let record = |judge: Option<JudgeRecord>, candidates, outcome| FrameRecord {
                 grouped: visit_grouped.clone(),
+                held: Vec::new(),
                 seen: judge.is_some().then(|| visit_seen.clone()),
                 refused: Vec::new(),
                 id: rec_id.clone(),
@@ -1148,6 +1170,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     reason,
                     proposals: Vec::new(),
                     refused: Vec::new(),
+                    held: Vec::new(),
                     wait_ms,
                 });
                 break;
@@ -1155,6 +1178,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             // Transport: before any LLM, complete the enumeration from a
             // functor whose target knows directions this frame lacks.
             let mut transport_refused: Vec<(String, String)> = Vec::new();
+            let mut transport_held: Vec<(String, String)> = Vec::new();
             if self.cfg.open_world && cat.learnable(at) && expansions < self.cfg.max_expansions {
                 let found = self.transportable(cat, at);
                 if !found.is_empty() {
@@ -1167,8 +1191,11 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     }
                     let proposals: Vec<Proposal> = found.iter().map(|(.., p)| p.clone()).collect();
                     let settled = self.settled(cat, at, &found);
-                    let (learned, refused) =
-                        self.expand(&rec_id, reason, &proposals, &settled).await;
+                    let Expansion {
+                        learned,
+                        refused,
+                        held,
+                    } = self.expand(&rec_id, reason, &proposals, &settled, at).await;
                     if !learned.is_empty() {
                         if let Some(h) = speculative.take() {
                             h.abort();
@@ -1177,6 +1204,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         if let Some(last) = frames.last_mut() {
                             last.proposals = proposals.clone();
                             last.refused = refused.clone();
+                            last.held = held.clone();
                             last.outcome = Outcome::Expanded {
                                 reason,
                                 learned: learned.iter().map(|p| p.arrow.clone()).collect(),
@@ -1190,6 +1218,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                             source,
                             learned,
                             refused,
+                            held,
                             wait_ms,
                         });
                         expansions += 1;
@@ -1199,6 +1228,10 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     transport_refused = refused
                         .into_iter()
                         .map(|(a, why)| (a, format!("transported, refused: {why}")))
+                        .collect();
+                    transport_held = held
+                        .into_iter()
+                        .map(|(a, why)| (a, format!("transported: {why}")))
                         .collect();
                 }
             }
@@ -1222,20 +1255,26 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             // re-judge this frame with it (still holding the write claim).
             let mut expanded = None;
             let mut refused_here = Vec::new();
+            let mut held_here = Vec::new();
             if let Ok(proposals) = &proposals
                 && self.cfg.open_world
                 && cat.learnable(at)
                 && expansions < self.cfg.max_expansions
                 && !proposals.is_empty()
             {
-                let (learned, refused) = self
-                    .expand(&rec_id, reason, proposals, &HashMap::new())
+                let Expansion {
+                    learned,
+                    refused,
+                    held,
+                } = self
+                    .expand(&rec_id, reason, proposals, &HashMap::new(), at)
                     .await;
                 if learned.is_empty() {
                     refused_here = refused;
+                    held_here = held;
                 } else {
                     expansions += 1;
-                    expanded = Some((learned, refused));
+                    expanded = Some((learned, refused, held));
                 }
             }
             // Record before releasing the claim, so a walk waiting on this
@@ -1245,11 +1284,16 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     last.proposals = proposals.clone();
                     last.seen = Some(visit_seen.clone());
                     last.refused = match &expanded {
-                        Some((_, r)) => r.clone(),
+                        Some((_, r, _)) => r.clone(),
                         None => refused_here.clone(),
                     };
                     last.refused.extend(transport_refused.iter().cloned());
-                    if let Some((learned, _)) = &expanded {
+                    last.held = match &expanded {
+                        Some((_, _, h)) => h.clone(),
+                        None => held_here.clone(),
+                    };
+                    last.held.extend(transport_held.iter().cloned());
+                    if let Some((learned, ..)) = &expanded {
                         last.outcome = Outcome::Expanded {
                             reason,
                             source: "proposer".into(),
@@ -1260,7 +1304,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 self.note_concepts(id, at, proposals);
                 let admitted: Vec<&str> = expanded
                     .iter()
-                    .flat_map(|(l, _)| l.iter().map(|p| p.arrow.as_str()))
+                    .flat_map(|(l, ..)| l.iter().map(|p| p.arrow.as_str()))
                     .collect();
                 self.pending.lock().unwrap().entry(at).or_default().extend(
                     proposals
@@ -1270,13 +1314,14 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 );
             }
             drop(guard);
-            if let Some((learned, refused)) = expanded {
+            if let Some((learned, refused, held)) = expanded {
                 steps.push(StepRecord::Expanded {
                     at: at_name,
                     reason,
                     source: "proposer".into(),
                     learned,
                     refused,
+                    held,
                     wait_ms,
                 });
                 after = Some(rec_id);
@@ -1285,11 +1330,13 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             match proposals {
                 Ok(proposals) => {
                     refused_here.extend(transport_refused);
+                    held_here.extend(transport_held);
                     steps.push(StepRecord::Escalated {
                         at: at_name,
                         reason,
                         proposals,
                         refused: refused_here,
+                        held: held_here,
                         wait_ms,
                     });
                 }
@@ -1597,8 +1644,10 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         reason: Escalation,
         proposals: &[Proposal],
         settled: &HashMap<String, Vec<(String, String)>>,
-    ) -> (Vec<Proposal>, Vec<(String, String)>) {
-        let (mut learned, mut refused) = (Vec::new(), Vec::new());
+        at: ObjId,
+    ) -> Expansion {
+        let (mut learned, mut refused, mut held) = (Vec::new(), Vec::new(), Vec::new());
+        let assured = self.cfg.assured || self.cat().admission(at) == onto_core::Admission::Assured;
         let mut earlier: Vec<Proposal> = Vec::new();
         for p in proposals {
             let review = crate::supervisor::review_settled(
@@ -1621,6 +1670,21 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         format!("{}: {}", c.check, c.reason)
                     });
                 refused.push((p.arrow.clone(), why));
+                continue;
+            }
+            // Assured evolution: an undecided semantic check is a person's
+            // call. A closure challenge is not: it is what a missing
+            // enumeration looks like, and admission is chosen per frame.
+            let undecided: Vec<String> = review
+                .checks
+                .iter()
+                .filter(|c| {
+                    c.outcome == onto_core::supervise::Outcome::Unknown && c.check != "closure"
+                })
+                .map(|c| format!("{}: {}", c.check, c.reason))
+                .collect();
+            if assured && !undecided.is_empty() {
+                held.push((p.arrow.clone(), undecided.join("; ")));
                 continue;
             }
             let mut graph = self.graph.write().unwrap();
@@ -1654,7 +1718,11 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             });
             learned.push(p.clone());
         }
-        (learned, refused)
+        Expansion {
+            learned,
+            refused,
+            held,
+        }
     }
 
     fn advance(

@@ -243,41 +243,40 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
     Ok(())
 }
 
-/// Where the open world may grow, and what that guarantees.
+/// Where the open world may grow, under which admission, and what that
+/// guarantees.
 fn print_world(cat: &Category) {
-    let (mut open, mut sealed) = (Vec::new(), Vec::new());
+    use onto_core::Admission;
+    let mut groups: [(Admission, Vec<&str>); 3] = [
+        (Admission::OpenWorld, Vec::new()),
+        (Admission::Assured, Vec::new()),
+        (Admission::Sealed, Vec::new()),
+    ];
     for i in 0..cat.objects().len() as u32 {
         let o = ObjId(i);
-        if cat.learnable(o) {
-            open.push(cat.object(o).name.as_str());
-        } else {
-            sealed.push(cat.object(o).name.as_str());
+        let a = cat.admission(o);
+        if let Some(g) = groups.iter_mut().find(|(x, _)| *x == a) {
+            g.1.push(cat.object(o).name.as_str());
         }
     }
-    let world = if cat.closed_world() { "closed" } else { "open" };
     println!(
-        "
-open world   `world: {world}` · runs with --closed-world learn nothing"
+        "\nadmission   default {} · runs with --closed-world learn nothing, --loop assured tightens every frame",
+        cat.default_admission().as_str()
     );
-    println!(
-        "  learnable  {}",
-        if open.is_empty() {
-            "—".into()
-        } else {
-            open.join(", ")
-        }
-    );
-    println!(
-        "  sealed     {}",
-        if sealed.is_empty() {
-            "—".into()
-        } else {
-            sealed.join(", ")
-        }
-    );
-    if !sealed.is_empty() {
+    for (a, names) in &groups {
+        let what = match a {
+            Admission::OpenWorld => "learns what no hard check refutes",
+            Admission::Assured => "learns what every check passed; undecided waits for a person",
+            Admission::Sealed => "learns nothing; reached only by declared arrows",
+        };
         println!(
-            "  no learned arrow enters or leaves a sealed object: sealed objects are reached only by declared arrows"
+            "  {:<10}  {}   ({what})",
+            a.as_str(),
+            if names.is_empty() {
+                "—".to_owned()
+            } else {
+                names.join(", ")
+            }
         );
     }
 }

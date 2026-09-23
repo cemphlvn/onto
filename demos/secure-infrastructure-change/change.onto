@@ -37,8 +37,10 @@ category SecureInfrastructureChange {
     invariant unseen: case.agent, case.secrets;
     invariant via: ChangeRequested -> Deployed through Verified;
 
-    world: closed;
-    learnable: ChangeRequested;
+    # New kinds of change are learned only under assured evolution; the
+    # rest is sealed.
+    admission: sealed;
+    admission ChangeRequested: assured;
 
     about ChangeRequested: "someone, often an automated agent, asks to change a production system";
     about Deployed: "the change is deployed to production";

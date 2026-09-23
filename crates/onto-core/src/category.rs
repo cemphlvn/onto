@@ -129,10 +129,45 @@ pub struct Object {
     pub join: Option<Join>,
     /// What a model sees at this frame, when declared for it (`state X {…}`).
     pub state: Option<crate::state::StateSpec>,
-    /// Open world: `Some(true)` learnable, `Some(false)` sealed, `None` the
-    /// category's `world:` default. Objects the open world created are
-    /// learnable.
-    pub learnable: Option<bool>,
+    /// How new structure may enter at this frame (`admission X: …;`), or
+    /// `None` for the category's default. Objects the open world created
+    /// take the admission of the frame they grew from.
+    pub admission: Option<Admission>,
+}
+
+/// How uncertain new structure is admitted at a frame. Independent of
+/// closure (are the options complete?) and of layers (what trust does
+/// admitted structure carry?).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum Admission {
+    /// Open-world learning: what no hard check refutes enters the learned
+    /// layer, semantic uncertainty included, with provenance.
+    #[default]
+    OpenWorld,
+    /// Assured evolution: only what every check passed enters; anything a
+    /// check could not decide waits for a person.
+    Assured,
+    /// Nothing is learned here: new structure never leaves or enters.
+    Sealed,
+}
+
+impl Admission {
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "open_world" => Some(Self::OpenWorld),
+            "assured" => Some(Self::Assured),
+            "sealed" => Some(Self::Sealed),
+            _ => None,
+        }
+    }
+
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::OpenWorld => "open_world",
+            Self::Assured => "assured",
+            Self::Sealed => "sealed",
+        }
+    }
 }
 
 /// Whether an arrow may be taken from a given case and token set.
@@ -273,8 +308,9 @@ pub struct Category {
     starts: Vec<ObjId>,
     /// The category's default `state { … }`, if declared.
     state_default: Option<crate::state::StateSpec>,
-    /// `world: closed;`: frames are sealed unless declared `learnable:`.
-    closed_world: bool,
+    /// `admission: …;` (or `world: open|closed;`): the default for frames
+    /// that declare none.
+    default_admission: Admission,
     out_offsets: Vec<u32>,
     out_arrows: Vec<ArrowId>,
     object_index: HashMap<String, ObjId>,
@@ -326,12 +362,17 @@ impl Category {
     /// arrows into it. Sealed frames escalate to a person as in the closed
     /// world, whatever the run's mode.
     pub fn learnable(&self, o: ObjId) -> bool {
-        self.object(o).learnable.unwrap_or(!self.closed_world)
+        self.admission(o) != Admission::Sealed
     }
 
-    /// Whether the category declares `world: closed;`.
-    pub fn closed_world(&self) -> bool {
-        self.closed_world
+    /// How new structure is admitted at `o`.
+    pub fn admission(&self, o: ObjId) -> Admission {
+        self.object(o).admission.unwrap_or(self.default_admission)
+    }
+
+    /// The default admission for frames that declare none.
+    pub fn default_admission(&self) -> Admission {
+        self.default_admission
     }
 
     /// Whether any `state` is declared (otherwise every frame sees
@@ -626,7 +667,9 @@ impl Category {
                     if is_new {
                         // What the open world created, it may keep extending.
                         let dst = cat.object_id(&p.dst).expect("just added");
-                        cat.objects[dst.0 as usize].learnable = Some(true);
+                        // It grows under the admission of its source frame.
+                        let src = cat.object_id(&p.src).expect("checked");
+                        cat.objects[dst.0 as usize].admission = Some(cat.admission(src));
                     }
                 }
                 Err(e) => skipped.push((p.arrow.clone(), e.to_string())),
@@ -663,11 +706,11 @@ impl Category {
             if let Some(st) = &o.state {
                 b.state(Some(&o.name), st.clone())?;
             }
-            if let Some(l) = o.learnable {
-                b.learnable(&o.name, l)?;
+            if let Some(a) = o.admission {
+                b.admission(Some(&o.name), a)?;
             }
         }
-        b.closed_world(self.closed_world);
+        b.admission(None, self.default_admission)?;
         if let Some(st) = &self.state_default {
             b.state(None, st.clone())?;
         }
@@ -865,7 +908,7 @@ pub struct CategoryBuilder {
     attesters: Vec<crate::attest::Attester>,
     starts: Vec<ObjId>,
     state_default: Option<crate::state::StateSpec>,
-    closed_world: bool,
+    default_admission: Admission,
     object_index: HashMap<String, ObjId>,
     arrow_index: HashMap<String, ArrowId>,
 }
@@ -908,7 +951,7 @@ impl CategoryBuilder {
             entry: Entry::default(),
             join: None,
             state: None,
-            learnable: None,
+            admission: None,
         });
         self.object_index.insert(name.to_owned(), id);
         Ok(id)
@@ -1020,16 +1063,17 @@ impl CategoryBuilder {
         Ok(())
     }
 
-    /// Declares `object` learnable (`true`) or sealed (`false`).
-    pub fn learnable(&mut self, object: &str, learnable: bool) -> Result<(), Error> {
-        let id = self.lookup_object(object)?;
-        self.objects[id.0 as usize].learnable = Some(learnable);
+    /// Declares how new structure is admitted at `object`, or (`None`) the
+    /// default for every frame that declares none.
+    pub fn admission(&mut self, object: Option<&str>, a: Admission) -> Result<(), Error> {
+        match object {
+            None => self.default_admission = a,
+            Some(o) => {
+                let id = self.lookup_object(o)?;
+                self.objects[id.0 as usize].admission = Some(a);
+            }
+        }
         Ok(())
-    }
-
-    /// `world: closed;` seals every frame not declared learnable.
-    pub fn closed_world(&mut self, closed: bool) {
-        self.closed_world = closed;
     }
 
     /// Declares an application entry point.
@@ -1128,7 +1172,7 @@ impl CategoryBuilder {
             attesters: self.attesters,
             starts: self.starts,
             state_default: self.state_default,
-            closed_world: self.closed_world,
+            default_admission: self.default_admission,
             out_offsets,
             out_arrows,
             object_index: self.object_index,

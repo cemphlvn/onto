@@ -152,6 +152,7 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         max_branches: args.max_branches,
         open_world: !args.world.closed_world,
         max_expansions: args.world.max_expansions,
+        assured: args.world.assured(),
         ..Config::default()
     };
 
@@ -414,6 +415,7 @@ fn print_step(s: &StepRecord) {
             reason,
             proposals,
             refused,
+            held,
             ..
         } => {
             println!("  {at} ⇒ System 2 ({})", reason.as_str());
@@ -426,6 +428,9 @@ fn print_step(s: &StepRecord) {
             for (arrow, why) in refused {
                 println!("    not learned {arrow}: {why}");
             }
+            for (arrow, why) in held {
+                println!("    held for a person {arrow}: {why}");
+            }
         }
         StepRecord::Expanded {
             at,
@@ -433,6 +438,7 @@ fn print_step(s: &StepRecord) {
             source,
             learned,
             refused,
+            held,
             ..
         } => {
             let by = if source == "proposer" {
@@ -452,6 +458,9 @@ fn print_step(s: &StepRecord) {
             }
             for (arrow, why) in refused {
                 println!("    refused {arrow}: {why}");
+            }
+            for (arrow, why) in held {
+                println!("    held for a person {arrow}: {why}");
             }
         }
         StepRecord::Failed { at, error } => println!("  {at} ✗ {error}"),

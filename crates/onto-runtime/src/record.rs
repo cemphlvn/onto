@@ -45,6 +45,9 @@ pub struct FrameRecord {
     /// Open world: proposals the supervisor refused here, with the reason.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub refused: Vec<(String, String)>,
+    /// Assured admission: proposals held for a person, with the undecided checks.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub held: Vec<(String, String)>,
     /// Attestations that opened the arrow this visit followed: who
     /// observed what, and when (empty: the step rests on judgment alone).
     #[serde(skip_serializing_if = "Vec::is_empty")]

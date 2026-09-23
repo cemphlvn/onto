@@ -198,6 +198,13 @@ pub fn print_record(r: &Value, pad: &str) {
             r[1].as_str().unwrap_or("?")
         );
     }
+    for h in r["held"].as_array().into_iter().flatten() {
+        println!(
+            "{pad}  held for a person {}: {}",
+            h[0].as_str().unwrap_or("?"),
+            h[1].as_str().unwrap_or("?")
+        );
+    }
 }
 
 /// The fields a model was shown: `goal`, `asserted.a.b`, `observed.x`, …

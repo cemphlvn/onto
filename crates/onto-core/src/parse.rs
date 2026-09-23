@@ -32,8 +32,8 @@
 use serde_json::Value;
 
 use crate::category::{
-    ArrowMeta, Capability, Category, CategoryBuilder, Entry, Frame, Invariant, Join, PathSpec,
-    Primitive,
+    Admission, ArrowMeta, Capability, Category, CategoryBuilder, Entry, Frame, Invariant, Join,
+    PathSpec, Primitive,
 };
 use crate::error::Error;
 use crate::require::Require;
@@ -544,6 +544,19 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
         }
         return Ok(());
     }
+    if let Some(rest) = stmt.strip_prefix("admission ") {
+        // `admission A, B: open_world | assured | sealed;`
+        let (objects, mode) = rest
+            .split_once(':')
+            .ok_or_else(|| perr("expected `admission A, B: open_world | assured | sealed`"))?;
+        let a = Admission::parse(mode.trim()).ok_or_else(|| {
+            perr(format!(
+                "admission: expected open_world, assured or sealed, got `{}`",
+                mode.trim()
+            ))
+        })?;
+        return list(objects).try_for_each(|o| b.admission(Some(o), a));
+    }
     if let Some(rest) = stmt.strip_prefix("attester ") {
         b.attester(attester(rest)?);
         return Ok(());
@@ -601,21 +614,28 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
         ("objects", None) => list(value).try_for_each(|o| b.object(o).map(drop)),
         ("closed", None) => list(value).try_for_each(|o| b.close(o)),
         ("start", None) => list(value).try_for_each(|o| b.start(o)),
-        ("sealed", None) => list(value).try_for_each(|o| b.learnable(o, false)),
-        ("learnable", None) => list(value).try_for_each(|o| b.learnable(o, true)),
+        // Shorthands: `sealed: A;` / `learnable: A;` (open world at A);
+        // `world: open|closed;` sets the default to open_world or sealed.
+        ("sealed", None) => list(value).try_for_each(|o| b.admission(Some(o), Admission::Sealed)),
+        ("learnable", None) => {
+            list(value).try_for_each(|o| b.admission(Some(o), Admission::OpenWorld))
+        }
         ("world", None) => match value.trim() {
-            "open" => {
-                b.closed_world(false);
-                Ok(())
-            }
-            "closed" => {
-                b.closed_world(true);
-                Ok(())
-            }
+            "open" => b.admission(None, Admission::OpenWorld),
+            "closed" => b.admission(None, Admission::Sealed),
             other => Err(perr(format!(
                 "world: expected open or closed, got `{other}`"
             ))),
         },
+        ("admission", None) => {
+            let a = Admission::parse(value.trim()).ok_or_else(|| {
+                perr(format!(
+                    "admission: expected open_world, assured or sealed, got `{}`",
+                    value.trim()
+                ))
+            })?;
+            b.admission(None, a)
+        }
         (arrow, Some((src, rest))) => {
             let rest = rest.trim_start();
             let end = rest.find(|c: char| c.is_whitespace()).unwrap_or(rest.len());
@@ -624,7 +644,7 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
                 .map(drop)
         }
         (key, None) => Err(perr(format!(
-            "unknown declaration `{key}:` (expected objects, closed, start, sealed, learnable, world, or `name: A -> B`)"
+            "unknown declaration `{key}:` (expected objects, closed, start, admission, sealed, learnable, world, or `name: A -> B`)"
         ))),
     }
 }

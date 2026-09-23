@@ -189,7 +189,13 @@ Rules:
     entry contract, and obey **progress**: a learned arrow may not close a
     cycle. Each walk may extend at most `max_expansions` frames (default
     3). Records mark learned candidates and steps; answers reached through
-    them say so. **Sealed regions:** `sealed: A, B;` or `world: closed;`
+    them say so. **Admission regimes (D51):** per frame, `admission X:
+    open_world | assured | sealed;` (default `admission: …;`). Open
+    world learns what no hard check refutes, semantic unknowns included;
+    assured learns only what every check passed and holds the undecided
+    for a person; sealed learns nothing. Hard failures are rejected in
+    every regime; a closure challenge is not an unknown. A run can
+    tighten (`--loop assured`, `--closed-world`), never loosen. **Sealed regions:** `sealed: A, B;` or `world: closed;`
     with `learnable: A, B;` (policy) mark where the open world may grow;
     no learned arrow leaves or enters a sealed object, so sealed objects
     are reached only by declared arrows. Objects the open world creates
@@ -450,6 +456,7 @@ snapshot. No database until live multi-writer editing is needed.
 | D48 | a grouped frame backs off to the whole frame when the fiber holds nothing | live, a confident coarse step sent an accessibility ticket to the wrong team and the fiber could not recover |
 | D49 | transport runs before the LLM proposer; its proposals carry their functor and target arrow | known structure should be reused before new structure is invented, and learned structure should say where it came from |
 | D50 | overlap/duplicate between options of a closed target frame are settled by that frame, not re-judged | the closed claim is policy people declared; live, a model re-litigating it blocked the catalogue's options |
+| D51 | two evolutionary regimes over one runtime, chosen per frame: open-world learning (semantic unknowns may enter the learned layer as hypotheses with provenance) and assured evolution (unknowns wait for a person); closure, admission and layer are separate concepts | one trust regime cannot serve both a support taxonomy and a consent policy; applications must state how they live with the unknown |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -521,7 +528,11 @@ snapshot. No database until live multi-writer editing is needed.
 - **Functors, phase 2 (done):** `grouped by` with fallback and backoff;
   transport from empty fibers before the LLM, settled-by-structure
   sibling checks, transported structure restored across runs.
-- **Next:** usage-based reinforcement and pruning of learned arrows;
+- **Admission regimes (done):** `admission` per frame (open_world,
+  assured, sealed), `held` proposals, `--loop assured`; README states the
+  shared core and both loops; `docs/06-spaces.md` names the four spaces.
+- **Next:** the raster view; prediction across columns (functors phase
+  3); usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).

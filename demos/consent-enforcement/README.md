@@ -141,3 +141,13 @@ It does not send anything or run studies; it decides whether the use is
 authorized. It is only as good as the consent ledger's attestations
 (`docs/04-trust-model.md`). Not legal advice: the category encodes one
 organization's policy.
+
+## Admission regime (2026-09-24)
+
+The policy now declares `admission: sealed; admission UseRequested:
+assured;`: new kinds of use are learned only when every check passes;
+anything a check cannot decide waits for a person. Live, C-7 (sale to a
+data broker) passed every check and was learned as an island
+(`sell_to_broker → DataSaleReview → … → DataBrokerSaleDecision`) ending
+at a person; no route from it reaches `Sent` or `Study`, and learned
+structure cannot issue `MarketingGrant` or `ResearchGrant`.

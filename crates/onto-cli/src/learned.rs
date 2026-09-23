@@ -27,6 +27,12 @@ pub struct WorldArgs {
     /// learned and the walk continues.
     #[arg(long)]
     pub closed_world: bool,
+    /// `assured`: assured evolution at every learnable frame (learn only
+    /// what every check passed; hold the undecided for a person).
+    /// `policy` (default): each frame's declared admission. A run can
+    /// tighten admission, never loosen it.
+    #[arg(long = "loop", value_enum, default_value_t = Loop::Policy)]
+    pub learning: Loop,
     /// The learned layer (default: `<file stem>.learned.jsonl`).
     #[arg(long)]
     pub learned: Option<PathBuf>,
@@ -42,7 +48,18 @@ pub struct WorldArgs {
     pub no_memory: bool,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
+pub enum Loop {
+    Policy,
+    Assured,
+}
+
 impl WorldArgs {
+    /// Whether this run forces assured admission everywhere.
+    pub fn assured(&self) -> bool {
+        self.learning == Loop::Assured
+    }
+
     pub fn layer(&self, file: &Path) -> PathBuf {
         self.learned
             .clone()
@@ -59,9 +76,17 @@ impl WorldArgs {
         let layer = self.layer(file);
         let entries = read(&layer)?;
         let proposals: Vec<_> = entries.iter().map(|l| l.proposal.clone()).collect();
+        let learning = if self.assured() {
+            "assured admission everywhere".to_owned()
+        } else {
+            format!(
+                "admission per policy (default {})",
+                declared.default_admission().as_str()
+            )
+        };
         let (cat, skipped) = declared.with_learned(&proposals);
         println!(
-            "world: open · learned layer {} ({} arrows loaded{})",
+            "world: open · {learning} · learned layer {} ({} arrows loaded{})",
             layer.display(),
             proposals.len() - skipped.len(),
             if skipped.is_empty() {
