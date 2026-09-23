@@ -46,10 +46,19 @@ dt { color: var(--muted); } dd { margin: 0; overflow-wrap: anywhere; }
 .cand .k { font-weight: 600; } .cand .r { color: var(--muted); }
 .tag { display: inline-block; padding: 0 6px; border-radius: 4px; background: var(--chip); font-size: 11.5px; }
 .note { color: var(--muted); font-size: 12px; margin-top: 12px; }
+.split-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--grid); margin: 2px 0 6px; }
+.split-bar i, .split-keys i { display: block; height: 100%; }
+.split-keys { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.split-keys span { display: inline-flex; align-items: center; gap: 5px; }
+.split-keys i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+ul.ins { margin: 0; padding-left: 18px; font-size: 12.5px; } ul.ins li { margin: 2px 0; }
+aside p.r { color: var(--muted); font-size: 12.5px; margin: 4px 0 0; }
+.head { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.btn { border: 1px solid var(--border); background: var(--chip); color: var(--fg); border-radius: 6px; padding: 3px 10px; font: inherit; font-size: 12.5px; cursor: pointer; }
 </style>
 
 <div class="wrap">
-  <h1>onto raster</h1>
+  <div class="head"><h1>onto raster</h1><button class="btn" id="show-insights" type="button">Insights</button></div>
   <p class="sub" id="sub"></p>
   <div class="stats" id="stats"></div>
   <div class="bar" id="cases"></div>
@@ -58,12 +67,9 @@ dt { color: var(--muted); } dd { margin: 0; overflow-wrap: anywhere; }
       <div id="chart" role="img" aria-label="Raster: frames by time"></div>
       <div class="legend" id="legend"></div>
     </div>
-    <aside class="card" id="details">
-      <h2>Details</h2>
-      <p class="empty">Click a mark to see the event, its causal parents and children (drawn on the chart), and the frame record of that visit. Drag with the brush tool (top right) to summarise a time window. Scroll or pinch to zoom; drag to pan.</p>
-    </aside>
+    <aside class="card" id="details"></aside>
   </div>
-  <p class="note">x: time since the run started · y: frames (learned frames in italics) · colour: case, its branches share the hue · shape: event · length: time spent. The raster shows what happened, not what was possible: that is the category map.</p>
+  <p class="note">Click a mark for the event, its causal parents and children (drawn on the chart) and its frame record; brush a time window (top right of the chart) for a summary; Insights returns to the measurements. Scroll or pinch to zoom, drag to pan. x: time since the run started · y: frames (learned frames in italics) · colour: case, its branches share the hue · shape: event · length: time spent. The raster shows what happened, not what was possible: that is the category map.</p>
 </div>
 
 <script>window.ONTO_RASTER = /*DATA*/null;</script>

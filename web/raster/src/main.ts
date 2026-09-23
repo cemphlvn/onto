@@ -10,6 +10,7 @@ import {
   BrushComponent,
   DataZoomComponent,
   GridComponent,
+  MarkLineComponent,
   ToolboxComponent,
   TooltipComponent,
 } from "echarts/components";
@@ -34,6 +35,7 @@ echarts.use([
   DataZoomComponent,
   BrushComponent,
   ToolboxComponent,
+  MarkLineComponent,
   CanvasRenderer,
 ]);
 
@@ -45,6 +47,7 @@ type Option = ComposeOption<
   | DataZoomComponentOption
   | BrushComponentOption
   | ToolboxComponentOption
+  | import("echarts/components").MarkLineComponentOption
 >;
 
 const page = (window as unknown as { ONTO_RASTER: Page }).ONTO_RASTER;
@@ -255,7 +258,16 @@ function option(): Option {
       { id: "intervals", type: "custom", renderItem: renderInterval, encode: { x: [1, 2], y: 0 }, data: intervalData(), clip: true },
       { id: "forks", type: "custom", renderItem: renderLink(false, 1.2, 0.6), encode: { x: [0, 2], y: [1, 3] }, data: forkData(), silent: true },
       { id: "causal", type: "custom", renderItem: renderLink(true, 2, 0.9), encode: { x: [0, 2], y: [1, 3] }, data: causalData(), silent: true, z: 5 },
-      { id: "points", type: "scatter", data: pointData(), encode: { x: 0, y: 1 }, z: 10, emphasis: { scale: 1.4 } },
+      {
+        id: "points", type: "scatter", data: pointData(), encode: { x: 0, y: 1 }, z: 10, emphasis: { scale: 1.4 },
+        // Learning boundaries: from here on, the learned arrow is active.
+        markLine: {
+          silent: true, symbol: "none",
+          lineStyle: { color: css("--good"), type: "dashed", width: 1.2 },
+          label: { color: css("--good"), formatter: (p: unknown) => (p as { name?: string }).name ?? "", position: "insideEndTop", fontSize: 11 },
+          data: R.insights.learning.map((l) => ({ name: `learned ${l.arrow}`, xAxis: l.at_ms })),
+        },
+      },
     ],
   };
 }
@@ -445,7 +457,55 @@ function legend() {
   $("legend").innerHTML = items.map(([k, s]) => `<span>${s}${esc(k)}</span>`).join("");
 }
 
-function all() { header(); legend(); mount(); }
+// ---- insights: what the raster shows, measured ----
+function insights() {
+  const I = R.insights;
+  selected = null; refresh();
+  const out: HTMLElement[] = [];
+  const bar = (s: import("./types").Split) => {
+    const parts: [string, number, string][] = [
+      ["judge", s.judge_ms, "var(--fg)"], ["proposer", s.proposer_ms, "var(--muted)"],
+      ["claim wait", s.claim_wait_ms, "var(--warn)"], ["join wait", s.join_wait_ms, "var(--bad)"], ["other", s.other_ms, "var(--grid)"],
+    ];
+    const tot = parts.reduce((a, p) => a + p[1], 0) || 1;
+    const d = document.createElement("div"); d.className = "split";
+    d.innerHTML = `<div class="split-bar">${parts.map(([, v, c]) => `<i style="width:${(100 * v) / tot}%;background:${c}"></i>`).join("")}</div>` +
+      `<div class="split-keys">${parts.filter(([, v]) => v > 0.5).map(([k, v, c]) => `<span><i style="background:${c}"></i>${esc(k)} ${fmt(v)}</span>`).join("")}</div>`;
+    return d;
+  };
+  const sec = (title: string, ...kids: (HTMLElement | string)[]) => {
+    const s = document.createElement("section");
+    const h = document.createElement("h2"); h.textContent = title; s.appendChild(h);
+    for (const k of kids) { if (typeof k === "string") { const p = document.createElement("p"); p.className = "r"; p.textContent = k; s.appendChild(p); } else s.appendChild(k); }
+    return s;
+  };
+  const who = (w: number) => { const x = walkOf.get(w); return `${x?.case ?? ""} walk ${w}`.trim(); };
+  const list = (rows: string[]) => { const ul = document.createElement("ul"); ul.className = "ins"; for (const r of rows) { const li = document.createElement("li"); li.textContent = r; ul.appendChild(li); } return ul; };
+
+  out.push(sec("Where the time went (all walks)", bar(I.split),
+    `Model ${fmt(I.split.judge_ms + I.split.proposer_ms)} · coordination ${fmt(I.split.claim_wait_ms + I.split.join_wait_ms)} over a ${fmt(I.wall_ms)} run.`));
+  out.push(sec("Parallelism",
+    `Up to ${I.concurrency.max} walks active at once; ${I.concurrency.mean.toFixed(2)} on average. Work over wall: ${I.critical_path.work_over_wall.toFixed(2)}×.`));
+  const cp = I.critical_path;
+  out.push(sec("Critical path (what the run waited for)", bar(cp.split),
+    `${cp.frames.join(" → ")} · ends at ${fmt(cp.end_ms)} (${cp.records.length} records)`));
+  const busy = I.frames.filter((f) => f.visits > 0).slice(0, 5);
+  out.push(sec("Busiest frames", list(busy.map((f) =>
+    `${f.frame}: ${fmt(f.time_ms)} in ${f.visits} visits (${f.cases} cases) · model ${fmt(f.model_ms)} · claim wait ${fmt(f.claim_wait_ms)}${f.max_queue > 1 ? `, queue up to ${f.max_queue}` : ""}`))));
+  if (I.joins.length) out.push(sec("Joins", list(I.joins.map((j) =>
+    j.policy === "race"
+      ? `${j.frame} (race): ${who(j.decisive)} won${j.arrivals.length > 1 ? `, the next ${fmt(j.spread_ms)} later` : ""}`
+      : `${j.frame} (${j.policy}): waited for ${who(j.decisive)}, the last of ${j.arrivals.length}, ${fmt(j.spread_ms)} after the first`))));
+  const gaps = I.frames.filter((f) => f.escalations > 1).sort((a, b) => b.escalations - a.escalations);
+  if (gaps.length) out.push(sec("Repeated gaps", list(gaps.map((f) =>
+    `${f.frame}: ${f.escalations} escalations from ${f.escalating_cases} cases, ${f.proposals} proposals`))));
+  if (I.learning.length) out.push(sec("Learning, before → after", list(I.learning.map((l) =>
+    `${l.arrow} at ${l.frame} (${l.source}, ${fmt(l.at_ms)}): escalations ${l.escalations_before} → ${l.escalations_after}, mean stay ${fmt(l.mean_stay_before_ms)} → ${fmt(l.mean_stay_after_ms)}, used ${l.used_after}× after`))));
+  $("details").replaceChildren(...out);
+}
+
+function all() { header(); legend(); mount(); insights(); }
+$("show-insights")?.addEventListener("click", insights);
 // A small hook for tests and scripted exploration (no behaviour of its own).
 (window as unknown as { __ontoRaster: object }).__ontoRaster = {
   events: R.events,

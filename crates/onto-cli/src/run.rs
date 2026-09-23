@@ -58,6 +58,9 @@ pub struct RunArgs {
     /// `FILE#Functor` (or `FILE` when it declares one functor).
     #[arg(long)]
     view: Vec<PathBuf>,
+    /// Start job i after i × this many milliseconds (an arrival stream).
+    #[arg(long, default_value_t = 0)]
+    stagger: u64,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -153,6 +156,7 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         open_world: !args.world.closed_world,
         max_expansions: args.world.max_expansions,
         assured: args.world.assured(),
+        stagger: Duration::from_millis(args.stagger),
         ..Config::default()
     };
 

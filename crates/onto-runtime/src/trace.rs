@@ -81,6 +81,101 @@ pub struct Raster {
     /// Frame record id → causal parent record ids.
     pub parents: BTreeMap<String, Vec<String>>,
     pub meta: Value,
+    /// What the raster shows, measured (`insights`).
+    pub insights: Insights,
+}
+
+/// Measurements of a run's behaviour as a system, computed from the
+/// projection: one per question the raster answers.
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct Insights {
+    pub wall_ms: f64,
+    /// Where the time went, summed over all walks.
+    pub split: Split,
+    /// Walks active at once.
+    pub concurrency: Concurrency,
+    /// Per frame, busiest first.
+    pub frames: Vec<FrameStat>,
+    /// The chain of records that ended last, back to the run's start.
+    pub critical_path: CriticalPath,
+    /// Every join that resolved, with each branch's arrival.
+    pub joins: Vec<JoinStat>,
+    /// Every learned arrow: the frame before and after it became active.
+    pub learning: Vec<LearnStat>,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct Split {
+    pub judge_ms: f64,
+    pub proposer_ms: f64,
+    pub claim_wait_ms: f64,
+    pub join_wait_ms: f64,
+    /// Time in visits not spent on the above (runtime work, idle).
+    pub other_ms: f64,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct Concurrency {
+    pub max: usize,
+    /// Time-weighted mean of walks active, over the run.
+    pub mean: f64,
+    /// `(ms, walks active from then on)`, a step function.
+    pub profile: Vec<(f64, usize)>,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct FrameStat {
+    pub frame: String,
+    pub visits: usize,
+    pub cases: usize,
+    pub time_ms: f64,
+    pub claim_wait_ms: f64,
+    /// Most walks waiting for this frame's claim at once.
+    pub max_queue: usize,
+    pub model_ms: f64,
+    pub escalations: usize,
+    /// Distinct cases that escalated here.
+    pub escalating_cases: usize,
+    pub proposals: usize,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct CriticalPath {
+    pub records: Vec<String>,
+    pub frames: Vec<String>,
+    pub end_ms: f64,
+    pub split: Split,
+    /// Sum of all visit time over the wall time: work done in parallel.
+    pub work_over_wall: f64,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct JoinStat {
+    pub record: String,
+    pub frame: String,
+    pub policy: String,
+    pub continued: u64,
+    /// `(walk, ms it reached the join)`, in arrival order.
+    pub arrivals: Vec<(u64, f64)>,
+    /// The branch that arrived last (all) or first (race).
+    pub decisive: u64,
+    pub spread_ms: f64,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct LearnStat {
+    pub arrow: String,
+    pub frame: String,
+    pub at_ms: f64,
+    pub source: String,
+    pub visits_before: usize,
+    pub escalations_before: usize,
+    pub mean_stay_before_ms: f64,
+    pub visits_after: usize,
+    pub escalations_after: usize,
+    pub mean_stay_after_ms: f64,
+    /// Steps along the learned arrow after it became active.
+    pub used_after: usize,
 }
 
 /// Projects one run's telemetry events (as written, with `timestamp`
@@ -565,13 +660,307 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
             frames.iter().filter(|f| !declared.contains(f)).cloned().collect::<Vec<_>>()
         },
     });
-    Raster {
+    let mut raster = Raster {
         category,
         frames,
         walks,
         events: out,
         parents,
         meta,
+        insights: Insights::default(),
+    };
+    raster.insights = insights(&raster, events);
+    raster
+}
+
+fn insights(r: &Raster, telemetry: &[Value]) -> Insights {
+    let m = |ns: u64| ns as f64 / 1e6;
+    let span = |e: &RasterEvent| m(e.end_ns.unwrap_or(e.start_ns).saturating_sub(e.start_ns));
+    let of = |k: EventKind| r.events.iter().filter(move |e| e.kind == k);
+    let wall = r
+        .meta
+        .get("wall_ms")
+        .and_then(Value::as_f64)
+        .unwrap_or_else(|| {
+            r.events
+                .iter()
+                .map(|e| m(e.end_ns.unwrap_or(e.start_ns)))
+                .fold(0.0, f64::max)
+        });
+    let root: HashMap<u64, u64> = r.walks.iter().map(|w| (w.id, w.root)).collect();
+
+    let sum = |k: EventKind| of(k).map(span).sum::<f64>();
+    let visit_time: f64 = sum(EventKind::Visit);
+    let split = Split {
+        judge_ms: sum(EventKind::JudgeCall),
+        proposer_ms: sum(EventKind::ProposerCall),
+        claim_wait_ms: sum(EventKind::ClaimWait),
+        join_wait_ms: sum(EventKind::JoinWait),
+        other_ms: 0.0,
+    };
+    let split = Split {
+        other_ms: (visit_time + split.join_wait_ms
+            - split.judge_ms
+            - split.proposer_ms
+            - split.claim_wait_ms
+            - split.join_wait_ms)
+            .max(0.0),
+        ..split
+    };
+
+    // Concurrency: walks with a visit or a join wait open at time t.
+    let mut edges: Vec<(u64, i64)> = Vec::new();
+    for e in r
+        .events
+        .iter()
+        .filter(|e| matches!(e.kind, EventKind::Visit | EventKind::JoinWait))
+    {
+        edges.push((e.start_ns, 1));
+        edges.push((e.end_ns.unwrap_or(e.start_ns), -1));
+    }
+    edges.sort_by_key(|x| (x.0, x.1));
+    let (mut active, mut max, mut area, mut last) = (0i64, 0usize, 0.0, 0u64);
+    let mut profile = Vec::new();
+    for (t, d) in edges {
+        area += active as f64 * m(t - last);
+        last = t;
+        active += d;
+        max = max.max(active.max(0) as usize);
+        if profile
+            .last()
+            .is_none_or(|p: &(f64, usize)| p.1 != active.max(0) as usize)
+        {
+            profile.push((m(t), active.max(0) as usize));
+        }
+    }
+    let concurrency = Concurrency {
+        max,
+        mean: if wall > 0.0 { area / wall } else { 0.0 },
+        profile,
+    };
+
+    // Frames.
+    let mut frames: Vec<FrameStat> = r
+        .frames
+        .iter()
+        .map(|f| {
+            let here = |k: EventKind| {
+                r.events
+                    .iter()
+                    .filter(move |e| e.kind == k && &e.frame == f)
+            };
+            let waits: Vec<&RasterEvent> = here(EventKind::ClaimWait).collect();
+            let mut qe: Vec<(u64, i64)> = waits
+                .iter()
+                .flat_map(|e| [(e.start_ns, 1), (e.end_ns.unwrap_or(e.start_ns), -1)])
+                .collect();
+            qe.sort_by_key(|x| (x.0, x.1));
+            let (mut q, mut qmax) = (0i64, 0i64);
+            for (_, d) in qe {
+                q += d;
+                qmax = qmax.max(q);
+            }
+            let esc: Vec<&RasterEvent> = here(EventKind::Escalation).collect();
+            let mut cases: Vec<u64> = here(EventKind::Visit).map(|e| root[&e.walk]).collect();
+            cases.sort_unstable();
+            cases.dedup();
+            let mut esc_cases: Vec<u64> = esc.iter().map(|e| root[&e.walk]).collect();
+            esc_cases.sort_unstable();
+            esc_cases.dedup();
+            FrameStat {
+                frame: f.clone(),
+                visits: here(EventKind::Visit).count(),
+                cases: cases.len(),
+                time_ms: here(EventKind::Visit).map(span).sum(),
+                claim_wait_ms: waits.iter().map(|e| span(e)).sum(),
+                max_queue: qmax.max(0) as usize,
+                model_ms: here(EventKind::JudgeCall)
+                    .chain(here(EventKind::ProposerCall))
+                    .map(span)
+                    .sum(),
+                escalations: esc.len(),
+                escalating_cases: esc_cases.len(),
+                proposals: here(EventKind::Proposal).count(),
+            }
+        })
+        .collect();
+    frames.sort_by(|a, b| b.time_ms.total_cmp(&a.time_ms));
+
+    // Critical path: from the record that ended last, back through the
+    // parent that ended last (the one the next record waited for).
+    let mut rec_start: HashMap<&str, u64> = HashMap::new();
+    let mut rec_end: HashMap<&str, u64> = HashMap::new();
+    let mut rec_frame: HashMap<&str, &str> = HashMap::new();
+    for e in &r.events {
+        if let Some(rec) = e.record.as_deref() {
+            let s = rec_start.entry(rec).or_insert(e.start_ns);
+            *s = (*s).min(e.start_ns);
+            let t = rec_end.entry(rec).or_insert(0);
+            *t = (*t).max(e.end_ns.unwrap_or(e.start_ns));
+            rec_frame.entry(rec).or_insert(e.frame.as_str());
+        }
+    }
+    let mut path: Vec<String> = Vec::new();
+    let mut cur = rec_end.iter().max_by_key(|x| *x.1).map(|x| x.0.to_string());
+    while let Some(rec) = cur {
+        if path.contains(&rec) {
+            break;
+        }
+        cur = r
+            .parents
+            .get(&rec)
+            .and_then(|ps| {
+                ps.iter()
+                    .filter(|p| rec_end.contains_key(p.as_str()))
+                    .max_by_key(|p| rec_end[p.as_str()])
+            })
+            .cloned();
+        path.push(rec);
+    }
+    path.reverse();
+    let on = |e: &&RasterEvent| {
+        e.record
+            .as_deref()
+            .is_some_and(|x| path.iter().any(|p| p == x))
+    };
+    let path_sum = |k: EventKind| {
+        r.events
+            .iter()
+            .filter(on)
+            .filter(|e| e.kind == k)
+            .map(span)
+            .sum::<f64>()
+    };
+    let path_visits = path_sum(EventKind::Visit);
+    let cp_split = Split {
+        judge_ms: path_sum(EventKind::JudgeCall),
+        proposer_ms: path_sum(EventKind::ProposerCall),
+        claim_wait_ms: path_sum(EventKind::ClaimWait),
+        join_wait_ms: path_sum(EventKind::JoinWait),
+        other_ms: 0.0,
+    };
+    let critical_path = CriticalPath {
+        frames: path
+            .iter()
+            .map(|p| {
+                rec_frame
+                    .get(p.as_str())
+                    .copied()
+                    .unwrap_or_default()
+                    .to_owned()
+            })
+            .collect(),
+        end_ms: path
+            .last()
+            .and_then(|p| rec_end.get(p.as_str()))
+            .map_or(0.0, |t| m(*t)),
+        split: Split {
+            other_ms: (path_visits + cp_split.join_wait_ms
+                - cp_split.judge_ms
+                - cp_split.proposer_ms
+                - cp_split.claim_wait_ms
+                - cp_split.join_wait_ms)
+                .max(0.0),
+            ..cp_split
+        },
+        work_over_wall: if wall > 0.0 { visit_time / wall } else { 0.0 },
+        records: path,
+    };
+
+    // Joins: the continuing walk, and every walk folded into it there.
+    let ms_f = |e: &Value, k: &str| e[k].as_f64().unwrap_or(0.0);
+    let mut joins = Vec::new();
+    for c in telemetry
+        .iter()
+        .filter(|e| e["event"] == "join" && e["role"] == "continued")
+    {
+        let (Some(walk), Some(at)) = (c["walk"].as_u64(), c["at"].as_str()) else {
+            continue;
+        };
+        let mut arrivals = vec![(walk, ms_f(c, "t") - ms_f(c, "wait_ms"))];
+        for o in telemetry
+            .iter()
+            .filter(|e| e["event"] == "join" && e["at"] == at && e["into"].as_u64() == Some(walk))
+        {
+            if let Some(w) = o["walk"].as_u64() {
+                arrivals.push((w, ms_f(o, "t") - ms_f(o, "wait_ms")));
+            }
+        }
+        arrivals.sort_by(|a, b| a.1.total_cmp(&b.1));
+        let policy = c["policy"].as_str().unwrap_or_default().to_owned();
+        let decisive = if policy == "race" {
+            arrivals.first().map_or(walk, |a| a.0)
+        } else {
+            arrivals.last().map_or(walk, |a| a.0)
+        };
+        let spread = arrivals.last().map_or(0.0, |l| l.1) - arrivals.first().map_or(0.0, |f| f.1);
+        joins.push(JoinStat {
+            record: c["record"].as_str().unwrap_or_default().to_owned(),
+            frame: at.to_owned(),
+            policy,
+            continued: walk,
+            arrivals,
+            decisive,
+            spread_ms: spread,
+        });
+    }
+
+    // Learning: each learned arrow, its frame before and after.
+    let mut learning = Vec::new();
+    for l in telemetry.iter().filter(|e| e["event"] == "learned") {
+        let (Some(arrow), Some(frame)) = (l["arrow"].as_str(), l["from"].as_str()) else {
+            continue;
+        };
+        let t = (ms_f(l, "t") * 1e6) as u64;
+        let source = telemetry
+            .iter()
+            .filter(|e| e["event"] == "expansion" && e["record"] == l["record"])
+            .find_map(|e| e["source"].as_str())
+            .unwrap_or("proposer")
+            .to_owned();
+        let visits: Vec<&RasterEvent> = of(EventKind::Visit).filter(|e| e.frame == frame).collect();
+        let (before, after): (Vec<&RasterEvent>, Vec<&RasterEvent>) =
+            visits.iter().partition(|e| e.start_ns < t);
+        let esc = |b: bool| {
+            of(EventKind::Escalation)
+                .filter(|e| e.frame == frame && (e.start_ns < t) == b)
+                .count()
+        };
+        let mean = |v: &[&RasterEvent]| {
+            if v.is_empty() {
+                0.0
+            } else {
+                v.iter().map(|e| span(e)).sum::<f64>() / v.len() as f64
+            }
+        };
+        learning.push(LearnStat {
+            arrow: arrow.to_owned(),
+            frame: frame.to_owned(),
+            at_ms: m(t),
+            source,
+            visits_before: before.len(),
+            escalations_before: esc(true),
+            mean_stay_before_ms: mean(&before),
+            visits_after: after.len(),
+            escalations_after: esc(false),
+            mean_stay_after_ms: mean(&after),
+            used_after: telemetry
+                .iter()
+                .filter(|e| {
+                    e["event"] == "step" && e["arrow"] == arrow && ms_f(e, "t") * 1e6 > t as f64
+                })
+                .count(),
+        });
+    }
+
+    Insights {
+        wall_ms: wall,
+        split,
+        concurrency,
+        frames,
+        critical_path,
+        joins,
+        learning,
     }
 }
 

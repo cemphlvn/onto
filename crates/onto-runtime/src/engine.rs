@@ -64,6 +64,9 @@ pub struct Config {
     /// Otherwise each frame's declared admission decides (`admission X:
     /// assured;`); a run can tighten admission, never loosen it.
     pub assured: bool,
+    /// Arrival stream: job i starts `i × stagger` after the run starts
+    /// (zero: all at once).
+    pub stagger: Duration,
 }
 
 impl Default for Config {
@@ -81,6 +84,7 @@ impl Default for Config {
             open_world: true,
             max_expansions: 3,
             assured: false,
+            stagger: Duration::ZERO,
         }
     }
 }
@@ -415,7 +419,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         // them, so walks never spawn themselves.
         let (branch_tx, mut branch_rx) = mpsc::unbounded_channel::<Seed>();
         let mut running = JoinSet::new();
-        for (job, from) in jobs.into_iter().zip(starts) {
+        for (i, (job, from)) in jobs.into_iter().zip(starts).enumerate() {
             let seed = Seed {
                 id: self.next_walk.fetch_add(1, Relaxed),
                 parent: None,
@@ -429,7 +433,14 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 tokens: BTreeSet::new(),
                 forks: Vec::new(),
             };
-            running.spawn(self.clone().walk(seed, branch_tx.clone()));
+            let (engine, tx) = (self.clone(), branch_tx.clone());
+            let delay = self.cfg.stagger * i as u32;
+            running.spawn(async move {
+                if !delay.is_zero() {
+                    tokio::time::sleep(delay).await;
+                }
+                engine.walk(seed, tx).await
+            });
         }
         let mut walks = Vec::new();
         loop {

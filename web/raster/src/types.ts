@@ -41,7 +41,19 @@ export interface Walk {
   goal: string;
 }
 
+export interface Split { judge_ms: number; proposer_ms: number; claim_wait_ms: number; join_wait_ms: number; other_ms: number }
+export interface Insights {
+  wall_ms: number;
+  split: Split;
+  concurrency: { max: number; mean: number; profile: [number, number][] };
+  frames: { frame: string; visits: number; cases: number; time_ms: number; claim_wait_ms: number; max_queue: number; model_ms: number; escalations: number; escalating_cases: number; proposals: number }[];
+  critical_path: { records: string[]; frames: string[]; end_ms: number; split: Split; work_over_wall: number };
+  joins: { record: string; frame: string; policy: string; continued: number; arrivals: [number, number][]; decisive: number; spread_ms: number }[];
+  learning: { arrow: string; frame: string; at_ms: number; source: string; visits_before: number; escalations_before: number; mean_stay_before_ms: number; visits_after: number; escalations_after: number; mean_stay_after_ms: number; used_after: number }[];
+}
+
 export interface Raster {
+  insights: Insights;
   category: string;
   frames: string[];
   walks: Walk[];

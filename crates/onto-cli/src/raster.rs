@@ -35,6 +35,9 @@ pub struct RasterArgs {
     /// Where to write the page (default: next to the telemetry, `.html`).
     #[arg(long)]
     out: Option<PathBuf>,
+    /// Also write the projection's insights (the measurements) as JSON.
+    #[arg(long)]
+    json: Option<PathBuf>,
 }
 
 pub fn main(args: RasterArgs) -> Result<(), BoxError> {
@@ -94,6 +97,9 @@ pub fn main(args: RasterArgs) -> Result<(), BoxError> {
     };
     let raster = onto_runtime::trace::project(&kept, &rows);
     let events = raster.events.len();
+    if let Some(path) = &args.json {
+        std::fs::write(path, serde_json::to_string_pretty(&raster.insights)?)?;
+    }
     let data = json!({
         "source": args.telemetry.display().to_string(),
         "run": n,
