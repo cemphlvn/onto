@@ -1018,3 +1018,77 @@ mod attestation {
         assert!(parse(&s.replace("key: ed25519:", "key: rsa:")).is_err());
     }
 }
+
+mod quotient {
+    use super::*;
+    use onto_core::quotient::{Mode, label_only_identities, partition, redundant_arrows};
+
+    fn names(cat: &onto_core::Category, classes: Vec<Vec<onto_core::ObjId>>) -> Vec<Vec<String>> {
+        classes
+            .into_iter()
+            .map(|g| g.into_iter().map(|o| cat.object(o).name.clone()).collect())
+            .collect()
+    }
+
+    #[test]
+    fn refinement_separates_by_depth_and_merges_by_behaviour() {
+        // A -> B -> C and D -> E: B and D each lead to a terminal, A does not.
+        let cat = parse("category C { objects: A, B, C, D, E; ab: A -> B; bc: B -> C; de: D -> E; closed: A, B, C, D, E; }").unwrap();
+        let classes = names(&cat, partition(&cat, Mode::Exact));
+        assert_eq!(classes, [vec!["A"], vec!["B", "D"], vec!["C", "E"]]);
+    }
+
+    #[test]
+    fn support_taxonomy_identities_rest_on_descriptions() {
+        let src = std::fs::read_to_string(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../demos/support-commons/support.onto"
+        ))
+        .unwrap();
+        let cat = parse(&src).unwrap();
+        assert!(
+            partition(&cat, Mode::Exact).iter().all(|g| g.len() == 1),
+            "no genuine duplicates"
+        );
+        let label_only = names(&cat, label_only_identities(&cat));
+        assert!(
+            label_only.contains(
+                &[
+                    "Refund",
+                    "Invoice",
+                    "Outage",
+                    "HowTo",
+                    "Login",
+                    "FeatureRequest"
+                ]
+                .map(String::from)
+                .to_vec()
+            ),
+            "{label_only:?}"
+        );
+    }
+
+    #[test]
+    fn preconditions_and_effects_are_structure() {
+        // Same shape, but one arrow needs evidence: not equivalent, even ignoring descriptions.
+        let cat = parse("category C { objects: A, B, T; a: A -> T \"x\"; b: B -> T \"y\" require ok == true; closed: A, B, T; }").unwrap();
+        assert_eq!(partition(&cat, Mode::Structure).len(), 3);
+        // Without the precondition they collapse structurally, but not exactly.
+        let cat = parse(
+            "category C { objects: A, B, T; a: A -> T \"x\"; b: B -> T \"y\"; closed: A, B, T; }",
+        )
+        .unwrap();
+        assert_eq!(partition(&cat, Mode::Structure).len(), 2);
+        assert_eq!(partition(&cat, Mode::Exact).len(), 3);
+    }
+
+    #[test]
+    fn redundant_arrows_are_exact_repeats() {
+        let cat = parse("category C { objects: A, B; f: A -> B \"same\"; g: A -> B \"same\"; h: A -> B \"other\"; }").unwrap();
+        let r: Vec<_> = redundant_arrows(&cat)
+            .iter()
+            .map(|(e, l)| (cat.arrow(*e).name.clone(), cat.arrow(*l).name.clone()))
+            .collect();
+        assert_eq!(r, [("f".to_owned(), "g".to_owned())]);
+    }
+}

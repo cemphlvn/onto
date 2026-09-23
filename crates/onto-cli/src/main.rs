@@ -8,6 +8,7 @@ use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, 
 mod ask;
 mod attest;
 mod laws;
+mod quotient;
 mod run;
 mod supervise;
 mod why;
@@ -67,6 +68,8 @@ enum Cmd {
     Keygen(attest::KeygenArgs),
     /// Sign an observation as an attester (prints the observation JSON).
     Attest(attest::AttestArgs),
+    /// Behavioural equivalence classes: duplicates and description-only identities.
+    Quotient(quotient::QuotientArgs),
     /// Derive what entry contracts and arrow effects imply.
     Laws(laws::LawsArgs),
     /// Review provisional proposals: structural proofs, then semantic checks.
@@ -88,6 +91,7 @@ fn main() -> ExitCode {
         Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Why(args) => why::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Laws(args) => laws::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Quotient(args) => quotient::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Keygen(args) => attest::keygen(args).map(|()| ExitCode::SUCCESS),
         Cmd::Attest(args) => attest::attest(args).map(|()| ExitCode::SUCCESS),
         Cmd::Review(args) => supervise::review_main(args).map(|()| ExitCode::SUCCESS),
@@ -266,6 +270,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         | Cmd::Review(_)
         | Cmd::Promote(_)
         | Cmd::Laws(_)
+        | Cmd::Quotient(_)
         | Cmd::Keygen(_)
         | Cmd::Attest(_) => {
             unreachable!("handled in main")

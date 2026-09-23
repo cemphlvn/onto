@@ -9,6 +9,7 @@ pub mod error;
 pub mod laws;
 pub mod parse;
 pub mod path;
+pub mod quotient;
 pub mod require;
 pub mod supervise;
 pub mod walk;

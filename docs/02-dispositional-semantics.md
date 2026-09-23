@@ -117,6 +117,17 @@ equivalent, cycles included.
 
 ### Status
 
+**B′ (exact-label behavioural quotient) is built** (`onto quotient`,
+`quotient.rs`): partition refinement to the coarsest bisimulation, in
+exact mode (descriptions count) and structure mode (they do not),
+diagnostics only. On the demos: support-commons confirms §2.2 (Refund,
+Invoice, Outage, HowTo, Login, FeatureRequest are structurally one class;
+so are {Billing, Technical} and {Account, Product}); incident-graph is
+fully **asymmetric** (every object told apart by structure, thanks to
+attested preconditions, levels, the noul frame and the join); consent-paths
+had three objects identified **by name only** (no description, no
+behaviour), fixed by describing them.
+
 Capability authority, declared roots and proof-producing laws are
 **built** (after A–D): tokens need declared issuers and revokers, checked
 by one validator on every route; the minting attack

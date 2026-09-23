@@ -34,6 +34,7 @@ propose new structure.
 | disposition | what happened to one candidate arrow at a frame visit: selected · forked · alternative · rejected · deferred · filtered_by_require, with the judge's number and a reason built from the numbers | `walk::Disposition`, `walk::dispose` |
 | capability token | an on/off property a walk holds, set by `ensures` and cleared by `revokes` on arrows; a capability, not a fact: an arrow standing for a real-world fact must `require` the evidence before it `ensures` the token | `Arrow::ensures`, `WalkState::tokens` |
 | capability declaration | which arrows may issue and revoke a token (`capability T { issuers: …; revokers: …; }`); every token used must be declared | `Capability` |
+| behavioural quotient | coarsest bisimulation over frames (labels without names, set semantics), exact or structure-only; diagnostics, never applied | `quotient.rs`, `onto quotient` |
 | attested observation | an Ed25519-signed claim about the world by a declared attester, bound to a case; `attested P` preconditions read only verified ones | `attest.rs`, `onto attest` |
 | join | where sibling branches of one fork recombine: `all` (intersection of tokens), `race` (first arrival), `gate` (authority exports an allowlist); `incomplete_join` / `blocked_by_gate` when a sibling cannot arrive | `Join`, `joins.rs` |
 | declared root | an application entry point (`start: A;`); starting still counts as entering | `Category::starts` |
@@ -435,7 +436,10 @@ snapshot. No database until live multi-writer editing is needed.
   evidence outrank a model's hesitation. Until legal decides, the current
   behaviour stands: the judge decides, and an unsure judge escalates to a
   person.
-- **Next:** exact-label behavioural quotient; behavioural
+- **Behavioural quotient (done):** `onto quotient` reports duplicates,
+  name-only identities, description-only identities (the asymmetry
+  check) and redundant arrows.
+- **Next:** behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).
 - **M3:** functors between categories; multi-category files.

@@ -15,6 +15,10 @@ category Consent {
              Aggregated, Research, Processor, Marketing, Published;
 
     about Collected: "personal data the organization holds about a person";
+    about Research:   "the data is used in a scientific or academic study";
+    about Processor:  "the data is held by an external processor acting for the organization";
+    about Published:  "aggregate statistics are made public";
+    about Marketing:  "the person receives marketing";
 
     frame Collected: choice "On which legal basis would this intended use rest?";
     consent:  Collected -> Consented "the person explicitly agreed to this kind of use (GDPR 6(1)(a))"
