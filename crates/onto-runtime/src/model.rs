@@ -91,6 +91,11 @@ pub struct ProposalRequest {
     pub frame: Vec<Candidate>,
     pub reason: String,
     pub known_objects: Vec<String>,
+    /// Terminal objects (closed, no outgoing arrows): where a walk ends
+    /// successfully, each with a few declared arrows that finish into it
+    /// (`arrow: From -> To (about)`), showing how this graph ends a case.
+    /// A learned branch that never reaches one leaves the case unfinished.
+    pub outcomes: Vec<Value>,
     /// Provisional arrows other walks already proposed at this frame. A
     /// proposer should reuse one unchanged when it fits.
     pub pending_here: Vec<Pending>,
@@ -252,6 +257,22 @@ impl MockJudge {
                     t.split(|ch: char| !ch.is_alphanumeric())
                         .any(|w| w.len() > 3 && goal.contains(&w.to_lowercase()))
                 })
+    }
+}
+
+/// The mock judge critiques like [`MockCritic`] (open world reviews with
+/// the judge).
+impl Critic for MockJudge {
+    fn name(&self) -> String {
+        MockCritic.name()
+    }
+
+    async fn nouls(
+        &self,
+        state: Value,
+        questions: Vec<NoulQuestion>,
+    ) -> Result<(Vec<f32>, Usage), ModelError> {
+        MockCritic.nouls(state, questions).await
     }
 }
 

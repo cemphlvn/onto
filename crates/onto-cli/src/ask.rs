@@ -8,7 +8,6 @@
 
 use std::io::{BufRead, IsTerminal, Write};
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use clap::Args;
 use onto_core::walk::Escalation;
@@ -40,12 +39,12 @@ pub struct AskArgs {
     /// happened to it.
     #[arg(long)]
     why: bool,
+    #[command(flatten)]
+    world: crate::learned::WorldArgs,
 }
 
 pub fn main(args: AskArgs) -> Result<(), BoxError> {
-    let src =
-        std::fs::read_to_string(&args.file).map_err(|e| format!("{}: {e}", args.file.display()))?;
-    let cat = Arc::new(onto_core::parse(&src)?);
+    let cat = args.world.load(&args.file)?;
     cat.object_id(&args.from)?;
     if let Some(path) = &args.telemetry {
         telemetry::init_jsonl(path)?;
@@ -54,9 +53,11 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
     let cfg = Config {
         threshold: args.threshold,
         policy: Policy::Shared,
+        open_world: !args.world.closed_world,
+        max_expansions: args.world.max_expansions,
         ..Config::default()
     };
-    let engine = Engine::new(cat.clone(), judge, proposer, cfg);
+    let engine = Engine::new(cat, judge, proposer, cfg);
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?;
@@ -69,7 +70,9 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
             case,
         };
         let report = rt.block_on(engine.run(vec![job]))?;
-        print_answer(&cat, &report);
+        // The graph may have grown during the walk (open world).
+        print_answer(&engine.cat(), &report);
+        args.world.save(&args.file, &report.learned)?;
         if args.why {
             println!();
             println!("  Why:");
@@ -133,6 +136,8 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
     let mut last_attested: Vec<String> = Vec::new();
     // Set when a join this walk continued from was attested completion.
     let mut attested_join: Option<String> = None;
+    // Some step went through structure the open world learned.
+    let mut through_learned = false;
     for s in &w.steps {
         match s {
             StepRecord::Followed {
@@ -143,14 +148,21 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                 p,
                 alternatives,
                 attested,
+                learned,
                 ..
             } => {
                 n += 1;
+                through_learned |= *learned;
                 if *decided_by == onto_core::Primitive::Split {
                     println!("{pad}{n}. {from} → {to}   (a required step: no judgment)");
                 } else {
                     let sure = confidence.unwrap_or(*p) * 100.0;
-                    println!("{pad}{n}. {from} → {to}   ({sure:.0}% sure)");
+                    let learned = if *learned {
+                        "; a newly learned option"
+                    } else {
+                        ""
+                    };
+                    println!("{pad}{n}. {from} → {to}   ({sure:.0}% sure{learned})");
                 }
                 for a in attested {
                     println!("{pad}   attested by {a}");
@@ -195,6 +207,14 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                 proposals,
                 ..
             } => outcome = Some((at.clone(), *reason, proposals.clone())),
+            StepRecord::Expanded { at, learned, .. } => {
+                println!(
+                    "{pad}   ⟡ the known options at {at} did not cover your case; an AI proposed new ones, they passed the safety proofs (policy, capabilities, invariants), and the walk continued:"
+                );
+                for p in learned {
+                    println!("{pad}     learned \"{}\" → {}: {}", p.arrow, p.dst, p.about);
+                }
+            }
             StepRecord::Failed { at, error } => {
                 println!("{pad}✗ Something went wrong at {at}: {error}");
                 return;
@@ -221,6 +241,13 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                 );
             } else if let Some(how) = &attested_join {
                 println!("{pad}✓ Completed: {end_name}; {how}.");
+            } else if through_learned {
+                println!(
+                    "{pad}✓ Reached {end_name} through learned structure (not declared policy)."
+                );
+                println!(
+                    "{pad}  Not attested: no trusted source has confirmed the outcome in the world."
+                );
             } else {
                 println!("{pad}✓ Reached {end_name} by an existing route.");
                 println!(
@@ -313,7 +340,7 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                     println!("{pad}    for: {}", p.about);
                 }
                 println!(
-                    "{pad}  Suggestions stay provisional until someone validates them (coming in M2)."
+                    "{pad}  Suggestions stay provisional until a person reviews and promotes them."
                 );
             }
         }

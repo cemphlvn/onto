@@ -74,6 +74,9 @@ pub struct CandidateRecord {
     pub judgment: Option<f32>,
     pub disposition: Disposition,
     pub reason: String,
+    /// Learned structure (open world), not declared policy.
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub learned: bool,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -89,6 +92,12 @@ pub enum Outcome {
     },
     Escalated {
         reason: Escalation,
+    },
+    /// Open world: System 2's `learned` arrows were admitted into the
+    /// live graph and the walk re-judged this frame with them.
+    Expanded {
+        reason: Escalation,
+        learned: Vec<String>,
     },
     Failed {
         error: String,
@@ -114,6 +123,7 @@ pub(crate) fn candidates(cat: &Category, ds: Vec<CandidateDisposition>) -> Vec<C
                 judgment: d.judgment,
                 disposition: d.disposition,
                 reason: d.reason,
+                learned: a.learned,
             }
         })
         .collect()

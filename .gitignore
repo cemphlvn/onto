@@ -1,3 +1,5 @@
 /target
 # fonto is a separate repository that lives alongside onto
 /fonto/
+# learned layers (open world) are local by default; commit one deliberately
+*.learned.jsonl

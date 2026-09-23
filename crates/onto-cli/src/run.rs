@@ -1,7 +1,6 @@
 //! `onto run`: the concurrent core loop from the command line.
 
 use std::path::PathBuf;
-use std::sync::Arc;
 use std::time::Duration;
 
 use clap::{Args, ValueEnum};
@@ -9,7 +8,8 @@ use onto_core::walk::{Answer, Proposal};
 use onto_runtime::engine::StepRecord;
 use onto_runtime::frames::{Mode, PotentialityKind, Resolution};
 use onto_runtime::model::{
-    FrameRequest, Judge, MockJudge, MockProposer, ModelError, ProposalRequest, Proposer, Usage,
+    Critic, FrameRequest, Judge, MockJudge, MockProposer, ModelError, NoulQuestion,
+    ProposalRequest, Proposer, Usage,
 };
 use onto_runtime::providers::{Jev, OpenRouter};
 use onto_runtime::{Config, Engine, Job, Policy, RunReport, telemetry};
@@ -52,6 +52,8 @@ pub struct RunArgs {
     judge_model: Option<String>,
     #[arg(long)]
     proposer_model: Option<String>,
+    #[command(flatten)]
+    world: crate::learned::WorldArgs,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -68,14 +70,34 @@ pub enum AnyJudge {
 impl Judge for AnyJudge {
     fn name(&self) -> String {
         match self {
-            Self::Jev(j) => j.name(),
-            Self::Mock(j) => j.name(),
+            Self::Jev(j) => Judge::name(j),
+            Self::Mock(j) => Judge::name(j),
         }
     }
     async fn judge(&self, req: FrameRequest) -> Result<(Answer, Usage), ModelError> {
         match self {
             Self::Jev(j) => j.judge(req).await,
             Self::Mock(j) => j.judge(req).await,
+        }
+    }
+}
+
+/// The judge also critiques open-world proposals before they are learned.
+impl Critic for AnyJudge {
+    fn name(&self) -> String {
+        match self {
+            Self::Jev(j) => Critic::name(j),
+            Self::Mock(j) => Critic::name(j),
+        }
+    }
+    async fn nouls(
+        &self,
+        state: Value,
+        questions: Vec<NoulQuestion>,
+    ) -> Result<(Vec<f32>, Usage), ModelError> {
+        match self {
+            Self::Jev(j) => j.nouls(state, questions).await,
+            Self::Mock(j) => j.nouls(state, questions).await,
         }
     }
 }
@@ -103,9 +125,7 @@ impl Proposer for AnyProposer {
 pub type BoxError = Box<dyn std::error::Error>;
 
 pub fn main(args: RunArgs) -> Result<(), BoxError> {
-    let src =
-        std::fs::read_to_string(&args.file).map_err(|e| format!("{}: {e}", args.file.display()))?;
-    let cat = Arc::new(onto_core::parse(&src)?);
+    let cat = args.world.load(&args.file)?;
     let jobs = read_jobs(&args.jobs)?;
     if let Some(path) = &args.telemetry {
         telemetry::init_jsonl(path)?;
@@ -126,6 +146,8 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         speculate: args.speculate,
         max_steps: args.max_steps,
         max_branches: args.max_branches,
+        open_world: !args.world.closed_world,
+        max_expansions: args.world.max_expansions,
         ..Config::default()
     };
 
@@ -135,6 +157,7 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
     let report = rt.block_on(Engine::new(cat, judge, proposer, cfg).run(jobs))?;
 
     print_summary(&report, args.telemetry.as_deref());
+    args.world.save(&args.file, &report.learned)?;
     if let Some(path) = &args.dispositions {
         let n = write_dispositions(&report, path)?;
         println!("dispositions: {} ({n} frame records)", path.display());
@@ -331,8 +354,10 @@ fn print_step(s: &StepRecord) {
             confidence,
             alternatives,
             attested,
+            learned,
             wait_ms,
         } => {
+            let learned = if *learned { "  (learned)" } else { "" };
             let conf = confidence.map_or(String::new(), |c| format!(" conf={c:.2}"));
             let wait = if *wait_ms >= 1.0 {
                 format!("  waited {wait_ms:.0}ms")
@@ -340,7 +365,7 @@ fn print_step(s: &StepRecord) {
                 String::new()
             };
             println!(
-                "  {from} --{arrow}--> {to}   [{}] p={p:.2}{conf}{wait}",
+                "  {from} --{arrow}--> {to}   [{}] p={p:.2}{conf}{wait}{learned}",
                 decided_by.as_str()
             );
             for a in attested {
@@ -383,6 +408,27 @@ fn print_step(s: &StepRecord) {
                     "    provisional {}: {} -> {}  — {}",
                     p.arrow, p.src, p.dst, p.about
                 );
+            }
+        }
+        StepRecord::Expanded {
+            at,
+            reason,
+            learned,
+            refused,
+            ..
+        } => {
+            println!(
+                "  {at} ⇒ System 2 ({}) ⇒ learned, walk continues",
+                reason.as_str()
+            );
+            for p in learned {
+                println!(
+                    "    learned {}: {} -> {}  — {}",
+                    p.arrow, p.src, p.dst, p.about
+                );
+            }
+            for (arrow, why) in refused {
+                println!("    refused {arrow}: {why}");
             }
         }
         StepRecord::Failed { at, error } => println!("  {at} ✗ {error}"),

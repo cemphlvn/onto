@@ -161,6 +161,9 @@ pub struct Arrow {
     pub ensures: Vec<String>,
     /// Capability tokens the walk loses on taking this arrow (applied first).
     pub revokes: Vec<String>,
+    /// Added by the open world (a model's proposal that passed the
+    /// supervisor's checks), not declared by a person.
+    pub learned: bool,
 }
 
 impl Arrow {
@@ -185,6 +188,7 @@ pub struct ArrowMeta {
     pub attested: Option<Require>,
     pub ensures: Vec<String>,
     pub revokes: Vec<String>,
+    pub learned: bool,
 }
 
 /// A rule the graph must keep, checked on load and on every proposal.
@@ -483,6 +487,61 @@ impl Category {
         })
     }
 
+    /// Reapplies learned arrows (from a `.learned.jsonl` layer) on top of
+    /// this category, each through [`crate::supervise::structural`], the
+    /// same checks the open world applied when it learned them. Arrows that
+    /// no longer pass (the declared policy changed) are skipped and
+    /// returned with the reason.
+    ///
+    /// One rule applies to learned arrows only (**progress**): a learned
+    /// arrow may not close a cycle, i.e. its target may not already lead
+    /// back to its source. Declared graphs may loop on purpose (a retry);
+    /// learned structure only ever moves a walk forward, so it cannot trap
+    /// walks in a loop no person designed.
+    pub fn with_learned(
+        self,
+        learned: &[crate::walk::Proposal],
+    ) -> (Category, Vec<(String, String)>) {
+        let mut cat = self;
+        let mut skipped = Vec::new();
+        for p in learned {
+            if let (Ok(src), Ok(dst)) = (cat.object_id(&p.src), cat.object_id(&p.dst))
+                && (src == dst || cat.reachable(dst, src, &[]).is_some())
+            {
+                skipped.push((
+                    p.arrow.clone(),
+                    format!(
+                        "progress: {} already leads back to {}; a learned arrow may not close a cycle",
+                        p.dst, p.src
+                    ),
+                ));
+                continue;
+            }
+            let (checks, _) = crate::supervise::structural(&cat, p);
+            if let Some(c) = checks
+                .iter()
+                .find(|c| c.outcome == crate::supervise::Outcome::Fail)
+            {
+                skipped.push((p.arrow.clone(), format!("{}: {}", c.check, c.reason)));
+                continue;
+            }
+            let meta = ArrowMeta {
+                instructions: (!p.about.is_empty()).then(|| Value::String(p.about.clone())),
+                learned: true,
+                ..ArrowMeta::default()
+            };
+            match cat.extend(&p.arrow, &p.src, &p.dst, meta) {
+                Ok(next) => {
+                    let snapshot = cat.snapshot.clone();
+                    cat = next;
+                    cat.snapshot = snapshot;
+                }
+                Err(e) => skipped.push((p.arrow.clone(), e.to_string())),
+            }
+        }
+        (cat, skipped)
+    }
+
     /// This category plus one more arrow (and its target, if new): the
     /// graph a proposal would produce. The new object is open.
     pub fn extend(
@@ -518,6 +577,7 @@ impl Category {
                 level: a.level,
                 require: a.require.clone(),
                 attested: a.attested.clone(),
+                learned: a.learned,
                 ensures: a.ensures.clone(),
                 revokes: a.revokes.clone(),
             };
@@ -776,6 +836,7 @@ impl CategoryBuilder {
             level: meta.level,
             require: meta.require,
             attested: meta.attested,
+            learned: meta.learned,
             ensures: meta.ensures,
             revokes: meta.revokes,
         });
@@ -992,4 +1053,59 @@ fn check_name(name: &str) -> Result<(), Error> {
         return Err(Error::InvalidName(name.to_owned()));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod learned_tests {
+    use crate::walk::Proposal;
+
+    const SRC: &str = "category C {
+        objects: A, B, M;
+        capability G { issuers: g; }
+        g: A -> B ensures G;
+        m: B -> M;
+        invariant via: A -> M through B;
+    }";
+
+    fn p(arrow: &str, src: &str, dst: &str) -> Proposal {
+        Proposal {
+            arrow: arrow.into(),
+            src: src.into(),
+            dst: dst.into(),
+            about: "learned".into(),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn learned_layer_replays_through_the_proofs() {
+        let cat = crate::parse(SRC).unwrap();
+        let snapshot = cat.snapshot().map(str::to_owned);
+        let forged = Proposal {
+            ensures: vec!["G".into()],
+            ..p("mint", "B", "New")
+        };
+        let (cat, skipped) = cat.with_learned(&[
+            p("side", "A", "Side"),
+            p("bypass", "A", "M"),
+            forged,
+            p("next", "Side", "B"),
+            p("back", "B", "Side"),
+            p("self", "M", "M"),
+        ]);
+        let names: Vec<&str> = skipped.iter().map(|(a, _)| a.as_str()).collect();
+        assert_eq!(names, ["bypass", "mint", "back", "self"]);
+        assert!(skipped[2].1.starts_with("progress"));
+        let side = cat.object_id("Side").unwrap();
+        let learned: Vec<&str> = cat
+            .out(side)
+            .iter()
+            .map(|a| cat.arrow(*a))
+            .filter(|a| a.learned)
+            .map(|a| a.name.as_str())
+            .collect();
+        assert_eq!(learned, ["next"]);
+        // The snapshot still names the declared policy.
+        assert_eq!(cat.snapshot().map(str::to_owned), snapshot);
+    }
 }

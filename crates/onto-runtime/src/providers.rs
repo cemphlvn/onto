@@ -301,6 +301,11 @@ const PROPOSER_SYSTEM: &str = "You extend a category (objects and arrows) that a
 The walk is stuck at object `at`: its outgoing arrows (`frame`) do not cover the goal, for the stated `reason`. \
 Propose 1 to 3 new arrows leaving `at` that would let the walk continue toward the goal. \
 Each target is an existing object from `known_objects` when one fits, otherwise a new object name in PascalCase. \
+A walk succeeds only when it reaches one of the `outcomes`; `reached_by` shows how this graph finishes a case \
+(the handling action is an arrow INTO the outcome, whether or not the customer's problem is already solved). \
+Mirror that shape: when handling the case is one action from `at`, target the outcome directly with an arrow named for the action; \
+introduce a new object only when a genuinely different decision remains before the action. \
+Never target an object on `path_so_far`: a learned arrow may not close a cycle and is refused. \
 Arrow names are short snake_case verbs. Give each arrow an `about`: one sentence saying which cases it is for. \
 New arrows must not overlap each other or the existing frame (read each existing arrow's instructions), \
 and must not re-propose an existing arrow. When `focus` is set, this walk is one branch of a case with several \

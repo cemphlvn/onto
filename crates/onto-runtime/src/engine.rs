@@ -21,8 +21,8 @@ use crate::frames::{Claim, FrameLocks, Mode, Policy, Potentiality, PotentialityK
 use crate::joins::{Arrival, ForkInfo, JoinOutcome, Joins};
 use crate::mem::{self, MemSample};
 use crate::model::{
-    Candidate, Focus, FrameRequest, Hop, Judge, ModelError, Pending, ProposalRequest, Proposer,
-    Usage,
+    Candidate, Critic, Focus, FrameRequest, Hop, Judge, ModelError, Pending, ProposalRequest,
+    Proposer, Usage,
 };
 use crate::record::{self, ClaimRecord, FrameRecord, JudgeRecord, Outcome};
 
@@ -51,6 +51,14 @@ pub struct Config {
     pub judge_concurrency: usize,
     pub proposer_concurrency: usize,
     pub mem_sample_every: Duration,
+    /// Open world (the default): when a frame's enumeration is missing,
+    /// System 2's proposals that pass the supervisor (every structural
+    /// proof, and no failed semantic check) join the live graph as
+    /// *learned* structure and the walk keeps going. Closed world: the
+    /// declared graph only; proposals stay provisional for a person.
+    pub open_world: bool,
+    /// Frames one walk may extend (open world).
+    pub max_expansions: usize,
 }
 
 impl Default for Config {
@@ -65,6 +73,8 @@ impl Default for Config {
             judge_concurrency: 16,
             proposer_concurrency: 4,
             mem_sample_every: Duration::from_millis(250),
+            open_world: true,
+            max_expansions: 3,
         }
     }
 }
@@ -91,6 +101,8 @@ pub enum StepRecord {
         alternatives: Vec<Alt>,
         /// Attestations that opened this arrow (empty: judgment alone).
         attested: Vec<String>,
+        /// The arrow is learned structure (open world), not declared.
+        learned: bool,
         wait_ms: f64,
     },
     Forked {
@@ -110,6 +122,17 @@ pub enum StepRecord {
     Failed {
         at: String,
         error: String,
+    },
+    /// Open world: the frame's enumeration was missing, System 2 proposed,
+    /// and the supervisor admitted `learned` into the live graph. The walk
+    /// re-judges the frame with them.
+    Expanded {
+        at: String,
+        reason: Escalation,
+        learned: Vec<Proposal>,
+        /// Proposals the supervisor refused, with the reason.
+        refused: Vec<(String, String)>,
+        wait_ms: f64,
     },
     /// Arrived at a join object and the join resolved for this walk.
     Joined {
@@ -152,6 +175,8 @@ pub struct RunReport {
     pub speculate: bool,
     /// Roots first, then branches, each in id order.
     pub walks: Vec<WalkReport>,
+    /// Structure the open world learned in this run, in admission order.
+    pub learned: Vec<Learned>,
     pub potentialities: Vec<Potentiality>,
     pub wall_ms: f64,
     /// Sum of every model call's latency; `model_ms_sum / wall_ms` is the
@@ -168,6 +193,20 @@ pub struct RunReport {
     pub mem_start: MemSample,
     pub mem_end: MemSample,
     pub peak_rss_bytes: Option<usize>,
+}
+
+/// One arrow the open world admitted: the learned layer's unit. Replayed
+/// through the same structural proofs whenever the layer is loaded.
+#[derive(Clone, Debug, Serialize, serde::Deserialize)]
+pub struct Learned {
+    pub proposal: Proposal,
+    /// The frame record whose escalation it answered.
+    pub record: String,
+    pub reason: String,
+    /// Snapshot of the graph the run started from.
+    pub snapshot: Option<String>,
+    /// The supervisor's checks, `check: outcome` (unknowns included).
+    pub checks: Vec<String>,
 }
 
 #[derive(Default)]
@@ -206,7 +245,15 @@ struct Seed {
 }
 
 pub struct Engine<J, P> {
-    cat: Arc<Category>,
+    /// The live graph: the declared category plus whatever the open world
+    /// has learned in this engine's lifetime. Extension only appends
+    /// objects and arrows, so ids stay stable across versions.
+    graph: std::sync::RwLock<Arc<Category>>,
+    /// The loaded snapshot (declared + learned layer at start): the identity
+    /// every record refers to.
+    snapshot: Option<String>,
+    /// Arrows learned in this engine's lifetime, for the learned layer file.
+    learned: Mutex<Vec<Learned>>,
     judge: J,
     proposer: P,
     cfg: Config,
@@ -224,7 +271,17 @@ pub struct Engine<J, P> {
     next_walk: AtomicU64,
 }
 
-impl<J: Judge, P: Proposer> Engine<J, P> {
+impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
+    /// The current graph (declared + learned so far).
+    pub fn cat(&self) -> Arc<Category> {
+        self.graph.read().unwrap().clone()
+    }
+
+    /// Arrows the open world has learned so far.
+    pub fn learned(&self) -> Vec<Learned> {
+        self.learned.lock().unwrap().clone()
+    }
+
     pub fn new(cat: Arc<Category>, judge: J, proposer: P, cfg: Config) -> Arc<Self> {
         Arc::new(Self {
             locks: FrameLocks::new(cfg.policy),
@@ -235,7 +292,9 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             joins: Joins::default(),
             counters: Counters::default(),
             next_walk: AtomicU64::new(1),
-            cat,
+            snapshot: cat.snapshot().map(str::to_owned),
+            graph: std::sync::RwLock::new(cat),
+            learned: Mutex::new(Vec::new()),
             judge,
             proposer,
             cfg,
@@ -247,20 +306,22 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
     pub async fn run(self: &Arc<Self>, jobs: Vec<Job>) -> Result<RunReport, onto_core::Error> {
         let starts = jobs
             .iter()
-            .map(|j| self.cat.object_id(&j.from))
+            .map(|j| self.cat().object_id(&j.from))
             .collect::<Result<Vec<_>, _>>()?;
+        let learned_before = self.learned.lock().unwrap().len();
         let mem_start = mem::sample();
         let sampler = mem::spawn_sampler(self.cfg.mem_sample_every);
         tracing::info!(
             target: "onto",
             event = "run.start",
-            category = self.cat.name(),
-            snapshot = self.cat.snapshot(),
+            category = self.cat().name(),
+            snapshot = self.snapshot.as_deref(),
             walks = jobs.len(),
-            judge = %self.judge.name(),
+            judge = %Judge::name(&self.judge),
             proposer = %self.proposer.name(),
             policy = self.cfg.policy.as_str(),
             speculate = self.cfg.speculate,
+            open_world = self.cfg.open_world,
             threshold = r4(self.cfg.threshold),
             max_branches = self.cfg.max_branches,
             max_fork_depth = self.cfg.max_fork_depth,
@@ -313,12 +374,13 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         let peak_rss_bytes = sampler.stop().max(mem_end.rss_bytes);
         let c = &self.counters;
         let report = RunReport {
-            snapshot: self.cat.snapshot().map(str::to_owned),
-            judge: self.judge.name(),
+            snapshot: self.snapshot.clone(),
+            judge: Judge::name(&self.judge),
             proposer: self.proposer.name(),
             policy: self.cfg.policy,
             speculate: self.cfg.speculate,
             walks,
+            learned: self.learned()[learned_before..].to_vec(),
             potentialities: self.locks.potentialities(),
             wall_ms: ms(wall),
             model_ms_sum: c.model_us.load(Relaxed) as f64 / 1e3,
@@ -359,7 +421,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         seed: Seed,
         branch_tx: mpsc::UnboundedSender<Seed>,
     ) -> WalkReport {
-        let cat = &*self.cat;
+        let cat_arc = self.cat();
+        let cat = &*cat_arc;
         let t0 = Instant::now();
         let Seed {
             id,
@@ -438,7 +501,11 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             }
         }
 
+        let mut expansions = 0usize;
         'steps: for _ in 0..self.cfg.max_steps {
+            // The graph may have grown since the last step (open world).
+            let cat_arc = self.cat();
+            let cat = &*cat_arc;
             let at = path.dst;
             let object = cat.object(at);
 
@@ -537,7 +604,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 frames.push(FrameRecord {
                     id: join_id.clone(),
                     after: after.clone(),
-                    snapshot: self.cat.snapshot().map(str::to_owned),
+                    snapshot: self.snapshot.clone(),
                     walk: id,
                     focus: focus.as_ref().map(|f| f.arrow.clone()),
                     tokens: tokens.iter().cloned().collect(),
@@ -613,7 +680,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             let record = |judge, candidates, outcome| FrameRecord {
                 id: rec_id.clone(),
                 after: after.clone(),
-                snapshot: self.cat.snapshot().map(str::to_owned),
+                snapshot: self.snapshot.clone(),
                 walk: id,
                 focus: visit_focus.clone(),
                 tokens: tokens.iter().cloned().collect(),
@@ -951,6 +1018,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         .map(|&(i, p)| self.alt(frame[i], p))
                         .collect(),
                     attested: last_attested.clone(),
+                    learned: a.learned,
                     wait_ms,
                 });
                 self.advance(&mut path, &mut hops, &mut tokens, arrow, primitive, p);
@@ -983,21 +1051,56 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     self.call_proposer(id, req, false).await
                 }
             };
+            // Open world: admit what the supervisor lets through, then
+            // re-judge this frame with it (still holding the write claim).
+            let mut expanded = None;
+            if let Ok(proposals) = &proposals
+                && self.cfg.open_world
+                && expansions < self.cfg.max_expansions
+                && !proposals.is_empty()
+            {
+                let (learned, refused) = self.expand(&rec_id, reason, proposals).await;
+                if !learned.is_empty() {
+                    expansions += 1;
+                    expanded = Some((learned, refused));
+                }
+            }
             // Record before releasing the claim, so a walk waiting on this
             // frame sees these proposals when its own proposer runs.
             if let Ok(proposals) = &proposals {
                 if let Some(last) = frames.last_mut() {
                     last.proposals = proposals.clone();
+                    if let Some((learned, _)) = &expanded {
+                        last.outcome = Outcome::Expanded {
+                            reason,
+                            learned: learned.iter().map(|p| p.arrow.clone()).collect(),
+                        };
+                    }
                 }
                 self.note_concepts(id, at, proposals);
-                self.pending
-                    .lock()
-                    .unwrap()
-                    .entry(at)
-                    .or_default()
-                    .extend(proposals.iter().map(|p| (id, p.clone())));
+                let admitted: Vec<&str> = expanded
+                    .iter()
+                    .flat_map(|(l, _)| l.iter().map(|p| p.arrow.as_str()))
+                    .collect();
+                self.pending.lock().unwrap().entry(at).or_default().extend(
+                    proposals
+                        .iter()
+                        .filter(|p| !admitted.contains(&p.arrow.as_str()))
+                        .map(|p| (id, p.clone())),
+                );
             }
             drop(guard);
+            if let Some((learned, refused)) = expanded {
+                steps.push(StepRecord::Expanded {
+                    at: at_name,
+                    reason,
+                    learned,
+                    refused,
+                    wait_ms,
+                });
+                after = Some(rec_id);
+                continue 'steps;
+            }
             match proposals {
                 Ok(proposals) => {
                     steps.push(StepRecord::Escalated {
@@ -1018,7 +1121,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             parent,
             goal: job.goal,
             from: job.from,
-            path: path.display_typed(cat),
+            path: path.display_typed(&self.cat()),
             steps,
             frames,
             elapsed_ms: ms(t0.elapsed()),
@@ -1035,6 +1138,73 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         report
     }
 
+    /// Reviews `proposals` against the live graph and admits every one
+    /// the supervisor does not reject. Structural proofs are re-run under
+    /// the graph's write lock, against the graph they will extend, so two
+    /// walks learning at once cannot combine into a violation.
+    async fn expand(
+        &self,
+        record: &str,
+        reason: Escalation,
+        proposals: &[Proposal],
+    ) -> (Vec<Proposal>, Vec<(String, String)>) {
+        let (mut learned, mut refused) = (Vec::new(), Vec::new());
+        let mut earlier: Vec<Proposal> = Vec::new();
+        for p in proposals {
+            let review = crate::supervisor::review(
+                &self.cat(),
+                p.arrow.clone(),
+                vec![record.to_owned()],
+                p,
+                &earlier,
+                &self.judge,
+            )
+            .await;
+            earlier.push(p.clone());
+            if review.admission == onto_core::supervise::Admission::Reject {
+                let why = review
+                    .checks
+                    .iter()
+                    .find(|c| c.outcome == onto_core::supervise::Outcome::Fail)
+                    .map_or("rejected".to_owned(), |c| {
+                        format!("{}: {}", c.check, c.reason)
+                    });
+                refused.push((p.arrow.clone(), why));
+                continue;
+            }
+            let mut graph = self.graph.write().unwrap();
+            let (next, skipped) = (**graph).clone().with_learned(std::slice::from_ref(p));
+            if let Some((_, why)) = skipped.into_iter().next() {
+                refused.push((p.arrow.clone(), why));
+                continue;
+            }
+            *graph = Arc::new(next);
+            drop(graph);
+            tracing::info!(
+                target: "onto",
+                event = "learned",
+                record,
+                arrow = %p.arrow,
+                from = %p.src,
+                to = %p.dst,
+                admission = ?review.admission,
+            );
+            self.learned.lock().unwrap().push(Learned {
+                proposal: p.clone(),
+                record: record.to_owned(),
+                reason: reason.as_str().to_owned(),
+                snapshot: self.snapshot.clone(),
+                checks: review
+                    .checks
+                    .iter()
+                    .map(|c| format!("{}: {:?}", c.check, c.outcome).to_lowercase())
+                    .collect(),
+            });
+            learned.push(p.clone());
+        }
+        (learned, refused)
+    }
+
     fn advance(
         &self,
         path: &mut Path,
@@ -1044,7 +1214,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         decided_by: Primitive,
         p: f32,
     ) {
-        let cat = &*self.cat;
+        let cat_arc = self.cat();
+        let cat = &*cat_arc;
         let a = cat.arrow(arrow);
         hops.push(Hop {
             from: cat.object(a.src).name.clone(),
@@ -1061,11 +1232,12 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
     /// The verified observations behind an attested arrow, as
     /// `Attester: field, … @ time` (empty if the arrow needs none).
     fn evidence(&self, arrow: ArrowId, case: &Value) -> Vec<String> {
-        let Some(need) = &self.cat.arrow(arrow).attested else {
+        let cat = self.cat();
+        let Some(need) = &cat.arrow(arrow).attested else {
             return Vec::new();
         };
         let paths = need.paths();
-        let (_, ok, _) = onto_core::attest::attested_view(self.cat.attesters(), case);
+        let (_, ok, _) = onto_core::attest::attested_view(self.cat().attesters(), case);
         ok.into_iter()
             .filter(|v| v.fields.iter().any(|f| paths.contains(f)))
             .map(|v| format!("{}: {} @ {}", v.attester, v.fields.join(", "), v.at))
@@ -1073,10 +1245,11 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
     }
 
     fn alt(&self, arrow: ArrowId, p: f32) -> Alt {
-        let a = self.cat.arrow(arrow);
+        let cat = self.cat();
+        let a = cat.arrow(arrow);
         Alt {
             arrow: a.name.clone(),
-            to: self.cat.object(a.dst).name.clone(),
+            to: self.cat().object(a.dst).name.clone(),
             p,
         }
     }
@@ -1166,7 +1339,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         }
         result.map(|(answer, u)| {
             let rec = JudgeRecord {
-                model: self.judge.name(),
+                model: Judge::name(&self.judge),
                 latency_ms: ms(latency),
                 questions: u.questions,
                 confidence: answer.confidence(),
@@ -1248,7 +1421,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
     /// Records a conceptual potentiality when another walk has already
     /// proposed the same new concept (or the same arrow into an existing one).
     fn note_concepts(&self, walk: u64, at: ObjId, proposals: &[Proposal]) {
-        let cat = &*self.cat;
+        let cat_arc = self.cat();
+        let cat = &*cat_arc;
         for p in proposals {
             let key = match cat.object_id(&p.dst) {
                 Ok(_) => format!("{}->{}", normalize(&p.src), normalize(&p.dst)),
@@ -1285,7 +1459,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
     }
 
     fn candidate(&self, arrow: ArrowId) -> Candidate {
-        let cat = &*self.cat;
+        let cat_arc = self.cat();
+        let cat = &*cat_arc;
         let a = cat.arrow(arrow);
         Candidate {
             arrow: a.name.clone(),
@@ -1296,10 +1471,11 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
     }
 
     fn focus(&self, arrow: ArrowId) -> Focus {
-        let a = self.cat.arrow(arrow);
+        let cat = self.cat();
+        let a = cat.arrow(arrow);
         Focus {
             arrow: a.name.clone(),
-            to: self.cat.object(a.dst).name.clone(),
+            to: self.cat().object(a.dst).name.clone(),
             condition: a.instructions.clone(),
         }
     }
@@ -1315,13 +1491,14 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         frame: &[ArrowId],
         can_fork: bool,
     ) -> FrameRequest {
-        let object = self.cat.object(path.dst);
+        let cat = self.cat();
+        let object = cat.object(path.dst);
         FrameRequest {
             goal: job.goal.clone(),
             case: job.case.clone(),
             at: object.name.clone(),
             about_at: object.about.clone(),
-            path_so_far: path.display(&self.cat),
+            path_so_far: path.display(&self.cat()),
             hops: hops.to_vec(),
             focus: focus.clone(),
             tokens: tokens.iter().cloned().collect(),
@@ -1340,23 +1517,47 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         focus: &Option<Focus>,
         reason: &str,
     ) -> ProposalRequest {
-        let object = self.cat.object(path.dst);
+        let cat = self.cat();
+        let object = cat.object(path.dst);
         ProposalRequest {
             goal: job.goal.clone(),
             case: job.case.clone(),
             at: object.name.clone(),
             about_at: object.about.clone(),
-            path_so_far: path.display(&self.cat),
+            path_so_far: path.display(&self.cat()),
             focus: focus.clone(),
             primitive: object.frame.primitive,
-            frame: self
-                .cat
+            frame: cat
                 .out(path.dst)
                 .iter()
                 .map(|a| self.candidate(*a))
                 .collect(),
             reason: reason.to_owned(),
-            known_objects: self.cat.objects().iter().map(|o| o.name.clone()).collect(),
+            known_objects: cat.objects().iter().map(|o| o.name.clone()).collect(),
+            outcomes: (0..cat.objects().len() as u32)
+                .map(ObjId)
+                .filter(|o| cat.object(*o).closure == Closure::Closed && cat.out(*o).is_empty())
+                .map(|o| {
+                    let reached_by: Vec<String> = (0..cat.arrows().len() as u32)
+                        .map(ArrowId)
+                        .map(|a| cat.arrow(a))
+                        .filter(|a| a.dst == o && !a.learned)
+                        .take(6)
+                        .map(|a| {
+                            let about = a.instructions.as_ref().map_or(String::new(), |i| {
+                                format!(" ({})", i.as_str().map_or(i.to_string(), str::to_owned))
+                            });
+                            format!(
+                                "{}: {} -> {}{about}",
+                                a.name,
+                                cat.object(a.src).name,
+                                cat.object(o).name
+                            )
+                        })
+                        .collect();
+                    serde_json::json!({"object": cat.object(o).name, "reached_by": reached_by})
+                })
+                .collect(),
             pending_here: self
                 .pending
                 .lock()

@@ -15,6 +15,7 @@ async fn run(policy: Policy, speculate: bool, goals: &[&str]) -> RunReport {
     let cfg = Config {
         policy,
         speculate,
+        open_world: false,
         ..Config::default()
     };
     let engine = Engine::new(
@@ -148,6 +149,7 @@ async fn run_parts(max_branches: usize, from: &str, goal: &str, case: Value) -> 
     let cfg = Config {
         policy: Policy::Shared,
         max_branches,
+        open_world: false,
         ..Config::default()
     };
     let engine = Engine::new(
@@ -273,6 +275,7 @@ async fn later_proposers_reuse_pending_proposals_at_the_frame() {
     let cat = Arc::new(onto_core::parse(TRIAGE).unwrap());
     let cfg = Config {
         policy: Policy::Shared,
+        open_world: false,
         ..Config::default()
     };
     let engine = Engine::new(
@@ -366,6 +369,7 @@ mod dispositions {
         let cat = Arc::new(onto_core::parse(src).unwrap());
         let cfg = Config {
             policy: Policy::Shared,
+            open_world: false,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -424,6 +428,7 @@ mod dispositions {
         let cat = Arc::new(onto_core::parse(src).unwrap());
         let cfg = Config {
             policy: Policy::Shared,
+            open_world: false,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -640,6 +645,7 @@ mod contracts {
         let cat = Arc::new(onto_core::parse(SRC).unwrap());
         let cfg = Config {
             policy: Policy::Shared,
+            open_world: false,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -723,6 +729,7 @@ mod joins {
         let cat = Arc::new(onto_core::parse(&src(join, verify_require)).unwrap());
         let cfg = Config {
             policy: Policy::Shared,
+            open_world: false,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -900,6 +907,7 @@ mod attested_joins {
         let cat = Arc::new(onto_core::parse(&src(verify_attested)).unwrap());
         let cfg = Config {
             policy: Policy::Shared,
+            open_world: false,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -982,6 +990,7 @@ mod parallel_race {
             MockProposer { latency: LATENCY },
             Config {
                 policy: Policy::Shared,
+                open_world: false,
                 ..Config::default()
             },
         );
@@ -1043,6 +1052,7 @@ mod split_frames {
         let cfg = Config {
             policy: Policy::Shared,
             max_branches,
+            open_world: false,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -1121,6 +1131,7 @@ mod sequential_joins {
         let cfg = Config {
             policy: Policy::Shared,
             max_branches: 6,
+            open_world: false,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -1155,5 +1166,170 @@ mod sequential_joins {
             "{:#?}",
             r.walks.iter().map(|w| &w.steps).collect::<Vec<_>>()
         );
+    }
+}
+
+/// Open world (the default): a missing enumeration is filled by System 2,
+/// the supervisor admits what it cannot reject, and the walk continues.
+mod open_world {
+    use super::*;
+    use onto_core::walk::Proposal;
+    use onto_runtime::model::{ModelError, ProposalRequest, Proposer, Usage};
+
+    /// Proposes the same arrows at every escalation.
+    struct Fixed(Vec<Proposal>);
+
+    impl Proposer for Fixed {
+        fn name(&self) -> String {
+            "fixed".into()
+        }
+        async fn propose(&self, _: ProposalRequest) -> Result<(Vec<Proposal>, Usage), ModelError> {
+            Ok((self.0.clone(), Usage::default()))
+        }
+    }
+
+    fn arrow(name: &str, src: &str, dst: &str) -> Proposal {
+        Proposal {
+            arrow: name.into(),
+            src: src.into(),
+            dst: dst.into(),
+            about: format!("cases for {dst}"),
+            ..Default::default()
+        }
+    }
+
+    async fn walk<P: Proposer>(src: &str, from: &str, goal: &str, p: P, cfg: Config) -> RunReport {
+        let cat = Arc::new(onto_core::parse(src).unwrap());
+        let engine = Engine::new(cat, MockJudge { latency: LATENCY }, p, cfg);
+        let job = Job {
+            from: from.into(),
+            goal: goal.into(),
+            case: json!({}),
+        };
+        engine.run(vec![job]).await.unwrap()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn missing_enumeration_is_learned_and_the_walk_continues() {
+        let r = walk(
+            TRIAGE,
+            "Request",
+            "please refund",
+            MockProposer { latency: LATENCY },
+            Config::default(),
+        )
+        .await;
+        let steps = &r.walks[0].steps;
+        let StepRecord::Expanded { at, learned, .. } = &steps[0] else {
+            panic!("expected expansion: {steps:?}");
+        };
+        assert_eq!(
+            (at.as_str(), learned[0].dst.as_str()),
+            ("Request", "Refund")
+        );
+        let StepRecord::Followed { to, learned, .. } = &steps[1] else {
+            panic!("expected the walk to follow the learned arrow: {steps:?}");
+        };
+        assert_eq!(to, "Refund");
+        assert!(learned);
+        // At the new object the proposer repeats itself: refused as a
+        // duplicate name, so the walk escalates instead of looping.
+        assert!(matches!(steps.last(), Some(StepRecord::Escalated { .. })));
+        assert_eq!(r.learned.len(), 1);
+        assert!(r.walks[0].path.ends_with("Request -> Refund"));
+        // The frame record says it was expanded; the learned candidate is marked.
+        let f = &r.walks[0].frames;
+        assert!(matches!(
+            f[0].outcome,
+            onto_runtime::record::Outcome::Expanded { .. }
+        ));
+        // The re-judged visit at Request offers the learned arrow, marked.
+        assert_eq!(f[1].at, "Request");
+        assert!(
+            f[1].candidates
+                .iter()
+                .any(|c| c.learned && c.arrow == "to_refund")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn closed_world_and_zero_budget_stop_at_escalation() {
+        for cfg in [
+            Config {
+                open_world: false,
+                ..Config::default()
+            },
+            Config {
+                max_expansions: 0,
+                ..Config::default()
+            },
+        ] {
+            let r = walk(
+                TRIAGE,
+                "Request",
+                "please refund",
+                MockProposer { latency: LATENCY },
+                cfg,
+            )
+            .await;
+            assert!(matches!(r.walks[0].steps[0], StepRecord::Escalated { .. }));
+            assert!(r.learned.is_empty());
+        }
+    }
+
+    const CONSENT: &str = r#"
+    category C {
+        objects: Collected, Consented, Marketing, Archive;
+        capability Grant { issuers: consent; }
+        consent: Collected -> Consented;
+        market:  Consented -> Marketing;
+        entry Marketing: needs Grant;
+        invariant via: Collected -> Marketing through Consented;
+    }
+    "#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn policy_violations_are_never_learned() {
+        let bypass = arrow("shortcut", "Collected", "Marketing");
+        let forged = Proposal {
+            ensures: vec!["Grant".into()],
+            ..arrow("forge", "Collected", "Archive")
+        };
+        let r = walk(
+            CONSENT,
+            "Collected",
+            "archive it",
+            Fixed(vec![bypass, forged]),
+            Config::default(),
+        )
+        .await;
+        assert!(r.learned.is_empty(), "{:?}", r.learned);
+        let StepRecord::Escalated { .. } = &r.walks[0].steps[0] else {
+            panic!("expected a stop: {:?}", r.walks[0].steps);
+        };
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_valid_proposal_is_learned_beside_a_refused_one() {
+        let bypass = arrow("shortcut", "Collected", "Marketing");
+        let archive = arrow("archive", "Collected", "Archive");
+        let r = walk(
+            CONSENT,
+            "Collected",
+            "archive it",
+            Fixed(vec![bypass, archive]),
+            Config::default(),
+        )
+        .await;
+        let StepRecord::Expanded {
+            learned, refused, ..
+        } = &r.walks[0].steps[0]
+        else {
+            panic!("expected expansion: {:?}", r.walks[0].steps);
+        };
+        assert_eq!(learned.len(), 1);
+        assert_eq!(learned[0].arrow, "archive");
+        assert_eq!(refused[0].0, "shortcut");
+        assert!(refused[0].1.starts_with("invariant"), "{refused:?}");
     }
 }

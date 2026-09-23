@@ -103,11 +103,15 @@ Rules:
 1. **"None of these" is always a candidate.** A System-1 model must be able
    to say the frame does not fit (TypeSafe guidance: include a no-match
    outcome).
-2. **Proposals never enter the category directly.** They are provisional
-   until verified: well-typed, law-consistent (egg), and not overlapping
-   existing arrows (a pairwise MECE check, itself a System-1 judgment).
-3. **Verified proposals close gaps permanently**, so the fast path covers
-   more over time. (Mechanism: M2 delta log.)
+2. **Proposals never enter the declared policy directly.** In the open
+   world (the default) a proposal the supervisor does not reject joins
+   the **learned layer** and the walk continues through it; in the closed
+   world (`--closed-world`) it stays provisional. Either way the `.onto`
+   file changes only by `onto promote` (a person). See rule 15.
+3. **Learned structure closes gaps permanently**, so the fast path covers
+   more over time: the next walk's System 1 takes a learned arrow without
+   asking System 2. (Mechanism: `<stem>.learned.jsonl`; promotion moves an
+   arrow into the declared file.)
 4. A closed frame with no outgoing arrows is a **terminal**; the walk stops.
 5. **The gate is the model's own confidence** when it reports one (Jev
    does), else the top probability. One function, `walk::decide`, holds
@@ -168,6 +172,24 @@ Rules:
     for every MAY-but-not-MUST claim; dead arrows say why. The exploration
     is exact over |objects| × 2^|tokens| states: fine for today's graphs,
     exponential in tokens (later: bitsets, BDDs, per-capability dataflow).
+15. **Open world by default; two layers.** When a frame's enumeration is
+    missing (none of these, open frame, low confidence), System 2
+    proposes, the supervisor reviews against the **live** graph with the
+    judge as critic, and every proposal that no check fails (structural
+    proofs, rule / duplicate / overlap critic checks; `unknown` allowed)
+    is admitted as a **learned** arrow; the walk re-judges the same frame
+    with it. The *declared* layer (the `.onto` file: capabilities, entry
+    contracts, invariants, attesters, closure claims, roots) is policy and
+    is never written by a run. The *learned* layer is appended to
+    `<stem>.learned.jsonl` and replayed on every load through the same
+    structural proofs, against the current policy: a policy change
+    retires learned arrows that no longer pass; learned arrows can never
+    change policy. Learned arrows carry no capability effects they could
+    not already have (authority is by declared issuer name), inherit every
+    entry contract, and obey **progress**: a learned arrow may not close a
+    cycle. Each walk may extend at most `max_expansions` frames (default
+    3). Records mark learned candidates and steps; answers reached through
+    them say so.
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -393,6 +415,10 @@ snapshot. No database until live multi-writer editing is needed.
 | D33 | attested observations: declared attesters with Ed25519 keys, strict verification over a domain-separated canonical message, field authorization, case binding | a real-world claim must be authenticated, not asserted; replay across cases is refused |
 | D34 | completion is presented only on attested evidence: arrows can require it, joins and answers are labelled attested or not | a walk reaching an object is evidence about the walk, not the world |
 | D35 | `noul parallel` frames pursue every holding arrow without a fork question | racing alternatives (mitigation plans) are neither independent aspects nor competing readings; the author declares them |
+| D37 | open world is the default: supervisor-admitted proposals become learned arrows and the walk continues; `--closed-world` restores stop-and-promote | escalating to a person at every missing enumeration made the index unable to grow by itself; safety lives in the proofs, not in stopping |
+| D38 | two layers: declared policy (`.onto`, human) and learned structure (`.learned.jsonl`, replayed through the proofs on every load) | exploration must not require editing policy; a policy change must be able to retire what was learned under the old one |
+| D39 | learned arrows may not close a cycle (progress) | live, a proposer learned `Shipping -> Ticket` despite being told not to, and every later walk looped until the step limit; a prompt is not a guarantee |
+| D40 | the proposer is shown the graph's outcomes and the declared arrows that finish into them | live, learned branches kept adding intermediate objects and never reached `Resolved` |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -441,7 +467,12 @@ snapshot. No database until live multi-writer editing is needed.
 - **Behavioural quotient (done):** `onto quotient` reports duplicates,
   name-only identities, description-only identities (the asymmetry
   check) and redundant arrows.
-- **Next:** behavioural
+- **Open world (done):** default open world, learned layer, progress
+  rule, `--closed-world`, `onto learned`; live on support-commons, a
+  delivery ticket learned `Ticket -> Delivery -> Resolved`, and the next
+  session's ticket reused it and grew the Delivery frame.
+- **Next:** usage-based reinforcement and pruning of learned arrows;
+  model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).
 - **M3:** functors between categories; multi-category files.

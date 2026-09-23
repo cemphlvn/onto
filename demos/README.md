@@ -18,6 +18,7 @@ Every demo keeps four kinds of structure visibly apart:
 |---|---|---|
 | **Committed structure** | objects, arrows, equations in the `.onto` file | `onto check`, `onto ls`, `onto reach` |
 | **Provisional proposal** | a System-2 suggestion, never applied | `provisional …` lines, `proposals` in the report |
+| **Learned arrow** | open world (default): a System-2 suggestion the supervisor admitted; the walk continued through it; kept in `<stem>.learned.jsonl`, never in the `.onto` file | `learned …` lines, `(learned)` steps, `onto learned FILE`; `--closed-world` to run on declared policy only |
 | **Detected potentiality** | two walks that could meet (node) or proposed the same concept | potentiality list, `potentiality` telemetry events |
 | **Validated addition** | a proposal checked and promoted into the graph | *coming in M2* |
 

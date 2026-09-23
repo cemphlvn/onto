@@ -22,6 +22,10 @@ file is stale; both are bugs.
   true` holds only on an Ed25519-signed observation by a declared
   attester, authorized for that field, bound to this case. A result is
   presented as completion in the world only on such evidence.
+- **Open world is the default (after the authority milestone).** Models
+  extend the graph by themselves, into a separate *learned layer* that is
+  proved against the policy on every load and can never change it
+  (§9). `--closed-world` restores the human-only path.
 - **The human step is procedural.** Promotion is a command a person is
   meant to run; nothing authenticates who runs it.
 
@@ -35,7 +39,8 @@ file is stale; both are bugs.
 | Attested observations | signed claims in the case (`observations`) | **verified**: declared attester, strict Ed25519 signature over canonical JSON, field authorization, bound to the case `id` | the attester (holder of the secret key) | `attested` preconditions read only the attested view; rejected observations are reported with the reason |
 | Attester declarations | `attester Name { key; observes; }` | **policy: root of trust** | whoever edits the `.onto` file | the policy validator (unique names, valid keys, every attested field observable) |
 | Model judgments (System 1) | Jev's Choice, Noul, Score answers | **untrusted, calibrated** | the model | gated: code filters first; confidence thresholds; abstention escalates |
-| Proposals (System 2) | an OpenRouter model's suggested arrows | **untrusted** | the model | never applied; reviewed by the supervisor; promoted only by a person |
+| Proposals (System 2) | an OpenRouter model's suggested arrows | **untrusted** | the model | open world: admitted to the learned layer when no check fails; closed world: provisional; promoted into policy only by a person |
+| Learned layer | `<stem>.learned.jsonl` | **untrusted structure, proved against policy** | the open world (any run), or anyone who edits the file | replayed through the structural proofs and the progress rule on every load; arrows that fail are retired |
 | Supervisor semantic checks | rule, duplicate, overlap judgments | **untrusted, calibrated** | the critic model | fail ≥ 0.7, pass ≤ 0.3, unknown between; unknown blocks admission |
 | Supervisor structural checks | well-formedness, capability authority, `via`/`never` | **proofs** | — | deterministic code, the same code on every route |
 
@@ -154,8 +159,10 @@ authenticate who produced it (signatures are future work, §3).
 
 ## 8. For ethicists: where people are in the loop
 
-- A person approves every change to the graph. Models draft (proposer),
-  critique (supervisor), and route (judge); none of them promotes.
+- A person approves every change to the **policy** (the `.onto` file).
+  In the open world (default) models also extend the **learned layer**
+  without a person, under the proofs of §9; in the closed world a person
+  approves every change to the graph. No model ever promotes into policy.
 - A person must look at every `unknown` verdict before it can be
   promoted, and every closure challenge revises a claim only through a
   person.
@@ -164,3 +171,49 @@ authenticate who produced it (signatures are future work, §3).
   person", not a guess.
 - The honest limit: these are **process** guarantees today, not
   authenticated ones (§3, §6).
+
+## 9. Open world: the learned layer
+
+Added after the freeze (D37–D40 in `docs/00-architecture.md`). Stopping
+at every missing enumeration kept the index from growing; the default is
+now the open world, and the safety argument moves from "a person
+approves every arrow" to "every arrow is proved against a policy only a
+person writes".
+
+What holds:
+
+- **Policy is untouchable by runs.** Capabilities, entry contracts,
+  invariants, attesters, closure claims and roots live only in the
+  `.onto` file; runs append only to the learned layer.
+- **Every learned arrow passes the same structural proofs** as a promoted
+  one (well-formedness, capability authority, `via`/`never`), re-run
+  under the graph's write lock against the graph it extends, and again on
+  every load. A policy change retires learned arrows that no longer pass.
+- **Progress.** A learned arrow may not close a cycle.
+- **Budget.** At most `max_expansions` frames per walk (default 3).
+- **Labelled.** Records mark learned candidates and `expanded` outcomes;
+  `ask` says "through learned structure (not declared policy)".
+- **Attestation is unchanged.** A learned arrow has no `attested`
+  precondition and no capability effects, so it never produces
+  "Completed … attested"; it cannot open a declared entry contract a walk
+  does not already satisfy.
+
+What changes, stated plainly:
+
+- **Critic `unknown` admits.** In the open world, a semantic check the
+  critic cannot decide does not block learning (in review it blocks
+  promotion). Only failures refuse.
+- **Closure claims are extended, not revised.** A learned arrow out of a
+  `closed:` frame is a closure challenge that the learned layer accepts;
+  the declared claim is unchanged, and `onto learned` / `onto review`
+  show it.
+- **Routing may now use structure no person has seen.** A walk may reach
+  an outcome through learned arrows; the answer says so. Where that is
+  unacceptable (regulated decisions), run `--closed-world`, or keep
+  the relevant region `closed:` and guard its outcomes with entry
+  contracts and `attested` preconditions, which learned arrows cannot
+  satisfy on their own.
+- **The learned layer is a file.** Anyone who can write it can add
+  structure; it is still proved against the policy on load. Learned
+  layers are git-ignored by default; commit one deliberately.
+

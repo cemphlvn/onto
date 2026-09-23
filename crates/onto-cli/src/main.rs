@@ -8,6 +8,7 @@ use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, 
 mod ask;
 mod attest;
 mod laws;
+mod learned;
 mod quotient;
 mod run;
 mod supervise;
@@ -82,12 +83,16 @@ enum Cmd {
     Ask(ask::AskArgs),
     /// Run many walks concurrently against live models (Jev + OpenRouter) or mocks.
     Run(run::RunArgs),
+    /// List the learned layer (open world) and whether each arrow still
+    /// holds against the declared graph.
+    Learned(learned::LearnedArgs),
 }
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
     let result = match cli.cmd {
         Cmd::Run(args) => run::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Learned(args) => learned::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Why(args) => why::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Laws(args) => laws::main(args).map(|()| ExitCode::SUCCESS),
@@ -266,6 +271,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
             println!("path: {}", walk.state.path.display_typed(&cat));
         }
         Cmd::Run(_)
+        | Cmd::Learned(_)
         | Cmd::Ask(_)
         | Cmd::Why(_)
         | Cmd::Review(_)
