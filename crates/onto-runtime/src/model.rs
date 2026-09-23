@@ -98,6 +98,10 @@ pub struct ProposalRequest {
     pub frame: Vec<Candidate>,
     pub reason: String,
     pub known_objects: Vec<String>,
+    /// Objects the open world may not extend: never a target of a new
+    /// arrow (it would be refused). Only declared arrows reach them.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub sealed: Vec<String>,
     /// Terminal objects (closed, no outgoing arrows): where a walk ends
     /// successfully, each with a few declared arrows that finish into it
     /// (`arrow: From -> To (about)`), showing how this graph ends a case.

@@ -191,6 +191,13 @@ pub fn print_record(r: &Value, pad: &str) {
             p["about"].as_str().unwrap_or("")
         );
     }
+    for r in r["refused"].as_array().into_iter().flatten() {
+        println!(
+            "{pad}  not learned {}: {}",
+            r[0].as_str().unwrap_or("?"),
+            r[1].as_str().unwrap_or("?")
+        );
+    }
 }
 
 /// The fields a model was shown: `goal`, `asserted.a.b`, `observed.x`, …

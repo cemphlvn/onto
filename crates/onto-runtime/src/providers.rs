@@ -298,6 +298,8 @@ A walk succeeds only when it reaches one of the `outcomes`; `reached_by` shows h
 Mirror that shape: when handling the case is one action from `at`, target the outcome directly with an arrow named for the action; \
 introduce a new object only when a genuinely different decision remains before the action. \
 Never target an object on `path_so_far`: a learned arrow may not close a cycle and is refused. \
+Never target an object in `sealed`: sealed objects are reached only by arrows people declared, so such a proposal is refused; \
+name a new object instead (the case then needs a person, which is the right outcome for what policy does not cover). \
 Arrow names are short snake_case verbs. Give each arrow an `about`: one sentence saying which cases it is for. \
 New arrows must not overlap each other or the existing frame (read each existing arrow's instructions), \
 and must not re-propose an existing arrow. When `focus` is set, this walk is one branch of a case with several \

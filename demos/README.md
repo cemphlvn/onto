@@ -83,7 +83,7 @@ perform the action ("commit" stays outside the runtime).
 | 6 | supply-recovery | race + all | later |
 | 7 | accessibility-journeys | all + race | later |
 | 8 | social-care | all + gate | later: safety-sensitive |
-| 9 | secure-infrastructure-change | all (tests, security review, rollback readiness) + deployment gate, for autonomous agents' changes | candidate for wave 2 |
+| 9 | [**secure-infrastructure-change**](secure-infrastructure-change/) | split into attested verification lines, all-join, judged risk, then a standard-change or change-board path issuing the deploy capability; forged CI evidence and prompt injection refused; secrets proved unseen | **runnable** |
 | 10 | repair-network | race + all | later |
 
 Together the first wave shows **speed** (race), **authority** (gate) and

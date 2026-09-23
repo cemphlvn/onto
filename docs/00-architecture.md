@@ -505,6 +505,9 @@ snapshot. No database until live multi-writer editing is needed.
 - **Memory and replay (done):** `memory: similar N`, `onto replay`;
   benefits-assembly: applicant record unseen (proved), a MECE gap
   (carers) found, precedents shown to change a decision.
+- **secure-infrastructure-change (done):** judgment, evidence and
+  authority as three layers; refusals recorded; the proposer is told
+  what is sealed; `onto laws` shows which frames may reach a proposer.
 - **Next:** usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound

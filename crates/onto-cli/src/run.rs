@@ -404,6 +404,7 @@ fn print_step(s: &StepRecord) {
             at,
             reason,
             proposals,
+            refused,
             ..
         } => {
             println!("  {at} ⇒ System 2 ({})", reason.as_str());
@@ -412,6 +413,9 @@ fn print_step(s: &StepRecord) {
                     "    provisional {}: {} -> {}  — {}",
                     p.arrow, p.src, p.dst, p.about
                 );
+            }
+            for (arrow, why) in refused {
+                println!("    not learned {arrow}: {why}");
             }
         }
         StepRecord::Expanded {

@@ -1,0 +1,89 @@
+# Secure Infrastructure Change: an autonomous agent (or a person) proposes
+# a change to production. It is deployed only when judgment, evidence and
+# authority all agree.
+#
+# 1. The judge classifies the change. The three ordinary kinds carry
+#    StandardEligible, but only on the scanner's signed word that no access
+#    rules (IAM) are touched: an access change cannot be classified into
+#    the fast path, whatever the judge or the agent's text says.
+# 2. Every change splits (no judgment) into tests, a security scan and a
+#    rollback rehearsal, each complete only on its attester's evidence;
+#    `join Verified: all` waits for all three.
+# 3. The judge scores the risk. Low risk takes the standard-change path,
+#    which needs StandardEligible on entry and the change catalogue's
+#    signed listing; high risk goes to the change board's signed approval.
+#    Either issues DeployGrant; Deployed needs it on entry.
+#
+# The agent's credentials and any secrets in the payload are never shown
+# to a model (proved). New kinds of change may be learned at the first
+# frame only; everything after it is sealed.
+
+category SecureInfrastructureChange {
+    attester CI          { key: ed25519:Hl3qqrsAJE/KSXDmk8SCBZYgDzDaSUsRDkIZZ8HFNQM=; observes: tests.passed; }
+    attester Scanner     { key: ed25519:ztbCciuu5lEI7UneF4dRNn+Lr6wWDHl3bbBMDE8gOdg=; observes: security.clean, scan.iam_untouched; }
+    attester SRE         { key: ed25519:pS0zKDYIeYS0TAyR9Gz83xwxuF0/3f7MfK9SOH2Kuos=; observes: rollback.tested; }
+    attester Catalogue   { key: ed25519:mm99eYbXv0Hh7ikN/myi3B0kZvElBkxI3betRDA4F7k=; observes: standard.listed; }
+    attester ChangeBoard { key: ed25519:qtf/9DFma8ItPW5ZoTbQgkvizweMQjQeF6KjNqWs8n8=; observes: board.approved; }
+
+    capability StandardEligible { issuers: config, dependency, migration; }
+    capability DeployGrant      { issuers: standard_approved, board_approved; }
+
+    objects: ChangeRequested, Change, Tests, Security, Rollback, Verified,
+             Standard, Board, Cleared, Deployed;
+    start: ChangeRequested;
+
+    # What models see: the change, never the agent or the secrets.
+    state { case: change.summary, change.services, change.environment, change.diff; }
+    invariant unseen: case.agent, case.secrets;
+    invariant via: ChangeRequested -> Deployed through Verified;
+
+    world: closed;
+    learnable: ChangeRequested;
+
+    about ChangeRequested: "someone, often an automated agent, asks to change a production system";
+    about Deployed: "the change is deployed to production";
+
+    frame ChangeRequested: choice "What kind of change is this?";
+    config:     ChangeRequested -> Change "changes configuration values: timeouts, limits, feature flags"
+                attested scan.iam_untouched == true ensures StandardEligible;
+    dependency: ChangeRequested -> Change "upgrades or replaces a library, image or other dependency"
+                attested scan.iam_untouched == true ensures StandardEligible;
+    migration:  ChangeRequested -> Change "changes a database schema or moves stored data"
+                attested scan.iam_untouched == true ensures StandardEligible;
+    access:     ChangeRequested -> Change "changes who or what may access systems: roles, permissions, keys, network rules";
+    closed: ChangeRequested;
+
+    # Every change is verified three ways, in parallel, with no judgment.
+    frame Change: split;
+    test_line:     Change -> Tests;
+    security_line: Change -> Security;
+    rollback_line: Change -> Rollback;
+    closed: Change;
+    frame Tests: split;
+    tested:         Tests -> Verified "the test suite passed" attested tests.passed == true;
+    frame Security: split;
+    scanned:        Security -> Verified "the security scan is clean" attested security.clean == true;
+    frame Rollback: split;
+    rollback_ready: Rollback -> Verified "rolling back was rehearsed" attested rollback.tested == true;
+    closed: Tests, Security, Rollback;
+    join Verified: all;
+
+    frame Verified: score "How much could this change break in production if it goes wrong?";
+    low_risk:  Verified -> Standard level 0 "a failure would be small, local and quickly reversible";
+    high_risk: Verified -> Board    level 1 "a failure could cause an outage, data loss or a security exposure";
+    closed: Verified;
+    entry Standard: needs StandardEligible;
+
+    frame Standard: split;
+    standard_approved: Standard -> Cleared "the change catalogue lists this as a pre-approved standard change"
+                       attested standard.listed == true ensures DeployGrant;
+    frame Board: split;
+    board_approved:    Board -> Cleared "the change board approved this change"
+                       attested board.approved == true ensures DeployGrant;
+    closed: Standard, Board;
+
+    frame Cleared: split;
+    deploy: Cleared -> Deployed "deploy the change";
+    entry Deployed: needs DeployGrant;
+    closed: Cleared, Deployed;
+}

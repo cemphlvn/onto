@@ -302,12 +302,12 @@ what models see   per the `state` policy · case and observed fields proved · g
         let o = ObjId(i);
         let x = cat.object(o);
         let closed = x.closure == onto_core::Closure::Closed;
-        let terminal = closed && cat.out(o).is_empty();
-        let split = x.frame.primitive == Primitive::Split && closed;
-        if terminal || split {
+        if closed && cat.out(o).is_empty() {
             never.push(x.name.as_str());
             continue;
         }
+        // A split frame asks no judge, but a proposer when it escalates
+        // (its arrows' evidence missing, an entry contract failing).
         let who = if cat.out(o).is_empty() || x.frame.primitive == Primitive::Split {
             "proposer"
         } else {
@@ -316,14 +316,12 @@ what models see   per the `state` policy · case and observed fields proved · g
         asked.push((x.name.as_str(), who, cat.state_of(o)));
     }
     let width = asked.iter().map(|(n, ..)| n.len()).max().unwrap_or(0);
+    println!("  (`proposer`: no judge; a proposer is asked only if the walk escalates there)");
     for (name, who, spec) in &asked {
         println!("  {name:<width$}  {who:<8}  {}", spec.summary());
     }
     if !never.is_empty() {
-        println!(
-            "  never asked (terminal or closed split): {}",
-            never.join(", ")
-        );
+        println!("  never asked (terminals): {}", never.join(", "));
     }
     let goal_frames: Vec<&str> = asked
         .iter()

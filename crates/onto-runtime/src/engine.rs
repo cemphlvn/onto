@@ -117,6 +117,10 @@ pub enum StepRecord {
         at: String,
         reason: Escalation,
         proposals: Vec<Proposal>,
+        /// Open world: proposals the supervisor refused, with the reason
+        /// (none was admitted, so the walk stopped).
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        refused: Vec<(String, String)>,
         wait_ms: f64,
     },
     Failed {
@@ -622,6 +626,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 );
                 frames.push(FrameRecord {
                     seen: None,
+                    refused: Vec::new(),
                     id: join_id.clone(),
                     after: after.clone(),
                     snapshot: self.snapshot.clone(),
@@ -668,6 +673,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         at: object.name.clone(),
                         reason,
                         proposals: Vec::new(),
+                        refused: Vec::new(),
                         wait_ms: ms(waited),
                     });
                 }
@@ -701,6 +707,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let visit_seen = self.state(cat, &job, &path, &hops, &focus, &tokens);
             let record = |judge: Option<JudgeRecord>, candidates, outcome| FrameRecord {
                 seen: judge.is_some().then(|| visit_seen.clone()),
+                refused: Vec::new(),
                 id: rec_id.clone(),
                 after: after.clone(),
                 snapshot: self.snapshot.clone(),
@@ -1072,6 +1079,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     at: at_name,
                     reason,
                     proposals: Vec::new(),
+                    refused: Vec::new(),
                     wait_ms,
                 });
                 break;
@@ -1095,6 +1103,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             // Open world: admit what the supervisor lets through, then
             // re-judge this frame with it (still holding the write claim).
             let mut expanded = None;
+            let mut refused_here = Vec::new();
             if let Ok(proposals) = &proposals
                 && self.cfg.open_world
                 && cat.learnable(at)
@@ -1102,7 +1111,9 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 && !proposals.is_empty()
             {
                 let (learned, refused) = self.expand(&rec_id, reason, proposals).await;
-                if !learned.is_empty() {
+                if learned.is_empty() {
+                    refused_here = refused;
+                } else {
                     expansions += 1;
                     expanded = Some((learned, refused));
                 }
@@ -1113,6 +1124,10 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 if let Some(last) = frames.last_mut() {
                     last.proposals = proposals.clone();
                     last.seen = Some(visit_seen.clone());
+                    last.refused = match &expanded {
+                        Some((_, r)) => r.clone(),
+                        None => refused_here.clone(),
+                    };
                     if let Some((learned, _)) = &expanded {
                         last.outcome = Outcome::Expanded {
                             reason,
@@ -1150,6 +1165,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         at: at_name,
                         reason,
                         proposals,
+                        refused: refused_here,
                         wait_ms,
                     });
                 }
@@ -1680,9 +1696,15 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 .collect(),
             reason: reason.to_owned(),
             known_objects: cat.objects().iter().map(|o| o.name.clone()).collect(),
+            sealed: (0..cat.objects().len() as u32)
+                .map(ObjId)
+                .filter(|o| !cat.learnable(*o))
+                .map(|o| cat.object(o).name.clone())
+                .collect(),
             outcomes: (0..cat.objects().len() as u32)
                 .map(ObjId)
                 .filter(|o| cat.object(*o).closure == Closure::Closed && cat.out(*o).is_empty())
+                .filter(|o| cat.learnable(*o))
                 .map(|o| {
                     let reached_by: Vec<String> = (0..cat.arrows().len() as u32)
                         .map(ArrowId)

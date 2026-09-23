@@ -65,10 +65,17 @@ invariant unseen: case.person;
 
 ```
 what models see   per the `state` policy · case and observed fields proved · goal is free text
-  UseRequested    judge     case: request.purpose, request.description, request.channel
-  MarketingCheck  judge     case: request.purpose · observed (attested only)
-  ResearchCheck   judge     case: request.purpose, request.study · observed (attested only)
-  never asked (terminal or closed split): MarketingUse, ResearchUse, Draft, MarketingCleared, Sent, Dataset, ResearchCleared, Study
+  (`proposer`: no judge; a proposer is asked only if the walk escalates there)
+  UseRequested      judge     case: request.purpose, request.description, request.channel
+  MarketingUse      proposer  case: request.purpose, request.description, request.channel
+  ResearchUse       proposer  case: request.purpose, request.description, request.channel
+  Draft             proposer  case: request.purpose, request.description, request.channel
+  MarketingCheck    judge     case: request.purpose · observed (attested only)
+  MarketingCleared  proposer  case: request.purpose, request.description, request.channel
+  Dataset           proposer  case: request.purpose, request.description, request.channel
+  ResearchCheck     judge     case: request.purpose, request.study · observed (attested only)
+  ResearchCleared   proposer  case: request.purpose, request.description, request.channel
+  never asked (terminals): Sent, Study
   unseen: case.person   ✓ proved: no frame shows these fields, nor any field inside or around them
 ```
 

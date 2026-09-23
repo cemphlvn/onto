@@ -39,6 +39,9 @@ pub struct FrameRecord {
     pub outcome: Outcome,
     /// Provisional System-2 proposals made at this visit, if it escalated.
     pub proposals: Vec<Proposal>,
+    /// Open world: proposals the supervisor refused here, with the reason.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub refused: Vec<(String, String)>,
     /// Attestations that opened the arrow this visit followed: who
     /// observed what, and when (empty: the step rests on judgment alone).
     #[serde(skip_serializing_if = "Vec::is_empty")]
