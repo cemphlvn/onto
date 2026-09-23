@@ -33,6 +33,8 @@ pub enum Error {
     InvariantViolated { invariant: String, witness: String },
     #[error("capability: {0}")]
     Capability(String),
+    #[error("functor {functor}: {msg}")]
+    Functor { functor: String, msg: String },
     #[error("require {0}")]
     Require(String),
     #[error("rewrite construction failed: {0}")]

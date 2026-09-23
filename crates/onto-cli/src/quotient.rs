@@ -13,9 +13,7 @@ pub struct QuotientArgs {
 }
 
 pub fn main(args: QuotientArgs) -> Result<(), BoxError> {
-    let src =
-        std::fs::read_to_string(&args.file).map_err(|e| format!("{}: {e}", args.file.display()))?;
-    let cat = onto_core::parse(&src)?;
+    let cat = crate::module::load_category(&args.file)?;
     let name = |o: &onto_core::ObjId| cat.object(*o).name.clone();
     let names = |g: &[onto_core::ObjId]| g.iter().map(name).collect::<Vec<_>>().join(", ");
 

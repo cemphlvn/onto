@@ -3,12 +3,15 @@ use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
 use onto_core::walk::{Escalation, Judge, NullProposer, ScriptedJudge, Step, UniformJudge, Walker};
-use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, parse::path_spec};
+use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse::path_spec};
 
 mod ask;
 mod attest;
+mod functor;
 mod laws;
 mod learned;
+mod migrate;
+mod module;
 mod quotient;
 mod replay;
 mod run;
@@ -29,11 +32,19 @@ struct Cli {
 #[derive(Subcommand)]
 enum Cmd {
     /// Validate a file and summarise the category.
-    Check { file: PathBuf },
+    Check {
+        file: PathBuf,
+    },
     /// List an object's decision frame (its outgoing arrows).
-    Ls { file: PathBuf, object: String },
+    Ls {
+        file: PathBuf,
+        object: String,
+    },
     /// Type-check a path such as `g.f` and show the simplest equal path.
-    Compose { file: PathBuf, path: String },
+    Compose {
+        file: PathBuf,
+        path: String,
+    },
     /// Decide whether two paths are equal.
     Eq {
         file: PathBuf,
@@ -86,7 +97,11 @@ enum Cmd {
     Run(run::RunArgs),
     /// List the learned layer (open world) and whether each arrow still
     /// holds against the declared graph.
+    /// What a functor keeps, reflects and leaves uncovered.
+    Functor(functor::FunctorArgs),
     Learned(learned::LearnedArgs),
+    /// Carry the learned layer and memory along a version functor.
+    Migrate(migrate::MigrateArgs),
     /// Ask the judge again with a recorded state changed (counterfactual):
     /// does the decision depend on that field?
     Replay(replay::ReplayArgs),
@@ -96,7 +111,9 @@ fn main() -> ExitCode {
     let cli = Cli::parse();
     let result = match cli.cmd {
         Cmd::Run(args) => run::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Functor(args) => functor::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Learned(args) => learned::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Migrate(args) => migrate::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Replay(args) => replay::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Why(args) => why::main(args).map(|()| ExitCode::SUCCESS),
@@ -114,9 +131,8 @@ fn main() -> ExitCode {
     })
 }
 
-fn load(file: &PathBuf) -> Result<Category, Box<dyn std::error::Error>> {
-    let src = std::fs::read_to_string(file).map_err(|e| format!("{}: {e}", file.display()))?;
-    Ok(parse(&src)?)
+fn load(file: &std::path::Path) -> Result<Category, Box<dyn std::error::Error>> {
+    module::load_category(file)
 }
 
 fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
@@ -277,6 +293,8 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         }
         Cmd::Run(_)
         | Cmd::Learned(_)
+        | Cmd::Migrate(_)
+        | Cmd::Functor(_)
         | Cmd::Replay(_)
         | Cmd::Ask(_)
         | Cmd::Why(_)

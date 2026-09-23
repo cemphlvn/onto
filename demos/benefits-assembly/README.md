@@ -92,6 +92,46 @@ What this shows, and what it does not:
 - One baseline per record separates model instability from the effect
   of the change; a single run is evidence, not a statistic.
 
+## Version 2: the carer circumstance (functor, 2026-09-24)
+
+The first live runs found a MECE gap: a carer was forced into
+`has_disability`. Version 2 (`benefits.onto`) adds `is_carer ->
+Caring`, evidenced by the civil registry's signed `carer.registered`,
+and rewrites the question and the two old options. Version 1 is kept as
+`benefits.v1.onto`; `versions.onto` declares `functor Upgrade:
+BenefitsAssemblyV1 -> BenefitsAssembly { by name; require: authority,
+contracts, invariants; }`.
+
+```
+onto functor demos/benefits-assembly/versions.onto
+  authority ✓  contracts ✓  invariants ✓           every v1 route exists in v2
+  frames whose options changed: Circumstances: gained is_carer
+  same structure, changed meaning: has_disability, none_apply, the question at Circumstances
+  not covered (new in v2): Caring; is_carer, carer_evidenced
+
+onto migrate demos/benefits-assembly/versions.onto#Upgrade --memory <v1 memory> --to-memory <v2 memory>
+  memory: 0 migrated, 15 dropped as stale (their frame's options changed)
+```
+
+A precedent is an answer to a question; the question at Circumstances
+changed, so v1's answers (including the wrong carer decision) are not
+evidence under v2.
+
+Live under v2 (fresh memory):
+
+| case | v1 | v2 (first wording) | v2 (reworded `none_apply`) |
+|---|---|---|---|
+| B-7 carer | `has_disability` 0.69 (wrong) | `is_carer` 0.99, carer registration **attested** | `is_carer` 1.00 |
+| B-4 no condition | `none_apply` 1.00 | **escalated** 0.53 | `none_apply` 0.95 |
+| B-6 pregnancy | `none_apply` 0.93 | `none_apply` 0.63 | **escalated** 0.47 |
+| B-1/2/3/5/8 | `has_disability` | same | same |
+
+Fixing one gap moved others. Defined by negation ("neither … nor …"),
+`none_apply` confused the judge on the plainest case; reworded
+positively, it recovered. Pregnancy now escalates: maternity is a
+circumstance in many benefit systems, the next gap for a person to
+decide, not for the judge to force.
+
 ## What it does not do
 
 It does not submit anything to real institutions or decide eligibility:

@@ -1,0 +1,27 @@
+# The deployment policy, mapped into the shared change-control category.
+# `onto functor demos/secure-infrastructure-change/controls.onto`
+#
+# Loading proves the required checks: the standard's approval is issued
+# only by arrows that issue DeployGrant (authority), Implemented's
+# contract is enforced by Deployed's (contracts), and no route reaches
+# production without passing verification and authorization (invariants).
+
+import "change.onto";
+import "../../standards/change-control.onto";
+
+functor Controls: SecureInfrastructureChange -> ChangeControl {
+    objects: ChangeRequested -> Requested,
+             Change -> Classified, Tests -> Classified, Security -> Classified, Rollback -> Classified,
+             Verified -> Verified, Standard -> Verified, Board -> Verified,
+             Cleared -> Authorized, Deployed -> Implemented;
+    capabilities: DeployGrant -> Approval;
+
+    config: classify; dependency: classify; migration: classify; access: classify;
+    test_line: id; security_line: id; rollback_line: id;
+    tested: verify; scanned: verify; rollback_ready: verify;
+    low_risk: id; high_risk: id;
+    standard_approved: authorize; board_approved: authorize;
+    deploy: implement;
+
+    require: authority, contracts, invariants;
+}

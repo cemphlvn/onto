@@ -54,6 +54,10 @@ pub struct RunArgs {
     proposer_model: Option<String>,
     #[command(flatten)]
     world: crate::learned::WorldArgs,
+    /// Also show each walk's image under a functor from this category:
+    /// `FILE#Functor` (or `FILE` when it declares one functor).
+    #[arg(long)]
+    view: Vec<PathBuf>,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -160,6 +164,9 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
     let report = rt.block_on(engine.run(jobs))?;
 
     print_summary(&report, args.telemetry.as_deref());
+    for v in &args.view {
+        print_view(v, &report)?;
+    }
     args.world.save(&args.file, &report.learned)?;
     args.world.save_precedents(&args.file, &report.precedents)?;
     if let Some(path) = &args.dispositions {
@@ -449,6 +456,74 @@ fn print_step(s: &StepRecord) {
             ..
         } => println!("  {at} ⤝ join ({policy}) {role}: {detail}   waited {wait_ms:.0}ms"),
     }
+}
+
+/// Each case's image under a functor: what the target category sees of
+/// it. A case's walks (the root and its branches) are shown by the one
+/// that got furthest in the target. A walk that leaves the functor's
+/// domain (a learned arrow, an unmapped object) is shown up to there.
+fn print_view(spec: &std::path::Path, r: &RunReport) -> Result<(), BoxError> {
+    let (file, name) = crate::module::target(spec);
+    let (module, _) = crate::module::load_module(&file)?;
+    let f = match &name {
+        Some(n) => module.functor(n),
+        None if module.functors.len() == 1 => module.functors.first(),
+        None => None,
+    }
+    .ok_or_else(|| format!("{}: name one functor with #Name", file.display()))?;
+    let a = module.category(&f.src).expect("loaded");
+    let b = module.category(&f.dst).expect("loaded");
+    let parent: std::collections::HashMap<u64, Option<u64>> =
+        r.walks.iter().map(|w| (w.walk, w.parent)).collect();
+    let root = |mut w: u64| {
+        while let Some(Some(p)) = parent.get(&w) {
+            w = *p;
+        }
+        w
+    };
+    // Per case: (image length, image, where it left the view, goal).
+    let mut cases: std::collections::BTreeMap<u64, (usize, String, Option<String>, String)> =
+        Default::default();
+    for w in &r.walks {
+        // `h.g.f : A -> B`: arrows in reverse application order.
+        let (arrows, ends) = w.path.split_once(" : ").unwrap_or(("", &w.path));
+        let start = ends.split(" -> ").next().unwrap_or_default();
+        let Ok(x) = a.object_id(start) else { continue };
+        let mut path = onto_core::Path::id(x);
+        let mut left = None;
+        if !arrows.starts_with("id(") {
+            for arrow in arrows.rsplit('.') {
+                match a.arrow_id(arrow) {
+                    Ok(id) if path.push(a, id).is_ok() => {}
+                    _ => {
+                        left = Some(arrow.to_owned());
+                        break;
+                    }
+                }
+            }
+        }
+        let Some(img) = f.image(a, b, &path) else {
+            continue;
+        };
+        let entry = cases.entry(root(w.walk)).or_default();
+        if img.arrows.len() >= entry.0 {
+            *entry = (img.arrows.len(), img.display_typed(b), left, w.goal.clone());
+        }
+    }
+    println!();
+    println!(
+        "view {}: {} -> {}   (each case, as far as it got)",
+        f.name, f.src, f.dst
+    );
+    for (walk, (_, shown, left, goal)) in cases {
+        let tail = left.map_or(String::new(), |l| {
+            format!("   · left the view at `{l}` (not in {})", f.src)
+        });
+        let goal: String = goal.chars().take(48).collect();
+        println!("  walk {walk:<3} {shown}{tail}");
+        println!("           {goal}");
+    }
+    Ok(())
 }
 
 fn mib(bytes: Option<usize>) -> String {

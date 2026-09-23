@@ -1,3 +1,5 @@
+# Version 1 of the benefits policy (before 2026-09-24), kept for the Upgrade functor
+# in versions.onto. The live policy is benefits.onto (version 2).
 # Benefits Assembly: one coordinated application instead of separate
 # programs, each asking for the same evidence in a different way.
 #
@@ -14,15 +16,15 @@
 #    submission through only with the office's attested approval, which
 #    grants EligibilityGrant. Submitted needs that capability on entry.
 
-category BenefitsAssembly {
+category BenefitsAssemblyV1 {
     attester TaxAuthority   { key: ed25519:xMmHhpe4zfogt2tMU8ope1VHLE+v4u0Mdol9R/nXvgE=;   observes: income.below_threshold; }
-    attester CivilRegistry  { key: ed25519:E58e3uS804ciLMtKTR4hB1QCCqiwsxHy+IDU9lKkvS0=;  observes: residency.confirmed, household.confirmed, carer.registered; }
+    attester CivilRegistry  { key: ed25519:E58e3uS804ciLMtKTR4hB1QCCqiwsxHy+IDU9lKkvS0=;  observes: residency.confirmed, household.confirmed; }
     attester MedicalBoard   { key: ed25519:tAyfkTYsCXxujznVptAyu8alToL6/G58QSp+JoflUI0=;   observes: disability.assessed; }
     attester BenefitsOffice { key: ed25519:9vJ4514yJL8R7nRgmAF6vewQTr3WaFdla+R4/jddtks=; observes: eligibility.approved; }
 
     capability EligibilityGrant { issuers: approved; }
 
-    objects: Application, Income, Residency, Household, Circumstances, Disability, Caring,
+    objects: Application, Income, Residency, Household, Circumstances, Disability,
              EvidenceComplete, Preparation, Decision, Ready, Submitted;
     start: Application;
 
@@ -62,19 +64,13 @@ category BenefitsAssembly {
                          attested household.confirmed == true;
 
     # The judged part: does a special circumstance apply to this person?
-    # Version 2 (2026-09-24): the live runs found a carer forced into
-    # has_disability. Caring for someone is its own circumstance.
-    frame Circumstances: choice "Which special circumstance, if any, does the person describe about themselves?";
-    has_disability: Circumstances -> Disability "the person describes their own disability or long-term health condition";
-    is_carer:       Circumstances -> Caring "the person cares for a family member or someone else who cannot manage alone";
-    none_apply:     Circumstances -> EvidenceComplete "no special circumstance: the person describes only job loss, income, housing, family size or similar";
+    frame Circumstances: choice "Does the person describe a disability or long-term health condition that affects their support?";
+    has_disability: Circumstances -> Disability "the person describes a disability or long-term health condition";
+    none_apply:     Circumstances -> EvidenceComplete "no disability or long-term health condition is described";
     frame Disability: split;
     disability_evidenced: Disability -> EvidenceComplete "the disability has been assessed"
                           attested disability.assessed == true;
-    frame Caring: split;
-    carer_evidenced: Caring -> EvidenceComplete "the caring role is registered"
-                     attested carer.registered == true;
-    closed: Income, Residency, Household, Circumstances, Disability, Caring;
+    closed: Income, Residency, Household, Circumstances, Disability;
     join EvidenceComplete: all;
 
     # Prepare the application while the office decides eligibility.

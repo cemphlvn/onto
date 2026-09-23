@@ -445,6 +445,8 @@ snapshot. No database until live multi-writer editing is needed.
 | D43 | sealed regions (`sealed:`, `world: closed` + `learnable:`) bound the open world per object | a global open/closed switch was too coarse: in consent-enforcement the open world learned at the consent check; regulated regions need structure only people declare, while new kinds of request may still be learned |
 | D44 | memory is precedents projected onto the current state declaration, only from loaded runs, never the case itself | memory must not become a side channel around `unseen`, and must be reproducible within a run |
 | D45 | counterfactual replay always runs an unchanged baseline beside the change | live, the same state gave confidence 0.47 in the walk and 0.29 in replay: without a baseline, model instability would read as an effect |
+| D46 | functors are partial (defined on the mapped objects) and policy is **reflected** onto the source, on objects | a standard describes part of an organization; a required step must be a visible step of the source, not hidden inside one arrow |
+| D47 | precedents do not migrate across a change to their frame's options | a precedent answers a question; when the options change it answers a different one (live: v1's wrong carer decision) |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -508,7 +510,12 @@ snapshot. No database until live multi-writer editing is needed.
 - **secure-infrastructure-change (done):** judgment, evidence and
   authority as three layers; refusals recorded; the proposer is told
   what is sealed; `onto laws` shows which frames may reach a proposer.
-- **Next:** usage-based reinforcement and pruning of learned arrows;
+- **Functors, phase 1 (done):** modules and imports, `functor` blocks
+  (partial, by name), well-definedness and equations proved, authority /
+  contracts / invariants reflected, coverage, evidence backing; `onto
+  functor`, `run --view`, `onto migrate`; `standards/`. See
+  `docs/05-functors.md`.
+- **Next:** functors phase 2 (hierarchy, transport); usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).

@@ -6,6 +6,7 @@ pub mod attest;
 pub mod category;
 pub mod equality;
 pub mod error;
+pub mod functor;
 pub mod laws;
 pub mod parse;
 pub mod path;
@@ -21,7 +22,8 @@ pub use category::{
 };
 pub use equality::{Equality, Verdict};
 pub use error::Error;
-pub use parse::parse;
+pub use functor::{Functor, FunctorDecl, Obligation};
+pub use parse::{Module, parse, parse_module, parse_module_at};
 pub use path::Path;
 pub use require::Require;
 pub use state::{CaseView, StateSpec};

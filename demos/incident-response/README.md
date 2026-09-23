@@ -55,6 +55,31 @@ Two things the live runs taught the runtime:
   saw it as gone and declared itself incomplete. Fixed; a regression test
   reproduces the ordering.
 
+## The public status page as a view (functor, 2026-09-24)
+
+`status.onto` declares a `StatusPage` category (Investigating →
+Identified → Monitoring → Resolved) and `functor Public: IncidentResponse
+-> StatusPage` with `require: invariants, cover`: loading proves that
+the page can never show *Resolved* without *Monitoring* first, because
+operations never resolve without verification.
+
+```
+onto run demos/incident-response/incident.onto --jobs demos/incident-response/jobs \
+    --policy shared --max-branches 6 --view demos/incident-response/status.onto#Public
+
+view Public: IncidentResponse -> StatusPage   (each case, as far as it got)
+  walk 1   fix.identify : Investigating -> Monitoring      INC-5001
+  walk 2   identify : Investigating -> Identified          INC-5002
+  walk 3   fix.identify : Investigating -> Monitoring      INC-5003
+  walk 4   fix.identify : Investigating -> Monitoring      INC-5004
+```
+
+Live, no case showed *Resolved*: the final "declare resolved" is still
+left to a person (the judge was unsure, as before), so customers see
+*Monitoring*, not a claim nobody made. INC-5002, where no mitigation was
+attested, stays at *Identified*. The status is derived from the walk; it
+cannot say anything the operations did not do.
+
 ## What it does not do
 
 It does not perform mitigations; it governs which are pursued, which one

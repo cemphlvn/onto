@@ -1,0 +1,36 @@
+# The public status page, as a category, and the functor that derives it
+# from incident response. Customers see the image of the walk: it cannot
+# say anything the operations did not do (a functor maps paths to paths),
+# and `require: invariants` proves that "Resolved" is never shown before
+# monitoring, because operations never resolve before verification.
+#
+# onto functor demos/incident-response/status.onto
+# onto run demos/incident-response/incident.onto --jobs … --view demos/incident-response/status.onto#Public
+
+import "incident.onto";
+
+category StatusPage {
+    objects: Investigating, Identified, Monitoring, Resolved;
+    about Investigating: "we are investigating reports of a problem";
+    about Identified: "the issue has been identified and a fix is being implemented";
+    about Monitoring: "a fix has been implemented and we are monitoring the results";
+    about Resolved: "this incident has been resolved";
+    identify: Investigating -> Identified;
+    fix:      Identified -> Monitoring;
+    resolve:  Monitoring -> Resolved;
+    invariant via: Investigating -> Resolved through Monitoring;
+}
+
+functor Public: IncidentResponse -> StatusPage {
+    objects: Outage -> Investigating,
+             Rollback -> Identified, Failover -> Identified, Throttle -> Identified,
+             Mitigating -> Monitoring, ErrorCheck -> Monitoring, LatencyCheck -> Monitoring,
+             CheckoutCheck -> Monitoring, Verified -> Monitoring,
+             Resolved -> Resolved;
+    try_rollback: identify; try_failover: identify; try_throttle: identify;
+    rollback_applied: fix; failover_applied: fix; throttle_applied: fix;
+    check_errors: id; check_latency: id; check_checkout: id;
+    errors_ok: id; latency_ok: id; checkout_ok: id;
+    resolve: resolve;
+    require: invariants, cover;
+}

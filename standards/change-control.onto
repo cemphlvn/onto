@@ -1,0 +1,26 @@
+# Change control: a shared category of what a change-management process
+# must do, in the spirit of common change-management objectives (ITIL
+# change enablement, the change-management criteria of SOC 2). A sketch
+# for onto's functor demos: it is not the text of any standard and does
+# not certify anything.
+#
+# Organizations map their own policy into it with a functor
+# (`docs/05-functors.md`); the functor's report is the gap analysis.
+
+category ChangeControl {
+    capability Approval { issuers: authorize; }
+
+    objects: Requested, Classified, Verified, Authorized, Implemented, Reviewed;
+
+    about Verified: "the change was tested, security-reviewed, and its back-out rehearsed";
+
+    classify:    Requested -> Classified   "the kind and the risk of the change are recorded";
+    verify:      Classified -> Verified    "the change is tested, security-reviewed and its back-out rehearsed before it is authorized";
+    authorize:   Verified -> Authorized    "an authority approves the change" ensures Approval;
+    implement:   Authorized -> Implemented "the change is put into production";
+    post_review: Implemented -> Reviewed   "a post-implementation review is recorded";
+
+    entry Implemented: needs Approval;
+    invariant via: Requested -> Implemented through Verified;
+    invariant via: Requested -> Implemented through Authorized;
+}

@@ -46,8 +46,7 @@ pub fn main(args: ReplayArgs) -> Result<(), BoxError> {
     if args.drop.is_empty() && args.set.is_empty() {
         return Err("nothing to change: pass --drop FIELD or --set FIELD=VALUE".into());
     }
-    let src = std::fs::read_to_string(&args.file)?;
-    let cat = onto_core::parse(&src)?;
+    let cat = crate::module::load_category(&args.file)?;
     let text = std::fs::read_to_string(&args.dispositions)?;
     let records: Vec<Value> = text
         .lines()

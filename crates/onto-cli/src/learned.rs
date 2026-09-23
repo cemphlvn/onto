@@ -46,13 +46,12 @@ impl WorldArgs {
     pub fn layer(&self, file: &Path) -> PathBuf {
         self.learned
             .clone()
-            .unwrap_or_else(|| file.with_extension("learned.jsonl"))
+            .unwrap_or_else(|| sibling(file, "learned.jsonl"))
     }
 
     /// The declared graph, plus the learned layer in open world.
     pub fn load(&self, file: &Path) -> Result<Arc<Category>, BoxError> {
-        let src = std::fs::read_to_string(file).map_err(|e| format!("{}: {e}", file.display()))?;
-        let declared = onto_core::parse(&src)?;
+        let declared = crate::module::load_category(file)?;
         if self.closed_world {
             println!("world: closed (declared graph only)");
             return Ok(Arc::new(declared));
@@ -80,7 +79,7 @@ impl WorldArgs {
     fn memory_file(&self, file: &Path) -> PathBuf {
         self.memory
             .clone()
-            .unwrap_or_else(|| file.with_extension("memory.jsonl"))
+            .unwrap_or_else(|| sibling(file, "memory.jsonl"))
     }
 
     /// Precedents from earlier runs, if the category declares memory.
@@ -148,6 +147,15 @@ impl WorldArgs {
     }
 }
 
+/// `x.onto` → `x.<ext>`; `x.onto#Name` → `x.Name.<ext>`.
+fn sibling(spec: &Path, ext: &str) -> PathBuf {
+    let (file, name) = crate::module::target(spec);
+    match name {
+        Some(n) => file.with_extension(format!("{n}.{ext}")),
+        None => file.with_extension(ext),
+    }
+}
+
 pub fn read(layer: &Path) -> Result<Vec<Learned>, BoxError> {
     let Ok(text) = std::fs::read_to_string(layer) else {
         return Ok(Vec::new());
@@ -174,8 +182,7 @@ pub struct LearnedArgs {
 pub fn main(args: LearnedArgs) -> Result<(), BoxError> {
     let layer = args.world.layer(&args.file);
     let entries = read(&layer)?;
-    let src = std::fs::read_to_string(&args.file)?;
-    let mut cat = onto_core::parse(&src)?;
+    let mut cat = crate::module::load_category(&args.file)?;
     println!("{} ({} arrows)", layer.display(), entries.len());
     for l in &entries {
         let p = &l.proposal;

@@ -38,10 +38,260 @@ use crate::category::{
 use crate::error::Error;
 use crate::require::Require;
 
+/// Several categories and the functors between them: one file and what
+/// it imports.
+#[derive(Clone, Debug, Default)]
+pub struct Module {
+    pub categories: Vec<Category>,
+    pub functors: Vec<crate::functor::Functor>,
+}
+
+impl Module {
+    pub fn category(&self, name: &str) -> Option<&Category> {
+        self.categories.iter().find(|c| c.name() == name)
+    }
+
+    pub fn functor(&self, name: &str) -> Option<&crate::functor::Functor> {
+        self.functors.iter().find(|f| f.name == name)
+    }
+}
+
+enum Block {
+    Import(String),
+    Category(String),
+    Functor(String),
+}
+
+/// Top-level blocks of a file, with the line each starts on: `import
+/// "path";`, `category Name { … }`, `functor F: A -> B { … }`.
+fn blocks(src: &str) -> Result<Vec<(usize, Block)>, Error> {
+    let mut out = Vec::new();
+    let mut current = String::new();
+    let (mut line, mut start, mut depth) = (1usize, 1usize, 0usize);
+    let (mut in_str, mut escaped, mut in_comment) = (false, false, false);
+    for c in src.chars() {
+        if c == '\n' {
+            line += 1;
+            in_comment = false;
+        }
+        if in_comment {
+            continue;
+        }
+        if current.trim().is_empty() && !c.is_whitespace() && c != '#' {
+            start = line;
+        }
+        if in_str {
+            current.push(c);
+            match (escaped, c) {
+                (true, _) => escaped = false,
+                (false, '\\') => escaped = true,
+                (false, '"') => in_str = false,
+                _ => {}
+            }
+            continue;
+        }
+        match c {
+            '#' => {
+                in_comment = true;
+                continue;
+            }
+            '"' => in_str = true,
+            '{' | '[' => depth += 1,
+            '}' | ']' => {
+                depth = depth.checked_sub(1).ok_or(Error::Parse {
+                    line,
+                    msg: format!("unbalanced `{c}`"),
+                })?;
+            }
+            _ => {}
+        }
+        current.push(c);
+        let text = current.trim();
+        if depth == 0 && c == '}' {
+            let block = if text.starts_with("category ") || text.starts_with("cat ") {
+                Block::Category(text.to_owned())
+            } else if let Some(rest) = text.strip_prefix("functor ") {
+                Block::Functor(rest.to_owned())
+            } else {
+                return Err(Error::Parse {
+                    line: start,
+                    msg: "expected `category Name { … }` or `functor F: A -> B { … }`".into(),
+                });
+            };
+            out.push((start, block));
+            current.clear();
+        } else if depth == 0 && c == ';' {
+            let path = text
+                .strip_prefix("import")
+                .map(|r| r.trim_end_matches(';').trim())
+                .and_then(|r| r.strip_prefix('"')?.strip_suffix('"'))
+                .ok_or(Error::Parse {
+                    line: start,
+                    msg: format!("expected `import \"path\";`, got `{text}`"),
+                })?;
+            out.push((start, Block::Import(path.to_owned())));
+            current.clear();
+        }
+    }
+    if depth != 0 {
+        return Err(Error::Parse {
+            line,
+            msg: "missing closing `}`".into(),
+        });
+    }
+    if !current.trim().is_empty() {
+        return Err(Error::Parse {
+            line: start,
+            msg: format!("unexpected `{}`", current.trim()),
+        });
+    }
+    Ok(out)
+}
+
+/// Parses a file that may hold several categories, functors between them,
+/// and imports. `import` returns the source of an imported path (the
+/// caller resolves paths and refuses cycles). Categories take the
+/// snapshot of the file they are written in.
+pub fn parse_module(
+    src: &str,
+    import: &mut dyn FnMut(&str) -> Result<String, Error>,
+) -> Result<Module, Error> {
+    parse_module_at("", src, &mut |path, _| Ok((path.to_owned(), import(path)?)))
+}
+
+/// As [`parse_module`], for sources with an identity (a file path):
+/// `import(path, importer)` resolves `path` as written in `importer` and
+/// returns the imported source's identity and text.
+/// Resolves `(path, importer)` to the imported source's identity and text.
+pub type Importer<'a> = dyn FnMut(&str, &str) -> Result<(String, String), Error> + 'a;
+
+pub fn parse_module_at(id: &str, src: &str, import: &mut Importer) -> Result<Module, Error> {
+    let mut module = Module::default();
+    let mut decls = Vec::new();
+    for (line, block) in blocks(src)? {
+        match block {
+            Block::Import(path) => {
+                let (child, text) = import(&path, id)?;
+                let m = parse_module_at(&child, &text, import).map_err(|e| Error::Parse {
+                    line,
+                    msg: format!("in import \"{path}\": {e}"),
+                })?;
+                module.categories.extend(m.categories);
+                module.functors.extend(m.functors);
+            }
+            Block::Category(text) => {
+                let mut cat = category(&text, line)?;
+                cat.set_snapshot(snapshot_hash(src));
+                if module.category(cat.name()).is_some() {
+                    return Err(Error::Parse {
+                        line,
+                        msg: format!("category `{}` is declared twice", cat.name()),
+                    });
+                }
+                module.categories.push(cat);
+            }
+            Block::Functor(text) => decls.push((
+                line,
+                functor_decl(&text).map_err(|e| match e {
+                    Error::Parse { msg, .. } => Error::Parse { line, msg },
+                    other => other,
+                })?,
+            )),
+        }
+    }
+    for (line, d) in decls {
+        let (Some(a), Some(b)) = (module.category(&d.src), module.category(&d.dst)) else {
+            return Err(Error::Parse {
+                line,
+                msg: format!(
+                    "functor {}: categories `{}` and `{}` must both be declared or imported",
+                    d.name, d.src, d.dst
+                ),
+            });
+        };
+        let f = crate::functor::Functor::build(&d, a, b)?;
+        module.functors.push(f);
+    }
+    Ok(module)
+}
+
+/// `F: A -> B { objects: X -> Y, …; capabilities: T -> U; f: g.h; require: …; transport; }`
+fn functor_decl(text: &str) -> Result<crate::functor::FunctorDecl, Error> {
+    let (head, body) = text
+        .split_once('{')
+        .ok_or_else(|| perr("expected `functor F: A -> B { … }`"))?;
+    let (name, ends) = head
+        .split_once(':')
+        .ok_or_else(|| perr("expected `functor F: A -> B { … }`"))?;
+    let (src, dst) = ends
+        .split_once("->")
+        .ok_or_else(|| perr("expected `functor F: A -> B { … }`"))?;
+    let body = body
+        .trim()
+        .strip_suffix('}')
+        .ok_or_else(|| perr("missing `}`"))?;
+    let mut d = crate::functor::FunctorDecl {
+        name: name.trim().to_owned(),
+        src: src.trim().to_owned(),
+        dst: dst.trim().to_owned(),
+        ..Default::default()
+    };
+    let pairs = |v: &str| -> Result<Vec<(String, String)>, Error> {
+        list(v)
+            .map(|p| {
+                p.split_once("->")
+                    .map(|(x, y)| (x.trim().to_owned(), y.trim().to_owned()))
+                    .ok_or_else(|| perr(format!("expected `X -> Y`, got `{p}`")))
+            })
+            .collect()
+    };
+    for item in body.split(';').map(str::trim).filter(|i| !i.is_empty()) {
+        if item == "transport" {
+            d.transport = true;
+            continue;
+        }
+        if item == "by name" {
+            d.by_name = true;
+            continue;
+        }
+        let (key, value) = item
+            .split_once(':')
+            .ok_or_else(|| perr(format!("cannot read `{item}`")))?;
+        match key.trim() {
+            "objects" => d.objects.extend(pairs(value)?),
+            "capabilities" => d.capabilities.extend(pairs(value)?),
+            "require" => {
+                for o in list(value) {
+                    d.require
+                        .push(crate::functor::Obligation::parse(o).map_err(perr)?);
+                }
+            }
+            arrow => d.arrows.push((arrow.to_owned(), path_spec(value)?)),
+        }
+    }
+    Ok(d)
+}
+
 pub fn parse(src: &str) -> Result<Category, Error> {
-    let (name, statements) = split(src)?;
+    let blocks = blocks(src)?;
+    if blocks.len() != 1 || !matches!(blocks[0].1, Block::Category(_)) {
+        return Err(Error::Parse {
+            line: 1,
+            msg: "this file holds imports, functors or several categories; load it as a module"
+                .into(),
+        });
+    }
+    let mut cat = category(src, 1)?;
+    cat.set_snapshot(snapshot_hash(src));
+    Ok(cat)
+}
+
+/// One `category Name { … }` block starting at `line0`.
+fn category(src: &str, line0: usize) -> Result<Category, Error> {
+    let (name, statements) = split(src).map_err(|e| shift(e, line0))?;
     let mut b = CategoryBuilder::new(name);
     for (line, stmt) in statements {
+        let line = line + line0 - 1;
         statement(&mut b, &stmt).map_err(|e| match e {
             Error::Parse { msg, .. } => Error::Parse { line, msg },
             other => Error::Parse {
@@ -50,9 +300,17 @@ pub fn parse(src: &str) -> Result<Category, Error> {
             },
         })?;
     }
-    let mut cat = b.build()?;
-    cat.set_snapshot(snapshot_hash(src));
-    Ok(cat)
+    b.build()
+}
+
+fn shift(e: Error, line0: usize) -> Error {
+    match e {
+        Error::Parse { line, msg } => Error::Parse {
+            line: line + line0 - 1,
+            msg,
+        },
+        other => other,
+    }
 }
 
 /// SHA-256 of a category's source text, as lowercase hex: the identity of

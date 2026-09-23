@@ -29,9 +29,7 @@ pub struct LawsArgs {
 }
 
 pub fn main(args: LawsArgs) -> Result<(), BoxError> {
-    let src =
-        std::fs::read_to_string(&args.file).map_err(|e| format!("{}: {e}", args.file.display()))?;
-    let cat = onto_core::parse(&src)?;
+    let cat = crate::module::load_category(&args.file)?;
     let (starts, mode) = if !args.from.is_empty() {
         let ids = args
             .from

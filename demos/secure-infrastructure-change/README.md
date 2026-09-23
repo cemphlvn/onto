@@ -78,6 +78,37 @@ no trace. Now refusals are recorded (`not learned …: sealed`), and the
 proposer is told which objects are sealed and is shown only learnable
 outcomes. It then built an island that ends in a human review.
 
+## Mapped into a shared standard (functor, 2026-09-24)
+
+`controls.onto` imports this policy and `standards/change-control.onto`
+and declares `functor Controls: SecureInfrastructureChange ->
+ChangeControl` with `require: authority, contracts, invariants`.
+
+```
+onto functor demos/secure-infrastructure-change/controls.onto
+
+  reflected in SecureInfrastructureChange (required ones are proved at load)
+    authority   ✓   contracts   ✓   invariants  ✓
+  ChangeControl arrows, backed by
+    classify   config (attested), dependency (attested), migration (attested), access
+    verify     tested (attested), scanned (attested), rollback_ready (attested)   · all evidence signed
+    authorize  standard_approved (attested), board_approved (attested)   · all evidence signed
+    implement  deploy
+  not covered (no preimage in SecureInfrastructureChange):
+    objects  Reviewed
+    arrows   post_review: Implemented -> Reviewed
+```
+
+- The gap is real: the policy has no post-implementation review.
+- Tried: removing `entry Deployed: needs DeployGrant` makes `controls.onto`
+  fail to load ("Implemented needs Approval on entry, but Deployed needs
+  no capability mapped to it"). Adding a `hotfix: Change -> Cleared`
+  shortcut and deleting the policy's own `via` invariant still loads the
+  policy, but the functor refuses it: the shortcut maps onto
+  `authorize.verify`, issuing approval without authority, and it skips
+  every preimage of `Verified`. The standard catches what local policy
+  forgot.
+
 ## What it does not do
 
 It does not run tests, scans or deployments; it decides whether a

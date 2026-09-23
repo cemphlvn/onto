@@ -1,0 +1,17 @@
+# Version 1 → version 2 of the benefits policy, as a functor.
+# onto functor demos/benefits-assembly/versions.onto
+# onto migrate demos/benefits-assembly/versions.onto#Upgrade --learned … --memory …
+#
+# Every v1 route still exists in v2 (the functor), v2's contracts and
+# invariants hold for v1 (required), and the report names what changed:
+# the new circumstance, the changed question at Circumstances, and the
+# relabelled options. Precedents recorded at Circumstances under v1
+# answered a different question and are not migrated.
+
+import "benefits.v1.onto";
+import "benefits.onto";
+
+functor Upgrade: BenefitsAssemblyV1 -> BenefitsAssembly {
+    by name;
+    require: authority, contracts, invariants;
+}

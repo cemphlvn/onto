@@ -89,6 +89,17 @@ perform the action ("commit" stays outside the runtime).
 Together the first wave shows **speed** (race), **authority** (gate) and
 **completeness** (all), which ordinary agent routers do not govern.
 
+### Functor structures (M3 phase 1, 2026-09-24)
+
+| demo | functor | what it tests |
+|---|---|---|
+| secure-infrastructure-change | `Controls` → `standards/change-control.onto` | a shared standard: authority, contracts, invariants reflected; evidence backing; the gap (no post-implementation review) |
+| incident-response | `Public` → `StatusPage` | a view: `onto run --view`; the page never shows Resolved before Monitoring |
+| benefits-assembly | `Upgrade`: v1 → v2 | a version: new behaviour, changed questions, stale precedents dropped by `onto migrate` |
+
+Next (phase 2): hierarchy (`grouped by`) on a larger support-commons
+taxonomy, and transport (empty fibers) for benefits-assembly.
+
 ### Acceptance for every new demo
 
 - `onto check`, `onto laws` (with `--proofs` for the claims its README makes)
