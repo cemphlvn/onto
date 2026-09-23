@@ -6,6 +6,9 @@ Collected: share raw customer records with an advertising partner
 Collected: train an internal churn model on customer histories
 Collected: use purchase history for an academic study on shopping habits
 # Added with preconditions: the same intent, with and without evidence.
-Collected: {"goal": "send personalised product offers by email", "consent": {"marketing": true}}
-Collected: {"goal": "give pseudonymized records to our analytics vendor", "processor": {"region": "US", "scc": true}}
-Collected: {"goal": "give pseudonymized records to our analytics vendor", "processor": {"region": "US", "scc": false}}
+Collected: {"goal": "send personalised product offers by email", "consent": {"given": true, "marketing": true}}
+Collected: {"goal": "give pseudonymized records to our analytics vendor", "contract": {"active": true}, "processor": {"region": "US", "scc": true}}
+Collected: {"goal": "give pseudonymized records to our analytics vendor", "contract": {"active": true}, "processor": {"region": "US", "scc": false}}
+# Added with capabilities: consent given but no marketing opt-in; and no evidence at all.
+Collected: {"goal": "send personalised product offers by email", "consent": {"given": true, "marketing": false}}
+Collected: {"goal": "use purchase history for an academic study on shopping habits", "consent": {"given": true}}

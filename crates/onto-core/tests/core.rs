@@ -245,7 +245,7 @@ fn parses_meaning_primitives_levels_and_require() {
 fn require_filters_the_frame() {
     let cat = parse(RICH).unwrap();
     let consented = cat.object_id("Consented").unwrap();
-    let n = |state| cat.eligible(consented, &state).len();
+    let n = |state| cat.eligible(consented, &state, &Default::default()).len();
     assert_eq!(n(json!({"consent": {"marketing": true}, "age": 30})), 1);
     assert_eq!(n(json!({"consent": {"marketing": true}, "age": 12})), 0);
     assert_eq!(n(json!({"consent": {"marketing": false}, "age": 30})), 0);
@@ -521,5 +521,167 @@ mod supervisor {
             cat.reachable(id("Marketing"), id("Collected"), &[])
                 .is_none()
         );
+    }
+}
+
+mod contracts {
+    use super::*;
+    use onto_core::Gate;
+    use onto_core::laws::{derive, enforced};
+    use onto_core::supervise::{Admission, Outcome, admission, structural};
+    use onto_core::walk::Proposal;
+    use std::collections::BTreeSet;
+
+    /// Consent is a checked fact (require on the case) that yields a
+    /// capability (ensures ConsentGrant); Marketing needs the capability on
+    /// entry; withdrawing consent revokes it.
+    const SRC: &str = r#"
+    category C {
+        objects: Collected, Consented, Pseudonymized, Research, Marketing;
+        consent:  Collected -> Consented require consent.given == true ensures ConsentGrant, Basis;
+        contract: Collected -> Pseudonymized require contract == true ensures Basis;
+        pseudo:   Consented -> Pseudonymized;
+        study:    Pseudonymized -> Research;
+        market:   Consented -> Marketing;
+        withdraw: Consented -> Collected revokes ConsentGrant, Basis;
+        entry Marketing: needs ConsentGrant require consent.marketing == true;
+        entry Pseudonymized: needs Basis;
+        invariant via: Collected -> Marketing through Consented;
+    }"#;
+
+    fn tokens(names: &[&str]) -> BTreeSet<String> {
+        names.iter().map(|s| (*s).to_owned()).collect()
+    }
+
+    #[test]
+    fn contracts_parse_and_gate_arrows() {
+        let cat = parse(SRC).unwrap();
+        let id = |n| cat.arrow_id(n).unwrap();
+        assert_eq!(cat.arrow(id("consent")).ensures, ["ConsentGrant", "Basis"]);
+        assert_eq!(cat.arrow(id("withdraw")).revokes, ["ConsentGrant", "Basis"]);
+        let case = json!({"consent": {"given": true, "marketing": true}});
+        // Marketing needs a token the walk does not hold yet.
+        assert!(
+            matches!(cat.gate(id("market"), &case, &tokens(&[])), Gate::Entry { ref missing, .. } if missing == &["ConsentGrant"])
+        );
+        assert_eq!(
+            cat.gate(id("market"), &case, &tokens(&["ConsentGrant"])),
+            Gate::Open
+        );
+        // Entry case precondition still applies.
+        let no_opt_in = json!({"consent": {"given": true, "marketing": false}});
+        assert!(matches!(
+            cat.gate(id("market"), &no_opt_in, &tokens(&["ConsentGrant"])),
+            Gate::Entry {
+                require_failed: true,
+                ..
+            }
+        ));
+        // A token is only minted where the evidence holds.
+        assert_eq!(
+            cat.gate(id("consent"), &json!({}), &tokens(&[])),
+            Gate::Require
+        );
+    }
+
+    #[test]
+    fn walks_carry_and_apply_tokens() {
+        let cat = parse(SRC).unwrap();
+        let mut w = Walker {
+            cat: &cat,
+            judge: ScriptedJudge::new(["consent", "market"]),
+            proposer: NullProposer,
+            threshold: 0.5,
+        };
+        let case = json!({"consent": {"given": true, "marketing": true}});
+        let walk = w.walk("offers", case, cat.object_id("Collected").unwrap(), 5);
+        assert_eq!(walk.state.path.display(&cat), "market.consent");
+        assert_eq!(walk.state.tokens, tokens(&["Basis", "ConsentGrant"]));
+    }
+
+    #[test]
+    fn laws_drop_out_of_local_contracts() {
+        let cat = parse(SRC).unwrap();
+        let laws = derive(&cat, &[]);
+        let o = |n| cat.object_id(n).unwrap();
+        // Walks may start wherever entering needs no tokens.
+        assert_eq!(laws.starts, [o("Collected"), o("Consented"), o("Research")]);
+        assert_eq!(
+            laws.must(o("Marketing")),
+            Some(tokens(&["Basis", "ConsentGrant"]))
+        );
+        // Research states no contract, yet every walk into it holds Basis:
+        // derived from Pseudonymized's entry contract.
+        assert!(cat.object(o("Research")).entry.is_empty());
+        assert!(laws.must(o("Research")).unwrap().contains("Basis"));
+        // Returning to Collected by withdraw clears the tokens.
+        assert_eq!(laws.must(o("Collected")), Some(tokens(&[])));
+        assert!(laws.dead(&cat).is_empty());
+    }
+
+    #[test]
+    fn contracts_enforce_invariants_for_walks_even_where_the_graph_does_not() {
+        let with_bypass = SRC.replace(
+            "invariant via: Collected -> Marketing through Consented;",
+            "ads: Collected -> Marketing;",
+        );
+        let cat = parse(&with_bypass).unwrap();
+        // The bare graph has a bypass (`ads`), but no walk can take it:
+        // Marketing needs ConsentGrant, and only `consent` grants it.
+        assert!(
+            cat.reachable(
+                cat.object_id("Collected").unwrap(),
+                cat.object_id("Marketing").unwrap(),
+                &[cat.object_id("Consented").unwrap()]
+            )
+            .is_some()
+        );
+        let inv = onto_core::Invariant::Via {
+            from: "Collected".into(),
+            to: "Marketing".into(),
+            through: vec!["Consented".into()],
+        };
+        assert_eq!(enforced(&cat, &inv), Some(true));
+        let dead: Vec<_> = derive(&cat, &[])
+            .dead(&cat)
+            .iter()
+            .map(|a| cat.arrow(*a).name.clone())
+            .collect();
+        assert_eq!(dead, ["ads"]);
+    }
+
+    #[test]
+    fn review_notes_dead_proposals_and_challenges_closed_frames() {
+        let cat = parse(&SRC.replace(
+            "invariant via: Collected -> Marketing through Consented;",
+            "closed: Consented;",
+        ))
+        .unwrap();
+        let p = |arrow: &str, src: &str, dst: &str| Proposal {
+            arrow: arrow.into(),
+            src: src.into(),
+            dst: dst.into(),
+            about: String::new(),
+            rationale: String::new(),
+        };
+
+        let (checks, _) = structural(&cat, &p("ads", "Collected", "Marketing"));
+        let note = checks
+            .iter()
+            .find(|c| c.check == "contract")
+            .expect("contract note");
+        assert!(
+            note.reason.contains("needs ConsentGrant"),
+            "{}",
+            note.reason
+        );
+
+        let (checks, _) = structural(&cat, &p("newsletter", "Consented", "Newsletter"));
+        let challenge = checks
+            .iter()
+            .find(|c| c.check == "closure")
+            .expect("closure challenge");
+        assert_eq!(challenge.outcome, Outcome::Unknown);
+        assert_eq!(admission(&checks), Admission::Unknown);
     }
 }

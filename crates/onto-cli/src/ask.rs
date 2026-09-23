@@ -199,6 +199,13 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                         c.require.as_deref().unwrap_or("?")
                     );
                 }
+                for c in last
+                    .candidates
+                    .iter()
+                    .filter(|c| c.disposition == onto_core::walk::Disposition::BlockedByEntry)
+                {
+                    println!("{pad}  {} is not open to this case: {}.", c.to, c.reason);
+                }
             }
             if !proposals.is_empty() {
                 println!();

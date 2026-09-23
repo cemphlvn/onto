@@ -15,7 +15,9 @@
 
 use serde_json::Value;
 
-use crate::category::{ArrowId, Category, Closure, ObjId, Primitive};
+use std::collections::BTreeSet;
+
+use crate::category::{ArrowId, Category, Closure, Gate, ObjId, Primitive};
 use crate::path::Path;
 
 /// What the models see at each step.
@@ -25,6 +27,8 @@ pub struct WalkState {
     pub goal: String,
     /// Structured facts about the case; `require` clauses read it.
     pub state: Value,
+    /// Capability tokens the walk holds (set and cleared by arrow effects).
+    pub tokens: BTreeSet<String>,
     pub at: ObjId,
     pub path: Path,
 }
@@ -212,8 +216,13 @@ pub fn decide(
 
 /// Candidates for a frame in the order judges see them: eligible arrows in
 /// frame order, or by level for score frames.
-pub fn candidates(cat: &Category, at: ObjId, state: &Value) -> Vec<ArrowId> {
-    let mut c = cat.eligible(at, state);
+pub fn candidates(
+    cat: &Category,
+    at: ObjId,
+    case: &Value,
+    tokens: &BTreeSet<String>,
+) -> Vec<ArrowId> {
+    let mut c = cat.eligible(at, case, tokens);
     if cat.object(at).frame.primitive == Primitive::Score {
         c.sort_by_key(|a| cat.arrow(*a).level);
     }
@@ -289,6 +298,7 @@ impl<J: Judge, P: Proposer> Walker<'_, J, P> {
             state: WalkState {
                 goal: goal.to_owned(),
                 state,
+                tokens: BTreeSet::new(),
                 at: from,
                 path: Path::id(from),
             },
@@ -306,6 +316,7 @@ impl<J: Judge, P: Proposer> Walker<'_, J, P> {
             };
             walk.steps.push(step);
             let Some(arrow) = followed else { break };
+            walk.state.tokens = self.cat.arrow(arrow).effect(&walk.state.tokens);
             walk.state
                 .path
                 .push(self.cat, arrow)
@@ -316,7 +327,7 @@ impl<J: Judge, P: Proposer> Walker<'_, J, P> {
     }
 
     pub fn step(&mut self, state: &WalkState) -> Step {
-        let frame = candidates(self.cat, state.at, &state.state);
+        let frame = candidates(self.cat, state.at, &state.state, &state.tokens);
         let closure = self.cat.object(state.at).closure;
         let answer = (!frame.is_empty()).then(|| self.judge.judge(self.cat, state, &frame));
         let decision = decide(closure, answer.as_ref(), self.threshold, false);
@@ -456,6 +467,9 @@ pub enum Disposition {
     Deferred,
     /// Removed by its `require` before any model was asked.
     FilteredByRequire,
+    /// Removed by the target's entry contract: tokens the walk would not
+    /// hold, or the target's case precondition.
+    BlockedByEntry,
 }
 
 /// One candidate's judgment, disposition and the reason for it.
@@ -473,9 +487,12 @@ pub struct CandidateDisposition {
 /// whether `require` let it through, what the judge said, and why the
 /// decision treated it as it did. Deterministic: reasons are built from the
 /// numbers, not generated.
+#[allow(clippy::too_many_arguments)]
 pub fn dispose(
     cat: &Category,
     at: ObjId,
+    case: &Value,
+    tokens: &BTreeSet<String>,
     eligible: &[ArrowId],
     answer: Option<&Answer>,
     decision: &Decision,
@@ -507,16 +524,51 @@ pub fn dispose(
         if eligible.contains(&a) {
             continue;
         }
-        let req = cat
-            .arrow(a)
-            .require
-            .as_ref()
-            .map_or(String::new(), |r| r.to_string());
+        let arrow = cat.arrow(a);
+        let (disposition, reason) = match cat.gate(a, case, tokens) {
+            Gate::Entry {
+                missing,
+                require_failed,
+            } => {
+                let target = cat.object(arrow.dst);
+                let mut why = Vec::new();
+                if !missing.is_empty() {
+                    why.push(format!(
+                        "needs {} on entry, which this walk would not hold",
+                        missing.join(", ")
+                    ));
+                }
+                if require_failed {
+                    let r = target
+                        .entry
+                        .require
+                        .as_ref()
+                        .map_or(String::new(), |r| r.to_string());
+                    why.push(format!(
+                        "requires `{r}` on entry, which this case does not show"
+                    ));
+                }
+                (
+                    Disposition::BlockedByEntry,
+                    format!("{} {}", target.name, why.join(" and ")),
+                )
+            }
+            _ => {
+                let req = arrow
+                    .require
+                    .as_ref()
+                    .map_or(String::new(), |r| r.to_string());
+                (
+                    Disposition::FilteredByRequire,
+                    format!("require `{req}` did not hold for this case"),
+                )
+            }
+        };
         out.push(CandidateDisposition {
             arrow: a,
             judgment: None,
-            disposition: Disposition::FilteredByRequire,
-            reason: format!("require `{req}` did not hold for this case"),
+            disposition,
+            reason,
         });
     }
 

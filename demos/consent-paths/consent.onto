@@ -3,6 +3,12 @@
 # `require` clauses are checked in code against the case's facts before
 # any model is asked: evidence, not judgment. A data use is authorized only
 # if a path reaches it. Equations record routes that end in the same state.
+#
+# Capabilities: a legal basis is a checked fact that grants a token
+# (`ensures`); objects state what every walk entering them must hold
+# (`entry … needs`). The rules live on the objects, so every arrow into
+# them, including arrows added later, inherits them. `onto laws` derives
+# what follows.
 
 category Consent {
     objects: Collected, Consented, Contract, Pseudonymized, Anonymized,
@@ -11,14 +17,21 @@ category Consent {
     about Collected: "personal data the organization holds about a person";
 
     frame Collected: choice "On which legal basis would this intended use rest?";
-    consent:  Collected -> Consented "the person explicitly agreed to this kind of use (GDPR 6(1)(a))";
-    contract: Collected -> Contract  "the use is necessary to deliver the service the person signed up for (GDPR 6(1)(b))";
+    consent:  Collected -> Consented "the person explicitly agreed to this kind of use (GDPR 6(1)(a))"
+              require consent.given == true ensures ConsentGrant, LegalBasis;
+    contract: Collected -> Contract  "the use is necessary to deliver the service the person signed up for (GDPR 6(1)(b))"
+              require contract.active == true ensures LegalBasis;
     closed: Collected;                      # the only two bases this organization relies on
 
     pseudonymize: Consented -> Pseudonymized "remove direct identifiers before further use: analytics, research, sharing";
-    market:       Consented -> Marketing "send marketing to the person"
-                  require consent.marketing == true;
+    market:       Consented -> Marketing "send marketing to the person";
+    withdraw:     Consented -> Collected "the person withdraws their consent"
+                  revokes ConsentGrant, LegalBasis;
     closed: Consented;
+
+    # Entry contracts: stated once, inherited by every arrow in.
+    entry Pseudonymized: needs LegalBasis;
+    entry Marketing: needs ConsentGrant require consent.marketing == true;
 
     fulfil_pseudonymize: Contract -> Pseudonymized "pseudonymize data used to deliver the contracted service";
     # Contract stays open: other contract-necessary uses are not enumerated.

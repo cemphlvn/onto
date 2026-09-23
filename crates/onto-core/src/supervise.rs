@@ -39,7 +39,8 @@ pub enum Admission {
 #[derive(Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub struct Check {
-    /// `well_formed`, `invariant`, `rule`, `duplicate`, `overlap`.
+    /// `well_formed`, `closure`, `contract`, `invariant`, `rule`,
+    /// `duplicate`, `overlap`.
     pub check: String,
     /// What was checked against (an invariant, an existing arrow, …).
     pub subject: String,
@@ -95,6 +96,47 @@ pub fn structural(cat: &Category, p: &Proposal) -> (Vec<Check>, Option<Category>
     let Some(graph) = probe else {
         return (checks, None);
     };
+    // A closed frame claims its arrows are all the cases. A proposal there
+    // challenges that claim; only a person can revise it.
+    if let Ok(src) = cat.object_id(&p.src)
+        && cat.object(src).closure == crate::category::Closure::Closed
+    {
+        checks.push(Check {
+            check: "closure".into(),
+            subject: format!("{} (closed)", p.src),
+            outcome: Outcome::Unknown,
+            reason: format!(
+                "closure challenge: {} claims its arrows are complete; admitting a novel arrow revises that claim, which needs a person",
+                p.src
+            ),
+            p: None,
+            witness: None,
+        });
+    }
+    // Entry contracts: can any walk ever take the new arrow? (`extend`
+    // adds the proposal as the last arrow.)
+    let new = crate::category::ArrowId(graph.arrows().len() as u32 - 1);
+    if let Ok(src) = graph.object_id(&p.src) {
+        let laws = crate::laws::derive(&graph, &[]);
+        let reached = laws.arrivals.contains_key(&src);
+        let taken = laws.used.contains(&new);
+        let needs = &graph.object(graph.arrow(new).dst).entry.needs;
+        if reached && !taken && !needs.is_empty() {
+            checks.push(Check {
+                check: "contract".into(),
+                subject: format!("entry of {}", p.dst),
+                outcome: Outcome::Pass,
+                reason: format!(
+                    "no walk could take it: {} needs {} on entry, which no path to {} provides",
+                    p.dst,
+                    needs.join(", "),
+                    p.src
+                ),
+                p: None,
+                witness: None,
+            });
+        }
+    }
     let new_object = cat.object_id(&p.dst).is_err();
     if extended.is_some() {
         checks.push(Check {

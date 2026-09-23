@@ -1,6 +1,6 @@
 # onto — Scientific Positioning
 
-Status: **draft 3 — 2026-09-23.** Where onto sits among research fields,
+Status: **draft 4 — 2026-09-23.** Where onto sits among research fields,
 ranked by what the runtime **demonstrably does today** (disposition records included,
 live runs in `demos/`), separated from what it could become. Update this
 file when a capability lands; do not promote a field on intention alone.
@@ -73,6 +73,7 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 | 7 | Category theory and rewriting | **structural foundation** | a category presented by generators and relations; typed composition; path equality by equality saturation (egg), answering Unknown where the word problem is undecidable | no functors or universal constructions; categorical semantics of the *dynamics* is open |
 | 8 | Event structures / concurrency semantics | **emerging** | causality (the `after` DAG of frame records, across forks), concurrency (coexisted claims), and one mechanism that is exactly the conflict/concurrency split: the **fork Noul judges whether two enabled transitions are independent (concurrent) or competing (in conflict)** | node intersection is not formal conflict; no event-structure semantics defined or checked |
 | 9 | Supervisory control of discrete-event systems | **strong** | execution: `require` disables transitions, claims restrict interleavings, low confidence withholds a transition; **extension**: a supervisor admits, rejects or defers each proposed transition, proving `via`/`never` invariants with counter-paths and judging rules; a person promotes (live: legitimate-interest and legal-basis bypasses rejected) | no synthesis of a maximally permissive supervisor; invariants are reachability properties only (no temporal logic); semantic checks are conservative |
+| 9b | Typestate, effect systems, capability security | **strong** | walks carry capability tokens; arrows declare effects (`ensures`/`revokes`); objects declare entry contracts every incoming arrow inherits; a static analysis derives must/may capabilities per state, dead transitions and walk-level invariants (`onto laws`); starting is entering, so capabilities cannot be skipped | tokens are flat names (no parameters, no linearity); no effect polymorphism; the analysis assumes case preconditions satisfiable |
 | 10 | Agent-workflow frameworks (graph-of-LLM-calls orchestrators) | **practical neighbour** | graph of nodes, model-driven conditional edges, parallel branches | not a research field; onto's differences are the positioning: typed paths + equations, calibrated abstention, frame-level concurrency claims, potentiality log, governed open-world extension |
 | 11 | Planning under uncertainty | **analogy** | probabilities steer traversal | no reward, utility, transition model or objective; not decision-theoretic |
 | 12 | Truth maintenance (ATMS) | **weak today** | provisional proposals are assumptions; alternatives are logged | no maintained assumption environments or consistent "possible worlds"; would matter for the potentiality-preserving stage |

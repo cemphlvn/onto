@@ -20,6 +20,8 @@ pub struct FrameRecord {
     pub walk: u64,
     /// The aspect this walk handles, if it is (or continued) a fork branch.
     pub focus: Option<String>,
+    /// Capability tokens the walk held at this visit.
+    pub tokens: Vec<String>,
     pub at: String,
     pub primitive: Primitive,
     /// `closed` (the frame claims to be complete) or `open`.

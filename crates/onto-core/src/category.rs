@@ -64,6 +64,21 @@ pub struct Frame {
     pub instructions: Option<Value>,
 }
 
+/// What every walk entering an object must hold: capability tokens it
+/// needs, and a precondition over the case. Inherited by every incoming
+/// arrow, including arrows added later.
+#[derive(Clone, Debug, Default)]
+pub struct Entry {
+    pub needs: Vec<String>,
+    pub require: Option<Require>,
+}
+
+impl Entry {
+    pub fn is_empty(&self) -> bool {
+        self.needs.is_empty() && self.require.is_none()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Object {
     pub name: String,
@@ -71,6 +86,21 @@ pub struct Object {
     /// What this object means (text or structured JSON).
     pub about: Option<Value>,
     pub frame: Frame,
+    pub entry: Entry,
+}
+
+/// Whether an arrow may be taken from a given case and token set.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Gate {
+    Open,
+    /// The arrow's own `require` failed.
+    Require,
+    /// The target's entry contract failed: missing tokens (after the
+    /// arrow's effects), and/or its case precondition.
+    Entry {
+        missing: Vec<String>,
+        require_failed: bool,
+    },
 }
 
 #[derive(Clone, Debug)]
@@ -85,6 +115,23 @@ pub struct Arrow {
     pub level: Option<u32>,
     /// Checked in code against the walk's state before any model call.
     pub require: Option<Require>,
+    /// Capability tokens the walk holds after taking this arrow.
+    pub ensures: Vec<String>,
+    /// Capability tokens the walk loses on taking this arrow (applied first).
+    pub revokes: Vec<String>,
+}
+
+impl Arrow {
+    /// The token set after taking this arrow: revokes first, then ensures.
+    pub fn effect(&self, tokens: &BTreeSet<String>) -> BTreeSet<String> {
+        let mut out: BTreeSet<String> = tokens
+            .iter()
+            .filter(|t| !self.revokes.contains(t))
+            .cloned()
+            .collect();
+        out.extend(self.ensures.iter().cloned());
+        out
+    }
 }
 
 /// Optional meaning attached to an arrow at declaration.
@@ -93,6 +140,8 @@ pub struct ArrowMeta {
     pub instructions: Option<Value>,
     pub level: Option<u32>,
     pub require: Option<Require>,
+    pub ensures: Vec<String>,
+    pub revokes: Vec<String>,
 }
 
 /// A rule the graph must keep, checked on load and on every proposal.
@@ -245,6 +294,9 @@ impl Category {
             if o.closure == Closure::Closed {
                 b.close(&o.name)?;
             }
+            if !o.entry.is_empty() {
+                b.entry(&o.name, o.entry.clone())?;
+            }
         }
         if self.object_id(dst).is_err() {
             b.object(dst)?;
@@ -254,6 +306,8 @@ impl Category {
                 instructions: a.instructions.clone(),
                 level: a.level,
                 require: a.require.clone(),
+                ensures: a.ensures.clone(),
+                revokes: a.revokes.clone(),
             };
             let (s, d) = (&self.object(a.src).name, &self.object(a.dst).name);
             b.arrow_with(&a.name, s, d, meta)?;
@@ -319,17 +373,39 @@ impl Category {
         &self.out_arrows[lo..hi]
     }
 
-    /// The frame's arrows whose `require` holds in `state`, in frame order.
-    pub fn eligible(&self, obj: ObjId, state: &Value) -> Vec<ArrowId> {
+    /// Whether `arrow` may be taken given the case and the walk's tokens:
+    /// its own `require`, then its target's entry contract evaluated on
+    /// the tokens the walk would hold after the arrow's effects.
+    pub fn gate(&self, arrow: ArrowId, case: &Value, tokens: &BTreeSet<String>) -> Gate {
+        let a = self.arrow(arrow);
+        if a.require.as_ref().is_some_and(|r| !r.eval(case)) {
+            return Gate::Require;
+        }
+        let entry = &self.object(a.dst).entry;
+        let after = a.effect(tokens);
+        let missing: Vec<String> = entry
+            .needs
+            .iter()
+            .filter(|t| !after.contains(*t))
+            .cloned()
+            .collect();
+        let require_failed = entry.require.as_ref().is_some_and(|r| !r.eval(case));
+        if missing.is_empty() && !require_failed {
+            Gate::Open
+        } else {
+            Gate::Entry {
+                missing,
+                require_failed,
+            }
+        }
+    }
+
+    /// The frame's arrows whose gate is open, in frame order.
+    pub fn eligible(&self, obj: ObjId, case: &Value, tokens: &BTreeSet<String>) -> Vec<ArrowId> {
         self.out(obj)
             .iter()
             .copied()
-            .filter(|a| {
-                self.arrow(*a)
-                    .require
-                    .as_ref()
-                    .is_none_or(|r| r.eval(state))
-            })
+            .filter(|a| self.gate(*a, case, tokens) == Gate::Open)
             .collect()
     }
 
@@ -442,6 +518,7 @@ impl CategoryBuilder {
             closure: Closure::Open,
             about: None,
             frame: Frame::default(),
+            entry: Entry::default(),
         });
         self.object_index.insert(name.to_owned(), id);
         Ok(id)
@@ -462,6 +539,9 @@ impl CategoryBuilder {
         if self.object_index.contains_key(name) || self.arrow_index.contains_key(name) {
             return Err(Error::Duplicate(name.to_owned()));
         }
+        for t in meta.ensures.iter().chain(&meta.revokes) {
+            check_name(t)?;
+        }
         let src = self.lookup_object(src)?;
         let dst = self.lookup_object(dst)?;
         let id = ArrowId(self.arrows.len() as u32);
@@ -472,6 +552,8 @@ impl CategoryBuilder {
             instructions: meta.instructions,
             level: meta.level,
             require: meta.require,
+            ensures: meta.ensures,
+            revokes: meta.revokes,
         });
         self.arrow_index.insert(name.to_owned(), id);
         Ok(id)
@@ -487,6 +569,16 @@ impl CategoryBuilder {
     pub fn frame(&mut self, object: &str, frame: Frame) -> Result<(), Error> {
         let id = self.lookup_object(object)?;
         self.objects[id.0 as usize].frame = frame;
+        Ok(())
+    }
+
+    /// Sets `object`'s entry contract.
+    pub fn entry(&mut self, object: &str, entry: Entry) -> Result<(), Error> {
+        for t in &entry.needs {
+            check_name(t)?;
+        }
+        let id = self.lookup_object(object)?;
+        self.objects[id.0 as usize].entry = entry;
         Ok(())
     }
 

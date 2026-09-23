@@ -87,6 +87,7 @@ impl Judge for Jev {
                 "path_so_far": req.path_so_far,
                 "hops": req.hops,
                 "focus": req.focus,
+                "tokens_held": req.tokens,
             },
             "questions": questions,
         });

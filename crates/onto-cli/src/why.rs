@@ -103,6 +103,7 @@ pub fn print_record(r: &Value, pad: &str) {
             "rejected" => "·",
             "deferred" => "…",
             "filtered_by_require" => "⊘",
+            "blocked_by_entry" => "⊗",
             _ => "?",
         };
         let branch = c["disposition"]["branch"]

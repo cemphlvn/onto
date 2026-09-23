@@ -24,13 +24,15 @@
 //!
 //! Statements end with `;`. Objects must be declared before use. Arrow
 //! declarations take, in any order after `Src -> Dst`: `level N`, an
-//! instruction (a "string" or JSON object/array), and `require EXPR` (last,
-//! since the expression runs to the end of the statement).
+//! instruction (a "string" or JSON object/array), `require EXPR`,
+//! `ensures T, …` and `revokes T, …`. A `require` expression runs until an
+//! `ensures`/`revokes` keyword or the end of the statement.
+//! `entry Object: needs T, … require EXPR;` states an entry contract.
 
 use serde_json::Value;
 
 use crate::category::{
-    ArrowMeta, Category, CategoryBuilder, Frame, Invariant, PathSpec, Primitive,
+    ArrowMeta, Category, CategoryBuilder, Entry, Frame, Invariant, PathSpec, Primitive,
 };
 use crate::error::Error;
 use crate::require::Require;
@@ -187,6 +189,29 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
             },
         );
     }
+    if let Some(rest) = stmt.strip_prefix("entry ") {
+        let (object, rest) = rest
+            .split_once(':')
+            .ok_or_else(|| perr("expected `entry Object: needs T, … require …`"))?;
+        let mut entry = Entry::default();
+        let mut rest = rest.trim();
+        if let Some(r) = rest.strip_prefix("needs ") {
+            let (names, tail) = names(r);
+            entry.needs = names;
+            rest = tail.trim();
+        }
+        if let Some(r) = rest.strip_prefix("require ") {
+            entry.require = Some(Require::parse(r)?);
+        } else if !rest.is_empty() {
+            return Err(perr(format!("unexpected `{rest}` in entry contract")));
+        }
+        if entry.is_empty() {
+            return Err(perr(
+                "an entry contract needs `needs T, …` and/or `require …`",
+            ));
+        }
+        return b.entry(object.trim(), entry);
+    }
     if let Some(rest) = stmt.strip_prefix("invariant ") {
         b.invariant(invariant(rest.trim())?);
         return Ok(());
@@ -241,16 +266,31 @@ fn arrow_meta(mut rest: &str) -> Result<ArrowMeta, Error> {
                 .map_err(|_| perr("`level` needs a whole number"))?;
             meta.level = Some(level);
             rest = &r[end..];
+        } else if let Some(r) = rest.strip_prefix("ensures ") {
+            let (names, tail) = names(r);
+            meta.ensures.extend(names);
+            rest = tail;
+        } else if let Some(r) = rest.strip_prefix("revokes ") {
+            let (names, tail) = names(r);
+            meta.revokes.extend(names);
+            rest = tail;
         } else if let Some(r) = rest.strip_prefix("require ") {
-            meta.require = Some(Require::parse(r)?);
-            return Ok(meta);
+            // `require P ensures T` reads as a pre/postcondition: the
+            // expression ends at an effect keyword.
+            let end = [" ensures ", " revokes "]
+                .iter()
+                .filter_map(|k| r.find(k))
+                .min()
+                .unwrap_or(r.len());
+            meta.require = Some(Require::parse(&r[..end])?);
+            rest = &r[end..];
         } else if rest.starts_with(['"', '{', '[']) {
             let (value, tail) = json_value(rest)?;
             meta.instructions = Some(value);
             rest = tail;
         } else {
             return Err(perr(format!(
-                "unexpected `{rest}` (expected `level N`, an instruction, or `require …`)"
+                "unexpected `{rest}` (expected `level N`, an instruction, `ensures T`, `revokes T`, or `require …`)"
             )));
         }
     }
@@ -303,6 +343,28 @@ fn invariant(s: &str) -> Result<Invariant, Error> {
             })
         }
         _ => Err(bad()),
+    }
+}
+
+/// A comma-separated list of names (`A, B, C`); returns the names and
+/// the text after the last one.
+fn names(s: &str) -> (Vec<String>, &str) {
+    let mut out = Vec::new();
+    let mut rest = s;
+    loop {
+        let t = rest.trim_start();
+        let end = t
+            .find(|c: char| !(c.is_alphanumeric() || c == '_'))
+            .unwrap_or(t.len());
+        if end == 0 {
+            return (out, rest);
+        }
+        out.push(t[..end].to_owned());
+        rest = &t[end..];
+        match rest.trim_start().strip_prefix(',') {
+            Some(after) => rest = after,
+            None => return (out, rest),
+        }
     }
 }
 

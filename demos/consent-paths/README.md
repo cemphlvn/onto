@@ -100,6 +100,28 @@ invariant rule "…only explicit consent and contract… no other legal basis…
 `--override-unknown` for an unknown one, wrote it with a provenance
 comment, and refused the same review once it was stale.
 
+## Capabilities and derived laws (2026-09-23)
+
+Legal bases are now **checked facts that grant capabilities**:
+`consent` requires `consent.given` and ensures `ConsentGrant, LegalBasis`;
+`contract` requires `contract.active` and ensures `LegalBasis`;
+`withdraw` revokes both. Two entry contracts carry the rules, stated once
+and inherited by every arrow in, including arrows promoted later:
+`Pseudonymized` needs `LegalBasis`; `Marketing` needs `ConsentGrant` and
+`consent.marketing == true`.
+
+`onto laws demos/consent-paths/consent.onto` derives, among others:
+
+```
+every walk into Research has taken consent or contract, and no withdraw since   (derived)
+every walk into Marketing has taken consent, and no withdraw since             (by entry contract)
+via: Collected -> Marketing through Consented        graph ✓   walks ✓
+```
+
+Starting past the evidence check does not help: a case that claims an
+opt-in and starts at `Consented` finds `Marketing` and `Pseudonymized`
+`blocked_by_entry` (it holds neither token).
+
 ## What it does not do yet
 
 - Semantic checks are conservative: no proposal from this run was

@@ -622,3 +622,72 @@ mod supervisor {
         assert!(kinds.contains(&"overlap"));
     }
 }
+
+mod contracts {
+    use super::*;
+
+    const SRC: &str = r#"category C {
+        objects: Collected, Consented, Marketing;
+        consent: Collected -> Consented "consent" require consent.given == true ensures ConsentGrant;
+        market:  Consented -> Marketing "offers";
+        entry Marketing: needs ConsentGrant;
+        closed: Collected, Consented, Marketing;
+    }"#;
+
+    async fn walk(from: &str, goal: &str, case: Value) -> RunReport {
+        let cat = Arc::new(onto_core::parse(SRC).unwrap());
+        let cfg = Config {
+            policy: Policy::Shared,
+            ..Config::default()
+        };
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            cfg,
+        );
+        engine
+            .run(vec![Job {
+                from: from.into(),
+                goal: goal.into(),
+                case,
+            }])
+            .await
+            .unwrap()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tokens_flow_from_checked_evidence_to_entry_contracts() {
+        let ok = walk(
+            "Collected",
+            "consent then offers",
+            json!({"consent": {"given": true}}),
+        )
+        .await;
+        assert_eq!(ok.walks[0].path, "market.consent : Collected -> Marketing");
+        assert_eq!(ok.walks[0].frames[1].tokens, ["ConsentGrant"]);
+
+        // Starting past the evidence check: Consented can be started at (no
+        // contract), but Marketing's contract blocks the walk.
+        let skipped = walk("Consented", "offers", json!({"consent": {"given": true}})).await;
+        let f = &skipped.walks[0].frames[0];
+        assert_eq!(
+            f.candidates[0].disposition,
+            onto_core::walk::Disposition::BlockedByEntry
+        );
+        assert!(
+            f.candidates[0].reason.contains("needs ConsentGrant"),
+            "{}",
+            f.candidates[0].reason
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_walk_cannot_start_inside_a_contract() {
+        let r = walk("Marketing", "offers", json!({})).await;
+        assert!(
+            matches!(&r.walks[0].steps[0], StepRecord::Failed { error, .. } if error.contains("cannot start at Marketing"))
+        );
+        assert_eq!(r.judge_calls, 0);
+    }
+}

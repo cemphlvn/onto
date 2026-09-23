@@ -5,6 +5,7 @@
 pub mod category;
 pub mod equality;
 pub mod error;
+pub mod laws;
 pub mod parse;
 pub mod path;
 pub mod require;
@@ -12,8 +13,8 @@ pub mod supervise;
 pub mod walk;
 
 pub use category::{
-    Arrow, ArrowId, ArrowMeta, Category, CategoryBuilder, Closure, Frame, Invariant, ObjId, Object,
-    PathSpec, Primitive,
+    Arrow, ArrowId, ArrowMeta, Category, CategoryBuilder, Closure, Entry, Frame, Gate, Invariant,
+    ObjId, Object, PathSpec, Primitive,
 };
 pub use equality::{Equality, Verdict};
 pub use error::Error;

@@ -2,7 +2,7 @@
 //! System-1 judgments first, System-2 proposals on escalation. Noul frames
 //! may fork a walk into parallel branches.
 
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -177,6 +177,9 @@ struct Seed {
     after: Option<String>,
     /// The aspect a branch handles.
     focus: Option<Focus>,
+    /// Capability tokens held when the walk starts (a branch inherits its
+    /// parent's, including the effects of the arrow it forked along).
+    tokens: BTreeSet<String>,
 }
 
 pub struct Engine<J, P> {
@@ -253,6 +256,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 budget: Arc::new(AtomicUsize::new(self.cfg.max_branches)),
                 after: None,
                 focus: None,
+                tokens: BTreeSet::new(),
             };
             running.spawn(self.clone().walk(seed, branch_tx.clone()));
         }
@@ -339,6 +343,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             budget,
             mut after,
             mut focus,
+            mut tokens,
         } = seed;
         tracing::info!(
             target: "onto",
@@ -351,6 +356,54 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         let mut steps = Vec::new();
         let mut frames: Vec<FrameRecord> = Vec::new();
 
+        // Starting at an object is entering it: a new walk may not start
+        // where the entry contract fails (it would skip the contract).
+        if parent.is_none() {
+            let start = cat.object(path.dst);
+            let missing: Vec<&str> = start
+                .entry
+                .needs
+                .iter()
+                .filter(|t| !tokens.contains(*t))
+                .map(String::as_str)
+                .collect();
+            let require_failed = start
+                .entry
+                .require
+                .as_ref()
+                .is_some_and(|r| !r.eval(&job.case));
+            if !missing.is_empty() || require_failed {
+                let mut why = Vec::new();
+                if !missing.is_empty() {
+                    why.push(format!("it needs {} on entry", missing.join(", ")));
+                }
+                if require_failed {
+                    let r = start
+                        .entry
+                        .require
+                        .as_ref()
+                        .map_or(String::new(), ToString::to_string);
+                    why.push(format!("it requires `{r}` on entry"));
+                }
+                let error = format!("cannot start at {}: {}", start.name, why.join(" and "));
+                tracing::warn!(target: "onto", event = "walk.refused", walk = id, at = %start.name, error = %error);
+                steps.push(StepRecord::Failed {
+                    at: start.name.clone(),
+                    error,
+                });
+                return WalkReport {
+                    walk: id,
+                    parent,
+                    goal: job.goal,
+                    from: job.from,
+                    path: path.display_typed(cat),
+                    steps,
+                    frames,
+                    elapsed_ms: ms(t0.elapsed()),
+                };
+            }
+        }
+
         'steps: for n in 1..=self.cfg.max_steps {
             let at = path.dst;
             let object = cat.object(at);
@@ -360,7 +413,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             }
             let at_name = object.name.clone();
             let primitive = object.frame.primitive;
-            let frame = candidates(cat, at, &job.case);
+            let frame = candidates(cat, at, &job.case, &tokens);
 
             // Claim the frame. With speculation the System-2 call may start
             // right away, so the claim is a write from the start.
@@ -379,6 +432,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 after: after.clone(),
                 walk: id,
                 focus: visit_focus.clone(),
+                tokens: tokens.iter().cloned().collect(),
                 at: at_name.clone(),
                 primitive,
                 closure: if closed { "closed" } else { "open" },
@@ -401,6 +455,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     let ds = dispose(
                         cat,
                         at,
+                        &job.case,
+                        &tokens,
                         &frame,
                         None,
                         &Decision::Escalate(reason),
@@ -430,7 +486,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     && depth < self.cfg.max_fork_depth
                     && budget.load(Relaxed) > 0
                     && frame.len() > 1;
-                let req = self.frame_request(&job, &path, &hops, &focus, &frame, can_fork);
+                let req = self.frame_request(&job, &path, &hops, &focus, &tokens, &frame, can_fork);
                 let (answer, judge_rec) = match self.call_judge(id, req).await {
                     Ok(a) => a,
                     Err(e) => {
@@ -440,6 +496,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         let mut ds = dispose(
                             cat,
                             at,
+                            &job.case,
+                            &tokens,
                             &frame,
                             None,
                             &Decision::Escalate(Escalation::LowConfidence),
@@ -467,6 +525,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 let mut ds = dispose(
                     cat,
                     at,
+                    &job.case,
+                    &tokens,
                     &frame,
                     Some(&answer),
                     &decision,
@@ -499,10 +559,12 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         let mut spawned = Vec::new();
                         for &(index, branch_p) in &rest[..granted] {
                             let child = self.next_walk.fetch_add(1, Relaxed);
-                            let (mut child_path, mut child_hops) = (path.clone(), hops.clone());
+                            let (mut child_path, mut child_hops, mut child_tokens) =
+                                (path.clone(), hops.clone(), tokens.clone());
                             self.advance(
                                 &mut child_path,
                                 &mut child_hops,
+                                &mut child_tokens,
                                 frame[index],
                                 primitive,
                                 branch_p,
@@ -523,6 +585,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                                 budget: budget.clone(),
                                 after: Some(rec_id.clone()),
                                 focus: Some(self.focus(frame[index])),
+                                tokens: child_tokens,
                             });
                         }
                         for &(index, _) in &rest[granted..] {
@@ -621,7 +684,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         .collect(),
                     wait_ms,
                 });
-                self.advance(&mut path, &mut hops, arrow, primitive, p);
+                self.advance(&mut path, &mut hops, &mut tokens, arrow, primitive, p);
                 continue 'steps;
             };
 
@@ -696,6 +759,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         &self,
         path: &mut Path,
         hops: &mut Vec<Hop>,
+        tokens: &mut BTreeSet<String>,
         arrow: ArrowId,
         decided_by: Primitive,
         p: f32,
@@ -709,6 +773,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             decided_by,
             p,
         });
+        *tokens = a.effect(tokens);
         path.push(cat, arrow)
             .expect("frame arrows leave the current object");
     }
@@ -945,12 +1010,14 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn frame_request(
         &self,
         job: &Job,
         path: &Path,
         hops: &[Hop],
         focus: &Option<Focus>,
+        tokens: &BTreeSet<String>,
         frame: &[ArrowId],
         can_fork: bool,
     ) -> FrameRequest {
@@ -963,6 +1030,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             path_so_far: path.display(&self.cat),
             hops: hops.to_vec(),
             focus: focus.clone(),
+            tokens: tokens.iter().cloned().collect(),
             primitive: object.frame.primitive,
             instructions: object.frame.instructions.clone(),
             candidates: frame.iter().map(|a| self.candidate(*a)).collect(),

@@ -1,6 +1,6 @@
 # onto — Architecture
 
-Status: **draft 3 — 2026-09-23.** Single source of truth for how onto is
+Status: **draft 4 — 2026-09-23.** Single source of truth for how onto is
 built. Code follows this document; change it here first.
 
 ## 1. What onto is
@@ -32,6 +32,9 @@ propose new structure.
 | fork | a noul frame where several arrows hold and the judge says they are independent aspects: the walk splits into parallel branches | `Decision::Fork` |
 | parallel arrows | several arrows with the same endpoints and different meaning or preconditions (e.g. two legal bases) | — |
 | disposition | what happened to one candidate arrow at a frame visit: selected · forked · alternative · rejected · deferred · filtered_by_require, with the judge's number and a reason built from the numbers | `walk::Disposition`, `walk::dispose` |
+| capability token | an on/off property a walk holds, set by `ensures` and cleared by `revokes` on arrows; a capability, not a fact: an arrow standing for a real-world fact must `require` the evidence before it `ensures` the token | `Arrow::ensures`, `WalkState::tokens` |
+| entry contract | what every walk entering an object must hold (`needs` tokens, `require` over the case); inherited by every incoming arrow, present and future; starting at an object counts as entering it | `Entry`, `Gate` |
+| derived law | a statement implied by contracts and effects, e.g. "every walk into Research has taken consent or contract, and no withdraw since" | `laws::derive`, `onto laws` |
 | invariant | a rule every extension must keep: `via` (every path passes one of a set), `never` (no path) — proved; `rule` (natural language) — judged | `Invariant` |
 | review | the supervisor's verdict on a proposal: every check (well_formed, invariant, rule, duplicate, overlap) with outcome and reason, then admit · reject · unknown | `supervise::Check`, `supervisor::Review` |
 | promotion | the human step: writing a reviewed proposal into the `.onto` file with a provenance comment | `onto promote` |
@@ -129,6 +132,19 @@ Rules:
     before the claim is released, and the next proposer at that frame is
    shown them (`pending_here`) and asked to reuse one unchanged when it
    fits. Same-named proposals then group as conceptual potentialities.
+11. **Capabilities, not facts.** Walks carry tokens. An arrow is enabled
+    when its own `require` holds on the case and its target's entry
+    contract holds on the case and on the tokens the walk would hold after
+    the arrow's effects (revokes, then ensures):
+    enabled(a, s) = require_a(case) ∧ entry_dst(a)(case, effect_a(tokens)).
+    A new walk may only start where the entry contract holds with no
+    tokens, so a start in the middle of the graph cannot skip a contract.
+    Blocked arrows get the disposition `blocked_by_entry`.
+12. **Laws drop out.** `onto laws` explores the exact (object, tokens)
+    state space and reports, per object, the tokens every walk must and
+    some walk may hold on arrival, the derived laws, dead arrows, and
+    whether each `via` invariant is enforced for walks (not only for the
+    graph). Review notes a proposal no walk could take.
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -288,6 +304,9 @@ category Name {
     high: C -> D level 1 "blocking";
     g2.f = h2;                                 # path equation
     inv.f = id(A);                             # identities
+    g: B -> C require case.ok == true ensures T;   # checked fact grants capability T
+    w: C -> B revokes T;                       # capability withdrawn
+    entry D: needs T require case.flag == true;    # entry contract, inherited by every arrow into D
     invariant via: A -> D through B | C;       # every path A→D passes B or C (proved)
     invariant never: A -> Z;                   # no path A→Z, even to a future Z (proved)
     invariant rule "no arrow may …";           # judged by the critic
@@ -334,6 +353,10 @@ snapshot. No database until live multi-writer editing is needed.
 | D20 | promotion is a human step that edits the `.onto` file; git is the delta log | one source of truth; reviewable diffs; unsafe proposals were seen live |
 | D21 | semantic checks have an unknown band (0.3 < P < 0.7) that blocks automatic admission | the supervisor must not guess |
 | D22 | the rkyv/mmap snapshot moves out of M2 | performance, not governance |
+| D23 | capability tokens with `ensures`/`revokes` on arrows and `entry … needs` on objects; facts stay in the case | entry contracts need something to make them true; walking an arrow must not make a real-world fact true |
+| D24 | starting at an object is entering it | otherwise a mid-graph start skips contracts (found while deriving laws) |
+| D25 | derived laws by exact exploration of (object, tokens) states, case preconditions assumed satisfiable | exact for tokens, sound over-approximation for cases; small state spaces |
+| D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
 | D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |
 
@@ -353,7 +376,11 @@ snapshot. No database until live multi-writer editing is needed.
 - **M2 (done):** invariants (via with alternatives, never, rule), the
   supervisor (structural proofs + one-request semantic checks), `onto
   review`, `onto promote` with human approval; git as the delta log.
-- **Next:** snapshot (rkyv/mmap), joins, streaming records.
+- **Capabilities (done):** tokens, entry contracts, starting-is-entering,
+  `onto laws` (derived laws, dead arrows, walk-level invariant checks),
+  closure challenges and contract notes in review.
+- **Next:** exact-label behavioural quotient (diagnostics), behavioural
+  difference in review, snapshot (rkyv/mmap), joins, streaming records.
 - **M3:** functors between categories; multi-category files.
 - **M4:** C ABI (cbindgen) and Python bindings (PyO3); Jev `Chooser` adapter
   (Choice primitive over the frame) in Python.

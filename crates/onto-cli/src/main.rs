@@ -6,6 +6,7 @@ use onto_core::walk::{Escalation, Judge, NullProposer, ScriptedJudge, Step, Unif
 use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, parse::path_spec};
 
 mod ask;
+mod laws;
 mod run;
 mod supervise;
 mod why;
@@ -61,6 +62,8 @@ enum Cmd {
         #[arg(long, default_value = "")]
         goal: String,
     },
+    /// Derive what entry contracts and arrow effects imply.
+    Laws(laws::LawsArgs),
     /// Review provisional proposals: structural proofs, then semantic checks.
     Review(supervise::ReviewArgs),
     /// Promote one reviewed proposal into the category file (the human step).
@@ -79,6 +82,7 @@ fn main() -> ExitCode {
         Cmd::Run(args) => run::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Why(args) => why::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Laws(args) => laws::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Review(args) => supervise::review_main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Promote(args) => supervise::promote_main(args).map(|()| ExitCode::SUCCESS),
         cmd => run(Cli { cmd }),
@@ -247,7 +251,12 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
             }
             println!("path: {}", walk.state.path.display_typed(&cat));
         }
-        Cmd::Run(_) | Cmd::Ask(_) | Cmd::Why(_) | Cmd::Review(_) | Cmd::Promote(_) => {
+        Cmd::Run(_)
+        | Cmd::Ask(_)
+        | Cmd::Why(_)
+        | Cmd::Review(_)
+        | Cmd::Promote(_)
+        | Cmd::Laws(_) => {
             unreachable!("handled in main")
         }
     }

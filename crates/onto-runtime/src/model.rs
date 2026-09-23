@@ -58,6 +58,9 @@ pub struct FrameRequest {
     /// Set after a fork: judge only this aspect of the case.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub focus: Option<Focus>,
+    /// Capability tokens the walk holds (evidence checks already passed).
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub tokens: Vec<String>,
     pub primitive: Primitive,
     /// The frame's own question, if declared.
     #[serde(skip_serializing_if = "Option::is_none")]
