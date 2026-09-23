@@ -166,6 +166,13 @@ Rules:
     for every MAY-but-not-MUST claim; dead arrows say why. The exploration
     is exact over |objects| × 2^|tokens| states: fine for today's graphs,
     exponential in tokens (later: bitsets, BDDs, per-capability dataflow).
+15. **Forced by evidence.** A closed frame whose every arrow is guarded in
+    code (its own `require` or its target's entry contract) and that has
+    exactly one arrow left eligible is followed without a model call
+    (`walk::forced`). The record keeps the other arrows'
+    `filtered_by_require` / `blocked_by_entry` reasons and marks the
+    selected one "no model asked". A frame with any unguarded arrow is
+    still judged: that arrow's meaning may not fit the case.
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -386,6 +393,7 @@ snapshot. No database until live multi-writer editing is needed.
 | D30 | MUST laws carry exhaustive certificates, MAY laws witnesses, failures counterexamples | a single path is not a proof of "every walk" |
 | D31 | structured joins only (siblings of one fork); all / race / gate; intersection by default, gate exports an allowlist | known sibling sets avoid OR-join semantics; least privilege; authority transfer is explicit |
 | D32 | a walk waits only on running siblings | deadlock freedom without a global scheduler |
+| D33 | forced step: a closed, fully guarded frame with one eligible arrow is followed without a judge call; `onto walk --case JSON --json` | code-decided frames (e.g. Turkish morphotactics in fonto) otherwise pay a model call per step to confirm what the MECE claim already implies |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
 | D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |

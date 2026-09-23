@@ -220,6 +220,22 @@ pub fn decide(
     }
 }
 
+/// A frame decided by evidence alone: closed, every outgoing arrow guarded
+/// in code (its own `require` or its target's entry contract), and exactly
+/// one arrow left eligible. The MECE claim then names the arrow, so no model
+/// is asked. Returns the index into `eligible`. A frame with an unguarded
+/// arrow is still judged, since its meaning may not fit the case.
+pub fn forced(cat: &Category, at: ObjId, eligible: &[ArrowId]) -> Option<usize> {
+    let guarded = |a: ArrowId| {
+        let a = cat.arrow(a);
+        a.require.is_some() || !cat.object(a.dst).entry.is_empty()
+    };
+    (cat.object(at).closure == Closure::Closed
+        && eligible.len() == 1
+        && cat.out(at).iter().all(|a| guarded(*a)))
+    .then_some(0)
+}
+
 /// Candidates for a frame in the order judges see them: eligible arrows in
 /// frame order, or by level for score frames.
 pub fn candidates(
@@ -340,6 +356,12 @@ impl<J: Judge, P: Proposer> Walker<'_, J, P> {
 
     pub fn step(&mut self, state: &WalkState) -> Step {
         let frame = candidates(self.cat, state.at, &state.state, &state.tokens);
+        if let Some(index) = forced(self.cat, state.at, &frame) {
+            return Step::Followed {
+                arrow: frame[index],
+                p: 1.0,
+            };
+        }
         let closure = self.cat.object(state.at).closure;
         let answer = (!frame.is_empty()).then(|| self.judge.judge(self.cat, state, &frame));
         let decision = decide(closure, answer.as_ref(), self.threshold, false);
@@ -592,6 +614,11 @@ pub fn dispose(
         let p = judgment(i);
         let pv = p.unwrap_or(0.0);
         let (disposition, reason) = match decision {
+            Decision::Follow { index, .. } if *index == i && answer.is_none() => (
+                Disposition::Selected,
+                "the only arrow `require` left in a closed frame whose arrows are all guarded; no model asked"
+                    .to_owned(),
+            ),
             Decision::Follow { index, .. } if *index == i => {
                 let reason = match primitive {
                     Primitive::Choice => format!("most probable option (p {pv:.2}); {}", gate(pv)),

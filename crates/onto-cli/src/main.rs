@@ -61,6 +61,12 @@ enum Cmd {
         threshold: f32,
         #[arg(long, default_value = "")]
         goal: String,
+        /// Case facts as JSON (`require` clauses read them), or `@FILE`.
+        #[arg(long)]
+        case: Option<String>,
+        /// Print the walk as one JSON object instead of text.
+        #[arg(long)]
+        json: bool,
     },
     /// Derive what entry contracts and arrow effects imply.
     Laws(laws::LawsArgs),
@@ -206,9 +212,21 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
             steps,
             threshold,
             goal,
+            case,
+            json,
         } => {
             let cat = load(&file)?;
             let from = cat.object_id(&from)?;
+            let case: serde_json::Value = match case.as_deref() {
+                None => serde_json::json!({}),
+                Some(s) => {
+                    let text = match s.strip_prefix('@') {
+                        Some(path) => std::fs::read_to_string(path)?,
+                        None => s.to_owned(),
+                    };
+                    serde_json::from_str(&text)?
+                }
+            };
             let judge: Box<dyn Judge> = match script {
                 Some(names) => Box::new(ScriptedJudge::new(names)),
                 None => Box::new(UniformJudge),
@@ -219,7 +237,36 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
                 proposer: NullProposer,
                 threshold,
             };
-            let walk = walker.walk(&goal, serde_json::json!({}), from, steps);
+            let walk = walker.walk(&goal, case, from, steps);
+            if json {
+                let arrows: Vec<serde_json::Value> = walk
+                    .state
+                    .path
+                    .arrows
+                    .iter()
+                    .map(|a| {
+                        let a = cat.arrow(*a);
+                        serde_json::json!({
+                            "arrow": a.name,
+                            "to": cat.object(a.dst).name,
+                            "instructions": a.instructions,
+                        })
+                    })
+                    .collect();
+                let escalated = walk.steps.iter().find_map(|s| match s {
+                    Step::Escalated { reason, .. } => Some(reason.as_str()),
+                    Step::Followed { .. } => None,
+                });
+                let out = serde_json::json!({
+                    "from": cat.object(from).name,
+                    "at": cat.object(walk.state.at).name,
+                    "arrows": arrows,
+                    "tokens": walk.state.tokens,
+                    "escalated": escalated,
+                });
+                println!("{out}");
+                return Ok(ExitCode::SUCCESS);
+            }
             let mut at = from;
             for step in &walk.steps {
                 match step {

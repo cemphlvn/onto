@@ -879,3 +879,65 @@ mod joins {
         assert!(err("join Merge: maybe;").contains("unknown join"));
     }
 }
+
+const FORCED: &str = "
+category Verb {
+    objects: Stem, Tensed, Done, Maybe;
+    past:   Stem -> Tensed require tense == \"past\";
+    future: Stem -> Tensed require tense == \"future\";
+    closed: Stem;
+    first:  Tensed -> Done require person == 1;
+    other:  Tensed -> Done \"any other person\";
+    closed: Tensed;
+    closed: Done;
+}";
+
+#[test]
+fn guarded_closed_frame_with_one_eligible_arrow_is_forced() {
+    let cat = parse(FORCED).unwrap();
+    let stem = cat.object_id("Stem").unwrap();
+    // UniformJudge escalates every choice frame it is asked about, so a
+    // step past Stem proves no model was asked there.
+    let mut w = Walker {
+        cat: &cat,
+        judge: UniformJudge,
+        proposer: NullProposer,
+        threshold: 0.5,
+    };
+    let walk = w.walk("", json!({"tense": "past", "person": 1}), stem, 10);
+    assert!(matches!(walk.steps[0], Step::Followed { p, .. } if p == 1.0));
+    assert_eq!(walk.state.path.display(&cat), "past");
+    // Tensed has an unguarded arrow: it is judged, and the uniform judge declines.
+    assert!(matches!(
+        walk.steps[1],
+        Step::Escalated {
+            reason: Escalation::NoneOfThese,
+            ..
+        }
+    ));
+}
+
+#[test]
+fn forced_step_is_disposed_without_a_judgment() {
+    let cat = parse(FORCED).unwrap();
+    let stem = cat.object_id("Stem").unwrap();
+    let case = json!({"tense": "future"});
+    let tokens = Default::default();
+    let frame = onto_core::walk::candidates(&cat, stem, &case, &tokens);
+    let index = onto_core::walk::forced(&cat, stem, &frame).unwrap();
+    let decision = Decision::Follow {
+        index,
+        p: 1.0,
+        alternatives: Vec::new(),
+    };
+    let ds = onto_core::walk::dispose(
+        &cat, stem, &case, &tokens, &frame, None, &decision, 0.5, false,
+    );
+    let selected = ds
+        .iter()
+        .find(|d| d.disposition == onto_core::walk::Disposition::Selected)
+        .unwrap();
+    assert_eq!(cat.arrow(selected.arrow).name, "future");
+    assert_eq!(selected.judgment, None);
+    assert!(selected.reason.contains("no model asked"));
+}

@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 
 use onto_core::category::Closure;
 use onto_core::walk::{
-    Answer, Decision, Disposition, Escalation, Proposal, candidates, decide, dispose,
+    Answer, Decision, Disposition, Escalation, Proposal, candidates, decide, dispose, forced,
 };
 use onto_core::{ArrowId, Category, ObjId, Path, Primitive};
 use serde::Serialize;
@@ -604,6 +604,60 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         Outcome::Escalated { reason },
                     ));
                     break 'judged reason;
+                }
+                if let Some(index) = forced(cat, at, &frame) {
+                    // Decided by evidence: no judge call, no speculation.
+                    drop(guard);
+                    let decision = Decision::Follow {
+                        index,
+                        p: 1.0,
+                        alternatives: Vec::new(),
+                    };
+                    let ds = dispose(
+                        cat,
+                        at,
+                        &job.case,
+                        &tokens,
+                        &frame,
+                        None,
+                        &decision,
+                        self.cfg.threshold,
+                        false,
+                    );
+                    let arrow = frame[index];
+                    let a = cat.arrow(arrow);
+                    frames.push(record(
+                        None,
+                        record::candidates(cat, ds),
+                        Outcome::Followed {
+                            arrow: a.name.clone(),
+                            to: cat.object(a.dst).name.clone(),
+                        },
+                    ));
+                    after = Some(rec_id.clone());
+                    tracing::info!(
+                        target: "onto",
+                        event = "step",
+                        walk = id,
+                        from = %at_name,
+                        arrow = %a.name,
+                        to = %cat.object(a.dst).name,
+                        decided_by = "require",
+                        p = 1.0,
+                        alternatives = 0,
+                    );
+                    steps.push(StepRecord::Followed {
+                        from: at_name,
+                        arrow: a.name.clone(),
+                        to: cat.object(a.dst).name.clone(),
+                        decided_by: primitive,
+                        p: 1.0,
+                        confidence: None,
+                        alternatives: Vec::new(),
+                        wait_ms,
+                    });
+                    self.advance(&mut path, &mut hops, &mut tokens, arrow, primitive, 1.0);
+                    continue 'steps;
                 }
                 if self.cfg.speculate {
                     let engine = self.clone();
