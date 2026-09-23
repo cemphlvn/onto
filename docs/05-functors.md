@@ -1,6 +1,6 @@
 # onto — Functors
 
-Status: **phase 1 built — 2026-09-24** (phase 2 next). How categories
+Status: **phases 1 and 2 built — 2026-09-24**. How categories
 relate to each other, and how a walk uses those relations. Written before
 the code, like `docs/03-joins.md`.
 
@@ -131,6 +131,28 @@ F:g`, and the frame is re-judged. B's closed claim at `F(x)` is what
 makes this a *completion* of A's enumeration, not a guess. Only when
 nothing is transportable, or the re-judged frame still escalates, is the
 LLM proposer asked.
+
+**As built (phase 2):**
+
+- *Hierarchy.* The coarse step records `grouped` (functor, groups,
+  choice, p, confidence, fiber size, fallback) on the frame record;
+  arrows outside the fiber are recorded `other_group`. A coarse answer
+  below the confidence gate falls back to the whole frame. **Backoff:**
+  if the fiber holds nothing ("none of these"), the frame is judged once
+  more without grouping (a wrong group cannot strand a case). Live on 40
+  intents: flat 22/22; grouped 21/22 without backoff, 22/22 with it,
+  ~20% fewer tokens, twice the calls (`demos/support-commons`).
+- *Transport.* Before the LLM proposer, empty fibers become proposals
+  (`rationale: transported along F …`), reviewed and admitted like any
+  learned arrow; the step's `source` is `transport F`; learned entries
+  carry `transported: F:g`, from which a later run restores the images
+  of transported arrows and objects. **Settled by structure:** when
+  `F(x)` is closed in the target, duplicate and overlap questions
+  between a transported option and siblings mapping onto *other* options
+  of that frame are passed with the reason, not asked of the critic (the
+  closed frame is policy people declared; live, the critic had refused
+  both catalogue options against `none_apply`). Transport refusals are
+  recorded when the walk falls through to the LLM.
 
 ## 6. Later
 

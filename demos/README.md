@@ -97,8 +97,12 @@ Together the first wave shows **speed** (race), **authority** (gate) and
 | incident-response | `Public` → `StatusPage` | a view: `onto run --view`; the page never shows Resolved before Monitoring |
 | benefits-assembly | `Upgrade`: v1 → v2 | a version: new behaviour, changed questions, stale precedents dropped by `onto migrate` |
 
-Next (phase 2): hierarchy (`grouped by`) on a larger support-commons
-taxonomy, and transport (empty fibers) for benefits-assembly.
+Phase 2 (in a walk):
+
+| demo | functor | what it tests |
+|---|---|---|
+| support-commons (`large.onto`) | `ByTeam` → `Teams`, `grouped by` | 40 intents: flat 22/22 vs grouped (with backoff) 22/22, ~20% fewer tokens, twice the calls |
+| benefits-assembly (`catalogue.onto`) | `Catalog` → `standards/support-circumstances.onto`, `transport` | maternity and bereavement completed from the catalogue before any LLM; reused in a later session |
 
 ### Acceptance for every new demo
 

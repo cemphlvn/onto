@@ -70,6 +70,10 @@ pub struct Frame {
     /// alternative (no fork question), e.g. mitigation plans racing to a
     /// `race` join. The branch budget still applies.
     pub parallel: bool,
+    /// Choice frames only: `grouped by F`, a functor from this category.
+    /// The judge first chooses among the images of the frame's arrows,
+    /// then only within the chosen fiber (`docs/05-functors.md` §5).
+    pub grouped_by: Option<String>,
 }
 
 /// What every walk entering an object must hold: capability tokens it

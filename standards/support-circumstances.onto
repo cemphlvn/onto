@@ -1,0 +1,24 @@
+# Support circumstances: a shared catalogue of the circumstances support
+# programmes commonly recognize, and what completes each one. A sketch
+# for onto's transport demos: not any country's rules.
+#
+# A programme maps its own (shorter) enumeration into it with a functor
+# declared `transport`: when a case fits none of the programme's options,
+# the catalogue's missing directions are proposed before any LLM is asked.
+
+category SupportCircumstances {
+    objects: Circumstances, OwnCondition, Caring, Maternity, Bereavement, Assessed;
+
+    frame Circumstances: choice "Which special circumstance does the person describe about themselves?";
+    own_condition: Circumstances -> OwnCondition "their own disability or long-term health condition";
+    caring:        Circumstances -> Caring       "they care for someone who cannot manage alone";
+    maternity:     Circumstances -> Maternity    "they are pregnant, or had a baby in the last year";
+    bereavement:   Circumstances -> Bereavement  "their partner or a parent they depended on died recently";
+    none:          Circumstances -> Assessed     "no special circumstance";
+    closed: Circumstances;   # the catalogue claims these are the circumstances
+
+    condition_assessed:     OwnCondition -> Assessed "the condition is assessed by a medical board";
+    caring_registered:      Caring -> Assessed       "the caring role is registered";
+    maternity_confirmed:    Maternity -> Assessed    "the pregnancy or birth is confirmed by a midwife or registry";
+    bereavement_registered: Bereavement -> Assessed  "the death is registered";
+}

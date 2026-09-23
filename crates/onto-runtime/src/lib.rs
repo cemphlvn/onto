@@ -10,6 +10,7 @@
 pub mod engine;
 pub mod frames;
 pub mod joins;
+pub mod lens;
 pub mod mem;
 pub mod memory;
 pub mod model;

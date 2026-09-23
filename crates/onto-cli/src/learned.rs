@@ -76,6 +76,54 @@ impl WorldArgs {
         Ok(Arc::new(cat))
     }
 
+    /// Functors from this category (declared in or imported by its file),
+    /// for hierarchy and transport; and the learned layer's entries, so
+    /// transported structure keeps its image.
+    pub fn lenses(
+        &self,
+        file: &Path,
+        cat: &Category,
+    ) -> Result<(Vec<onto_runtime::lens::Lens>, Vec<Learned>), BoxError> {
+        let (module, _) = crate::module::load_module(&crate::module::target(file).0)?;
+        let lenses: Vec<onto_runtime::lens::Lens> = module
+            .functors
+            .iter()
+            .filter(|f| f.src == cat.name())
+            .map(|f| onto_runtime::lens::Lens {
+                functor: f.clone(),
+                target: Arc::new(module.category(&f.dst).expect("loaded").clone()),
+            })
+            .collect();
+        for o in cat.objects() {
+            if let Some(g) = &o.frame.grouped_by
+                && !lenses.iter().any(|l| &l.functor.name == g)
+            {
+                println!(
+                    "warning: frame {} is grouped by `{g}`, which is not a functor from {}; judged ungrouped",
+                    o.name,
+                    cat.name()
+                );
+            }
+        }
+        for l in &lenses {
+            let transport = if l.functor.transport {
+                " · transport"
+            } else {
+                ""
+            };
+            println!(
+                "functor {}: {} -> {}{transport}",
+                l.functor.name, l.functor.src, l.functor.dst
+            );
+        }
+        let entries = if self.closed_world {
+            Vec::new()
+        } else {
+            read(&self.layer(file))?
+        };
+        Ok((lenses, entries))
+    }
+
     fn memory_file(&self, file: &Path) -> PathBuf {
         self.memory
             .clone()

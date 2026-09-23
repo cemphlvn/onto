@@ -133,6 +133,8 @@ pub enum StepRecord {
     Expanded {
         at: String,
         reason: Escalation,
+        /// `proposer`, or `transport F` (empty fibers of functor F).
+        source: String,
         learned: Vec<Proposal>,
         /// Proposals the supervisor refused, with the reason.
         refused: Vec<(String, String)>,
@@ -214,6 +216,9 @@ pub struct Learned {
     pub snapshot: Option<String>,
     /// The supervisor's checks, `check: outcome` (unknowns included).
     pub checks: Vec<String>,
+    /// `F:g` when it completed the enumeration from functor F's arrow g.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub transported: Option<String>,
 }
 
 #[derive(Default)]
@@ -266,6 +271,9 @@ pub struct Engine<J, P> {
     memory: Mutex<Vec<crate::memory::Precedent>>,
     /// How many of `memory` were loaded (the rest are new).
     memory_loaded: AtomicUsize,
+    /// Functors from this category the walk uses (hierarchy, transport).
+    lenses: Mutex<Vec<Arc<crate::lens::Lens>>>,
+    transported: Mutex<crate::lens::Transported>,
     judge: J,
     proposer: P,
     cfg: Config,
@@ -287,6 +295,38 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
     /// The current graph (declared + learned so far).
     pub fn cat(&self) -> Arc<Category> {
         self.graph.read().unwrap().clone()
+    }
+
+    /// Functors from this category the walk may use, and the transported
+    /// structure an earlier run learned (from the learned layer).
+    pub fn use_lenses(&self, lenses: Vec<crate::lens::Lens>, learned: &[Learned]) {
+        let cat = self.cat();
+        let lenses: Vec<Arc<crate::lens::Lens>> = lenses
+            .into_iter()
+            .filter(|l| l.functor.src == cat.name())
+            .map(Arc::new)
+            .collect();
+        let mut t = self.transported.lock().unwrap();
+        for l in learned {
+            let Some((f, g)) = l.transported.as_deref().and_then(|x| x.split_once(':')) else {
+                continue;
+            };
+            let Some(li) = lenses.iter().position(|x| x.functor.name == f) else {
+                continue;
+            };
+            let Ok(g) = lenses[li].target.arrow_id(g) else {
+                continue;
+            };
+            t.arrows.insert((li, l.proposal.arrow.clone()), g);
+            let declared = cat
+                .object_id(&l.proposal.dst)
+                .is_ok_and(|o| lenses[li].functor.object(o).is_some());
+            if !declared {
+                t.objects
+                    .insert((li, l.proposal.dst.clone()), lenses[li].target.arrow(g).dst);
+            }
+        }
+        *self.lenses.lock().unwrap() = lenses;
     }
 
     /// Loads precedents (from an earlier run's memory file).
@@ -316,6 +356,8 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             learned: Mutex::new(Vec::new()),
             memory: Mutex::new(Vec::new()),
             memory_loaded: AtomicUsize::new(0),
+            lenses: Mutex::new(Vec::new()),
+            transported: Mutex::new(Default::default()),
             judge,
             proposer,
             cfg,
@@ -525,6 +567,8 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         }
 
         let mut expansions = 0usize;
+        // A grouped frame whose fiber held nothing: judged once more, flat.
+        let mut ungrouped: Option<ObjId> = None;
         'steps: for _ in 0..self.cfg.max_steps {
             // The graph may have grown since the last step (open world).
             let cat_arc = self.cat();
@@ -625,6 +669,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     detail = %detail,
                 );
                 frames.push(FrameRecord {
+                    grouped: None,
                     seen: None,
                     refused: Vec::new(),
                     id: join_id.clone(),
@@ -689,6 +734,14 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let at_name = object.name.clone();
             let primitive = object.frame.primitive;
             let frame = candidates(cat, at, &job.case, &tokens);
+            // A `grouped by` frame: choose the coarse group first, then
+            // judge only its fiber.
+            let (frame, visit_grouped) = if ungrouped == Some(at) {
+                (frame, None)
+            } else {
+                self.group(id, cat, at, &job, &path, &hops, &focus, &tokens, frame)
+                    .await
+            };
 
             // Claim the frame. With speculation the System-2 call may start
             // right away, so the claim is a write from the start.
@@ -706,6 +759,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             // Exactly what a model is shown at this visit, if one is asked.
             let visit_seen = self.state(cat, &job, &path, &hops, &focus, &tokens);
             let record = |judge: Option<JudgeRecord>, candidates, outcome| FrameRecord {
+                grouped: visit_grouped.clone(),
                 seen: judge.is_some().then(|| visit_seen.clone()),
                 refused: Vec::new(),
                 id: rec_id.clone(),
@@ -1073,6 +1127,20 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             };
 
             tracing::info!(target: "onto", event = "escalate", walk = id, at = %at_name, reason = reason.as_str());
+            // Backoff: the coarse step may have chosen the wrong group, and
+            // a fiber cannot recover from that. Judge the whole frame once.
+            if reason == Escalation::NoneOfThese
+                && visit_grouped.as_ref().is_some_and(|g| !g.fallback)
+            {
+                if let Some(h) = speculative.take() {
+                    h.abort();
+                }
+                tracing::info!(target: "onto", event = "ungroup", walk = id, at = %at_name);
+                ungrouped = Some(at);
+                drop(guard);
+                after = Some(rec_id);
+                continue 'steps;
+            }
             if reason == Escalation::SplitOverBudget {
                 // Structural: a proposal cannot fix a budget; a person must.
                 steps.push(StepRecord::Escalated {
@@ -1083,6 +1151,56 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     wait_ms,
                 });
                 break;
+            }
+            // Transport: before any LLM, complete the enumeration from a
+            // functor whose target knows directions this frame lacks.
+            let mut transport_refused: Vec<(String, String)> = Vec::new();
+            if self.cfg.open_world && cat.learnable(at) && expansions < self.cfg.max_expansions {
+                let found = self.transportable(cat, at);
+                if !found.is_empty() {
+                    if mode == Mode::Read {
+                        drop(guard);
+                        guard = self
+                            .locks
+                            .acquire(cat, Claim::new(cat, id, at, Mode::Write))
+                            .await;
+                    }
+                    let proposals: Vec<Proposal> = found.iter().map(|(.., p)| p.clone()).collect();
+                    let settled = self.settled(cat, at, &found);
+                    let (learned, refused) =
+                        self.expand(&rec_id, reason, &proposals, &settled).await;
+                    if !learned.is_empty() {
+                        if let Some(h) = speculative.take() {
+                            h.abort();
+                        }
+                        let source = self.note_transported(&rec_id, &found, &learned);
+                        if let Some(last) = frames.last_mut() {
+                            last.proposals = proposals.clone();
+                            last.refused = refused.clone();
+                            last.outcome = Outcome::Expanded {
+                                reason,
+                                learned: learned.iter().map(|p| p.arrow.clone()).collect(),
+                                source: source.clone(),
+                            };
+                        }
+                        drop(guard);
+                        steps.push(StepRecord::Expanded {
+                            at: at_name,
+                            reason,
+                            source,
+                            learned,
+                            refused,
+                            wait_ms,
+                        });
+                        expansions += 1;
+                        after = Some(rec_id);
+                        continue 'steps;
+                    }
+                    transport_refused = refused
+                        .into_iter()
+                        .map(|(a, why)| (a, format!("transported, refused: {why}")))
+                        .collect();
+                }
             }
             let proposals = match speculative {
                 Some(h) => h.await.expect("proposer task panicked"),
@@ -1110,7 +1228,9 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 && expansions < self.cfg.max_expansions
                 && !proposals.is_empty()
             {
-                let (learned, refused) = self.expand(&rec_id, reason, proposals).await;
+                let (learned, refused) = self
+                    .expand(&rec_id, reason, proposals, &HashMap::new())
+                    .await;
                 if learned.is_empty() {
                     refused_here = refused;
                 } else {
@@ -1128,9 +1248,11 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         Some((_, r)) => r.clone(),
                         None => refused_here.clone(),
                     };
+                    last.refused.extend(transport_refused.iter().cloned());
                     if let Some((learned, _)) = &expanded {
                         last.outcome = Outcome::Expanded {
                             reason,
+                            source: "proposer".into(),
                             learned: learned.iter().map(|p| p.arrow.clone()).collect(),
                         };
                     }
@@ -1152,6 +1274,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 steps.push(StepRecord::Expanded {
                     at: at_name,
                     reason,
+                    source: "proposer".into(),
                     learned,
                     refused,
                     wait_ms,
@@ -1161,6 +1284,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             }
             match proposals {
                 Ok(proposals) => {
+                    refused_here.extend(transport_refused);
                     steps.push(StepRecord::Escalated {
                         at: at_name,
                         reason,
@@ -1197,6 +1321,272 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         report
     }
 
+    /// A `grouped by` frame's coarse step: the judge chooses among the
+    /// images of the frame's arrows; if it is confident, only the chosen
+    /// fiber is left to judge. Otherwise (or if the frame cannot be
+    /// grouped) every arrow is judged, as without grouping.
+    #[allow(clippy::too_many_arguments)]
+    async fn group(
+        &self,
+        id: u64,
+        cat: &Category,
+        at: ObjId,
+        job: &Job,
+        path: &Path,
+        hops: &[Hop],
+        focus: &Option<Focus>,
+        tokens: &BTreeSet<String>,
+        frame: Vec<ArrowId>,
+    ) -> (Vec<ArrowId>, Option<crate::lens::GroupRecord>) {
+        let object = cat.object(at);
+        let Some(name) = object.frame.grouped_by.as_deref() else {
+            return (frame, None);
+        };
+        if object.frame.primitive != Primitive::Choice || frame.len() < 2 {
+            return (frame, None);
+        }
+        let lenses = self.lenses.lock().unwrap().clone();
+        let Some((li, lens)) = lenses
+            .iter()
+            .enumerate()
+            .find(|(_, l)| l.functor.name == name)
+        else {
+            return (frame, None);
+        };
+        let images: Vec<Option<ArrowId>> = {
+            let t = self.transported.lock().unwrap();
+            frame.iter().map(|f| t.first(li, lens, cat, *f)).collect()
+        };
+        if images.iter().any(Option::is_none) {
+            return (frame, None);
+        }
+        let mut groups: Vec<ArrowId> = Vec::new();
+        for g in images.iter().flatten() {
+            if !groups.contains(g) {
+                groups.push(*g);
+            }
+        }
+        if groups.len() < 2 {
+            return (frame, None);
+        }
+        let b = &lens.target;
+        let coarse = b.arrow(groups[0]).src;
+        let req = FrameRequest {
+            state: self.state(cat, job, path, hops, focus, tokens),
+            at: object.name.clone(),
+            focus: focus.clone(),
+            primitive: Primitive::Choice,
+            instructions: b
+                .object(coarse)
+                .frame
+                .instructions
+                .clone()
+                .or_else(|| object.frame.instructions.clone()),
+            candidates: groups.iter().map(|g| Candidate::of(b, *g)).collect(),
+            can_fork: false,
+            parallel: false,
+        };
+        let mut rec = crate::lens::GroupRecord {
+            functor: name.to_owned(),
+            groups: groups.iter().map(|g| b.arrow(*g).name.clone()).collect(),
+            chose: None,
+            p: None,
+            confidence: None,
+            kept: frame.len(),
+            fallback: true,
+        };
+        if let Ok((Answer::Choice(d), _)) = self.call_judge(id, req).await {
+            rec.confidence = d.confidence;
+            if let Some((i, p)) = d.top()
+                && d.confidence.unwrap_or(p) >= self.cfg.threshold
+            {
+                let fiber: Vec<ArrowId> = frame
+                    .iter()
+                    .zip(&images)
+                    .filter(|(_, g)| **g == Some(groups[i]))
+                    .map(|(f, _)| *f)
+                    .collect();
+                rec.chose = Some(b.arrow(groups[i]).name.clone());
+                rec.p = Some(p);
+                rec.kept = fiber.len();
+                rec.fallback = false;
+                tracing::info!(target: "onto", event = "grouped", walk = id, at = %object.name, functor = name, chose = %b.arrow(groups[i]).name, kept = fiber.len(), of = frame.len());
+                return (fiber, Some(rec));
+            }
+        }
+        tracing::info!(target: "onto", event = "grouped", walk = id, at = %object.name, functor = name, fallback = true);
+        (frame, Some(rec))
+    }
+
+    /// Empty fibers at `at` under every transport functor: arrows the
+    /// target has at `F(at)` that no arrow of `at` maps onto, as proposals.
+    fn transportable(&self, cat: &Category, at: ObjId) -> Vec<(usize, ArrowId, Proposal)> {
+        let lenses = self.lenses.lock().unwrap().clone();
+        let t = self.transported.lock().unwrap();
+        let mut out = Vec::new();
+        for (li, lens) in lenses
+            .iter()
+            .enumerate()
+            .filter(|(_, l)| l.functor.transport)
+        {
+            let b = &lens.target;
+            let Some(y) = t.object(li, lens, cat, at) else {
+                continue;
+            };
+            for &g in b.out(y) {
+                let covered = cat
+                    .out(at)
+                    .iter()
+                    .any(|f| t.first(li, lens, cat, *f) == Some(g));
+                if covered {
+                    continue;
+                }
+                let ga = b.arrow(g);
+                // Target: the unique object already mapping onto g's target
+                // (declared or transported), else a new object.
+                let mut pre: Vec<String> = lens
+                    .functor
+                    .preimage(ga.dst)
+                    .iter()
+                    .map(|x| cat.object(*x).name.clone())
+                    .collect();
+                pre.extend(
+                    t.objects
+                        .iter()
+                        .filter(|((l, _), y)| *l == li && **y == ga.dst)
+                        .map(|((_, n), _)| n.clone()),
+                );
+                let free = |n: &str| cat.object_id(n).is_err() && cat.arrow_id(n).is_err();
+                let dst = match pre.as_slice() {
+                    [one] => one.clone(),
+                    _ if free(&b.object(ga.dst).name) => b.object(ga.dst).name.clone(),
+                    _ => format!("{}{}", b.object(ga.dst).name, lens.functor.name),
+                };
+                let arrow = if free(&ga.name) {
+                    ga.name.clone()
+                } else {
+                    format!("{}_{}", ga.name, lens.functor.name.to_lowercase())
+                };
+                let about = ga
+                    .instructions
+                    .as_ref()
+                    .map(|i| i.as_str().map_or(i.to_string(), str::to_owned))
+                    .unwrap_or_default();
+                out.push((
+                    li,
+                    g,
+                    Proposal {
+                        arrow,
+                        src: cat.object(at).name.clone(),
+                        dst,
+                        about,
+                        rationale: format!(
+                            "transported along {}: {} --{}--> {} in {}",
+                            lens.functor.name,
+                            b.object(y).name,
+                            ga.name,
+                            b.object(ga.dst).name,
+                            b.name()
+                        ),
+                        ..Default::default()
+                    },
+                ));
+            }
+        }
+        out
+    }
+
+    /// For each transported proposal, the siblings its duplicate and
+    /// overlap questions are settled against: arrows (existing, or
+    /// transported in the same batch) mapping onto a *different* option of
+    /// the same closed frame of the target.
+    fn settled(
+        &self,
+        cat: &Category,
+        at: ObjId,
+        found: &[(usize, ArrowId, Proposal)],
+    ) -> HashMap<String, Vec<(String, String)>> {
+        let lenses = self.lenses.lock().unwrap().clone();
+        let t = self.transported.lock().unwrap();
+        let mut out: HashMap<String, Vec<(String, String)>> = HashMap::new();
+        for (li, g, p) in found {
+            let lens = &lenses[*li];
+            let b = &lens.target;
+            let y = b.arrow(*g).src;
+            if b.object(y).closure != Closure::Closed {
+                continue;
+            }
+            let why = |other: ArrowId| {
+                format!(
+                    "{} and {} are distinct options of {}.{}, which is closed (claimed MECE)",
+                    b.arrow(other).name,
+                    b.arrow(*g).name,
+                    b.name(),
+                    b.object(y).name
+                )
+            };
+            let entry = out.entry(p.arrow.clone()).or_default();
+            for f in cat.out(at) {
+                if let Some(g2) = t.first(*li, lens, cat, *f)
+                    && g2 != *g
+                    && b.arrow(g2).src == y
+                {
+                    entry.push((cat.arrow(*f).name.clone(), why(g2)));
+                }
+            }
+            for (l2, g2, p2) in found {
+                if l2 == li && g2 != g {
+                    entry.push((p2.arrow.clone(), why(*g2)));
+                }
+            }
+        }
+        out
+    }
+
+    /// Remembers the images of transported arrows (and new objects) that
+    /// were admitted, marks them in the learned layer, and names the source.
+    fn note_transported(
+        &self,
+        record: &str,
+        found: &[(usize, ArrowId, Proposal)],
+        learned: &[Proposal],
+    ) -> String {
+        let lenses = self.lenses.lock().unwrap().clone();
+        let cat = self.cat();
+        let mut t = self.transported.lock().unwrap();
+        let mut learned_log = self.learned.lock().unwrap();
+        let mut names = Vec::new();
+        for (li, g, p) in found {
+            if !learned.iter().any(|l| l.arrow == p.arrow) {
+                continue;
+            }
+            let lens = &lenses[*li];
+            t.arrows.insert((*li, p.arrow.clone()), *g);
+            let declared = cat
+                .object_id(&p.dst)
+                .is_ok_and(|o| lens.functor.object(o).is_some());
+            if !declared {
+                t.objects
+                    .insert((*li, p.dst.clone()), lens.target.arrow(*g).dst);
+            }
+            if let Some(l) = learned_log
+                .iter_mut()
+                .rev()
+                .find(|l| l.record == record && l.proposal.arrow == p.arrow)
+            {
+                l.transported = Some(format!(
+                    "{}:{}",
+                    lens.functor.name,
+                    lens.target.arrow(*g).name
+                ));
+            }
+            if !names.contains(&lens.functor.name) {
+                names.push(lens.functor.name.clone());
+            }
+        }
+        format!("transport {}", names.join(", "))
+    }
+
     /// Reviews `proposals` against the live graph and admits every one
     /// the supervisor does not reject. Structural proofs are re-run under
     /// the graph's write lock, against the graph they will extend, so two
@@ -1206,17 +1596,19 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         record: &str,
         reason: Escalation,
         proposals: &[Proposal],
+        settled: &HashMap<String, Vec<(String, String)>>,
     ) -> (Vec<Proposal>, Vec<(String, String)>) {
         let (mut learned, mut refused) = (Vec::new(), Vec::new());
         let mut earlier: Vec<Proposal> = Vec::new();
         for p in proposals {
-            let review = crate::supervisor::review(
+            let review = crate::supervisor::review_settled(
                 &self.cat(),
                 p.arrow.clone(),
                 vec![record.to_owned()],
                 p,
                 &earlier,
                 &self.judge,
+                settled.get(&p.arrow).map_or(&[][..], Vec::as_slice),
             )
             .await;
             earlier.push(p.clone());
@@ -1258,6 +1650,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     .iter()
                     .map(|c| format!("{}: {:?}", c.check, c.outcome).to_lowercase())
                     .collect(),
+                transported: None,
             });
             learned.push(p.clone());
         }

@@ -39,6 +39,9 @@ pub struct FrameRecord {
     pub outcome: Outcome,
     /// Provisional System-2 proposals made at this visit, if it escalated.
     pub proposals: Vec<Proposal>,
+    /// A `grouped by` frame's coarse step.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub grouped: Option<crate::lens::GroupRecord>,
     /// Open world: proposals the supervisor refused here, with the reason.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub refused: Vec<(String, String)>,
@@ -105,6 +108,8 @@ pub enum Outcome {
     Expanded {
         reason: Escalation,
         learned: Vec<String>,
+        /// `proposer`, or `transport F` (empty fibers of functor F).
+        source: String,
     },
     Failed {
         error: String,

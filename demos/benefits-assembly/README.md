@@ -132,6 +132,40 @@ positively, it recovered. Pregnancy now escalates: maternity is a
 circumstance in many benefit systems, the next gap for a person to
 decide, not for the judge to force.
 
+## Transport from a shared catalogue (functor, phase 2, 2026-09-24)
+
+`catalogue.onto` imports this policy and
+`standards/support-circumstances.onto` (own condition, caring, maternity,
+bereavement, none; `closed`) and declares `functor Catalog:
+BenefitsAssembly -> SupportCircumstances { …; transport; }`. `onto
+functor` shows the gaps (maternity, bereavement); when a walk escalates
+at `Circumstances`, those **empty fibers** are proposed before any LLM.
+
+Live (`onto run demos/benefits-assembly/catalogue.onto#BenefitsAssembly …`):
+
+- **B-6** ("I am pregnant … my employer did not renew my contract"):
+  without the catalogue the LLM proposer invented
+  `review_pregnancy_related_job_loss -> PregnancyRelatedJobLossReview`.
+  With it: *"a related catalogue (Catalog) already knew options this one
+  lacked"*: `maternity` and `bereavement` were admitted (the enumeration
+  completed from the catalogue), and the judge chose `maternity` at 1.00.
+  The next step, the catalogue's `maternity_confirmed`, leads into the
+  sealed evidence lines and was refused: the case needs a person to add
+  a maternity evidence line, which is a policy decision.
+- **A new session**, a widow raising two children: the judge took the
+  learned `bereavement` directly (1.00), no expansion at `Circumstances`.
+  The option transported for one case served another.
+
+First attempt, and the fix: the critic's overlap check refused both
+transported options (*"could one case fit both? yes, p 0.81"* against
+`none_apply`). But the catalogue's `Circumstances` frame is **closed**:
+people declared its options distinct, and the functor maps `none_apply`
+onto the catalogue's `none`. Duplicate and overlap questions between a
+transported option and siblings mapping onto *other* options of that
+closed frame are now **settled by structure** (recorded as such), not
+re-judged by a model. Rule invariants and every structural proof still
+apply.
+
 ## What it does not do
 
 It does not submit anything to real institutions or decide eligibility:

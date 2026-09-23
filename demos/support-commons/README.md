@@ -73,3 +73,38 @@ followed steps 0.81 → 0.94; walks that escalated 8 → 7.
   arrows; M2 verification must reject those.
 - Grouping relies on the proposer reusing a pending proposal's name; two
   proposals for the same case written independently can still differ.
+
+## Large taxonomy, grouped by team (functor, phase 2, 2026-09-24)
+
+`large.onto` holds 40 ticket intents in one choice frame, a `Teams`
+category (7 teams) and `functor ByTeam: SupportLarge -> Teams`. The frame
+is declared `choice grouped by ByTeam`: the judge first chooses a team
+(the images of the 40 arrows), then an intent within that team's fiber.
+If the fiber holds nothing ("none of these"), the frame is judged once
+more with all 40 (backoff): a wrong team cannot strand a ticket.
+
+22 labelled tickets (`large.jobs`, `expected` = the intent a person
+chose), live, closed world, no memory:
+
+| | flat (40 options, one call) | grouped, no backoff | grouped, with backoff |
+|---|---|---|---|
+| accuracy | **22/22** | 21/22 | **22/22** |
+| judge calls | 22 | 44 | 45 |
+| tokens in / out | 36 959 / 8 352 | 32 978 / 3 810 | 31 837 / 4 138 |
+| wall | **1.4 s** | 3.4 s | 1.7 s |
+
+- On clear tickets, Jev chooses among 40 options without help: the flat
+  frame was perfect. Grouping did not buy accuracy here.
+- Grouping cost two calls per ticket but ~20% fewer tokens in total
+  (output halved: seven team options, then a small fiber).
+- The one coarse mistake was instructive: a screen-reader complaint was
+  confidently routed to **Technical**, but `accessibility` belongs to
+  **Product**; without backoff the ticket escalated. That is the known
+  weakness of hierarchies, now covered by backoff, and recorded (the
+  frame record shows the grouped visit and the flat one).
+- The team choice is itself useful output: the frame record carries the
+  team, the fiber size and the confidence of both steps.
+
+Next measurements worth making: ambiguous tickets, and taxonomies in the
+hundreds, where a flat frame's prompt grows and grouping should matter.
+

@@ -1,0 +1,16 @@
+# The benefits policy, mapped into the shared circumstances catalogue with
+# transport: where the policy's enumeration is missing, the catalogue's
+# missing directions are proposed before any LLM is asked.
+#
+# onto run demos/benefits-assembly/catalogue.onto#BenefitsAssembly --jobs demos/benefits-assembly/jobs …
+
+import "benefits.onto";
+import "../../standards/support-circumstances.onto";
+
+functor Catalog: BenefitsAssembly -> SupportCircumstances {
+    objects: Circumstances -> Circumstances, Disability -> OwnCondition, Caring -> Caring,
+             EvidenceComplete -> Assessed;
+    has_disability: own_condition; is_carer: caring; none_apply: none;
+    disability_evidenced: condition_assessed; carer_evidenced: caring_registered;
+    transport;
+}

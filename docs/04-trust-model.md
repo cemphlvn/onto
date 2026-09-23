@@ -208,6 +208,12 @@ What holds:
 
 What changes, stated plainly:
 
+- **Transport trusts the catalogue.** A transported option's duplicate
+  and overlap checks against siblings mapping onto *other* options of a
+  closed frame in the functor's target are settled by that closed claim
+  (recorded "settled by structure"). The catalogue and the functor are
+  policy; whoever can edit them decides what is transported. Structural
+  proofs, sealed regions and rule invariants still apply.
 - **Critic `unknown` admits.** In the open world, a semantic check the
   critic cannot decide does not block learning (in review it blocks
   promotion). Only failures refuse.

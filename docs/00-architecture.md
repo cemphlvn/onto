@@ -447,6 +447,9 @@ snapshot. No database until live multi-writer editing is needed.
 | D45 | counterfactual replay always runs an unchanged baseline beside the change | live, the same state gave confidence 0.47 in the walk and 0.29 in replay: without a baseline, model instability would read as an effect |
 | D46 | functors are partial (defined on the mapped objects) and policy is **reflected** onto the source, on objects | a standard describes part of an organization; a required step must be a visible step of the source, not hidden inside one arrow |
 | D47 | precedents do not migrate across a change to their frame's options | a precedent answers a question; when the options change it answers a different one (live: v1's wrong carer decision) |
+| D48 | a grouped frame backs off to the whole frame when the fiber holds nothing | live, a confident coarse step sent an accessibility ticket to the wrong team and the fiber could not recover |
+| D49 | transport runs before the LLM proposer; its proposals carry their functor and target arrow | known structure should be reused before new structure is invented, and learned structure should say where it came from |
+| D50 | overlap/duplicate between options of a closed target frame are settled by that frame, not re-judged | the closed claim is policy people declared; live, a model re-litigating it blocked the catalogue's options |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -515,7 +518,10 @@ snapshot. No database until live multi-writer editing is needed.
   contracts / invariants reflected, coverage, evidence backing; `onto
   functor`, `run --view`, `onto migrate`; `standards/`. See
   `docs/05-functors.md`.
-- **Next:** functors phase 2 (hierarchy, transport); usage-based reinforcement and pruning of learned arrows;
+- **Functors, phase 2 (done):** `grouped by` with fallback and backoff;
+  transport from empty fibers before the LLM, settled-by-structure
+  sibling checks, transported structure restored across runs.
+- **Next:** usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).

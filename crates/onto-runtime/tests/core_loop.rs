@@ -1505,3 +1505,173 @@ async fn memory_shows_projected_precedents_from_other_cases() {
     assert_eq!(r.precedents.len(), 1);
     assert!(!r.precedents[0].saw.to_string().contains("applicant"));
 }
+
+/// Functors in a walk: transport completes a missing enumeration from a
+/// catalogue before any LLM; `grouped by` judges a coarse group first.
+mod functors {
+    use super::*;
+    use onto_runtime::lens::Lens;
+
+    fn lenses(src: &str) -> (Arc<onto_core::Category>, Vec<Lens>) {
+        let m =
+            onto_core::parse_module(src, &mut |p| Err(onto_core::Error::UnknownObject(p.into())))
+                .unwrap();
+        let cat = Arc::new(m.categories[0].clone());
+        let ls = m
+            .functors
+            .iter()
+            .map(|f| Lens {
+                functor: f.clone(),
+                target: Arc::new(m.category(&f.dst).unwrap().clone()),
+            })
+            .collect();
+        (cat, ls)
+    }
+
+    const TRANSPORT: &str = r#"
+    category Benefits {
+        objects: Circumstances, Disability, Done;
+        frame Circumstances: choice "Which circumstance?";
+        has_disability: Circumstances -> Disability "own disability";
+        none_apply: Circumstances -> Done "nothing special";
+        go: Disability -> Done;
+        closed: Circumstances, Disability, Done;
+    }
+    category Catalogue {
+        objects: Circ, Dis, Mat, Assessed;
+        disability: Circ -> Dis "own disability";
+        maternity: Circ -> Mat "pregnancy or a new baby";
+        none: Circ -> Assessed "nothing special";
+        dis_ok: Dis -> Assessed;
+        maternity_evidenced: Mat -> Assessed "maternity is confirmed";
+        closed: Circ;
+    }
+    functor Catalog: Benefits -> Catalogue {
+        objects: Circumstances -> Circ, Disability -> Dis, Done -> Assessed;
+        has_disability: disability; none_apply: none; go: dis_ok;
+        transport;
+    }
+    "#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn transport_completes_the_enumeration_without_an_llm() {
+        let (cat, ls) = lenses(TRANSPORT);
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            Config::default(),
+        );
+        engine.use_lenses(ls, &[]);
+        let job = Job {
+            from: "Circumstances".into(),
+            goal: "i am pregnant, maternity".into(),
+            case: json!({}),
+        };
+        let r = engine.run(vec![job]).await.unwrap();
+        let steps = &r.walks[0].steps;
+        let StepRecord::Expanded {
+            source, learned, ..
+        } = &steps[0]
+        else {
+            panic!("expected transport: {steps:?}");
+        };
+        assert_eq!(source, "transport Catalog");
+        assert_eq!(learned[0].arrow, "maternity");
+        assert_eq!(learned[0].dst, "Mat");
+        assert!(matches!(&steps[1], StepRecord::Followed { arrow, .. } if arrow == "maternity"));
+        // At the new object the catalogue knows the next step too: the walk
+        // ends at a declared outcome, and System 2 was never asked.
+        assert!(r.walks[0].path.ends_with("-> Done"), "{}", r.walks[0].path);
+        assert_eq!(r.proposer_calls, 0);
+        assert_eq!(
+            r.learned[0].transported.as_deref(),
+            Some("Catalog:maternity")
+        );
+    }
+
+    const GROUPED: &str = r#"
+    category Support {
+        objects: Ticket, Refund, Invoice, Outage, HowTo;
+        frame Ticket: choice grouped by Teams "Which kind of ticket?";
+        refund: Ticket -> Refund "money back";
+        invoice: Ticket -> Invoice "a billing document";
+        outage: Ticket -> Outage "something is broken";
+        howto: Ticket -> HowTo "how to use it";
+        closed: Ticket, Refund, Invoice, Outage, HowTo;
+    }
+    category Coarse {
+        objects: T, B, E;
+        billing: T -> B "money: charges, refunds, invoices";
+        technical: T -> E "the product misbehaves or someone needs help";
+    }
+    functor Teams: Support -> Coarse {
+        objects: Ticket -> T, Refund -> B, Invoice -> B, Outage -> E, HowTo -> E;
+        refund: billing; invoice: billing; outage: technical; howto: technical;
+    }
+    "#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_grouped_frame_judges_the_group_then_the_fiber() {
+        let (cat, ls) = lenses(GROUPED);
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            Config {
+                open_world: false,
+                ..Config::default()
+            },
+        );
+        engine.use_lenses(ls, &[]);
+        let job = Job {
+            from: "Ticket".into(),
+            goal: "billing: i want a refund".into(),
+            case: json!({}),
+        };
+        let r = engine.run(vec![job]).await.unwrap();
+        let f = &r.walks[0].frames[0];
+        let g = f.grouped.as_ref().expect("grouped");
+        assert_eq!(g.groups, ["billing", "technical"]);
+        assert_eq!(g.chose.as_deref(), Some("billing"));
+        assert_eq!(g.kept, 2);
+        let judged = f.candidates.iter().filter(|c| c.judgment.is_some()).count();
+        assert_eq!(judged, 2, "only the fiber is judged");
+        assert!(f.candidates.iter().any(|c| c.disposition
+            == onto_core::walk::Disposition::OtherGroup
+            && c.arrow == "outage"));
+        assert_eq!(r.walks[0].path, "refund : Ticket -> Refund");
+        assert_eq!(r.judge_calls, 2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_wrong_group_backs_off_to_the_whole_frame() {
+        let (cat, ls) = lenses(GROUPED);
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            Config {
+                open_world: false,
+                ..Config::default()
+            },
+        );
+        engine.use_lenses(ls, &[]);
+        // "charges" sends the coarse step to billing, but the intent is an
+        // outage: the billing fiber holds nothing, so the frame is judged
+        // again without grouping.
+        let job = Job {
+            from: "Ticket".into(),
+            goal: "charges page shows an outage".into(),
+            case: json!({}),
+        };
+        let r = engine.run(vec![job]).await.unwrap();
+        let f = &r.walks[0].frames;
+        assert_eq!(
+            f[0].grouped.as_ref().unwrap().chose.as_deref(),
+            Some("billing")
+        );
+        assert!(f[1].grouped.is_none(), "the second visit is flat");
+        assert_eq!(r.walks[0].path, "outage : Ticket -> Outage");
+    }
+}

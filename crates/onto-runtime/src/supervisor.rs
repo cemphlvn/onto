@@ -53,6 +53,23 @@ pub async fn review<C: Critic>(
     earlier: &[Proposal],
     critic: &C,
 ) -> Review {
+    review_settled(cat, id, sources, p, earlier, critic, &[]).await
+}
+
+/// As [`review`], with siblings whose duplicate and overlap questions are
+/// already settled by structure: `(sibling arrow, why)`. Transport uses
+/// it: two options of a closed frame in the functor's target are claimed
+/// distinct by that closed frame, a policy people declared, so the critic
+/// is not asked to re-judge them.
+pub async fn review_settled<C: Critic>(
+    cat: &Category,
+    id: String,
+    sources: Vec<String>,
+    p: &Proposal,
+    earlier: &[Proposal],
+    critic: &C,
+    settled: &[(String, String)],
+) -> Review {
     let (mut checks, extended) = supervise::structural(cat, p);
     let done = |checks: Vec<Check>, critic| Review {
         id: id.clone(),
@@ -113,6 +130,22 @@ pub async fn review<C: Critic>(
             s["to"].as_str().unwrap_or("?"),
             s["status"].as_str().unwrap_or("?")
         );
+        if let Some((_, why)) = settled
+            .iter()
+            .find(|(a, _)| Some(a.as_str()) == s["arrow"].as_str())
+        {
+            for check in ["duplicate", "overlap"] {
+                checks.push(Check {
+                    check: check.into(),
+                    subject: subject.clone(),
+                    outcome: Outcome::Pass,
+                    reason: format!("settled by structure: {why}"),
+                    p: None,
+                    witness: None,
+                });
+            }
+            continue;
+        }
         pending.push(Pending {
             check: "duplicate",
             subject: subject.clone(),

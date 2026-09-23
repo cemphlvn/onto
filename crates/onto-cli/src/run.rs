@@ -159,8 +159,10 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         .enable_all()
         .build()?;
     let precedents = args.world.precedents(&args.file, &cat)?;
+    let (lenses, entries) = args.world.lenses(&args.file, &cat)?;
     let engine = Engine::new(cat, judge, proposer, cfg);
     engine.remember(precedents);
+    engine.use_lenses(lenses, &entries);
     let report = rt.block_on(engine.run(jobs))?;
 
     print_summary(&report, args.telemetry.as_deref());
@@ -428,12 +430,18 @@ fn print_step(s: &StepRecord) {
         StepRecord::Expanded {
             at,
             reason,
+            source,
             learned,
             refused,
             ..
         } => {
+            let by = if source == "proposer" {
+                "System 2"
+            } else {
+                source.as_str()
+            };
             println!(
-                "  {at} ⇒ System 2 ({}) ⇒ learned, walk continues",
+                "  {at} ⇒ {by} ({}) ⇒ learned, walk continues",
                 reason.as_str()
             );
             for p in learned {

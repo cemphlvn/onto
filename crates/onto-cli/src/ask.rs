@@ -58,8 +58,10 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
         ..Config::default()
     };
     let precedents = args.world.precedents(&args.file, &cat)?;
+    let (lenses, entries) = args.world.lenses(&args.file, &cat)?;
     let engine = Engine::new(cat, judge, proposer, cfg);
     engine.remember(precedents);
+    engine.use_lenses(lenses, &entries);
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?;
@@ -210,9 +212,20 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                 proposals,
                 ..
             } => outcome = Some((at.clone(), *reason, proposals.clone())),
-            StepRecord::Expanded { at, learned, .. } => {
+            StepRecord::Expanded {
+                at,
+                learned,
+                source,
+                ..
+            } => {
+                let from = match source.strip_prefix("transport ") {
+                    Some(f) => {
+                        format!("a related catalogue ({f}) already knew options this one lacked")
+                    }
+                    None => "an AI proposed new ones".into(),
+                };
                 println!(
-                    "{pad}   ⟡ the known options at {at} did not cover your case; an AI proposed new ones, they passed the safety proofs (policy, capabilities, invariants), and the walk continued:"
+                    "{pad}   ⟡ the known options at {at} did not cover your case; {from}, they passed the safety proofs (policy, capabilities, invariants), and the walk continued:"
                 );
                 for p in learned {
                     println!("{pad}     learned \"{}\" → {}: {}", p.arrow, p.dst, p.about);

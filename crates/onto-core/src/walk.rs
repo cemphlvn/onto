@@ -503,6 +503,8 @@ pub enum Disposition {
     /// Removed because its `attested` precondition is not met by verified,
     /// signed observations.
     Unattested,
+    /// Eligible, but a `grouped by` frame chose another group first.
+    OtherGroup,
 }
 
 /// One candidate's judgment, disposition and the reason for it.
@@ -612,6 +614,10 @@ pub fn dispose(
                 }
                 (Disposition::Unattested, why)
             }
+            Gate::Open => (
+                Disposition::OtherGroup,
+                "not judged: the coarse step chose another group".to_owned(),
+            ),
             _ => {
                 let req = arrow
                     .require

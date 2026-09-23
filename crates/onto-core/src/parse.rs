@@ -466,6 +466,20 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
             Some(_) => return Err(perr("only noul frames can be `parallel`")),
             None => (false, tail),
         };
+        let (grouped_by, tail) = match tail.trim_start().strip_prefix("grouped by ") {
+            Some(t) if primitive == Primitive::Choice => {
+                let t = t.trim_start();
+                let end = t
+                    .find(|c: char| !(c.is_alphanumeric() || c == '_'))
+                    .unwrap_or(t.len());
+                if end == 0 {
+                    return Err(perr("expected `grouped by FunctorName`"));
+                }
+                (Some(t[..end].to_owned()), &t[end..])
+            }
+            Some(_) => return Err(perr("only choice frames can be `grouped by` a functor")),
+            None => (None, tail),
+        };
         let instructions = match tail.trim() {
             "" => None,
             t => Some(json_value(t)?.0),
@@ -476,6 +490,7 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
                 primitive,
                 instructions,
                 parallel,
+                grouped_by,
             },
         );
     }
