@@ -1,0 +1,380 @@
+<title>onto raster</title>
+<style>
+:root {
+  --bg: #f7f6f2; --panel: #ffffff; --fg: #1d1d1b; --muted: #6b6a64; --grid: #e6e3da;
+  --border: #d9d5ca; --good: #2f7d4f; --warn: #b7791f; --bad: #b83232; --call: #1d1d1b;
+  --hatch: #b9b4a6; --chip: #efece4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151514; --panel: #1f1f1d; --fg: #ecebe6; --muted: #9c9a92; --grid: #2d2c29;
+    --border: #3a3935; --good: #5cbf86; --warn: #e0a84a; --bad: #ea6b6b; --call: #ecebe6;
+    --hatch: #57544c; --chip: #2a2927; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151514; --panel: #1f1f1d; --fg: #ecebe6; --muted: #9c9a92; --grid: #2d2c29;
+  --border: #3a3935; --good: #5cbf86; --warn: #e0a84a; --bad: #ea6b6b; --call: #ecebe6;
+  --hatch: #57544c; --chip: #2a2927; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { padding-inline: 20px; padding-block: 18px 40px; max-width: 1400px; margin: 0 auto; }
+h1 { font-size: 20px; margin: 0 0 2px; font-weight: 650; letter-spacing: -0.01em; }
+.sub { color: var(--muted); margin: 0 0 14px; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 0 14px; }
+.stat b { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 12px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px; }
+.chip { border: 1px solid var(--border); background: var(--chip); color: var(--fg); border-radius: 999px;
+  padding: 3px 10px 3px 8px; font: inherit; font-size: 12.5px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.chip[aria-pressed="false"] { opacity: 0.45; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+label.ctl { color: var(--muted); font-size: 12.5px; display: inline-flex; gap: 6px; align-items: center; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+.scroll { overflow-x: auto; }
+svg { display: block; }
+svg text { fill: var(--fg); font: 12px ui-sans-serif, system-ui, sans-serif; }
+svg .muted { fill: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 14px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+.legend svg { display: inline-block; vertical-align: middle; margin-right: 4px; }
+aside { padding: 14px; position: sticky; top: calc(12px + env(safe-area-inset-top, 0px)); max-height: calc(100vh - 24px); overflow: auto; }
+aside h2 { font-size: 14px; margin: 0 0 8px; }
+aside .empty { color: var(--muted); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 3px 10px; margin: 0 0 10px; font-size: 12.5px; }
+dt { color: var(--muted); } dd { margin: 0; overflow-wrap: anywhere; }
+.cand { border-top: 1px solid var(--grid); padding: 6px 0; font-size: 12.5px; }
+.cand .k { font-weight: 600; } .cand .r { color: var(--muted); }
+.tag { display: inline-block; padding: 0 6px; border-radius: 4px; background: var(--chip); font-size: 11.5px; margin-left: 4px; }
+.mark { cursor: pointer; }
+.hover-ring { fill: none; stroke: var(--fg); stroke-width: 1.5; pointer-events: none; }
+.note { color: var(--muted); font-size: 12px; margin-top: 12px; }
+</style>
+
+<div class="wrap">
+  <h1>onto raster</h1>
+  <p class="sub" id="sub"></p>
+  <div class="stats" id="stats"></div>
+  <div class="bar" id="cases"></div>
+  <div class="bar">
+    <label class="ctl">zoom <input id="zoom" type="range" min="1" max="8" step="0.25" value="1"></label>
+    <label class="ctl"><input id="causal" type="checkbox" checked> causal lines</label>
+  </div>
+  <div class="layout">
+    <div class="card">
+      <div class="scroll" id="scroll"><svg id="chart" role="img" aria-label="Raster of the run: frames by time"></svg></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <aside class="card" id="details"><h2>Details</h2><p class="empty">Click a mark: the event, and the frame record of that visit when the run was saved with <code>--dispositions</code>.</p></aside>
+  </div>
+  <p class="note">x: time since the run started · y: frames · colour: case (its branches share the hue) · shape: event · bar length: time spent · lines: causality. The raster shows what happened, not what was possible: that is the category map.</p>
+</div>
+
+<script>
+const D = /*DATA*/null;
+const ev = D.events.slice().sort((a, b) => a.t - b.t);
+const $ = (id) => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => {
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+};
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const isDark = () => {
+  const t = document.documentElement.getAttribute("data-theme");
+  if (t) return t === "dark";
+  return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches;
+};
+const fmt = (ms) => ms >= 1000 ? (ms / 1000).toFixed(ms >= 10000 ? 1 : 2) + " s" : Math.round(ms) + " ms";
+
+// ---- walks and cases ----
+const walks = new Map();
+for (const e of ev) {
+  if (e.event === "walk.start") walks.set(e.walk, { id: e.walk, parent: e.parent ?? null, case: e.case, goal: e.goal, from: e.from, start: e.t, end: null, depth: 0 });
+}
+for (const e of ev) {
+  const w = walks.get(e.walk);
+  if (w && (e.event === "walk.end" || e.event === "walk.refused" || e.event === "walk.failed")) w.end = Math.max(w.end ?? 0, e.t);
+}
+const rootOf = (id) => { let w = walks.get(id); while (w && w.parent != null && walks.has(w.parent)) w = walks.get(w.parent); return w ? w.id : id; };
+const roots = [...walks.values()].filter((w) => w.parent == null || !walks.has(w.parent)).map((w) => w.id).sort((a, b) => a - b);
+const hue = new Map(roots.map((r, i) => [r, (i * 137.508 + 200) % 360]));
+const members = new Map(roots.map((r) => [r, []]));
+for (const w of [...walks.values()].sort((a, b) => a.id - b.id)) members.get(rootOf(w.id))?.push(w.id);
+const color = (walk) => {
+  const r = rootOf(walk), i = (members.get(r) || [walk]).indexOf(walk);
+  const dark = isDark();
+  const l = dark ? 66 - Math.min(i, 4) * 6 : 42 + Math.min(i, 4) * 7;
+  return `hsl(${hue.get(r) ?? 0} ${dark ? 60 : 62}% ${l}%)`;
+};
+const hidden = new Set();
+
+// ---- rows ----
+const seen = [];
+const note = (name) => { if (name && !seen.includes(name)) seen.push(name); };
+for (const e of ev) if (["visit", "join", "escalate", "fork", "expansion"].includes(e.event)) note(e.at);
+for (const e of ev) if (e.event === "step") { note(e.from); note(e.to); }
+let rows;
+if (D.rows && D.rows.length) {
+  rows = D.rows.filter((r) => seen.includes(r));
+  for (const name of seen.filter((r) => !rows.includes(r))) {
+    const via = ev.find((e) => e.event === "step" && e.to === name);
+    const at = via ? rows.indexOf(via.from) : -1;
+    rows.splice(at >= 0 ? at + 1 : rows.length, 0, name);
+  }
+} else rows = seen;
+const learnedRows = new Set(D.rows && D.rows.length ? rows.filter((r) => !D.rows.includes(r)) : []);
+
+// ---- per-walk visits (intervals) ----
+const byWalk = new Map();
+for (const e of ev) if (e.walk != null) { if (!byWalk.has(e.walk)) byWalk.set(e.walk, []); byWalk.get(e.walk).push(e); }
+const visits = [];
+for (const [walk, list] of byWalk) {
+  const bounds = list.filter((e) => e.event === "visit" || e.event === "join" || e.event === "walk.end")
+    .map((e) => ({ e, start: e.event === "visit" ? e.t - (e.claim_wait_ms || 0) : e.event === "join" ? e.t - (e.wait_ms || 0) : e.t }));
+  bounds.forEach((b, i) => {
+    if (b.e.event !== "visit") return;
+    const next = bounds.slice(i + 1).find((x) => x.start >= b.e.t - 1e-6);
+    const end = next ? next.start : (walks.get(walk)?.end ?? b.e.t);
+    visits.push({ walk, at: b.e.at, record: b.e.record, start: b.start, claimEnd: b.e.t, end: Math.max(end, b.e.t), mode: b.e.mode });
+  });
+}
+const visitAt = (walk, t, at) => visits.filter((v) => v.walk === walk && (!at || v.at === at) && v.start - 1 <= t && t <= v.end + 1).pop();
+
+// ---- stats ----
+const start = ev.find((e) => e.event === "run.start") || {}, end = ev.find((e) => e.event === "run.end") || {};
+const tMax = Math.max(1, ...ev.map((e) => e.t), ...visits.map((v) => v.end));
+$("sub").textContent = `${start.category || "category"} · judge ${start.judge || "?"} · proposer ${start.proposer || "?"} · policy ${start.policy || "?"} · ${D.source}` + (D.runs > 1 ? ` · run ${D.run} of ${D.runs}` : "");
+const stat = (v, k) => { const d = document.createElement("div"); d.className = "stat"; d.innerHTML = `<b></b><span></span>`; d.firstChild.textContent = v; d.lastChild.textContent = k; $("stats").appendChild(d); };
+stat(roots.length, "cases"); stat(walks.size, "walks");
+stat(fmt(end.wall_ms ?? tMax), "wall");
+if (end.model_ms_sum && end.wall_ms) stat((end.model_ms_sum / end.wall_ms).toFixed(2) + "×", "parallelism");
+stat(end.judge_calls ?? ev.filter((e) => e.event === "judge.call").length, "judge calls");
+stat(end.proposer_calls ?? ev.filter((e) => e.event === "proposer.call").length, "proposer calls");
+stat(ev.filter((e) => e.event === "escalate").length, "escalations");
+const waited = ev.filter((e) => e.event === "visit" && e.claim_wait_ms > 1).reduce((s, e) => s + e.claim_wait_ms, 0);
+stat(fmt(waited), "waited for claims");
+
+// ---- case chips ----
+for (const r of roots) {
+  const w = walks.get(r), b = document.createElement("button");
+  b.className = "chip"; b.setAttribute("aria-pressed", "true");
+  const dot = document.createElement("span"); dot.className = "dot"; dot.dataset.walk = r;
+  const label = (w.case ? w.case + " · " : "walk " + r + " · ") + (w.goal || "").slice(0, 38) + ((w.goal || "").length > 38 ? "…" : "");
+  b.append(dot, document.createTextNode(label)); b.title = w.goal || "";
+  b.onclick = () => { hidden.has(r) ? hidden.delete(r) : hidden.add(r); b.setAttribute("aria-pressed", hidden.has(r) ? "false" : "true"); draw(); };
+  $("cases").appendChild(b);
+}
+
+// ---- legend ----
+const legend = [
+  ["visit", (s) => el("rect", { x: 1, y: 6, width: 22, height: 6, rx: 2, fill: css("--muted"), opacity: 0.45 }, s)],
+  ["waiting for a claim", (s) => el("rect", { x: 1, y: 5, width: 22, height: 8, fill: "url(#hatch)" }, s)],
+  ["judge call", (s) => el("rect", { x: 1, y: 3, width: 22, height: 12, rx: 2, fill: css("--muted") }, s)],
+  ["proposer call", (s) => el("rect", { x: 1.5, y: 3.5, width: 21, height: 11, rx: 2, fill: "none", stroke: css("--muted"), "stroke-width": 1.5, "stroke-dasharray": "3 2" }, s)],
+  ["join wait", (s) => el("line", { x1: 1, x2: 23, y1: 9, y2: 9, stroke: css("--muted"), "stroke-width": 2.5, "stroke-dasharray": "5 3" }, s)],
+  ["decision (opacity: confidence)", (s) => el("circle", { cx: 12, cy: 9, r: 4.5, fill: css("--muted") }, s)],
+  ["fork", (s) => el("path", { d: "M7 14 L12 4 L17 14 Z", fill: css("--muted") }, s)],
+  ["join", (s) => el("path", { d: "M12 3 L18 9 L12 15 L6 9 Z", fill: css("--muted") }, s)],
+  ["escalation", (s) => el("path", { d: "M7 4 L17 14 M17 4 L7 14", stroke: css("--bad"), "stroke-width": 2.5 }, s)],
+  ["learned", (s) => star(s, 12, 9, css("--good"))],
+  ["held for a person", (s) => star(s, 12, 9, css("--warn"))],
+  ["refused", (s) => star(s, 12, 9, css("--bad"))],
+];
+function star(p, cx, cy, fill, r = 6) {
+  const pts = []; for (let i = 0; i < 10; i++) { const a = Math.PI / 5 * i - Math.PI / 2, rr = i % 2 ? r * 0.45 : r; pts.push([cx + rr * Math.cos(a), cy + rr * Math.sin(a)]); }
+  return el("polygon", { points: pts.map((q) => q.join(",")).join(" "), fill }, p);
+}
+function drawLegend() {
+  $("legend").innerHTML = "";
+  for (const [name, fn] of legend) {
+    const span = document.createElement("span"), s = document.createElementNS(NS, "svg");
+    s.setAttribute("width", 24); s.setAttribute("height", 18);
+    const defs = el("defs", {}, s); hatch(defs); fn(s);
+    span.append(s, document.createTextNode(name)); $("legend").appendChild(span);
+  }
+}
+function hatch(defs) {
+  const p = el("pattern", { id: "hatch", width: 5, height: 5, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, defs);
+  el("rect", { width: 5, height: 5, fill: css("--panel") }, p);
+  el("line", { x1: 0, y1: 0, x2: 0, y2: 5, stroke: css("--hatch"), "stroke-width": 2.5 }, p);
+}
+
+// ---- chart ----
+const LABEL = 170, ROW = 28, TOP = 30, BOTTOM = 16;
+let selected = null;
+function draw() {
+  const svg = $("chart"); svg.innerHTML = "";
+  const zoom = +$("zoom").value;
+  const avail = Math.max(420, $("scroll").clientWidth - LABEL - 24);
+  const plotW = avail * zoom, W = LABEL + plotW + 24, H = TOP + rows.length * ROW + BOTTOM;
+  svg.setAttribute("width", W); svg.setAttribute("height", H); svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const defs = el("defs", {}, svg); hatch(defs);
+  const x = (t) => LABEL + (t / tMax) * plotW;
+  const y = (row) => TOP + rows.indexOf(row) * ROW + ROW / 2;
+  const show = (walk) => !hidden.has(rootOf(walk));
+
+  // grid and time axis
+  const step = niceStep(tMax / Math.max(4, Math.round(plotW / 110)));
+  for (let t = 0; t <= tMax + 1e-9; t += step) {
+    el("line", { x1: x(t), x2: x(t), y1: TOP - 6, y2: H - BOTTOM, stroke: css("--grid") }, svg);
+    const tx = el("text", { x: x(t), y: TOP - 12, "text-anchor": "middle", class: "muted" }, svg); tx.textContent = fmt(t);
+  }
+  rows.forEach((r, i) => {
+    if (i % 2) el("rect", { x: 0, y: TOP + i * ROW, width: W, height: ROW, fill: css("--grid"), opacity: 0.35 }, svg);
+    const tx = el("text", { x: LABEL - 10, y: TOP + i * ROW + ROW / 2 + 4, "text-anchor": "end" }, svg);
+    tx.textContent = r.length > 22 ? r.slice(0, 21) + "…" : r;
+    if (learnedRows.has(r)) { tx.setAttribute("font-style", "italic"); tx.setAttribute("class", "muted"); }
+    const title = el("title", {}, tx); title.textContent = r + (learnedRows.has(r) ? " (learned)" : "");
+  });
+
+  const layer = { lines: el("g", {}, svg), bars: el("g", {}, svg), marks: el("g", {}, svg) };
+  // visits
+  for (const v of visits) {
+    if (!show(v.walk) || !rows.includes(v.at)) continue;
+    const c = color(v.walk), yy = y(v.at);
+    const bar = el("rect", { x: x(v.start), y: yy - 3, width: Math.max(1.5, x(v.end) - x(v.start)), height: 6, rx: 2, fill: c, opacity: 0.4, class: "mark" }, layer.bars);
+    hook(bar, { event: "visit", walk: v.walk, at: v.at, record: v.record, t: v.start, until: v.end, claim_wait_ms: v.claimEnd - v.start, mode: v.mode });
+    if (v.claimEnd - v.start > 0.5) el("rect", { x: x(v.start), y: yy - 4, width: Math.max(1, x(v.claimEnd) - x(v.start)), height: 8, fill: "url(#hatch)" }, layer.bars);
+  }
+  // calls and join waits
+  for (const e of ev) {
+    if (e.walk == null || !show(e.walk) || !rows.includes(e.at)) continue;
+    const c = color(e.walk), yy = y(e.at);
+    if (e.event === "judge.call" && e.latency_ms != null) {
+      const r = el("rect", { x: x(e.t - e.latency_ms), y: yy - 6, width: Math.max(2, x(e.t) - x(e.t - e.latency_ms)), height: 12, rx: 2, fill: c, class: "mark" }, layer.bars);
+      hook(r, e);
+    } else if (e.event === "proposer.call" && e.latency_ms != null) {
+      const r = el("rect", { x: x(e.t - e.latency_ms), y: yy - 5.5, width: Math.max(2, x(e.t) - x(e.t - e.latency_ms)), height: 11, rx: 2, fill: "none", stroke: c, "stroke-width": 1.5, "stroke-dasharray": "3 2", class: "mark" }, layer.bars);
+      hook(r, e);
+    } else if (e.event === "join" && e.wait_ms > 0.5) {
+      el("line", { x1: x(e.t - e.wait_ms), x2: x(e.t), y1: yy, y2: yy, stroke: c, "stroke-width": 2.5, "stroke-dasharray": "5 3" }, layer.bars);
+    }
+  }
+  // causal lines: a walk's step into its next visit; a branch from its fork
+  if ($("causal").checked) {
+    for (const e of ev) {
+      if (e.event !== "step" || !show(e.walk)) continue;
+      const next = visits.filter((v) => v.walk === e.walk && v.start >= e.t - 1).sort((a, b) => a.start - b.start)[0];
+      const to = next ? next.at : e.to, tt = next ? next.start : e.t;
+      if (rows.includes(e.from) && rows.includes(to)) curve(layer.lines, x(e.t), y(e.from), x(tt), y(to), color(e.walk));
+    }
+    for (const w of walks.values()) {
+      if (w.parent == null || !show(w.id)) continue;
+      const fork = ev.filter((e) => e.event === "fork" && e.walk === w.parent && e.t <= w.start + 1).pop();
+      const first = visits.filter((v) => v.walk === w.id).sort((a, b) => a.start - b.start)[0];
+      if (fork && first && rows.includes(fork.at) && rows.includes(first.at)) curve(layer.lines, x(fork.t), y(fork.at), x(first.start), y(first.at), color(w.id), true);
+    }
+  }
+  // point events
+  for (const e of ev) {
+    if (e.walk == null || !show(e.walk)) continue;
+    const c = color(e.walk);
+    let m = null;
+    if (e.event === "step" && rows.includes(e.from)) {
+      const conf = e.confidence ?? e.p ?? 1;
+      m = el("circle", { cx: x(e.t), cy: y(e.from), r: 4.5, fill: c, "fill-opacity": 0.3 + 0.7 * conf, stroke: c, "stroke-width": 1 }, layer.marks);
+    } else if (e.event === "fork" && rows.includes(e.at)) {
+      const cx = x(e.t), cy = y(e.at); m = el("path", { d: `M${cx - 5.5} ${cy + 5} L${cx} ${cy - 6} L${cx + 5.5} ${cy + 5} Z`, fill: c }, layer.marks);
+    } else if (e.event === "join" && rows.includes(e.at)) {
+      const cx = x(e.t), cy = y(e.at); m = el("path", { d: `M${cx} ${cy - 6.5} L${cx + 6.5} ${cy} L${cx} ${cy + 6.5} L${cx - 6.5} ${cy} Z`, fill: c, stroke: css("--panel"), "stroke-width": 1 }, layer.marks);
+    } else if (e.event === "escalate" && rows.includes(e.at)) {
+      const cx = x(e.t), cy = y(e.at); m = el("path", { d: `M${cx - 5} ${cy - 5} L${cx + 5} ${cy + 5} M${cx + 5} ${cy - 5} L${cx - 5} ${cy + 5}`, stroke: css("--bad"), "stroke-width": 2.5 }, layer.marks);
+      el("rect", { x: cx - 7, y: cy - 7, width: 14, height: 14, fill: "transparent", class: "mark" }, layer.marks).__e = e;
+    } else if (e.event === "expansion" && rows.includes(e.at)) {
+      const fill = e.learned > 0 ? css("--good") : e.held > 0 ? css("--warn") : css("--bad");
+      m = star(layer.marks, x(e.t), y(e.at) - 9, fill, 6.5);
+    } else if ((e.event === "walk.refused" || e.event === "walk.failed") && rows.includes(e.at)) {
+      m = el("rect", { x: x(e.t) - 5, y: y(e.at) - 5, width: 10, height: 10, fill: css("--bad") }, layer.marks);
+    }
+    if (m) { m.classList.add("mark"); hook(m, e); }
+  }
+  for (const n of layer.marks.querySelectorAll("rect")) if (n.__e) hook(n, n.__e);
+}
+function curve(p, x1, y1, x2, y2, c, dashed) {
+  const mx = (x1 + x2) / 2;
+  el("path", { d: `M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`, fill: "none", stroke: c, "stroke-width": 1.2, opacity: 0.55, "stroke-dasharray": dashed ? "2 3" : "" }, p);
+}
+function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; }
+function hook(node, e) {
+  const t = el("title", {}, node);
+  t.textContent = summary(e);
+  node.addEventListener("click", () => show_(e));
+}
+function summary(e) {
+  const w = walks.get(e.walk), who = w ? (w.case ? w.case + " " : "") + "walk " + e.walk : "walk " + e.walk;
+  switch (e.event) {
+    case "visit": return `${who} at ${e.at}: ${fmt(e.until - e.t)}` + (e.claim_wait_ms > 1 ? `, ${fmt(e.claim_wait_ms)} waiting for the claim` : "");
+    case "judge.call": return `${who}: judge at ${e.at}, ${fmt(e.latency_ms)}` + (e.confidence != null ? `, confidence ${(+e.confidence).toFixed(2)}` : "");
+    case "proposer.call": return `${who}: proposer at ${e.at}, ${fmt(e.latency_ms)}, ${e.proposals ?? 0} proposal(s)`;
+    case "step": return `${who}: ${e.from} —${e.arrow}→ ${e.to} (p ${(+e.p).toFixed(2)}${e.confidence != null ? ", conf " + (+e.confidence).toFixed(2) : ""})`;
+    case "fork": return `${who}: fork at ${e.at} into ${e.branches}`;
+    case "join": return `${who}: join (${e.policy}) at ${e.at}, ${e.role}, waited ${fmt(e.wait_ms || 0)}`;
+    case "escalate": return `${who}: escalated at ${e.at} (${e.reason})`;
+    case "expansion": return `${who}: ${e.source} at ${e.at}: ${e.learned} learned, ${e.held} held, ${e.refused} refused`;
+    default: return `${who}: ${e.event}`;
+  }
+}
+
+// ---- details ----
+function show_(e) {
+  const box = $("details"); box.innerHTML = "";
+  const h = document.createElement("h2"); h.textContent = summary(e); box.appendChild(h);
+  const dl = document.createElement("dl");
+  for (const [k, v] of Object.entries(e)) {
+    if (v == null || k === "event" && false) continue;
+    const dt = document.createElement("dt"), dd = document.createElement("dd");
+    dt.textContent = k; dd.textContent = typeof v === "number" ? (Number.isInteger(v) ? v : (+v).toFixed(2)) : String(v);
+    dl.append(dt, dd);
+  }
+  box.appendChild(dl);
+  const visit = e.record ? visits.find((v) => v.record === e.record) : visitAt(e.walk, e.t, e.at || e.from);
+  const rec = visit && D.records[visit.record];
+  if (!rec) {
+    const p = document.createElement("p"); p.className = "empty";
+    p.textContent = Object.keys(D.records).length ? "No frame record for this event." : "Frame records: run with --dispositions and pass them to onto raster.";
+    box.appendChild(p); return;
+  }
+  const h3 = document.createElement("h2"); h3.textContent = `Frame record ${rec.id}`; box.appendChild(h3);
+  const d2 = document.createElement("dl");
+  const row = (k, v) => { if (v == null || v === "" || (Array.isArray(v) && !v.length)) return; const dt = document.createElement("dt"), dd = document.createElement("dd"); dt.textContent = k; dd.textContent = Array.isArray(v) ? v.join(", ") : v; d2.append(dt, dd); };
+  row("at", `${rec.at} (${rec.primitive}, ${rec.closure})`);
+  row("after", rec.after); row("tokens", rec.tokens); row("attested", rec.attested);
+  row("focus", rec.focus);
+  if (rec.seen) row("model saw", leaves(rec.seen).join(", "));
+  if (rec.grouped) row("grouped", `${rec.grouped.functor}: ${rec.grouped.chose || "fallback"} (kept ${rec.grouped.kept})`);
+  const o = rec.outcome || {};
+  row("outcome", [o.kind, o.arrow && "→ " + o.arrow, o.reason, o.source].filter(Boolean).join(" "));
+  box.appendChild(d2);
+  for (const c of rec.candidates || []) {
+    const div = document.createElement("div"); div.className = "cand";
+    const k = document.createElement("span"); k.className = "k"; k.textContent = `${c.arrow} → ${c.to}`;
+    const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = c.disposition?.kind || c.disposition || "";
+    const j = document.createElement("span"); j.className = "tag"; j.textContent = c.judgment != null ? (+c.judgment).toFixed(2) : "—";
+    const r = document.createElement("div"); r.className = "r"; r.textContent = c.reason || "";
+    div.append(k, tag, j, r); box.appendChild(div);
+  }
+  for (const [label, list] of [["learned or proposed", (rec.proposals || []).map((p) => `${p.arrow}: ${p.src} → ${p.dst}`)], ["not learned", (rec.refused || []).map((x) => x.join(": "))], ["held for a person", (rec.held || []).map((x) => x.join(": "))]]) {
+    if (!list.length) continue;
+    const div = document.createElement("div"); div.className = "cand";
+    const k = document.createElement("div"); k.className = "k"; k.textContent = label; div.appendChild(k);
+    for (const s of list) { const r = document.createElement("div"); r.className = "r"; r.textContent = s; div.appendChild(r); }
+    box.appendChild(div);
+  }
+}
+function leaves(v, prefix = "") {
+  if (v && typeof v === "object" && !Array.isArray(v) && Object.keys(v).length) return Object.entries(v).flatMap(([k, x]) => ["at", "about_at"].includes(k) && !prefix ? [] : leaves(x, prefix ? prefix + "." + k : k));
+  return [prefix];
+}
+
+function paintChips() { for (const d of document.querySelectorAll(".dot")) d.style.background = color(+d.dataset.walk); }
+function redraw() { paintChips(); drawLegend(); draw(); }
+$("zoom").oninput = draw; $("causal").onchange = draw;
+window.addEventListener("resize", draw);
+if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", redraw);
+new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+redraw();
+</script>

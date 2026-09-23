@@ -86,3 +86,26 @@ It does not perform mitigations; it governs which are pursued, which one
 counts, and when completion may be claimed. Resolution is declared by a
 person. Attestations are only as honest as the attesters (see
 `docs/04-trust-model.md`).
+
+## The raster (2026-09-24)
+
+```
+onto run demos/incident-response/incident.onto --jobs demos/incident-response/jobs \
+    --policy shared --max-branches 6 --telemetry t.jsonl --dispositions d.jsonl
+onto raster t.jsonl --dispositions d.jsonl --category demos/incident-response/incident.onto
+```
+
+Live (Jev + OpenRouter, open world, 20.6 s wall, parallelism 2.85×):
+
+![raster of a live incident-response run](../../docs/raster-incident-response.png)
+
+
+- every judgment of all four incidents was made in the first ~1.5 s; the
+  remaining ~19 s were proposer calls, as the open world tried to learn
+  where evidence was missing (INC-5002 at Rollback and Failover);
+- INC-5003's all-join at Verified waited 6.5 s: its checkout branch had
+  escalated, and the join resolved as incomplete only after that
+  branch's proposer call returned. Open-world learning latency delays
+  the joins that depend on it; a sealed or assured check frame would not
+  make its siblings wait.
+

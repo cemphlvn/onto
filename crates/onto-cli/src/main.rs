@@ -13,6 +13,7 @@ mod learned;
 mod migrate;
 mod module;
 mod quotient;
+mod raster;
 mod replay;
 mod run;
 mod supervise;
@@ -99,6 +100,8 @@ enum Cmd {
     /// holds against the declared graph.
     /// What a functor keeps, reflects and leaves uncovered.
     Functor(functor::FunctorArgs),
+    /// Draw what a run did, in time: frames × time, from its telemetry.
+    Raster(raster::RasterArgs),
     Learned(learned::LearnedArgs),
     /// Carry the learned layer and memory along a version functor.
     Migrate(migrate::MigrateArgs),
@@ -112,6 +115,7 @@ fn main() -> ExitCode {
     let result = match cli.cmd {
         Cmd::Run(args) => run::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Functor(args) => functor::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Raster(args) => raster::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Learned(args) => learned::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Migrate(args) => migrate::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Replay(args) => replay::main(args).map(|()| ExitCode::SUCCESS),
@@ -293,6 +297,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         }
         Cmd::Run(_)
         | Cmd::Learned(_)
+        | Cmd::Raster(_)
         | Cmd::Migrate(_)
         | Cmd::Functor(_)
         | Cmd::Replay(_)

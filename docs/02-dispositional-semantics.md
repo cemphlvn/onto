@@ -64,6 +64,23 @@ the fork judgment.
 | static | $\gamma$ (frames, labels, targets) | bisimulation (partition refinement) | yes, cheap |
 | judged | $J$, history-indexed | testing equivalence on sample cases and histories | only empirically |
 
+**Operational state coalgebra** (added 2026-09-24, see
+`docs/06-spaces.md`). $\gamma$ describes the *structure*: what each object
+offers. A running walk lives in a larger state space,
+
+$$ S = \text{Object} \times \text{Tokens} \times \text{Forks} \times \text{Evidence} \times \text{History} $$
+
+and the runtime is a second coalgebra $\Gamma : S \to F_{op}(S)$, generated
+by $\gamma$ together with the guards (`require`, `attested`, entry
+contracts) and effects (`ensures`, `revokes`, join rules) of the policy:
+$\Gamma(s)$ offers exactly the arrows of $\gamma(\text{obj}(s))$ that are
+eligible in $s$, each with the state it leads to. `onto laws` explores
+the projection of $S$ onto $\text{Object} \times \text{Tokens}$ with case
+preconditions assumed satisfiable; the judged layer $J$ chooses among
+$\Gamma(s)$'s offers. The structure coalgebra induces the operational
+one; the converse does not hold (two objects bisimilar under $\gamma$
+can differ under $\Gamma$ once guards read the case).
+
 ## 2. Two corrections
 
 **2.1 Bisimulation cannot group new proposals.** `DeliveryIssue` and

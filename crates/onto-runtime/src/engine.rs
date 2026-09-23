@@ -530,6 +530,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             event = "walk.start",
             walk = id,
             parent,
+            case = job.case["id"].as_str(),
             from = %cat.object(path.dst).name,
             goal = %job.goal,
         );
@@ -775,6 +776,17 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let wait_ms = ms(guard.waited);
             seq += 1;
             let rec_id = format!("w{id}.{seq}");
+            // A visit starts when the walk asks for the frame; the claim
+            // wait is its first part (the raster draws it).
+            tracing::info!(
+                target: "onto",
+                event = "visit",
+                walk = id,
+                at = %cat.object(at).name,
+                record = %rec_id,
+                mode = mode.as_str(),
+                claim_wait_ms = wait_ms,
+            );
             // The focus this visit was made under (a fork below may change it).
             let visit_focus = focus.as_ref().map(|f| f.arrow.clone());
             // Exactly what a model is shown at this visit, if one is asked.
@@ -1196,6 +1208,17 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         refused,
                         held,
                     } = self.expand(&rec_id, reason, &proposals, &settled, at).await;
+                    tracing::info!(
+                        target: "onto",
+                        event = "expansion",
+                        walk = id,
+                        at = %at_name,
+                        record = %rec_id,
+                        source = "transport",
+                        learned = learned.len(),
+                        refused = refused.len(),
+                        held = held.len(),
+                    );
                     if !learned.is_empty() {
                         if let Some(h) = speculative.take() {
                             h.abort();
@@ -1269,6 +1292,17 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 } = self
                     .expand(&rec_id, reason, proposals, &HashMap::new(), at)
                     .await;
+                tracing::info!(
+                    target: "onto",
+                    event = "expansion",
+                    walk = id,
+                    at = %at_name,
+                    record = %rec_id,
+                    source = "proposer",
+                    learned = learned.len(),
+                    refused = refused.len(),
+                    held = held.len(),
+                );
                 if learned.is_empty() {
                     refused_here = refused;
                     held_here = held;
