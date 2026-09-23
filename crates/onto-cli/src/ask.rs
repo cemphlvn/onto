@@ -131,6 +131,8 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
     let mut outcome = None;
     let mut combined = false;
     let mut last_attested: Vec<String> = Vec::new();
+    // Set when a join this walk continued from was attested completion.
+    let mut attested_join: Option<String> = None;
     for s in &w.steps {
         match s {
             StepRecord::Followed {
@@ -159,8 +161,15 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                 role,
                 into,
                 detail,
+                completion_attested,
                 ..
             } => match role.as_str() {
+                "continued" if *completion_attested => {
+                    println!(
+                        "{pad}   ⤝ the parts of your case came back together at {at} ({detail})"
+                    );
+                    attested_join = Some(format!("every check at {at} was attested"));
+                }
                 "continued" => println!(
                     "{pad}   ⤝ the parts of your case came back together at {at} ({detail})"
                 ),
@@ -196,15 +205,17 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
         None if terminal => {
             let route = w.path.split(" : ").next().unwrap_or_default();
             // Completion in the world is claimed only on attested evidence.
-            if last_attested.is_empty() {
-                println!("{pad}✓ Reached {end_name} by an existing route.");
-                println!(
-                    "{pad}  Not attested: no trusted source has confirmed the outcome in the world."
-                );
-            } else {
+            if !last_attested.is_empty() {
                 println!(
                     "{pad}✓ Completed: {end_name}, attested by {}.",
                     last_attested.join("; ")
+                );
+            } else if let Some(how) = &attested_join {
+                println!("{pad}✓ Completed: {end_name}; {how}.");
+            } else {
+                println!("{pad}✓ Reached {end_name} by an existing route.");
+                println!(
+                    "{pad}  Not attested: no trusted source has confirmed the outcome in the world."
                 );
             }
             println!("{pad}  Route: {route}");
@@ -224,6 +235,9 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                     format!(
                         "the parts of your case were meant to come together at {at}, but one part could not finish"
                     )
+                }
+                Escalation::SplitOverBudget => {
+                    format!("{at} has required steps that could not all be started")
                 }
                 Escalation::BlockedByGate => {
                     format!(

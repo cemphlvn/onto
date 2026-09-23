@@ -24,7 +24,7 @@ propose new structure.
 | closed frame | outgoing arrows verified MECE (mutually exclusive, collectively exhaustive) | `Closure::Closed` |
 | open frame | known to be incomplete | `Closure::Open` |
 | equation | two parallel paths declared equal | `Equation` |
-| frame primitive | how a frame is decided: `choice` (one arrow), `noul` (each arrow's condition on its own), `score` (one ordered scale; arrows are levels) | `Primitive`, `Frame` |
+| frame primitive | how a frame is decided: `choice` (one arrow), `noul` (each arrow's condition on its own; `noul parallel` pursues every holding arrow as a concurrent alternative), `score` (one ordered scale; arrows are levels), `split` (no judgment: every eligible arrow is pursued) | `Primitive`, `Frame` |
 | instructions | an arrow's meaning, text or structured JSON; rendered per primitive by each model adapter | `Arrow::instructions` |
 | `about` | an object's meaning | `Object::about` |
 | `require` | a structured precondition checked in code against the case's JSON facts before any model is asked | `Require` |
@@ -392,6 +392,8 @@ snapshot. No database until live multi-writer editing is needed.
 | D32 | a walk waits only on running siblings | deadlock freedom without a global scheduler |
 | D33 | attested observations: declared attesters with Ed25519 keys, strict verification over a domain-separated canonical message, field authorization, case binding | a real-world claim must be authenticated, not asserted; replay across cases is refused |
 | D34 | completion is presented only on attested evidence: arrows can require it, joins and answers are labelled attested or not | a walk reaching an object is evidence about the walk, not the world |
+| D35 | `noul parallel` frames pursue every holding arrow without a fork question | racing alternatives (mitigation plans) are neither independent aspects nor competing readings; the author declares them |
+| D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
 | D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |

@@ -173,6 +173,13 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
         None => json!(format!("{default}{scope}")),
     };
     Ok(match req.primitive {
+        Primitive::Split => {
+            // Split frames are never judged; the engine does not send them.
+            return Err(ModelError::Unsupported {
+                model: "jev".into(),
+                primitive: "split",
+            });
+        }
         Primitive::Choice => {
             if req.candidates.len() > 254 {
                 return Err(ModelError::FrameTooWide(req.candidates.len()));
@@ -207,7 +214,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
                     json!({"type": "noul", "instructions": instructions}),
                 );
             }
-            if req.can_fork && req.candidates.len() > 1 {
+            if req.can_fork && !req.parallel && req.candidates.len() > 1 {
                 let options: Vec<Value> = req.candidates.iter().map(describe).collect();
                 qs.insert("fork".into(), json!({
                     "type": "noul",
@@ -237,6 +244,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
 fn read_answer(req: &FrameRequest, answers: &Value) -> Option<Answer> {
     let f = |v: &Value| v.as_f64().map(|x| x as f32);
     Some(match req.primitive {
+        Primitive::Split => return None,
         Primitive::Choice => {
             let a = &answers["next"];
             let probs = a["probabilities"].as_object()?;

@@ -1,0 +1,63 @@
+# Incident Response: mitigation plans race, verification must all pass,
+# and completion is claimed only on signed evidence.
+#
+# 1. Outage is a parallel noul frame: every plausible mitigation plan is
+#    pursued at once (rollback, failover, throttling).
+# 2. A plan reaches Mitigating only when its application is attested by
+#    the system that applied it. `join Mitigating: race` takes the first
+#    attested plan; later arrivals lose the race; plans without evidence
+#    stop where they are (unattested).
+# 3. From Mitigating, every verification check runs (a split: no model
+#    decides which checks apply); each passes only on a signed observation;
+#    `join Verified: all` continues only when every check has arrived.
+#    The join is labelled "completion attested" only if all arrived attested.
+
+category IncidentResponse {
+    attester DeployBot  { key: ed25519:BySBIgesMcXTFMl4KZ035C3R5xSRe9QBgU8RnPkvti0=;  observes: deploy.reverted; }
+    attester DbOps      { key: ed25519:XI+9IW33WXInyceHQVSs7PkiuVTRoVeVHPRi31ghiVI=;      observes: replica.promoted; }
+    attester EdgeProxy  { key: ed25519:SNKx/jxdQ71pHrXNWkX+jMfW7qPASVnHfETeGsTAx5Y=;  observes: limits.active; }
+    attester Monitoring { key: ed25519:IFXkBtEhjS9uzoHqXNWxNoSC0a/eoQcly/TL0y4o+iI=; observes: errors.normal, latency.normal; }
+    attester Synthetics { key: ed25519:WIJzt9oSdwoD4SziRlXwEmrbhXOz4x7D4Z6Eli/vMDw=; observes: checkout.passes; }
+
+    objects: Outage, Rollback, Failover, Throttle, Mitigating,
+             ErrorCheck, LatencyCheck, CheckoutCheck, Verified, Resolved;
+    start: Outage;
+
+    about Outage: "customers are affected right now; the root cause may be unknown";
+    about Mitigating: "a mitigation has been applied and must now be verified";
+    about Resolved: "the incident is over for customers";
+
+    frame Outage: noul parallel "Which mitigation plans are plausible for this outage? Every plausible plan is tried at once.";
+    try_rollback: Outage -> Rollback "a recent deploy or configuration change may have caused it";
+    try_failover: Outage -> Failover "the primary database or a zone may be unhealthy";
+    try_throttle: Outage -> Throttle "a traffic surge or abusive load may be overwhelming the service";
+    closed: Outage;
+
+    rollback_applied: Rollback -> Mitigating "the previous version is serving traffic again"
+                      attested deploy.reverted == true;
+    failover_applied: Failover -> Mitigating "traffic has moved to the promoted replica"
+                      attested replica.promoted == true;
+    throttle_applied: Throttle -> Mitigating "rate limits are in effect at the edge"
+                      attested limits.active == true;
+    closed: Rollback, Failover, Throttle;
+    join Mitigating: race;
+
+    # Verification is not judged: a split runs every check, so no model can
+    # drop one. (A noul frame here once skipped the checkout check live.)
+    frame Mitigating: split;
+    check_errors:   Mitigating -> ErrorCheck    "the error rate must be back to normal";
+    check_latency:  Mitigating -> LatencyCheck  "latency must be back to normal";
+    check_checkout: Mitigating -> CheckoutCheck "customers must be able to complete checkout end to end";
+    closed: Mitigating;
+
+    errors_ok:   ErrorCheck -> Verified    "the error rate is normal"                attested errors.normal == true;
+    latency_ok:  LatencyCheck -> Verified  "latency is normal"                       attested latency.normal == true;
+    checkout_ok: CheckoutCheck -> Verified "a synthetic checkout passes end to end"  attested checkout.passes == true;
+    closed: ErrorCheck, LatencyCheck, CheckoutCheck;
+    join Verified: all;
+
+    resolve: Verified -> Resolved "declare the incident resolved for customers";
+    closed: Verified, Resolved;
+
+    invariant via: Outage -> Resolved through Verified;   # never resolved without verification
+}

@@ -1092,3 +1092,14 @@ mod quotient {
         assert_eq!(r, [("f".to_owned(), "g".to_owned())]);
     }
 }
+
+#[test]
+fn split_frames_parse_and_reject_levels() {
+    let cat = parse("category C { objects: A, B; frame A: split; f: A -> B; }").unwrap();
+    assert_eq!(
+        cat.object(cat.object_id("A").unwrap()).frame.primitive,
+        Primitive::Split
+    );
+    assert!(parse("category C { objects: A, B; frame A: split; f: A -> B level 0; }").is_err());
+    assert!(parse("category C { objects: A, B; frame A: choice parallel; f: A -> B; }").is_err());
+}

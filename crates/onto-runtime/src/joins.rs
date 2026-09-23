@@ -149,6 +149,12 @@ impl Joins {
                     self.changed.notify_waiters();
                 }
                 if let Some(outcome) = resolve(&mut inner, walk, fork, &key, join) {
+                    // A walk that continues past the join is running again
+                    // (otherwise a later join would see it as waiting
+                    // elsewhere). Walks that end are marked by `ended`.
+                    if matches!(outcome, JoinOutcome::Continue { .. }) {
+                        inner.status.insert(walk, Status::Running);
+                    }
                     drop(inner);
                     self.changed.notify_waiters();
                     return (outcome, start.elapsed());

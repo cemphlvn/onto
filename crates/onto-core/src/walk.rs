@@ -100,6 +100,9 @@ pub enum Escalation {
     IncompleteJoin,
     /// A gate join's authority branch ended without arriving.
     BlockedByGate,
+    /// A split frame could not pursue every eligible arrow (branch budget
+    /// or depth): it escalates rather than drop one.
+    SplitOverBudget,
 }
 
 impl Escalation {
@@ -110,6 +113,7 @@ impl Escalation {
             Self::LowConfidence => "low_confidence",
             Self::IncompleteJoin => "incomplete_join",
             Self::BlockedByGate => "blocked_by_gate",
+            Self::SplitOverBudget => "split_over_budget",
         }
     }
 }
@@ -400,6 +404,10 @@ impl Judge for ScriptedJudge {
                 holds: hits,
                 fork: None,
             },
+            Primitive::Split => Answer::Noul {
+                holds: vec![1.0; candidates.len()],
+                fork: None,
+            },
             Primitive::Score => Answer::Score {
                 confidence: Some(if hit { 1.0 } else { 0.0 }),
                 levels: hits,
@@ -427,6 +435,10 @@ impl Judge for UniformJudge {
             }
             Primitive::Noul => Answer::Noul {
                 holds: vec![0.5; n],
+                fork: None,
+            },
+            Primitive::Split => Answer::Noul {
+                holds: vec![1.0; n],
                 fork: None,
             },
             Primitive::Score => Answer::Score {
@@ -630,6 +642,9 @@ pub fn dispose(
                         level(a),
                         gate(pv)
                     ),
+                    Primitive::Split => {
+                        "the only eligible arrow of a split frame (no judgment)".to_owned()
+                    }
                 };
                 (Disposition::Selected, reason)
             }
@@ -647,9 +662,18 @@ pub fn dispose(
             }
             Decision::Fork { branches, fork_p } if branches.iter().any(|(j, _)| *j == i) => (
                 Disposition::Forked { branch: None },
-                format!(
-                    "condition holds (p {pv:.2}); an independent aspect of the case (fork p {fork_p:.2})"
-                ),
+                if cat.object(at).frame.primitive == Primitive::Split {
+                    "pursued: a split frame pursues every eligible arrow, without judgment"
+                        .to_owned()
+                } else if cat.object(at).frame.parallel {
+                    format!(
+                        "condition holds (p {pv:.2}); pursued in parallel (the frame declares parallel alternatives)"
+                    )
+                } else {
+                    format!(
+                        "condition holds (p {pv:.2}); an independent aspect of the case (fork p {fork_p:.2})"
+                    )
+                },
             ),
             Decision::Follow { .. } | Decision::Fork { .. } => {
                 let reason = match (primitive, selected) {
@@ -661,6 +685,7 @@ pub fn dispose(
                         format!("level {} less probable (p {pv:.2})", level(a))
                     }
                     (Primitive::Choice, None) => format!("p {pv:.2}"),
+                    (Primitive::Split, _) => "not pursued".to_owned(),
                 };
                 (Disposition::Rejected, reason)
             }

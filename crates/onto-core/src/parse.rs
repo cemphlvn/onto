@@ -194,11 +194,17 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
             "choice" => Primitive::Choice,
             "noul" => Primitive::Noul,
             "score" => Primitive::Score,
+            "split" => Primitive::Split,
             other => {
                 return Err(perr(format!(
-                    "unknown primitive `{other}` (choice, noul, score)"
+                    "unknown primitive `{other}` (choice, noul, score, split)"
                 )));
             }
+        };
+        let (parallel, tail) = match tail.trim_start().strip_prefix("parallel") {
+            Some(t) if primitive == Primitive::Noul => (true, t),
+            Some(_) => return Err(perr("only noul frames can be `parallel`")),
+            None => (false, tail),
         };
         let instructions = match tail.trim() {
             "" => None,
@@ -209,6 +215,7 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
             Frame {
                 primitive,
                 instructions,
+                parallel,
             },
         );
     }

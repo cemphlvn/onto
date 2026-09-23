@@ -70,6 +70,8 @@ pub struct FrameRequest {
     /// Code allows a fork here (branch budget and depth); only then is the
     /// fork question asked.
     pub can_fork: bool,
+    /// The frame declares parallel alternatives: no fork question is asked.
+    pub parallel: bool,
 }
 
 /// What a System-2 proposer sees: the same frame, plus why System 1 gave up
@@ -280,6 +282,10 @@ impl Judge for MockJudge {
                 fork: req
                     .can_fork
                     .then(|| if goal.contains(" and ") { 0.9 } else { 0.1 }),
+            },
+            Primitive::Split => Answer::Noul {
+                holds: vec![1.0; hits.len()],
+                fork: None,
             },
             Primitive::Score => {
                 let mut levels = vec![0.0; hits.len()];

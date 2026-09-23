@@ -948,3 +948,212 @@ mod attested_joins {
         assert!(detail.contains("NOT attested"), "{detail}");
     }
 }
+
+mod parallel_race {
+    use super::*;
+    use base64::Engine as _;
+    use base64::engine::general_purpose::STANDARD as B64;
+    use ed25519_dalek::{Signer, SigningKey};
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn parallel_plans_race_and_only_attested_ones_can_win() {
+        let k = SigningKey::from_bytes(&[9; 32]);
+        let src = format!(
+            r#"category C {{
+            attester Ops {{ key: ed25519:{}; observes: a.done, b.done; }}
+            objects: Outage, PlanA, PlanB, Mitigating;
+            frame Outage: noul parallel;
+            try_a: Outage -> PlanA "slow";
+            try_b: Outage -> PlanB "leaked";
+            done_a: PlanA -> Mitigating "mitigate" attested a.done == true;
+            done_b: PlanB -> Mitigating "mitigate" attested b.done == true;
+            closed: Outage, PlanA, PlanB, Mitigating;
+            join Mitigating: race;
+        }}"#,
+            B64.encode(k.verifying_key().to_bytes())
+        );
+        let claim = json!({"a.done": true}).as_object().unwrap().clone();
+        let sig = k.sign(&onto_core::attest::message("Ops", "I-1", "t", &claim));
+        let obs = json!({"claim": claim, "attester": "Ops", "case": "I-1", "at": "t", "signature": B64.encode(sig.to_bytes())});
+        let cat = Arc::new(onto_core::parse(&src).unwrap());
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            Config {
+                policy: Policy::Shared,
+                ..Config::default()
+            },
+        );
+        // No " and " in the goal: a non-parallel frame would not fork.
+        let job = Job {
+            from: "Outage".into(),
+            goal: "slow, leaked: mitigate".into(),
+            case: json!({"id": "I-1", "observations": [obs]}),
+        };
+        let r = tokio::time::timeout(Duration::from_secs(5), engine.run(vec![job]))
+            .await
+            .unwrap()
+            .unwrap();
+
+        assert_eq!(r.forks, 1, "parallel frames fork without a fork question");
+        assert_eq!(
+            r.judge_questions,
+            2 + 1 + 1,
+            "Outage: one noul per plan; PlanA, PlanB: one each; no fork question"
+        );
+        let winner = r
+            .walks
+            .iter()
+            .find(|w| {
+                w.steps
+                    .iter()
+                    .any(|s| matches!(s, StepRecord::Joined { role, .. } if role == "continued"))
+            })
+            .expect("a winner");
+        assert!(winner.path.contains("done_a"), "{}", winner.path);
+        let other = r.walks.iter().find(|w| w.walk != winner.walk).unwrap();
+        let blocked = other.frames.last().unwrap();
+        assert_eq!(
+            blocked.candidates[0].disposition,
+            onto_core::walk::Disposition::Unattested
+        );
+    }
+}
+
+mod split_frames {
+    use super::*;
+    use onto_core::walk::Escalation;
+
+    const SRC: &str = r#"category C {
+        objects: Mitigating, E, L, K, Verified;
+        frame Mitigating: split;
+        check_e: Mitigating -> E;
+        check_l: Mitigating -> L;
+        check_k: Mitigating -> K;
+        e_ok: E -> Verified "errors";
+        l_ok: L -> Verified "latency";
+        k_ok: K -> Verified "checkout";
+        closed: Mitigating, E, L, K, Verified;
+        join Verified: all;
+    }"#;
+
+    async fn go(max_branches: usize) -> RunReport {
+        let cat = Arc::new(onto_core::parse(SRC).unwrap());
+        let cfg = Config {
+            policy: Policy::Shared,
+            max_branches,
+            ..Config::default()
+        };
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            cfg,
+        );
+        let job = Job {
+            from: "Mitigating".into(),
+            goal: "errors latency checkout".into(),
+            case: json!({}),
+        };
+        tokio::time::timeout(Duration::from_secs(5), engine.run(vec![job]))
+            .await
+            .unwrap()
+            .unwrap()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_split_pursues_every_arrow_without_judgment() {
+        let r = go(4).await;
+        assert_eq!((r.forks, r.branches, r.walks.len()), (1, 2, 3));
+        // Judged only the three check frames (E, L, K), never Mitigating.
+        assert_eq!(r.judge_calls, 3);
+        assert!(r.walks[0].frames[0].judge.is_none());
+        assert!(r.walks.iter().any(|w| {
+            w.steps
+                .iter()
+                .any(|s| matches!(s, StepRecord::Joined { role, .. } if role == "continued"))
+        }));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_split_over_budget_escalates_instead_of_dropping_a_check() {
+        let r = go(1).await;
+        assert_eq!(r.walks.len(), 1, "nothing forked");
+        assert!(matches!(
+            r.walks[0].steps[0],
+            StepRecord::Escalated {
+                reason: Escalation::SplitOverBudget,
+                ..
+            }
+        ));
+        assert_eq!(r.proposer_calls, 0);
+    }
+}
+
+mod sequential_joins {
+    use super::*;
+
+    /// Race at M, then a split into checks that must all arrive at V: the
+    /// race winner must count as running again for the second join. The
+    /// winner's own check path (E, E2) is one hop longer, so the other
+    /// checks reach V while the winner is still walking.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_race_winner_can_complete_a_later_all_join() {
+        let src = r#"category C {
+            objects: Outage, A, B, M, E, E2, L, V;
+            frame Outage: noul parallel;
+            try_a: Outage -> A "slow";
+            try_b: Outage -> B "leaked";
+            a_done: A -> M "mitigate";
+            b_done: B -> M "mitigate";
+            join M: race;
+            frame M: split;
+            check_e: M -> E;
+            check_l: M -> L;
+            e_mid: E -> E2 "errors";
+            e_ok: E2 -> V "errors";
+            l_ok: L -> V "latency";
+            join V: all;
+            closed: Outage, A, B, M, E, E2, L, V;
+        }"#;
+        let cat = Arc::new(onto_core::parse(src).unwrap());
+        let cfg = Config {
+            policy: Policy::Shared,
+            max_branches: 6,
+            ..Config::default()
+        };
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            cfg,
+        );
+        let job = Job {
+            from: "Outage".into(),
+            goal: "slow, leaked: mitigate errors latency".into(),
+            case: json!({}),
+        };
+        let r = tokio::time::timeout(Duration::from_secs(5), engine.run(vec![job]))
+            .await
+            .unwrap()
+            .unwrap();
+        let continued: Vec<&str> = r
+            .walks
+            .iter()
+            .flat_map(|w| &w.steps)
+            .filter_map(|s| match s {
+                StepRecord::Joined { role, policy, .. } if role == "continued" => {
+                    Some(policy.as_str())
+                }
+                _ => None,
+            })
+            .collect();
+        assert_eq!(
+            continued,
+            ["race", "all"],
+            "{:#?}",
+            r.walks.iter().map(|w| &w.steps).collect::<Vec<_>>()
+        );
+    }
+}

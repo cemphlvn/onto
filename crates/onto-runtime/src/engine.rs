@@ -659,45 +659,92 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         engine.call_proposer(id, req, true).await
                     }));
                 }
-                let can_fork = primitive == Primitive::Noul
+                let split = primitive == Primitive::Split;
+                let can_fork = (primitive == Primitive::Noul || split)
                     && depth < self.cfg.max_fork_depth
                     && budget.load(Relaxed) > 0
                     && frame.len() > 1;
-                let req = self.frame_request(&job, &path, &hops, &focus, &tokens, &frame, can_fork);
-                let (answer, judge_rec) = match self.call_judge(id, req).await {
-                    Ok(a) => a,
-                    Err(e) => {
-                        if let Some(h) = speculative {
-                            h.abort();
+                // A split must pursue every eligible arrow; if the branch
+                // budget or depth cannot cover them all, escalate rather
+                // than drop one (a partial split would let an all-join
+                // complete with a check missing).
+                if split
+                    && frame.len() > 1
+                    && (depth >= self.cfg.max_fork_depth || budget.load(Relaxed) < frame.len() - 1)
+                {
+                    let reason = Escalation::SplitOverBudget;
+                    let ds = dispose(
+                        cat,
+                        at,
+                        &job.case,
+                        &tokens,
+                        &frame,
+                        None,
+                        &Decision::Escalate(reason),
+                        self.cfg.threshold,
+                        false,
+                    );
+                    frames.push(record(
+                        None,
+                        record::candidates(cat, ds),
+                        Outcome::Escalated { reason },
+                    ));
+                    break 'judged reason;
+                }
+                let (mut answer, judge_rec) = if split {
+                    // No judgment: every eligible arrow holds.
+                    (
+                        Answer::Noul {
+                            holds: vec![1.0; frame.len()],
+                            fork: None,
+                        },
+                        None,
+                    )
+                } else {
+                    let req =
+                        self.frame_request(&job, &path, &hops, &focus, &tokens, &frame, can_fork);
+                    match self.call_judge(id, req).await {
+                        Ok((a, r)) => (a, Some(r)),
+                        Err(e) => {
+                            if let Some(h) = speculative {
+                                h.abort();
+                            }
+                            let mut ds = dispose(
+                                cat,
+                                at,
+                                &job.case,
+                                &tokens,
+                                &frame,
+                                None,
+                                &Decision::Escalate(Escalation::LowConfidence),
+                                self.cfg.threshold,
+                                false,
+                            );
+                            for d in ds
+                                .iter_mut()
+                                .filter(|d| d.disposition == Disposition::Deferred)
+                            {
+                                d.reason = "not judged: the judge call failed".into();
+                            }
+                            frames.push(record(
+                                None,
+                                record::candidates(cat, ds),
+                                Outcome::Failed {
+                                    error: e.to_string(),
+                                },
+                            ));
+                            steps.push(self.failed(id, &at_name, e));
+                            break 'steps;
                         }
-                        let mut ds = dispose(
-                            cat,
-                            at,
-                            &job.case,
-                            &tokens,
-                            &frame,
-                            None,
-                            &Decision::Escalate(Escalation::LowConfidence),
-                            self.cfg.threshold,
-                            false,
-                        );
-                        for d in ds
-                            .iter_mut()
-                            .filter(|d| d.disposition == Disposition::Deferred)
-                        {
-                            d.reason = "not judged: the judge call failed".into();
-                        }
-                        frames.push(record(
-                            None,
-                            record::candidates(cat, ds),
-                            Outcome::Failed {
-                                error: e.to_string(),
-                            },
-                        ));
-                        steps.push(self.failed(id, &at_name, e));
-                        break 'steps;
                     }
                 };
+                // A parallel or split frame pursues every holding arrow; the
+                // engine enforces this rather than trusting a judge.
+                if (object.frame.parallel || split)
+                    && let Answer::Noul { fork, .. } = &mut answer
+                {
+                    *fork = Some(1.0);
+                }
                 let decision = decide(object.closure, Some(&answer), self.cfg.threshold, can_fork);
                 let mut ds = dispose(
                     cat,
@@ -713,7 +760,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 let (index, p, alternatives) = match decision {
                     Decision::Escalate(reason) => {
                         frames.push(record(
-                            Some(judge_rec),
+                            judge_rec,
                             record::candidates(cat, ds),
                             Outcome::Escalated { reason },
                         ));
@@ -729,10 +776,22 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         (index, p, alternatives)
                     }
                     Decision::Fork { branches, fork_p } => {
-                        self.discard(speculative.take(), id, &at_name);
-                        drop(guard);
                         let (first, rest) = branches.split_first().expect("a fork has branches");
                         let granted = reserve(&budget, rest.len());
+                        if split && granted < rest.len() {
+                            // Another branch took the budget meanwhile: give
+                            // it back and escalate rather than drop a check.
+                            budget.fetch_add(granted, Relaxed);
+                            let reason = Escalation::SplitOverBudget;
+                            frames.push(record(
+                                None,
+                                record::candidates(cat, std::mem::take(&mut ds)),
+                                Outcome::Escalated { reason },
+                            ));
+                            break 'judged reason;
+                        }
+                        self.discard(speculative.take(), id, &at_name);
+                        drop(guard);
                         let child_ids: Vec<u64> = (0..granted)
                             .map(|_| self.next_walk.fetch_add(1, Relaxed))
                             .collect();
@@ -792,7 +851,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         // This walk continues as the first branch.
                         focus = Some(self.focus(frame[first.0]));
                         frames.push(record(
-                            Some(judge_rec.clone()),
+                            judge_rec.clone(),
                             record::candidates(cat, std::mem::take(&mut ds)),
                             Outcome::Forked {
                                 continued: cat.arrow(frame[first.0]).name.clone(),
@@ -845,7 +904,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 if !ds.is_empty() {
                     // A plain step (a fork's record was already written).
                     frames.push(record(
-                        Some(judge_rec),
+                        judge_rec,
                         record::candidates(cat, ds),
                         Outcome::Followed {
                             arrow: a.name.clone(),
@@ -890,6 +949,16 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             };
 
             tracing::info!(target: "onto", event = "escalate", walk = id, at = %at_name, reason = reason.as_str());
+            if reason == Escalation::SplitOverBudget {
+                // Structural: a proposal cannot fix a budget; a person must.
+                steps.push(StepRecord::Escalated {
+                    at: at_name,
+                    reason,
+                    proposals: Vec::new(),
+                    wait_ms,
+                });
+                break;
+            }
             let proposals = match speculative {
                 Some(h) => h.await.expect("proposer task panicked"),
                 None => {
@@ -1251,6 +1320,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             instructions: object.frame.instructions.clone(),
             candidates: frame.iter().map(|a| self.candidate(*a)).collect(),
             can_fork,
+            parallel: object.frame.parallel,
         }
     }
 

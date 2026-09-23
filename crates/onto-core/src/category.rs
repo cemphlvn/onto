@@ -44,6 +44,9 @@ pub enum Primitive {
     Noul,
     /// One ordered scale; each arrow is a level on it.
     Score,
+    /// No judgment: every eligible arrow is pursued (an AND-split), e.g.
+    /// mandatory verification checks. A model must not be able to drop one.
+    Split,
 }
 
 impl Primitive {
@@ -52,6 +55,7 @@ impl Primitive {
             Self::Choice => "choice",
             Self::Noul => "noul",
             Self::Score => "score",
+            Self::Split => "split",
         }
     }
 }
@@ -62,6 +66,10 @@ impl Primitive {
 pub struct Frame {
     pub primitive: Primitive,
     pub instructions: Option<Value>,
+    /// Noul frames only: every arrow that holds is pursued as a concurrent
+    /// alternative (no fork question), e.g. mitigation plans racing to a
+    /// `race` join. The branch budget still applies.
+    pub parallel: bool,
 }
 
 /// What every walk entering an object must hold: capability tokens it

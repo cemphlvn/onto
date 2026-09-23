@@ -74,7 +74,7 @@ perform the action ("commit" stays outside the runtime).
 
 | # | demo | joins | status |
 |---|---|---|---|
-| 1 | **incident-response** (successor of incident-graph) | race over mitigation plans, then all over verification checks; attested completion | **first wave** |
+| 1 | [**incident-response**](incident-response/) (successor of incident-graph) | race over mitigation plans, then a split into checks that must all pass; attested completion | **runnable** |
 | 2 | **consent-enforcement** (successor of consent-paths) | gate: a requested use proceeds only when purpose, evidence and an authorized capability meet | **first wave** |
 | 3 | **benefits-assembly** | all over income, residency, disability and household evidence (each attested), then a gate for eligibility authority | **first wave** |
 | 4 | hospital-discharge | all (medication, transport, housing, follow-up) + clinician gate | later: safety-sensitive |

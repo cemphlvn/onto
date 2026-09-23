@@ -251,6 +251,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
                             Escalation::LowConfidence => "System 1 below threshold",
                             Escalation::IncompleteJoin => "join could not complete",
                             Escalation::BlockedByGate => "join gate never authorized",
+                            Escalation::SplitOverBudget => "split could not pursue every arrow",
                         };
                         println!("{} ⇒ escalate to System 2: {why}", cat.object(at).name);
                         for p in proposals {
