@@ -130,16 +130,27 @@ neighbours of the description the judge read.
 The raster shows what happened; it does not show what was possible
 (that is the map).
 
-**Built (2026-09-24):** `onto run --telemetry t.jsonl --dispositions
-d.jsonl`, then `onto raster t.jsonl --dispositions d.jsonl --category
-FILE` writes one self-contained HTML page: visits as bars (claim waits
-hatched), judge calls solid, proposer calls dashed, join waits dashed
-lines, decisions as dots (opacity = confidence), forks, joins,
-escalations and expansions (learned / held / refused) as shapes, causal
-lines between a walk's visits and from a fork to its branches, case
-filters and zoom. Clicking a mark shows the event and the frame record
-of that visit. The engine writes `visit` (with the claim wait) and
-`expansion` events for it.
+**Built (2026-09-24), raster v1:**
+
+```
+onto-runtime telemetry ──► onto_runtime::trace::project ──► RasterEvent[] (typed, per record, with causal parents)
+                                                               │
+                        onto raster ── embeds ──► web/raster (TypeScript, Apache ECharts, Canvas) in one HTML page
+```
+
+`onto raster t.jsonl --dispositions d.jsonl --category FILE` writes a
+self-contained page (no server, works offline). Encoding: arrival =
+point (opacity = confidence, not for mechanical steps); judge / proposer
+calls = solid / dashed bars; claim waits = dashed bars; join waits =
+thin bars; fork = diverging mark with short links to the branches; join
+= merge mark; race winner = diamond; potentiality = framed mark;
+proposal or transport = triangle; learned / held / refused = coloured
+marks. Causality is drawn only for the clicked record (its parents and
+children). Zoom and pan (dataZoom), brush a time window for a summary
+(time per kind, busiest frames), case filters, tooltips. ECharts is only
+the first renderer: the projection is its own type, so deck.gl (for runs
+too large for ECharts, measured first), a figure exporter or a live view
+(SSE) can consume the same events.
 
 Build order from here: raster–map–state linking; one band per category for
 phase 3 of the functors; surprise and prediction signals; geometry last,

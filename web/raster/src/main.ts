@@ -1,0 +1,458 @@
+// The raster view: what an onto run did, in time. Frames on y, time on x,
+// one colour family per case, event kinds as shapes, waits and calls as
+// lengths. Causality is drawn only for the clicked record (its parents and
+// children), so the picture stays readable. ECharts is only the first
+// renderer of the typed projection (types.ts).
+
+import * as echarts from "echarts/core";
+import { CustomChart, ScatterChart } from "echarts/charts";
+import {
+  BrushComponent,
+  DataZoomComponent,
+  GridComponent,
+  ToolboxComponent,
+  TooltipComponent,
+} from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
+import type { CustomSeriesOption, ScatterSeriesOption } from "echarts/charts";
+import type {
+  BrushComponentOption,
+  DataZoomComponentOption,
+  GridComponentOption,
+  ToolboxComponentOption,
+  TooltipComponentOption,
+} from "echarts/components";
+import type { ComposeOption } from "echarts/core";
+import type { CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams, CustomSeriesRenderItemReturn } from "echarts";
+import type { EventKind, FrameRecord, Page, RasterEvent } from "./types";
+
+echarts.use([
+  CustomChart,
+  ScatterChart,
+  GridComponent,
+  TooltipComponent,
+  DataZoomComponent,
+  BrushComponent,
+  ToolboxComponent,
+  CanvasRenderer,
+]);
+
+type Option = ComposeOption<
+  | CustomSeriesOption
+  | ScatterSeriesOption
+  | GridComponentOption
+  | TooltipComponentOption
+  | DataZoomComponentOption
+  | BrushComponentOption
+  | ToolboxComponentOption
+>;
+
+const page = (window as unknown as { ONTO_RASTER: Page }).ONTO_RASTER;
+const R = page.raster;
+const $ = (id: string) => document.getElementById(id) as HTMLElement;
+const ms = (ns: number) => ns / 1e6;
+const fmt = (m: number) => (m >= 1000 ? `${(m / 1000).toFixed(m >= 10000 ? 1 : 2)} s` : `${Math.round(m)} ms`);
+const byId = new Map(R.events.map((e) => [e.id, e]));
+const walkOf = new Map(R.walks.map((w) => [w.id, w]));
+const rowOf = new Map(R.frames.map((f, i) => [f, i]));
+const learned = new Set(R.meta.learned ?? []);
+
+const INTERVAL: EventKind[] = ["visit", "claim_wait", "judge_call", "proposer_call", "join_wait"];
+const hidden = new Set<number>();
+
+// ---- colour: one hue per case, branches lighter/darker ----
+const roots = [...new Set(R.walks.map((w) => w.root))].sort((a, b) => a - b);
+const hue = new Map(roots.map((r, i) => [r, (i * 137.508 + 200) % 360]));
+const family = new Map<number, number[]>();
+for (const w of [...R.walks].sort((a, b) => a.id - b.id)) {
+  if (!family.has(w.root)) family.set(w.root, []);
+  family.get(w.root)!.push(w.id);
+}
+const dark = () => {
+  const t = document.documentElement.getAttribute("data-theme");
+  return t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+};
+const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function color(walk: number): string {
+  const w = walkOf.get(walk);
+  const root = w?.root ?? walk;
+  const i = Math.min((family.get(root) ?? [walk]).indexOf(walk), 4);
+  const l = dark() ? 66 - i * 6 : 42 + i * 7;
+  return `hsl(${hue.get(root) ?? 0} 62% ${l}%)`;
+}
+const visible = (e: RasterEvent) => !hidden.has(walkOf.get(e.walk)?.root ?? e.walk) && rowOf.has(e.frame);
+
+// ---- shapes ----
+const PATH = {
+  fork: "path://M5 0 L5 5 L1 10 M5 5 L9 10",
+  join: "path://M1 0 L5 5 L9 0 M5 5 L5 10",
+  cross: "path://M0 0 L10 10 M10 0 L0 10",
+};
+function symbolOf(k: EventKind): { symbol: string; size: number; offset?: [number, number] } {
+  switch (k) {
+    case "arrival": return { symbol: "circle", size: 8 };
+    case "fork": return { symbol: PATH.fork, size: 12 };
+    case "join": return { symbol: PATH.join, size: 12 };
+    case "race_win": return { symbol: "diamond", size: 13 };
+    case "potentiality": return { symbol: "rect", size: 6, offset: [0, 10] };
+    case "proposal": return { symbol: "triangle", size: 11, offset: [0, -10] };
+    case "admitted": case "held": case "refused": return { symbol: "circle", size: 7, offset: [9, -10] };
+    case "escalation": return { symbol: PATH.cross, size: 11 };
+    case "failed": return { symbol: "rect", size: 10 };
+    default: return { symbol: "circle", size: 6 };
+  }
+}
+
+// ---- series data ----
+function intervalData() {
+  return R.events
+    .filter((e) => INTERVAL.includes(e.kind) && e.end_ns != null && visible(e))
+    .map((e) => ({ value: [rowOf.get(e.frame)!, ms(e.start_ns), ms(e.end_ns!), e.id] }));
+}
+function pointData() {
+  return R.events
+    .filter((e) => !INTERVAL.includes(e.kind) && visible(e))
+    .map((e) => {
+      const s = symbolOf(e.kind);
+      const c =
+        e.kind === "admitted" ? css("--good") :
+        e.kind === "held" ? css("--warn") :
+        e.kind === "refused" || e.kind === "escalation" || e.kind === "failed" ? css("--bad") :
+        color(e.walk);
+      const stroked = e.kind === "fork" || e.kind === "join" || e.kind === "escalation";
+      const framed = e.kind === "potentiality";
+      const opacity = e.kind === "arrival" && !e.mechanical && e.confidence != null ? 0.25 + 0.75 * e.confidence : 1;
+      return {
+        value: [ms(e.start_ns), rowOf.get(e.frame)!, e.id],
+        symbol: s.symbol,
+        symbolSize: s.size,
+        symbolOffset: s.offset ?? [0, 0],
+        itemStyle: stroked
+          ? { color: "none", borderColor: c, borderWidth: 2, opacity }
+          : framed
+            ? { color: "transparent", borderColor: c, borderWidth: 1.5, opacity }
+            : { color: c, opacity, borderColor: css("--panel"), borderWidth: 1 },
+      };
+    });
+}
+// Fork links: short, always shown: a fork to each branch's first arrival.
+function forkData() {
+  const out: { value: number[] }[] = [];
+  for (const f of R.events.filter((e) => e.kind === "fork" && visible(e))) {
+    for (const w of R.walks.filter((w) => w.parent === f.walk)) {
+      const first = R.events.find((e) => e.walk === w.id && e.kind === "arrival");
+      if (first && visible(first) && first.start_ns >= f.start_ns - 1e6) {
+        out.push({ value: [ms(f.start_ns), rowOf.get(f.frame)!, ms(first.start_ns), rowOf.get(first.frame)!, w.id] });
+      }
+    }
+  }
+  return out;
+}
+// Causal links for the selected record: its parents and its children.
+let selected: string | null = null;
+function causalData() {
+  if (!selected) return [];
+  const anchor = (rec: string, last: boolean) => {
+    const evs = R.events.filter((e) => e.record === rec && (e.kind === "arrival" || e.kind === "join" || e.kind === "race_win" || e.kind === "fork"));
+    return last ? evs[evs.length - 1] : evs[0];
+  };
+  const pairs: [string, string][] = [];
+  for (const p of R.parents[selected] ?? []) pairs.push([p, selected]);
+  for (const [child, ps] of Object.entries(R.parents)) if (ps.includes(selected)) pairs.push([selected, child]);
+  return pairs
+    .map(([a, b]) => [anchor(a, true), anchor(b, false)] as const)
+    .filter(([a, b]) => a && b && visible(a) && visible(b))
+    .map(([a, b]) => ({ value: [ms(a!.start_ns), rowOf.get(a!.frame)!, ms(b!.start_ns), rowOf.get(b!.frame)!, b!.walk] }));
+}
+
+// ---- render items ----
+function renderInterval(params: CustomSeriesRenderItemParams, api: CustomSeriesRenderItemAPI): CustomSeriesRenderItemReturn {
+  const e = byId.get(api.value(3) as number)!;
+  const row = api.value(0) as number;
+  const a = api.coord([api.value(1), row]);
+  const b = api.coord([api.value(2), row]);
+  const band = (api.size!([0, 1]) as number[])[1];
+  const h = e.kind === "visit" ? band * 0.22 : e.kind === "join_wait" ? band * 0.08 : band * 0.46;
+  const cs = params.coordSys as unknown as { x: number; y: number; width: number; height: number };
+  const shape = echarts.graphic.clipRectByRect(
+    { x: a[0], y: a[1] - h / 2, width: Math.max(1.5, b[0] - a[0]), height: h },
+    { x: cs.x, y: cs.y, width: cs.width, height: cs.height },
+  );
+  if (!shape) return null;
+  const c = color(e.walk);
+  const style =
+    e.kind === "visit" ? { fill: c, opacity: 0.28 } :
+    e.kind === "claim_wait" ? { fill: "none", stroke: css("--muted"), lineWidth: 1.2, lineDash: [4, 3] } :
+    e.kind === "judge_call" ? { fill: c, opacity: 0.95 } :
+    e.kind === "proposer_call" ? { fill: "none", stroke: c, lineWidth: 1.5, lineDash: [3, 2] } :
+    { fill: c, opacity: 0.8 };
+  return { type: "rect", shape: { ...shape, r: 2 }, style } as CustomSeriesRenderItemReturn;
+}
+function renderLink(dashed: boolean, width: number, alpha: number) {
+  return (_: CustomSeriesRenderItemParams, api: CustomSeriesRenderItemAPI): CustomSeriesRenderItemReturn => {
+    const a = api.coord([api.value(0), api.value(1)]);
+    const b = api.coord([api.value(2), api.value(3)]);
+    const mx = (a[0] + b[0]) / 2;
+    return {
+      type: "bezierCurve",
+      shape: { x1: a[0], y1: a[1], x2: b[0], y2: b[1], cpx1: mx, cpy1: a[1], cpx2: mx, cpy2: b[1] },
+      style: { stroke: color(api.value(4) as number), lineWidth: width, opacity: alpha, fill: "none", lineDash: dashed ? [3, 3] : undefined },
+      silent: true,
+    } as CustomSeriesRenderItemReturn;
+  };
+}
+
+// ---- chart ----
+let chart: echarts.ECharts | null = null;
+function option(): Option {
+  const tMax = Math.max(1, ...R.events.map((e) => ms(e.end_ns ?? e.start_ns)));
+  return {
+    backgroundColor: "transparent",
+    animation: false,
+    textStyle: { fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" },
+    grid: { left: 150, right: 24, top: 36, bottom: 64 },
+    toolbox: { right: 16, top: 0, feature: { brush: { type: ["lineX", "clear"], title: { lineX: "select a time window", clear: "clear" } } } },
+    brush: { xAxisIndex: 0, brushType: "lineX", throttleType: "debounce", throttleDelay: 200, brushStyle: { color: "rgba(120,120,120,0.15)" } },
+    tooltip: {
+      trigger: "item",
+      confine: true,
+      formatter: (p: unknown) => {
+        const d = (p as { value?: number[] }).value;
+        const id = d ? d[d.length === 3 ? 2 : 3] : undefined;
+        const e = id != null ? byId.get(id) : undefined;
+        if (!e) return "";
+        const w = walkOf.get(e.walk);
+        const who = `${w?.case ? w.case + " · " : ""}walk ${e.walk}`;
+        return `<b>${esc(e.label)}</b><br><span style="opacity:.7">${esc(who)} · ${e.kind.replace("_", " ")} · ${fmt(ms(e.start_ns))}</span>`;
+      },
+    },
+    xAxis: {
+      type: "value",
+      min: 0,
+      max: tMax,
+      axisLabel: { formatter: (v: number) => fmt(v), color: css("--muted") },
+      splitLine: { lineStyle: { color: css("--grid") } },
+    },
+    yAxis: {
+      type: "category",
+      data: R.frames,
+      inverse: true,
+      axisTick: { show: false },
+      axisLine: { lineStyle: { color: css("--border") } },
+      axisLabel: {
+        color: css("--fg"),
+        formatter: (v: string) => (learned.has(v) ? `{l|${v}}` : v),
+        rich: { l: { fontStyle: "italic", color: css("--muted") } },
+      },
+      splitArea: { show: true, areaStyle: { color: ["transparent", css("--band")] } },
+    },
+    dataZoom: [
+      { type: "inside", xAxisIndex: 0, filterMode: "weakFilter" },
+      { type: "slider", xAxisIndex: 0, filterMode: "weakFilter", height: 18, bottom: 16, labelFormatter: (v: number) => fmt(v) },
+      ...(R.frames.length > 14 ? [{ type: "slider" as const, yAxisIndex: 0, filterMode: "weakFilter" as const, width: 14, right: 4 }] : []),
+    ],
+    series: [
+      { id: "intervals", type: "custom", renderItem: renderInterval, encode: { x: [1, 2], y: 0 }, data: intervalData(), clip: true },
+      { id: "forks", type: "custom", renderItem: renderLink(false, 1.2, 0.6), encode: { x: [0, 2], y: [1, 3] }, data: forkData(), silent: true },
+      { id: "causal", type: "custom", renderItem: renderLink(true, 2, 0.9), encode: { x: [0, 2], y: [1, 3] }, data: causalData(), silent: true, z: 5 },
+      { id: "points", type: "scatter", data: pointData(), encode: { x: 0, y: 1 }, z: 10, emphasis: { scale: 1.4 } },
+    ],
+  };
+}
+function mount() {
+  chart?.dispose();
+  chart = echarts.init($("chart"), dark() ? "dark" : undefined, { renderer: "canvas" });
+  chart.setOption(option());
+  chart.on("click", (p) => {
+    const d = (p as { value?: number[] }).value;
+    if (!d) return;
+    const id = d[d.length === 3 ? 2 : 3];
+    const e = byId.get(id);
+    if (e) inspect(e);
+  });
+  chart.on("brushSelected", (p) => {
+    const areas = (p as { batch?: { areas?: { coordRange?: number[] }[] }[] }).batch?.[0]?.areas ?? [];
+    const range = areas[0]?.coordRange;
+    if (range) windowSummary(range[0], range[1]);
+  });
+}
+function refresh() {
+  chart?.setOption({
+    series: [
+      { id: "intervals", data: intervalData() },
+      { id: "forks", data: forkData() },
+      { id: "causal", data: causalData() },
+      { id: "points", data: pointData() },
+    ],
+  });
+}
+
+// ---- header ----
+function header() {
+  const m = R.meta;
+  $("sub").textContent = [m.category, m.judge && `judge ${m.judge}`, m.proposer && `proposer ${m.proposer}`, m.policy && `policy ${m.policy}`, page.source, page.runs > 1 ? `run ${page.run} of ${page.runs}` : ""].filter(Boolean).join(" · ");
+  const stats: [string | number, string][] = [
+    [roots.length, "cases"],
+    [R.walks.length, "walks"],
+    [fmt(m.wall_ms ?? Math.max(...R.events.map((e) => ms(e.end_ns ?? e.start_ns)))), "wall"],
+  ];
+  if (m.model_ms_sum && m.wall_ms) stats.push([`${(m.model_ms_sum / m.wall_ms).toFixed(2)}×`, "parallelism"]);
+  stats.push([m.judge_calls ?? count("judge_call"), "judge calls"], [m.proposer_calls ?? count("proposer_call"), "proposer calls"]);
+  stats.push([count("escalation"), "escalations"], [fmt(total("claim_wait")), "claim waits"], [fmt(total("join_wait")), "join waits"]);
+  $("stats").replaceChildren(...stats.map(([v, k]) => {
+    const d = document.createElement("div"); d.className = "stat";
+    const b = document.createElement("b"); b.textContent = String(v);
+    const s = document.createElement("span"); s.textContent = k;
+    d.append(b, s); return d;
+  }));
+  $("cases").replaceChildren(...roots.map((r) => {
+    const w = walkOf.get(r)!, b = document.createElement("button");
+    b.className = "chip"; b.setAttribute("aria-pressed", hidden.has(r) ? "false" : "true");
+    const dot = document.createElement("span"); dot.className = "dot"; dot.style.background = color(r);
+    const goal = w.goal.length > 40 ? w.goal.slice(0, 39) + "…" : w.goal;
+    b.append(dot, document.createTextNode(`${w.case ?? "walk " + r} · ${goal}`)); b.title = w.goal;
+    b.onclick = () => { hidden.has(r) ? hidden.delete(r) : hidden.add(r); b.setAttribute("aria-pressed", hidden.has(r) ? "false" : "true"); refresh(); };
+    return b;
+  }));
+}
+const count = (k: EventKind) => R.events.filter((e) => e.kind === k).length;
+const total = (k: EventKind) => R.events.filter((e) => e.kind === k).reduce((s, e) => s + ms((e.end_ns ?? e.start_ns) - e.start_ns), 0);
+
+// ---- inspector ----
+function esc(s: string) { return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!)); }
+function panel(title: string, rows: [string, string][]): HTMLElement {
+  const box = document.createElement("section");
+  const h = document.createElement("h2"); h.textContent = title; box.appendChild(h);
+  const dl = document.createElement("dl");
+  for (const [k, v] of rows) {
+    if (!v) continue;
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    dl.append(dt, dd);
+  }
+  box.appendChild(dl);
+  return box;
+}
+function inspect(e: RasterEvent) {
+  selected = e.record;
+  refresh();
+  const w = walkOf.get(e.walk);
+  const out: HTMLElement[] = [panel(e.label, [
+    ["kind", e.kind.replace("_", " ")],
+    ["case", `${w?.case ?? ""} walk ${e.walk}${w?.parent != null ? ` (branch of walk ${w.parent})` : ""}`],
+    ["at", e.frame],
+    ["time", e.end_ns != null ? `${fmt(ms(e.start_ns))} → ${fmt(ms(e.end_ns))} (${fmt(ms(e.end_ns - e.start_ns))})` : fmt(ms(e.start_ns))],
+    ["confidence", e.mechanical ? "mechanical step" : e.confidence != null ? e.confidence.toFixed(2) : ""],
+    ["record", e.record ?? ""],
+    ["caused by", (e.record && R.parents[e.record]?.join(", ")) || ""],
+    ["leads to", e.record ? Object.entries(R.parents).filter(([, ps]) => ps.includes(e.record!)).map(([c]) => c).join(", ") : ""],
+  ])];
+  const rec: FrameRecord | undefined = e.record ? page.records[e.record] : undefined;
+  if (rec) out.push(record(rec));
+  else {
+    const p = document.createElement("p"); p.className = "empty";
+    p.textContent = Object.keys(page.records).length ? "No frame record for this event." : "Pass --dispositions to onto raster to see frame records here.";
+    out.push(p);
+  }
+  $("details").replaceChildren(...out);
+}
+function record(rec: FrameRecord): HTMLElement {
+  const o = rec.outcome ?? {};
+  const box = panel(`Frame record ${rec.id}`, [
+    ["at", `${rec.at} (${rec.primitive}, ${rec.closure})`],
+    ["tokens", (rec.tokens ?? []).join(", ")],
+    ["attested", (rec.attested ?? []).join("; ")],
+    ["focus", rec.focus ?? ""],
+    ["model saw", rec.seen ? leaves(rec.seen).join(", ") : ""],
+    ["grouped", rec.grouped ? `${rec.grouped.functor}: ${rec.grouped.chose ?? "fallback"} (kept ${rec.grouped.kept})` : ""],
+    ["outcome", [o.kind, o.arrow && `→ ${o.arrow}`, o.reason, o.source].filter(Boolean).join(" ")],
+  ]);
+  for (const c of rec.candidates ?? []) {
+    const d = document.createElement("div"); d.className = "cand";
+    const disp = typeof c.disposition === "string" ? c.disposition : (c.disposition as { kind?: string })?.kind ?? "";
+    const top = document.createElement("div");
+    top.innerHTML = `<span class="k"></span> <span class="tag"></span> <span class="tag"></span>`;
+    (top.children[0] as HTMLElement).textContent = `${c.arrow} → ${c.to}`;
+    (top.children[1] as HTMLElement).textContent = disp;
+    (top.children[2] as HTMLElement).textContent = c.judgment != null ? c.judgment.toFixed(2) : "—";
+    const r = document.createElement("div"); r.className = "r"; r.textContent = c.reason;
+    d.append(top, r); box.appendChild(d);
+  }
+  for (const [label, list] of [
+    ["proposed", (rec.proposals ?? []).map((p) => `${p.arrow}: ${p.src} → ${p.dst}`)],
+    ["not learned", (rec.refused ?? []).map((x) => x.join(": "))],
+    ["held for a person", (rec.held ?? []).map((x) => x.join(": "))],
+  ] as [string, string[]][]) {
+    if (!list.length) continue;
+    const d = document.createElement("div"); d.className = "cand";
+    const k = document.createElement("div"); k.className = "k"; k.textContent = label; d.appendChild(k);
+    for (const s of list) { const r = document.createElement("div"); r.className = "r"; r.textContent = s; d.appendChild(r); }
+    box.appendChild(d);
+  }
+  return box;
+}
+function leaves(v: unknown, prefix = ""): string[] {
+  if (v && typeof v === "object" && !Array.isArray(v) && Object.keys(v).length) {
+    return Object.entries(v as Record<string, unknown>).flatMap(([k, x]) =>
+      !prefix && (k === "at" || k === "about_at") ? [] : leaves(x, prefix ? `${prefix}.${k}` : k));
+  }
+  return [prefix];
+}
+
+// ---- brush: a time window ----
+function windowSummary(a: number, b: number) {
+  const inWin = R.events.filter((e) => visible(e) && ms(e.start_ns) <= b && ms(e.end_ns ?? e.start_ns) >= a);
+  const overlap = (e: RasterEvent) => Math.max(0, Math.min(b, ms(e.end_ns ?? e.start_ns)) - Math.max(a, ms(e.start_ns)));
+  const sum = (k: EventKind) => inWin.filter((e) => e.kind === k).reduce((s, e) => s + overlap(e), 0);
+  const n = (k: EventKind) => inWin.filter((e) => e.kind === k).length;
+  const walks = new Set(inWin.filter((e) => e.kind === "visit").map((e) => e.walk));
+  const frames = new Map<string, number>();
+  for (const e of inWin.filter((e) => e.kind === "visit")) frames.set(e.frame, (frames.get(e.frame) ?? 0) + overlap(e));
+  const busiest = [...frames.entries()].sort((x, y) => y[1] - x[1]).slice(0, 3).map(([f, t]) => `${f} ${fmt(t)}`).join(", ");
+  selected = null; refresh();
+  $("details").replaceChildren(panel(`Window ${fmt(a)} → ${fmt(b)}`, [
+    ["walks active", String(walks.size)],
+    ["judge time", `${fmt(sum("judge_call"))} (${n("judge_call")} calls)`],
+    ["proposer time", `${fmt(sum("proposer_call"))} (${n("proposer_call")} calls)`],
+    ["claim waits", fmt(sum("claim_wait"))],
+    ["join waits", fmt(sum("join_wait"))],
+    ["arrivals", String(n("arrival"))],
+    ["escalations", String(n("escalation"))],
+    ["learned / held / refused", `${n("admitted")} / ${n("held")} / ${n("refused")}`],
+    ["busiest frames", busiest],
+  ]));
+}
+
+// ---- legend ----
+function legend() {
+  const items: [string, string][] = [
+    ["visit", `<svg width="22" height="12"><rect x="1" y="4" width="20" height="4" rx="2" fill="currentColor" opacity=".35"/></svg>`],
+    ["claim wait", `<svg width="22" height="12"><rect x="1.5" y="2.5" width="19" height="7" fill="none" stroke="currentColor" stroke-dasharray="4 3"/></svg>`],
+    ["judge call", `<svg width="22" height="12"><rect x="1" y="2" width="20" height="8" rx="2" fill="currentColor"/></svg>`],
+    ["proposer call", `<svg width="22" height="12"><rect x="1.5" y="2.5" width="19" height="7" rx="2" fill="none" stroke="currentColor" stroke-dasharray="3 2"/></svg>`],
+    ["join wait", `<svg width="22" height="12"><rect x="1" y="5" width="20" height="2" fill="currentColor"/></svg>`],
+    ["arrival (opacity: confidence)", `<svg width="14" height="12"><circle cx="7" cy="6" r="4" fill="currentColor"/></svg>`],
+    ["fork", `<svg width="14" height="12"><path d="M7 1 L7 6 L3 11 M7 6 L11 11" stroke="currentColor" fill="none" stroke-width="1.8"/></svg>`],
+    ["join", `<svg width="14" height="12"><path d="M3 1 L7 6 L11 1 M7 6 L7 11" stroke="currentColor" fill="none" stroke-width="1.8"/></svg>`],
+    ["race winner", `<svg width="14" height="12"><path d="M7 0 L13 6 L7 12 L1 6 Z" fill="currentColor"/></svg>`],
+    ["potentiality", `<svg width="14" height="12"><rect x="3" y="2" width="8" height="8" fill="none" stroke="currentColor"/></svg>`],
+    ["proposal / transport", `<svg width="14" height="12"><path d="M7 1 L13 11 L1 11 Z" fill="currentColor"/></svg>`],
+    ["learned", `<svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="var(--good)"/></svg>`],
+    ["held for a person", `<svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="var(--warn)"/></svg>`],
+    ["refused", `<svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="var(--bad)"/></svg>`],
+    ["escalation", `<svg width="14" height="12"><path d="M2 1 L12 11 M12 1 L2 11" stroke="var(--bad)" stroke-width="2"/></svg>`],
+  ];
+  $("legend").innerHTML = items.map(([k, s]) => `<span>${s}${esc(k)}</span>`).join("");
+}
+
+function all() { header(); legend(); mount(); }
+// A small hook for tests and scripted exploration (no behaviour of its own).
+(window as unknown as { __ontoRaster: object }).__ontoRaster = {
+  events: R.events,
+  inspect: (id: number) => { const e = byId.get(id); if (e) inspect(e); },
+  window: windowSummary,
+};
+all();
+window.addEventListener("resize", () => chart?.resize());
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", all);
+new MutationObserver(all).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });

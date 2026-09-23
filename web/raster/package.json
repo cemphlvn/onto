@@ -1,0 +1,18 @@
+{
+  "name": "onto-raster",
+  "private": true,
+  "description": "The raster view of onto runs: an ECharts renderer of the typed trace projection (onto-runtime::trace).",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "build": "tsc --noEmit && esbuild src/main.ts --bundle --minify --format=iife --target=es2020 --legal-comments=eof --outfile=../../crates/onto-cli/assets/raster.js"
+  },
+  "dependencies": {
+    "echarts": "6.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}

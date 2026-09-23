@@ -1,0 +1,70 @@
+<title>onto raster</title>
+<!-- The raster view of an onto run. Rendered with Apache ECharts
+     (Apache-2.0; see ECHARTS-LICENSE.txt and ECHARTS-NOTICE.txt in the onto
+     repository, crates/onto-cli/assets). -->
+<style>
+:root {
+  --bg: #f7f6f2; --panel: #ffffff; --fg: #1d1d1b; --muted: #6b6a64; --grid: #e6e3da; --band: rgba(0,0,0,0.025);
+  --border: #d9d5ca; --good: #2f7d4f; --warn: #b7791f; --bad: #b83232; --chip: #efece4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151514; --panel: #1f1f1d; --fg: #ecebe6; --muted: #9c9a92; --grid: #2d2c29; --band: rgba(255,255,255,0.025);
+    --border: #3a3935; --good: #5cbf86; --warn: #e0a84a; --bad: #ea6b6b; --chip: #2a2927; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151514; --panel: #1f1f1d; --fg: #ecebe6; --muted: #9c9a92; --grid: #2d2c29; --band: rgba(255,255,255,0.025);
+  --border: #3a3935; --good: #5cbf86; --warn: #e0a84a; --bad: #ea6b6b; --chip: #2a2927; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { padding-inline: 20px; padding-block: 18px 40px; max-width: 1480px; margin: 0 auto; }
+h1 { font-size: 20px; margin: 0 0 2px; font-weight: 650; letter-spacing: -0.01em; }
+.sub { color: var(--muted); margin: 0 0 14px; overflow-wrap: anywhere; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 14px; }
+.stat b { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 12px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.chip { border: 1px solid var(--border); background: var(--chip); color: var(--fg); border-radius: 999px; padding: 3px 10px 3px 8px;
+  font: inherit; font-size: 12.5px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.chip[aria-pressed="false"] { opacity: 0.4; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 16px; align-items: start; }
+@media (max-width: 960px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+#chart { width: 100%; height: clamp(360px, 62vh, 760px); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 14px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend svg { color: var(--muted); }
+aside { padding: 14px; position: sticky; top: calc(12px + env(safe-area-inset-top, 0px)); max-height: calc(100vh - 24px); overflow: auto; }
+aside h2 { font-size: 14px; margin: 0 0 8px; line-height: 1.35; }
+aside section + section { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.empty { color: var(--muted); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 3px 10px; margin: 0 0 10px; font-size: 12.5px; }
+dt { color: var(--muted); } dd { margin: 0; overflow-wrap: anywhere; }
+.cand { border-top: 1px solid var(--grid); padding: 6px 0; font-size: 12.5px; }
+.cand .k { font-weight: 600; } .cand .r { color: var(--muted); }
+.tag { display: inline-block; padding: 0 6px; border-radius: 4px; background: var(--chip); font-size: 11.5px; }
+.note { color: var(--muted); font-size: 12px; margin-top: 12px; }
+</style>
+
+<div class="wrap">
+  <h1>onto raster</h1>
+  <p class="sub" id="sub"></p>
+  <div class="stats" id="stats"></div>
+  <div class="bar" id="cases"></div>
+  <div class="layout">
+    <div class="card">
+      <div id="chart" role="img" aria-label="Raster: frames by time"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <aside class="card" id="details">
+      <h2>Details</h2>
+      <p class="empty">Click a mark to see the event, its causal parents and children (drawn on the chart), and the frame record of that visit. Drag with the brush tool (top right) to summarise a time window. Scroll or pinch to zoom; drag to pan.</p>
+    </aside>
+  </div>
+  <p class="note">x: time since the run started · y: frames (learned frames in italics) · colour: case, its branches share the hue · shape: event · length: time spent. The raster shows what happened, not what was possible: that is the category map.</p>
+</div>
+
+<script>window.ONTO_RASTER = /*DATA*/null;</script>
+<script>/*RASTER_JS*/</script>

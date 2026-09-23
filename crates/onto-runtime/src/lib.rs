@@ -18,6 +18,7 @@ pub mod providers;
 pub mod record;
 pub mod supervisor;
 pub mod telemetry;
+pub mod trace;
 
 pub use engine::{Config, Engine, Job, RunReport};
 pub use frames::Policy;

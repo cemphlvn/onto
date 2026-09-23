@@ -1,9 +1,9 @@
 //! `onto raster`: what a run did, in time (`docs/06-spaces.md` §5).
 //!
-//! Reads a telemetry file (`onto run --telemetry`), keeps one run's
-//! events with their time since the run started, and writes one
-//! self-contained HTML page: frames on y, time on x, one colour family per
-//! case, event kinds as shapes, waits as lengths, causality as lines.
+//! Reads a telemetry file (`onto run --telemetry`), keeps one run, projects
+//! it to typed raster events (`onto_runtime::trace`), and writes one
+//! self-contained HTML page: the projection as data, and the ECharts
+//! renderer built from `web/raster` (`assets/raster.js`, Apache-2.0).
 //! `--dispositions` embeds the frame records, so clicking an event shows
 //! the visit's record (tokens, evidence, candidates, what the model saw).
 //! `--category` orders the rows as the category declares its objects.
@@ -15,7 +15,9 @@ use serde_json::{Map, Value, json};
 
 use crate::run::BoxError;
 
-const TEMPLATE: &str = include_str!("raster.html");
+const TEMPLATE: &str = include_str!("../assets/raster.html");
+/// Built by `npm run build` in `web/raster`.
+const RENDERER: &str = include_str!("../assets/raster.js");
 
 #[derive(Args)]
 pub struct RasterArgs {
@@ -90,26 +92,28 @@ pub fn main(args: RasterArgs) -> Result<(), BoxError> {
             .collect(),
         None => Vec::new(),
     };
+    let raster = onto_runtime::trace::project(&kept, &rows);
+    let events = raster.events.len();
     let data = json!({
         "source": args.telemetry.display().to_string(),
         "run": n,
         "runs": runs.len(),
-        "events": kept,
+        "raster": raster,
         "records": records,
-        "rows": rows,
     });
-    // `</` would end the embedding script early.
+    // `</` would end an embedding script early.
     let data = serde_json::to_string(&data)?.replace("</", "<\\/");
-    let page = TEMPLATE.replace("/*DATA*/null", &data);
+    let page = TEMPLATE
+        .replace("/*DATA*/null", &data)
+        .replace("/*RASTER_JS*/", &RENDERER.replace("</script", "<\\/script"));
     let out = args
         .out
         .clone()
         .unwrap_or_else(|| args.telemetry.with_extension("raster.html"));
     std::fs::write(&out, page)?;
     println!(
-        "raster: {} ({} events, run {n} of {}{})",
+        "raster: {} ({events} raster events, run {n} of {}{})",
         out.display(),
-        kept.len(),
         runs.len(),
         if records.is_empty() {
             String::new()
