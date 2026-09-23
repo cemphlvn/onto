@@ -240,7 +240,69 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
             println!("  {inv:<62} graph ✓   walks {walks}");
         }
     }
+    print_seen(&cat);
     Ok(())
+}
+
+/// What each frame shows a model (the `state` policy), and the `unseen`
+/// invariants it proves.
+fn print_seen(cat: &Category) {
+    use onto_core::Primitive;
+    println!(
+        "
+what models see   per the `state` policy · case and observed fields proved · goal is free text"
+    );
+    if !cat.declares_state() {
+        println!(
+            "  no `state` declared: every frame sees the goal, the whole case, history, focus and tokens"
+        );
+    }
+    let (mut asked, mut never) = (Vec::new(), Vec::new());
+    for i in 0..cat.objects().len() as u32 {
+        let o = ObjId(i);
+        let x = cat.object(o);
+        let closed = x.closure == onto_core::Closure::Closed;
+        let terminal = closed && cat.out(o).is_empty();
+        let split = x.frame.primitive == Primitive::Split && closed;
+        if terminal || split {
+            never.push(x.name.as_str());
+            continue;
+        }
+        let who = if cat.out(o).is_empty() || x.frame.primitive == Primitive::Split {
+            "proposer"
+        } else {
+            "judge"
+        };
+        asked.push((x.name.as_str(), who, cat.state_of(o)));
+    }
+    let width = asked.iter().map(|(n, ..)| n.len()).max().unwrap_or(0);
+    for (name, who, spec) in &asked {
+        println!("  {name:<width$}  {who:<8}  {}", spec.summary());
+    }
+    if !never.is_empty() {
+        println!(
+            "  never asked (terminal or closed split): {}",
+            never.join(", ")
+        );
+    }
+    let goal_frames: Vec<&str> = asked
+        .iter()
+        .filter(|(_, _, s)| s.goal)
+        .map(|(n, ..)| *n)
+        .collect();
+    for inv in cat.invariants() {
+        if let Invariant::Unseen(_) = inv {
+            println!(
+                "  {inv}   ✓ proved: no frame shows these fields, nor any field inside or around them"
+            );
+        }
+    }
+    if !goal_frames.is_empty() {
+        println!(
+            "  goal (free text) reaches {}: its content is whatever the requester wrote, not covered by `unseen`",
+            goal_frames.join(", ")
+        );
+    }
 }
 
 fn or_none(v: &[String]) -> String {

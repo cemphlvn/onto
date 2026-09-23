@@ -93,6 +93,9 @@ pub fn print_record(r: &Value, pad: &str) {
     for a in r["attested"].as_array().into_iter().flatten() {
         println!("{pad}  attested: {}", a.as_str().unwrap_or("?"));
     }
+    if r["seen"].is_object() {
+        println!("{pad}  model saw: {}", seen_fields(&r["seen"]).join(", "));
+    }
     let wait = r["claim"]["wait_ms"].as_f64().unwrap_or(0.0);
     if wait >= 1.0 {
         println!("{pad}  waited {wait:.0}ms for an intersecting frame");
@@ -136,6 +139,17 @@ pub fn print_record(r: &Value, pad: &str) {
             o["spawned"]
         ),
         Some("escalated") => format!("escalated ({})", o["reason"].as_str().unwrap_or("?")),
+        Some("expanded") => format!(
+            "expanded ({}): learned {}; re-judged with it",
+            o["reason"].as_str().unwrap_or("?"),
+            o["learned"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .filter_map(Value::as_str)
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
         Some("failed") => format!("failed: {}", o["error"].as_str().unwrap_or("?")),
         Some("joined") => format!(
             "join ({}) {}: {}{}",
@@ -165,4 +179,28 @@ pub fn print_record(r: &Value, pad: &str) {
             p["about"].as_str().unwrap_or("")
         );
     }
+}
+
+/// The fields a model was shown: `goal`, `asserted.a.b`, `observed.x`, …
+/// (names only; the values are in the record).
+fn seen_fields(seen: &Value) -> Vec<String> {
+    fn leaves(prefix: &str, v: &Value, out: &mut Vec<String>) {
+        match v.as_object() {
+            Some(m) if !m.is_empty() => {
+                for (k, x) in m {
+                    leaves(&format!("{prefix}.{k}"), x, out);
+                }
+            }
+            _ => out.push(prefix.to_owned()),
+        }
+    }
+    let mut out = Vec::new();
+    for (k, v) in seen.as_object().into_iter().flatten() {
+        match k.as_str() {
+            "at" | "about_at" => {}
+            "asserted" | "observed" | "case" => leaves(k, v, &mut out),
+            _ => out.push(k.clone()),
+        }
+    }
+    out
 }

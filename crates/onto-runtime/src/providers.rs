@@ -79,16 +79,7 @@ impl Judge for Jev {
         let n_questions = questions.as_object().map_or(0, |q| q.len() as u32);
         let body = json!({
             "model": self.model,
-            "state": {
-                "goal": req.goal,
-                "case": req.case,
-                "at": req.at,
-                "about_at": req.about_at,
-                "path_so_far": req.path_so_far,
-                "hops": req.hops,
-                "focus": req.focus,
-                "tokens_held": req.tokens,
-            },
+            "state": req.state,
             "questions": questions,
         });
         let (v, attempts) = post_json(&self.http, &self.url, &self.key, &body).await?;
@@ -298,6 +289,7 @@ impl OpenRouter {
 }
 
 const PROPOSER_SYSTEM: &str = "You extend a category (objects and arrows) that a fast decision model walks. \
+`state` is everything you may see of the case (declared by policy; fields not in it are withheld on purpose, do not ask for them). \
 The walk is stuck at object `at`: its outgoing arrows (`frame`) do not cover the goal, for the stated `reason`. \
 Propose 1 to 3 new arrows leaving `at` that would let the walk continue toward the goal. \
 Each target is an existing object from `known_objects` when one fits, otherwise a new object name in PascalCase. \

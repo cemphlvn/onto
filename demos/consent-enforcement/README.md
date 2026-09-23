@@ -40,6 +40,51 @@ UseRequested (choice: judged once — marketing or research?)
 - After the purpose is judged, preparation and the final use are
   mechanical (`split`): onto governs the decision, not the action.
 
+## What models see (state policy)
+
+Every case carries the person's whole record (name, email, date of
+birth, health conditions, purchases), as a real system would. **No model
+is shown any of it**, and that is proved, not hoped:
+
+```
+state { case: request.purpose, request.description, request.channel; }
+state MarketingCheck { case: request.purpose; observed; }
+state ResearchCheck  { case: request.purpose, request.study; observed; }
+invariant unseen: case.person;
+```
+
+- The judge that classifies the use reads only the request.
+- At the checks it also reads `observed`: only verified, signed
+  observations (the raw, unverified `observations` are never shown).
+- `invariant unseen: case.person` is proved when the file loads and for
+  every proposal and learned arrow (a new object inherits the default
+  state). A frame that would show any part of `person` fails to load,
+  naming the frame. `onto laws` prints what each frame sees.
+- Every frame record keeps the exact state sent (`seen`); `onto why`
+  prints `model saw: …`.
+
+```
+what models see   per the `state` policy · case and observed fields proved · goal is free text
+  UseRequested    judge     case: request.purpose, request.description, request.channel
+  MarketingCheck  judge     case: request.purpose · observed (attested only)
+  ResearchCheck   judge     case: request.purpose, request.study · observed (attested only)
+  never asked (terminal or closed split): MarketingUse, ResearchUse, Draft, MarketingCleared, Sent, Dataset, ResearchCleared, Study
+  unseen: case.person   ✓ proved: no frame shows these fields, nor any field inside or around them
+```
+
+Live (2026-09-24, open world): the six outcomes below were unchanged; 15
+of 37 frame visits called a model, and none of the 15 recorded states
+contains any value from the person's record. In C-2 (consent withdrawn),
+the open world learned `request_marketing_consent: MarketingCheck ->
+MarketingConsentRequest`; the authority branch went there instead of to
+the gate, so the campaign stayed blocked: learned structure cannot mint
+`MarketingGrant`.
+
+Limits: the proof is about **which fields** reach a model, not what free
+text says. `request.description` is shown; if a requester writes the
+person's diagnosis into it, the model sees it. Keep shown fields
+structured where possible.
+
 ```sh
 onto run demos/consent-enforcement/consent.onto --jobs demos/consent-enforcement/jobs --policy shared --max-branches 6
 onto laws demos/consent-enforcement/consent.onto --proofs

@@ -602,6 +602,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     detail = %detail,
                 );
                 frames.push(FrameRecord {
+                    seen: None,
                     id: join_id.clone(),
                     after: after.clone(),
                     snapshot: self.snapshot.clone(),
@@ -677,7 +678,10 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let rec_id = format!("w{id}.{seq}");
             // The focus this visit was made under (a fork below may change it).
             let visit_focus = focus.as_ref().map(|f| f.arrow.clone());
-            let record = |judge, candidates, outcome| FrameRecord {
+            // Exactly what a model is shown at this visit, if one is asked.
+            let visit_seen = self.state(cat, &job, &path, &hops, &focus, &tokens);
+            let record = |judge: Option<JudgeRecord>, candidates, outcome| FrameRecord {
+                seen: judge.is_some().then(|| visit_seen.clone()),
                 id: rec_id.clone(),
                 after: after.clone(),
                 snapshot: self.snapshot.clone(),
@@ -728,7 +732,9 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     let req = self.proposal_request(
                         &job,
                         &path,
+                        &hops,
                         &focus,
+                        &tokens,
                         "speculative: started alongside System 1",
                     );
                     speculative = Some(tokio::spawn(async move {
@@ -1047,7 +1053,8 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                             .acquire(cat, Claim::new(cat, id, at, Mode::Write))
                             .await;
                     }
-                    let req = self.proposal_request(&job, &path, &focus, reason.as_str());
+                    let req =
+                        self.proposal_request(&job, &path, &hops, &focus, &tokens, reason.as_str());
                     self.call_proposer(id, req, false).await
                 }
             };
@@ -1070,6 +1077,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             if let Ok(proposals) = &proposals {
                 if let Some(last) = frames.last_mut() {
                     last.proposals = proposals.clone();
+                    last.seen = Some(visit_seen.clone());
                     if let Some((learned, _)) = &expanded {
                         last.outcome = Outcome::Expanded {
                             reason,
@@ -1494,14 +1502,9 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         let cat = self.cat();
         let object = cat.object(path.dst);
         FrameRequest {
-            goal: job.goal.clone(),
-            case: job.case.clone(),
+            state: self.state(&cat, job, path, hops, focus, tokens),
             at: object.name.clone(),
-            about_at: object.about.clone(),
-            path_so_far: path.display(&self.cat()),
-            hops: hops.to_vec(),
             focus: focus.clone(),
-            tokens: tokens.iter().cloned().collect(),
             primitive: object.frame.primitive,
             instructions: object.frame.instructions.clone(),
             candidates: frame.iter().map(|a| self.candidate(*a)).collect(),
@@ -1510,18 +1513,102 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         }
     }
 
+    /// The state a model sees at the frame `path` ends at: exactly what
+    /// the frame's `state` declaration allows. Without any declaration in
+    /// the category, the shape every frame always had.
+    fn state(
+        &self,
+        cat: &Category,
+        job: &Job,
+        path: &Path,
+        hops: &[Hop],
+        focus: &Option<Focus>,
+        tokens: &BTreeSet<String>,
+    ) -> Value {
+        use serde_json::{Map, json};
+        let object = cat.object(path.dst);
+        if !cat.declares_state() {
+            return json!({
+                "goal": job.goal,
+                "case": job.case,
+                "at": object.name,
+                "about_at": object.about,
+                "path_so_far": path.display(cat),
+                "hops": hops,
+                "focus": focus,
+                "tokens_held": tokens,
+            });
+        }
+        let spec = cat.state_of(path.dst);
+        let mut s = Map::new();
+        s.insert("at".into(), json!(object.name));
+        if let Some(about) = &object.about {
+            s.insert("about_at".into(), about.clone());
+        }
+        if spec.goal {
+            s.insert("goal".into(), json!(job.goal));
+        }
+        // Asserted by the submitter (not verified).
+        let asserted = match &spec.case {
+            onto_core::CaseView::Hidden => None,
+            onto_core::CaseView::Whole => {
+                let mut c = job.case.clone();
+                if let Some(m) = c.as_object_mut() {
+                    // Raw observations are shown only verified (`observed`).
+                    m.remove("observations");
+                }
+                Some(c)
+            }
+            onto_core::CaseView::Fields(fields) => {
+                let mut picked = Value::Object(Map::new());
+                for f in fields {
+                    if let Some(v) = f.split('.').try_fold(&job.case, |v, k| v.get(k)) {
+                        insert_path(&mut picked, f, v.clone());
+                    }
+                }
+                Some(picked)
+            }
+        };
+        if let Some(a) = asserted {
+            s.insert("asserted".into(), a);
+        }
+        // Verified: signed by declared attesters, bound to this case.
+        if spec.observed {
+            let (view, _, _) = onto_core::attest::attested_view(cat.attesters(), &job.case);
+            s.insert("observed".into(), view);
+        }
+        // Inferred: earlier judgments of this walk.
+        if let Some(n) = spec.history {
+            let recent = &hops[hops.len().saturating_sub(n)..];
+            let mut inferred = Map::new();
+            if n == usize::MAX {
+                inferred.insert("path_so_far".into(), json!(path.display(cat)));
+            }
+            inferred.insert("hops".into(), json!(recent));
+            s.insert("inferred".into(), Value::Object(inferred));
+        }
+        if spec.focus && focus.is_some() {
+            s.insert("focus".into(), json!(focus));
+        }
+        if spec.tokens {
+            s.insert("tokens_held".into(), json!(tokens));
+        }
+        Value::Object(s)
+    }
+
     fn proposal_request(
         &self,
         job: &Job,
         path: &Path,
+        hops: &[Hop],
         focus: &Option<Focus>,
+        tokens: &BTreeSet<String>,
         reason: &str,
     ) -> ProposalRequest {
         let cat = self.cat();
         let object = cat.object(path.dst);
         ProposalRequest {
-            goal: job.goal.clone(),
-            case: job.case.clone(),
+            state: self.state(&cat, job, path, hops, focus, tokens),
             at: object.name.clone(),
             about_at: object.about.clone(),
             path_so_far: path.display(&self.cat()),
@@ -1603,4 +1690,22 @@ fn normalize(s: &str) -> String {
         .filter(|c| c.is_alphanumeric())
         .flat_map(char::to_lowercase)
         .collect()
+}
+
+/// Sets `a.b.c` in nested JSON objects.
+fn insert_path(root: &mut Value, dotted: &str, value: Value) {
+    let mut cursor = root;
+    let parts: Vec<&str> = dotted.split('.').collect();
+    for (i, p) in parts.iter().enumerate() {
+        let Some(map) = cursor.as_object_mut() else {
+            return;
+        };
+        if i + 1 == parts.len() {
+            map.insert((*p).to_owned(), value);
+            return;
+        }
+        cursor = map
+            .entry((*p).to_owned())
+            .or_insert_with(|| Value::Object(serde_json::Map::new()));
+    }
 }

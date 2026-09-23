@@ -139,7 +139,9 @@ fn split(src: &str) -> Result<(String, Vec<(usize, String)>), Error> {
                     if depth == 1
                         && c == '}'
                         && (current.trim_start().starts_with("capability ")
-                            || current.trim_start().starts_with("attester "))
+                            || current.trim_start().starts_with("attester ")
+                            || current.trim_start().starts_with("state ")
+                            || current.trim_start().starts_with("state{"))
                     {
                         statements.push((start_line, current.trim().to_owned()));
                         current.clear();
@@ -248,6 +250,26 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
             )));
         };
         return b.join(object.trim(), join);
+    }
+    if let Some(rest) = stmt.strip_prefix("state")
+        && (rest.starts_with(' ') || rest.starts_with('{'))
+    {
+        let (targets, body) = rest
+            .split_once('{')
+            .ok_or_else(|| perr("expected `state { … }` or `state A, B { … }`"))?;
+        let body = body
+            .trim()
+            .strip_suffix('}')
+            .ok_or_else(|| perr("state: missing `}`"))?;
+        let spec = crate::state::StateSpec::parse(body).map_err(|e| perr(format!("state: {e}")))?;
+        let targets: Vec<&str> = list(targets).collect();
+        if targets.is_empty() {
+            return b.state(None, spec);
+        }
+        for t in targets {
+            b.state(Some(t), spec.clone())?;
+        }
+        return Ok(());
     }
     if let Some(rest) = stmt.strip_prefix("attester ") {
         b.attester(attester(rest)?);
@@ -404,6 +426,24 @@ fn invariant(s: &str) -> Result<Invariant, Error> {
         return Ok(Invariant::Rule(value));
     }
     let (kind, rest) = s.split_once(':').ok_or_else(bad)?;
+    if kind.trim() == "unseen" {
+        let fields: Vec<String> = rest
+            .split(',')
+            .map(|f| f.trim().to_owned())
+            .filter(|f| !f.is_empty())
+            .collect();
+        if let Some(f) = fields.iter().find(|f| {
+            !(f.starts_with("case.") || f.starts_with("observed.")) || !crate::state::is_path(f)
+        }) {
+            return Err(perr(format!(
+                "unseen: `{f}` must be a field path under `case.` or `observed.`"
+            )));
+        }
+        if fields.is_empty() {
+            return Err(bad());
+        }
+        return Ok(Invariant::Unseen(fields));
+    }
     let (from, rest) = rest.split_once("->").ok_or_else(bad)?;
     let from = from.trim().to_owned();
     match kind.trim() {

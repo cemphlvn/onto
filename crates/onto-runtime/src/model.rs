@@ -47,20 +47,15 @@ pub struct Focus {
 /// What a System-1 judge sees for one frame.
 #[derive(Clone, Debug, Serialize)]
 pub struct FrameRequest {
-    pub goal: String,
-    /// Structured facts about the case (from the job), possibly empty.
-    pub case: Value,
+    /// Everything the model may see of the case and the walk, built from
+    /// the frame's `state` declaration (`onto_core::state`). Providers
+    /// send this and nothing else about the case.
+    pub state: Value,
     pub at: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub about_at: Option<Value>,
-    pub path_so_far: String,
-    pub hops: Vec<Hop>,
-    /// Set after a fork: judge only this aspect of the case.
+    /// Set after a fork: judge only this aspect of the case (phrases the
+    /// questions; it is in `state` only when declared).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub focus: Option<Focus>,
-    /// Capability tokens the walk holds (evidence checks already passed).
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub tokens: Vec<String>,
     pub primitive: Primitive,
     /// The frame's own question, if declared.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -78,8 +73,8 @@ pub struct FrameRequest {
 /// and the objects that already exist (so it can reuse them).
 #[derive(Clone, Debug, Serialize)]
 pub struct ProposalRequest {
-    pub goal: String,
-    pub case: Value,
+    /// What this frame may see (the same state the judge saw).
+    pub state: Value,
     pub at: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub about_at: Option<Value>,
@@ -283,7 +278,10 @@ impl Judge for MockJudge {
 
     async fn judge(&self, req: FrameRequest) -> Result<(Answer, Usage), ModelError> {
         tokio::time::sleep(self.latency).await;
-        let goal = req.goal.to_lowercase();
+        let goal = req.state["goal"]
+            .as_str()
+            .unwrap_or_default()
+            .to_lowercase();
         let hits: Vec<bool> = req.candidates.iter().map(|c| Self::hit(&goal, c)).collect();
         let first = hits.iter().position(|h| *h);
         let answer = match req.primitive {
@@ -346,7 +344,10 @@ impl Proposer for MockProposer {
 
     async fn propose(&self, req: ProposalRequest) -> Result<(Vec<Proposal>, Usage), ModelError> {
         tokio::time::sleep(self.latency).await;
-        let goal = req.goal.to_lowercase();
+        let goal = req.state["goal"]
+            .as_str()
+            .unwrap_or_default()
+            .to_lowercase();
         if let Some(p) = req
             .pending_here
             .iter()
@@ -372,7 +373,9 @@ impl Proposer for MockProposer {
         let word: String = req
             .focus
             .as_ref()
-            .map_or(req.goal.as_str(), |f| f.arrow.as_str())
+            .map_or(req.state["goal"].as_str().unwrap_or("Other"), |f| {
+                f.arrow.as_str()
+            })
             .split_whitespace()
             .last()
             .unwrap_or("Other")

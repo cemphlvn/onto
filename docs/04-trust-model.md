@@ -37,6 +37,7 @@ file is stale; both are bugs.
 | Graph structure | objects, arrows, instructions, equations | trusted once committed | file edit, or `onto promote` (one arrow at a time) | loading validates everything below against the policy |
 | Case facts | the job's JSON (`consent.given`, `processor.region`) | **asserted by the submitter; not verified** | whoever submits the job | `require` evaluates them; nothing checks they are true |
 | Attested observations | signed claims in the case (`observations`) | **verified**: declared attester, strict Ed25519 signature over canonical JSON, field authorization, bound to the case `id` | the attester (holder of the secret key) | `attested` preconditions read only the attested view; rejected observations are reported with the reason |
+| State policy | `state { … }`, `invariant unseen` | **policy: root of trust** | whoever edits the `.onto` file | `unseen` proved on load and for every proposal; each record keeps the state sent (`seen`) |
 | Attester declarations | `attester Name { key; observes; }` | **policy: root of trust** | whoever edits the `.onto` file | the policy validator (unique names, valid keys, every attested field observable) |
 | Model judgments (System 1) | Jev's Choice, Noul, Score answers | **untrusted, calibrated** | the model | gated: code filters first; confidence thresholds; abstention escalates |
 | Proposals (System 2) | an OpenRouter model's suggested arrows | **untrusted** | the model | open world: admitted to the learned layer when no check fails; closed world: provisional; promoted into policy only by a person |
@@ -95,6 +96,8 @@ signed commits.
 | **Path equality** | equality saturation (egg) | Equal / Distinct / **Unknown** when limits are hit: never a guess |
 | **Attested observation** | strict Ed25519 verification of `onto-observation-v1` + canonical JSON (attester, case, time, claim); field authorization; case binding | relative to the attester declarations (policy) and the secrecy of the attesters' keys |
 | **Attested completion** | a join is labelled `completion attested` only when every branch arrived by an attested arrow; `ask` says "Completed … attested by …" only then | a statement about signed evidence, not about the attester's honesty |
+
+| **Field visibility** (`invariant unseen`) | every frame's effective state (own, default, or everything when none is declared) is checked against each unseen field, and fields inside or around it | fields, not text: a shown free-text field (the goal, a description) can contain anything |
 
 **Not proved, only judged or asserted:**
 

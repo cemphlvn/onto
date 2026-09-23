@@ -1333,3 +1333,58 @@ mod open_world {
         assert!(refused[0].1.starts_with("invariant"), "{refused:?}");
     }
 }
+
+/// `state` declarations decide exactly what a model is shown, and the
+/// record keeps it.
+#[tokio::test(flavor = "multi_thread")]
+async fn models_see_only_the_declared_state() {
+    let src = r#"category C {
+        objects: Use, Marketing, Research, Sent;
+        state { goal; case: request.purpose; }
+        state Marketing { case: request.purpose; history: last 1; }
+        marketing: Use -> Marketing "sending offers";
+        research:  Use -> Research  "a study";
+        send: Marketing -> Sent "send the offers";
+        closed: Use, Marketing, Sent;
+        invariant unseen: case.person;
+    }"#;
+    let cat = Arc::new(onto_core::parse(src).unwrap());
+    let engine = Engine::new(
+        cat,
+        MockJudge { latency: LATENCY },
+        MockProposer { latency: LATENCY },
+        Config {
+            open_world: false,
+            ..Config::default()
+        },
+    );
+    let job = Job {
+        from: "Use".into(),
+        goal: "send offers to marketing".into(),
+        case: json!({
+            "goal": "send offers to marketing",
+            "request": {"purpose": "marketing", "requested_by": "growth"},
+            "person": {"name": "Ayşe", "health": "diabetes"},
+        }),
+    };
+    let r = engine.run(vec![job]).await.unwrap();
+    let f = &r.walks[0].frames;
+    let first = f[0].seen.as_ref().expect("the judge was asked");
+    assert_eq!(
+        first["asserted"],
+        json!({"request": {"purpose": "marketing"}})
+    );
+    assert_eq!(first["goal"], "send offers to marketing");
+    assert!(first.get("inferred").is_none());
+    // Marketing's own declaration: no goal, one hop of history.
+    let second = f[1].seen.as_ref().expect("the judge was asked");
+    assert!(second.get("goal").is_none());
+    assert_eq!(second["inferred"]["hops"].as_array().unwrap().len(), 1);
+    for rec in f {
+        let text = serde_json::to_string(&rec.seen).unwrap();
+        assert!(
+            !text.contains("Ayşe") && !text.contains("diabetes"),
+            "{text}"
+        );
+    }
+}

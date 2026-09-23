@@ -203,6 +203,30 @@ pub fn structural(cat: &Category, p: &Proposal) -> (Vec<Check>, Option<Category>
                 (w, format!("there is still no path from {from} to {to}"))
             }
             Invariant::Rule(_) => continue,
+            Invariant::Unseen(_) => {
+                // A new object inherits the default state; without one it
+                // would see everything.
+                let broken = graph
+                    .unseen_violation()
+                    .filter(|(i, _)| *i == inv)
+                    .map(|(_, why)| why.replace("__proposed", ""));
+                checks.push(Check {
+                    check: "invariant".into(),
+                    subject: inv.to_string(),
+                    outcome: if broken.is_some() {
+                        Outcome::Fail
+                    } else {
+                        Outcome::Pass
+                    },
+                    reason: broken.clone().map_or_else(
+                        || "no frame's state shows these fields".to_owned(),
+                        |why| format!("adding it breaks the invariant: {why}"),
+                    ),
+                    p: None,
+                    witness: broken,
+                });
+                continue;
+            }
         };
         checks.push(match witness {
             Some(path) => Check {

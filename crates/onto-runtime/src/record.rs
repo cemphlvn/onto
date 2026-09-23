@@ -31,6 +31,10 @@ pub struct FrameRecord {
     pub claim: ClaimRecord,
     /// `None` when no model was asked (nothing eligible, or the call failed).
     pub judge: Option<JudgeRecord>,
+    /// The state the model was shown at this visit (judge or proposer),
+    /// exactly as sent: what it saw of the case, per the `state` policy.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub seen: Option<serde_json::Value>,
     pub candidates: Vec<CandidateRecord>,
     pub outcome: Outcome,
     /// Provisional System-2 proposals made at this visit, if it escalated.

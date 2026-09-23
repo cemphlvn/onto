@@ -11,6 +11,7 @@ pub mod parse;
 pub mod path;
 pub mod quotient;
 pub mod require;
+pub mod state;
 pub mod supervise;
 pub mod walk;
 
@@ -23,3 +24,4 @@ pub use error::Error;
 pub use parse::parse;
 pub use path::Path;
 pub use require::Require;
+pub use state::{CaseView, StateSpec};

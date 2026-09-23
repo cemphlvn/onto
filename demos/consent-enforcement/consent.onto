@@ -26,6 +26,14 @@ category ConsentEnforcement {
              Dataset, ResearchCheck, ResearchCleared, Study;
     start: UseRequested;
 
+    # What models see (policy, data minimization). A case carries the
+    # person's whole record; no model is shown any of it. The judge reads
+    # the request; at the checks it also reads the verified evidence.
+    state { case: request.purpose, request.description, request.channel; }
+    state MarketingCheck { case: request.purpose; observed; }
+    state ResearchCheck  { case: request.purpose, request.study; observed; }
+    invariant unseen: case.person;      # proved on load and for every proposal
+
     about UseRequested: "someone in the organization wants to use a person's data";
     about Sent: "marketing is sent to the person";
     about Study: "the person's data is used in a study";

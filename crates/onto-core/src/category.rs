@@ -123,6 +123,8 @@ pub struct Object {
     pub entry: Entry,
     /// Set when sibling branches recombine here.
     pub join: Option<Join>,
+    /// What a model sees at this frame, when declared for it (`state X {…}`).
+    pub state: Option<crate::state::StateSpec>,
 }
 
 /// Whether an arrow may be taken from a given case and token set.
@@ -208,6 +210,9 @@ pub enum Invariant {
     Never { from: String, to: String },
     /// A natural-language rule, judged by a model (text or JSON).
     Rule(Value),
+    /// No frame's state shows these fields to a model (`case.a.b`,
+    /// `observed.a.b`): proved from the `state` declarations.
+    Unseen(Vec<String>),
 }
 
 impl std::fmt::Display for Invariant {
@@ -218,6 +223,7 @@ impl std::fmt::Display for Invariant {
             }
             Self::Never { from, to } => write!(f, "never: {from} -> {to}"),
             Self::Rule(v) => write!(f, "rule {v}"),
+            Self::Unseen(fields) => write!(f, "unseen: {}", fields.join(", ")),
         }
     }
 }
@@ -257,6 +263,8 @@ pub struct Category {
     attesters: Vec<crate::attest::Attester>,
     /// Declared application entry points (`start: A, B;`).
     starts: Vec<ObjId>,
+    /// The category's default `state { … }`, if declared.
+    state_default: Option<crate::state::StateSpec>,
     out_offsets: Vec<u32>,
     out_arrows: Vec<ArrowId>,
     object_index: HashMap<String, ObjId>,
@@ -292,6 +300,53 @@ impl Category {
 
     pub fn invariants(&self) -> &[Invariant] {
         &self.invariants
+    }
+
+    /// What a model sees at `o`: its own `state` declaration, else the
+    /// category default, else everything (the behaviour before `state`).
+    pub fn state_of(&self, o: ObjId) -> crate::state::StateSpec {
+        self.object(o)
+            .state
+            .clone()
+            .or_else(|| self.state_default.clone())
+            .unwrap_or_else(crate::state::StateSpec::legacy)
+    }
+
+    /// Whether any `state` is declared (otherwise every frame sees
+    /// everything, as before).
+    pub fn declares_state(&self) -> bool {
+        self.state_default.is_some() || self.objects.iter().any(|o| o.state.is_some())
+    }
+
+    /// The first `unseen` field some frame's state would show, with the
+    /// frame and the reason.
+    pub fn unseen_violation(&self) -> Option<(&Invariant, String)> {
+        self.invariants.iter().find_map(|inv| {
+            let Invariant::Unseen(fields) = inv else {
+                return None;
+            };
+            fields.iter().find_map(|field| {
+                (0..self.objects.len() as u32).find_map(|o| {
+                    let o = ObjId(o);
+                    self.state_of(o).reveals(field, &self.attesters).map(|why| {
+                        let declared = if self.object(o).state.is_some() {
+                            "its own `state`"
+                        } else if self.state_default.is_some() {
+                            "the default `state`"
+                        } else {
+                            "no `state` is declared, so"
+                        };
+                        (
+                            inv,
+                            format!(
+                                "frame {} would show `{field}`: {declared} {why}",
+                                self.object(o).name
+                            ),
+                        )
+                    })
+                })
+            })
+        })
     }
 
     pub fn capabilities(&self) -> &[Capability] {
@@ -481,7 +536,7 @@ impl Category {
                     self.reachable(id(from)?, id(to)?, &avoid)
                 }
                 Invariant::Never { from, to } => self.reachable(id(from)?, id(to)?, &[]),
-                Invariant::Rule(_) => None,
+                Invariant::Rule(_) | Invariant::Unseen(_) => None,
             }?;
             Some((inv, witness))
         })
@@ -567,6 +622,12 @@ impl Category {
             if let Some(j) = &o.join {
                 b.join(&o.name, j.clone())?;
             }
+            if let Some(st) = &o.state {
+                b.state(Some(&o.name), st.clone())?;
+            }
+        }
+        if let Some(st) = &self.state_default {
+            b.state(None, st.clone())?;
         }
         if self.object_id(dst).is_err() {
             b.object(dst)?;
@@ -761,6 +822,7 @@ pub struct CategoryBuilder {
     capabilities: Vec<Capability>,
     attesters: Vec<crate::attest::Attester>,
     starts: Vec<ObjId>,
+    state_default: Option<crate::state::StateSpec>,
     object_index: HashMap<String, ObjId>,
     arrow_index: HashMap<String, ArrowId>,
 }
@@ -802,6 +864,7 @@ impl CategoryBuilder {
             frame: Frame::default(),
             entry: Entry::default(),
             join: None,
+            state: None,
         });
         self.object_index.insert(name.to_owned(), id);
         Ok(id)
@@ -896,6 +959,23 @@ impl CategoryBuilder {
         self.attesters.push(attester);
     }
 
+    /// Declares what models see: the default (`object` = None) or for one
+    /// frame.
+    pub fn state(
+        &mut self,
+        object: Option<&str>,
+        spec: crate::state::StateSpec,
+    ) -> Result<(), Error> {
+        match object {
+            None => self.state_default = Some(spec),
+            Some(o) => {
+                let id = self.lookup_object(o)?;
+                self.objects[id.0 as usize].state = Some(spec);
+            }
+        }
+        Ok(())
+    }
+
     /// Declares an application entry point.
     pub fn start(&mut self, object: &str) -> Result<(), Error> {
         let id = self.lookup_object(object)?;
@@ -918,6 +998,12 @@ impl CategoryBuilder {
             return Err(Error::InvariantViolated {
                 invariant: inv.to_string(),
                 witness: witness.display_typed(&cat),
+            });
+        }
+        if let Some((inv, witness)) = cat.unseen_violation() {
+            return Err(Error::InvariantViolated {
+                invariant: inv.to_string(),
+                witness,
             });
         }
         Ok(cat)
@@ -985,6 +1071,7 @@ impl CategoryBuilder {
             capabilities: self.capabilities,
             attesters: self.attesters,
             starts: self.starts,
+            state_default: self.state_default,
             out_offsets,
             out_arrows,
             object_index: self.object_index,

@@ -190,6 +190,17 @@ Rules:
     cycle. Each walk may extend at most `max_expansions` frames (default
     3). Records mark learned candidates and steps; answers reached through
     them say so.
+16. **What a model sees is policy.** A System-1 call has no memory: its
+    `state` is its whole context. `state { … }` (default) and `state A, B
+    { … }` (override) declare it: `goal`, `case` or `case: a.b, …`,
+    `observed` (the attested view, verified only), `history` / `history:
+    last N` (earlier judgments, marked inferred), `focus`, `tokens`. The
+    state is sectioned by epistemic status: `asserted` (case facts),
+    `observed` (signed), `inferred` (earlier model judgments). The
+    proposer sees the same state as the judge at that frame; the critic
+    sees no case at all. `invariant unseen: case.x` is proved on load and
+    for every proposal. Records keep the exact state sent (`seen`).
+    With no `state` declared, frames see what they always did.
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -419,6 +430,8 @@ snapshot. No database until live multi-writer editing is needed.
 | D38 | two layers: declared policy (`.onto`, human) and learned structure (`.learned.jsonl`, replayed through the proofs on every load) | exploration must not require editing policy; a policy change must be able to retire what was learned under the old one |
 | D39 | learned arrows may not close a cycle (progress) | live, a proposer learned `Shipping -> Ticket` despite being told not to, and every later walk looped until the step limit; a prompt is not a guarantee |
 | D40 | the proposer is shown the graph's outcomes and the declared arrows that finish into them | live, learned branches kept adding intermediate objects and never reached `Resolved` |
+| D41 | model input (`state`) is declared per frame, sectioned asserted / observed / inferred, and recorded | data minimization must be a checkable policy, and models must know which facts are evidence and which are guesses |
+| D42 | `unseen` proves field visibility, not text content | free text (`goal`, descriptions) cannot be proved clean; `onto laws` names every frame that sees free text instead |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -471,7 +484,11 @@ snapshot. No database until live multi-writer editing is needed.
   rule, `--closed-world`, `onto learned`; live on support-commons, a
   delivery ticket learned `Ticket -> Delivery -> Resolved`, and the next
   session's ticket reused it and grew the Delivery frame.
-- **Next:** usage-based reinforcement and pruning of learned arrows;
+- **State policy (done):** `state` declarations, sectioned model input,
+  `invariant unseen`, `seen` in records, `onto laws` visibility section;
+  consent-enforcement shows no person data reaching any model, proved.
+- **Next:** `memory: similar N` (episodic, policy-scoped) and
+  counterfactual replay from `seen` (benefits-assembly); usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).
