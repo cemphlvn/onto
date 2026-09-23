@@ -26,6 +26,9 @@ pub const PASS_AT: f32 = 0.3;
 #[derive(Clone, Debug, Serialize)]
 pub struct Review {
     pub id: String,
+    /// SHA-256 of the category source the proposal was reviewed against.
+    /// Promotion requires the file to still be this snapshot.
+    pub snapshot: Option<String>,
     /// Frame records the proposal came from (identical proposals merged).
     pub sources: Vec<String>,
     pub proposal: Proposal,
@@ -53,6 +56,7 @@ pub async fn review<C: Critic>(
     let (mut checks, extended) = supervise::structural(cat, p);
     let done = |checks: Vec<Check>, critic| Review {
         id: id.clone(),
+        snapshot: cat.snapshot().map(str::to_owned),
         sources: sources.clone(),
         proposal: p.clone(),
         admission: supervise::admission(&checks),

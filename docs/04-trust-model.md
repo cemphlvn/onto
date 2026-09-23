@@ -92,7 +92,11 @@ signed commits.
 - that a description means what its author intended;
 - that a `closed:` frame is really complete (an assertion; a proposal
   into it is a *challenge*, and only a person can revise the claim);
-- anything about joins (designed, not built: `docs/03-joins.md`).
+- that a successful join reflects **completion in the world**: an
+  all-join means every branch *reached* the join object through judged
+  transitions and code gates. It does not mean the rollback ran or the
+  key was revoked. That needs **attested observations** (next milestone);
+  until then a join is evidence about the walk, not about the world.
 
 ## 5. Snapshot atomicity
 
@@ -106,13 +110,19 @@ What holds today:
   reloads the edited file before writing, rolling back if it would not
   load.
 
-Known gaps, frozen as limitations of this milestone:
+The three gaps frozen with the milestone are **closed** (after
+`8206348`):
 
-| gap | consequence | planned fix |
-|---|---|---|
-| reviews and disposition records do not record which snapshot they were made against | an audit cannot prove which graph a verdict judged | a content hash of the category in every record, review and promotion comment |
-| `promote` re-runs structural checks but **not semantic ones** (rules, duplicates, overlap) | a verdict can go stale: e.g. an equivalent arrow promoted since the review | require the review's snapshot hash to match, or re-review |
-| `promote`'s read–check–write is not atomic | two concurrent promotions can lose one update | compare-and-swap on the file hash (re-read and compare immediately before writing), or a lock |
+| gap | fix |
+|---|---|
+| records and reviews did not say which graph they judged | every frame record, run report, `run.start` event and review carries the **snapshot**: the SHA-256 of the category source (`shasum -a 256 file.onto` reproduces it); review notes proposals made against another snapshot; the promotion comment names the snapshot the review judged |
+| `promote` did not re-run semantic checks | `promote` refuses unless the review's snapshot equals the file's current snapshot: a changed file means re-review (which re-runs rules, duplicates and overlap). No override. |
+| promotion was not atomic | an exclusive lock file serializes promotions of a file; the snapshot is checked under the lock; the write is compare-and-swap (re-hash immediately before) and atomic (write a sibling, rename over) |
+
+Residual: the lock serializes `onto promote` runs, not arbitrary editors;
+an editor writing between the compare and the rename (a very small
+window) is not detected. Snapshots identify content, they do not
+authenticate who produced it (signatures are future work, §3).
 
 ## 6. Threats considered
 

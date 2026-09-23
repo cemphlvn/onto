@@ -109,6 +109,21 @@ pub fn review_main(args: ReviewArgs) -> Result<(), BoxError> {
             }
         }
     }
+    let current = cat.snapshot().unwrap_or_default().to_owned();
+    let other_snapshots: BTreeMap<String, ()> = text
+        .lines()
+        .filter_map(|l| serde_json::from_str::<Value>(l).ok())
+        .filter_map(|r| r["snapshot"].as_str().map(str::to_owned))
+        .filter(|h| *h != current)
+        .map(|h| (h, ()))
+        .collect();
+    for h in other_snapshots.keys() {
+        println!(
+            "note: some proposals were made against snapshot {}; reviewing them against the current file, snapshot {}",
+            short(h),
+            short(&current)
+        );
+    }
     if merged.is_empty() {
         println!(
             "no provisional proposals in {}",
@@ -281,9 +296,30 @@ pub fn promote_main(args: PromoteArgs) -> Result<(), BoxError> {
         revokes: names(&review["proposal"]["revokes"]),
     };
 
-    // The file may have changed since the review: prove the structure again.
+    // Serialize promotions of this file, then check, under the lock, that
+    // the file is still the snapshot the review judged: a changed file
+    // means the semantic checks may be stale, and only a re-review fixes it.
+    let _lock = FileLock::acquire(&args.file)?;
     let original =
         std::fs::read_to_string(&args.file).map_err(|e| format!("{}: {e}", args.file.display()))?;
+    let current = onto_core::parse::snapshot_hash(&original);
+    match review["snapshot"].as_str() {
+        Some(h) if h == current => {}
+        Some(h) => {
+            return Err(format!(
+                "{} was reviewed against snapshot {}, but {} is now {}: its checks may be stale; re-run `onto review`",
+                args.id,
+                short(h),
+                args.file.display(),
+                short(&current)
+            )
+            .into());
+        }
+        None => {
+            return Err(format!("{} records no snapshot; re-run `onto review`", args.id).into());
+        }
+    }
+    // Defense in depth: prove the structure again on the current file.
     let cat = onto_core::parse(&original)?;
     let (checks, _) = structural(&cat, &p);
     if let Some(c) = checks.iter().find(|c| c.outcome == Outcome::Fail) {
@@ -304,9 +340,10 @@ pub fn promote_main(args: PromoteArgs) -> Result<(), BoxError> {
             .join(", ")
     });
     let mut block = format!(
-        "\n    # promoted {} UTC · review {} · {}{} · from {sources}\n",
+        "\n    # promoted {} UTC · review {} of snapshot {} · {}{} · from {sources}\n",
         today(),
         args.id,
+        short(&current),
         review["admission"].as_str().unwrap_or("?"),
         if review["admission"] == "unknown" {
             " (overridden by a person)"
@@ -344,7 +381,19 @@ pub fn promote_main(args: PromoteArgs) -> Result<(), BoxError> {
     );
     onto_core::parse(&updated)
         .map_err(|e| format!("promotion would not load, file unchanged: {e}"))?;
-    std::fs::write(&args.file, updated)?;
+    // Compare-and-swap: the file must not have changed since we read it;
+    // then replace it atomically (write a sibling, rename over).
+    let now = std::fs::read_to_string(&args.file)?;
+    if onto_core::parse::snapshot_hash(&now) != current {
+        return Err(format!(
+            "{} changed during promotion; nothing written",
+            args.file.display()
+        )
+        .into());
+    }
+    let tmp = args.file.with_extension("onto.promoting");
+    std::fs::write(&tmp, &updated)?;
+    std::fs::rename(&tmp, &args.file)?;
     println!(
         "promoted {}: {} -> {} into {}",
         p.arrow,
@@ -352,8 +401,49 @@ pub fn promote_main(args: PromoteArgs) -> Result<(), BoxError> {
         p.dst,
         args.file.display()
     );
-    println!("review the diff and commit it: git is the delta log.");
+    println!(
+        "snapshot {} → {}. Review the diff and commit it: git is the delta log.",
+        short(&current),
+        short(&onto_core::parse::snapshot_hash(&updated))
+    );
     Ok(())
+}
+
+fn short(hash: &str) -> &str {
+    &hash[..hash.len().min(12)]
+}
+
+/// An exclusive lock on promotions of one file: `<file>.lock`, created
+/// atomically, removed on drop.
+struct FileLock(PathBuf);
+
+impl FileLock {
+    fn acquire(file: &std::path::Path) -> Result<Self, BoxError> {
+        let path = file.with_extension("onto.lock");
+        match std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+        {
+            Ok(mut f) => {
+                use std::io::Write;
+                let _ = writeln!(f, "{}", std::process::id());
+                Ok(Self(path))
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => Err(format!(
+                "another promotion holds {}; if none is running, remove it",
+                path.display()
+            )
+            .into()),
+            Err(e) => Err(e.into()),
+        }
+    }
+}
+
+impl Drop for FileLock {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.0);
+    }
 }
 
 fn names(v: &Value) -> Vec<String> {

@@ -139,6 +139,8 @@ pub struct WalkReport {
 
 #[derive(Clone, Debug, Serialize)]
 pub struct RunReport {
+    /// SHA-256 of the category source every walk in this run used.
+    pub snapshot: Option<String>,
     pub judge: String,
     pub proposer: String,
     pub policy: Policy,
@@ -248,6 +250,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             target: "onto",
             event = "run.start",
             category = self.cat.name(),
+            snapshot = self.cat.snapshot(),
             walks = jobs.len(),
             judge = %self.judge.name(),
             proposer = %self.proposer.name(),
@@ -305,6 +308,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         let peak_rss_bytes = sampler.stop().max(mem_end.rss_bytes);
         let c = &self.counters;
         let report = RunReport {
+            snapshot: self.cat.snapshot().map(str::to_owned),
             judge: self.judge.name(),
             proposer: self.proposer.name(),
             policy: self.cfg.policy,
@@ -491,6 +495,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 frames.push(FrameRecord {
                     id: join_id.clone(),
                     after: after.clone(),
+                    snapshot: self.cat.snapshot().map(str::to_owned),
                     walk: id,
                     focus: focus.as_ref().map(|f| f.arrow.clone()),
                     tokens: tokens.iter().cloned().collect(),
@@ -564,6 +569,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             let record = |judge, candidates, outcome| FrameRecord {
                 id: rec_id.clone(),
                 after: after.clone(),
+                snapshot: self.cat.snapshot().map(str::to_owned),
                 walk: id,
                 focus: visit_focus.clone(),
                 tokens: tokens.iter().cloned().collect(),

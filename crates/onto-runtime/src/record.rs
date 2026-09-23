@@ -17,6 +17,8 @@ pub struct FrameRecord {
     pub id: String,
     /// The visit this one follows causally.
     pub after: Option<String>,
+    /// SHA-256 of the category source this visit was made against.
+    pub snapshot: Option<String>,
     pub walk: u64,
     /// The aspect this walk handles, if it is (or continued) a fork branch.
     pub focus: Option<String>,

@@ -879,3 +879,21 @@ mod joins {
         assert!(err("join Merge: maybe;").contains("unknown join"));
     }
 }
+
+#[test]
+fn categories_know_their_snapshot() {
+    let cat = parse(TRIAGE).unwrap();
+    let hash = onto_core::parse::snapshot_hash(TRIAGE);
+    assert_eq!(cat.snapshot(), Some(hash.as_str()));
+    assert_eq!(hash.len(), 64);
+    // A different source is a different snapshot; a hypothetical
+    // extension has none (it is not a file anyone can point to).
+    assert_ne!(
+        onto_core::parse::snapshot_hash(&format!("{TRIAGE}\n")),
+        hash
+    );
+    let ext = cat
+        .extend("x", "Request", "Somewhere", Default::default())
+        .unwrap();
+    assert_eq!(ext.snapshot(), None);
+}

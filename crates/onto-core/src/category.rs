@@ -227,6 +227,9 @@ pub struct Equation {
 #[derive(Clone, Debug)]
 pub struct Category {
     name: String,
+    /// SHA-256 of the source text this category was parsed from (hex);
+    /// `None` for categories built in code or extended hypothetically.
+    snapshot: Option<String>,
     objects: Vec<Object>,
     arrows: Vec<Arrow>,
     equations: Vec<Equation>,
@@ -243,6 +246,16 @@ pub struct Category {
 impl Category {
     pub fn name(&self) -> &str {
         &self.name
+    }
+
+    /// The snapshot this category was loaded from: the SHA-256 of its
+    /// source text, verifiable with `shasum -a 256 file.onto`.
+    pub fn snapshot(&self) -> Option<&str> {
+        self.snapshot.as_deref()
+    }
+
+    pub(crate) fn set_snapshot(&mut self, hash: String) {
+        self.snapshot = Some(hash);
     }
 
     pub fn objects(&self) -> &[Object] {
@@ -841,6 +854,7 @@ impl CategoryBuilder {
         }
 
         let mut cat = Category {
+            snapshot: None,
             name: self.name,
             objects: self.objects,
             arrows: self.arrows,

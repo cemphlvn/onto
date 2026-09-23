@@ -841,3 +841,16 @@ mod joins {
         )));
     }
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn every_record_names_its_snapshot() {
+    let r = run(Policy::Shared, false, &[FIX]).await;
+    let expected = onto_core::parse::snapshot_hash(TRIAGE);
+    assert_eq!(r.snapshot.as_deref(), Some(expected.as_str()));
+    assert!(
+        r.walks[0]
+            .frames
+            .iter()
+            .all(|f| f.snapshot.as_deref() == Some(expected.as_str()))
+    );
+}

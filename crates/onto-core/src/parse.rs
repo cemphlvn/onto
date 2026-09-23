@@ -50,7 +50,19 @@ pub fn parse(src: &str) -> Result<Category, Error> {
             },
         })?;
     }
-    b.build()
+    let mut cat = b.build()?;
+    cat.set_snapshot(snapshot_hash(src));
+    Ok(cat)
+}
+
+/// SHA-256 of a category's source text, as lowercase hex: the identity of
+/// the snapshot that walks, reviews and promotions refer to.
+pub fn snapshot_hash(src: &str) -> String {
+    use sha2::{Digest, Sha256};
+    Sha256::digest(src.as_bytes())
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect()
 }
 
 fn perr(msg: impl Into<String>) -> Error {

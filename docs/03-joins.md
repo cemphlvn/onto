@@ -26,6 +26,10 @@ parallel branches from a noul fork recombine. Implementation:
   not yet shown live: when a case describes actions already taken, the
   judge hesitates at the arrows for those actions (the graph models what
   to do, not what was done).
+- **A successful join is not evidence of real-world completion.** It
+  means every branch reached the join object through judged transitions
+  and code gates. Presenting it as "the incident is mitigated" requires
+  attested observations (`docs/04-trust-model.md` §4).
 
 ## 1. Principle
 
