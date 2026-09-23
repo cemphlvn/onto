@@ -55,4 +55,9 @@ category Incident {
     verify:  Rollback -> Mitigated "confirm errors stopped after the rollback";
     confirm: Rotate -> Mitigated   "confirm the old credential no longer works";
     closed: Failover, Rollback, Rotate, Mitigated;
+
+    # An incident that forked into independent aspects is mitigated only
+    # when every aspect is: the branches must all arrive here (all-join).
+    # Walks that never forked pass straight through.
+    join Mitigated: all;
 }

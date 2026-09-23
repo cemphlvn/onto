@@ -1,6 +1,6 @@
 # onto — Architecture
 
-Status: **draft 5 — 2026-09-23.** Single source of truth for how onto is
+Status: **draft 6 — 2026-09-23.** Single source of truth for how onto is
 built. Code follows this document; change it here first.
 
 ## 1. What onto is
@@ -34,6 +34,7 @@ propose new structure.
 | disposition | what happened to one candidate arrow at a frame visit: selected · forked · alternative · rejected · deferred · filtered_by_require, with the judge's number and a reason built from the numbers | `walk::Disposition`, `walk::dispose` |
 | capability token | an on/off property a walk holds, set by `ensures` and cleared by `revokes` on arrows; a capability, not a fact: an arrow standing for a real-world fact must `require` the evidence before it `ensures` the token | `Arrow::ensures`, `WalkState::tokens` |
 | capability declaration | which arrows may issue and revoke a token (`capability T { issuers: …; revokers: …; }`); every token used must be declared | `Capability` |
+| join | where sibling branches of one fork recombine: `all` (intersection of tokens), `race` (first arrival), `gate` (authority exports an allowlist); `incomplete_join` / `blocked_by_gate` when a sibling cannot arrive | `Join`, `joins.rs` |
 | declared root | an application entry point (`start: A;`); starting still counts as entering | `Category::starts` |
 | entry contract | what every walk entering an object must hold (`needs` tokens, `require` over the case); inherited by every incoming arrow, present and future; starting at an object counts as entering it | `Entry`, `Gate` |
 | derived law | a statement implied by contracts and effects, e.g. "every walk into Research has taken consent or contract, and no withdraw since" | `laws::derive`, `onto laws` |
@@ -329,6 +330,7 @@ category Name {
     entry D: needs T require case.flag == true;    # entry contract, inherited by every arrow into D
     capability T { issuers: g; revokers: w; }  # only g may issue T, only w revoke it
     start: A;                                  # declared application root
+    join D: all;                               # branches of a fork recombine here (all | race | gate authority g export T)
     invariant via: A -> D through B | C;       # every path A→D passes B or C (proved)
     invariant never: A -> Z;                   # no path A→Z, even to a future Z (proved)
     invariant rule "no arrow may …";           # judged by the critic
@@ -382,6 +384,8 @@ snapshot. No database until live multi-writer editing is needed.
 | D28 | one capability validator for loading, review and promotion | a governance rule must not behave differently by entry route |
 | D29 | `start:` roots; laws in two scopes (declared roots / all startable) | application guarantees and category guarantees are different claims |
 | D30 | MUST laws carry exhaustive certificates, MAY laws witnesses, failures counterexamples | a single path is not a proof of "every walk" |
+| D31 | structured joins only (siblings of one fork); all / race / gate; intersection by default, gate exports an allowlist | known sibling sets avoid OR-join semantics; least privilege; authority transfer is explicit |
+| D32 | a walk waits only on running siblings | deadlock freedom without a global scheduler |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
 | D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |
@@ -412,9 +416,13 @@ snapshot. No database until live multi-writer editing is needed.
   atomicity documented in `docs/04-trust-model.md`: policy declarations
   are the root of trust; policy changes are a privileged operation (not
   yet enforced); known snapshot gaps listed with fixes.
-- **Next:** join semantics (All, Gate, Race) documented, then built;
-  exact-label behavioural quotient; behavioural difference in review;
-  snapshot; streaming records.
+- **Joins (done):** all, race, gate; deadlock-free waiting; merge nodes
+  in the disposition graph; incident-graph mitigates only when every
+  forked aspect is mitigated.
+- **Next:** snapshot hashes in records/reviews and atomic promotion
+  (trust-model gaps); exact-label behavioural quotient; behavioural
+  difference in review; streaming records; joins in `onto laws` (sound
+  already, see `docs/03-joins.md` §5, but not reported).
 - **M3:** functors between categories; multi-category files.
 - **M4:** C ABI (cbindgen) and Python bindings (PyO3); Jev `Chooser` adapter
   (Choice primitive over the frame) in Python.

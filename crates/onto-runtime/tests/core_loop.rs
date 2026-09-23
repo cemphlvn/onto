@@ -693,3 +693,151 @@ mod contracts {
         assert_eq!(r.judge_calls, 0);
     }
 }
+
+mod joins {
+    use super::*;
+    use onto_core::walk::Escalation;
+    use onto_runtime::record::Outcome;
+
+    /// Alert forks into Latency and Security (mock: goal contains " and ");
+    /// each branch reaches Merge, gaining Seen or Checked on the way.
+    fn src(join: &str, verify_require: &str) -> String {
+        format!(
+            r#"category C {{
+            capability Seen {{ issuers: look; }}
+            capability Checked {{ issuers: verify; }}
+            objects: Alert, Latency, Security, Merge, Done;
+            frame Alert: noul;
+            latency:  Alert -> Latency  "slow responses";
+            security: Alert -> Security "leaked credentials";
+            look:   Latency -> Merge "merge" ensures Seen;
+            verify: Security -> Merge "merge" {verify_require} ensures Checked;
+            finish: Merge -> Done "done";
+            closed: Alert, Latency, Security, Merge, Done;
+            {join}
+        }}"#
+        )
+    }
+
+    async fn go(join: &str, verify_require: &str) -> RunReport {
+        let cat = Arc::new(onto_core::parse(&src(join, verify_require)).unwrap());
+        let cfg = Config {
+            policy: Policy::Shared,
+            ..Config::default()
+        };
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            cfg,
+        );
+        let job = Job {
+            from: "Alert".into(),
+            goal: "slow and leaked credentials: merge, then done".into(),
+            case: json!({}),
+        };
+        tokio::time::timeout(Duration::from_secs(5), engine.run(vec![job]))
+            .await
+            .expect("join deadlocked")
+            .unwrap()
+    }
+
+    fn joined(w: &onto_runtime::engine::WalkReport) -> (&str, Vec<String>) {
+        w.steps
+            .iter()
+            .find_map(|s| match s {
+                StepRecord::Joined { role, tokens, .. } => Some((role.as_str(), tokens.clone())),
+                _ => None,
+            })
+            .expect("a join step")
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn all_join_continues_once_with_the_intersection() {
+        let r = go("join Merge: all;", "").await;
+        assert_eq!(r.walks.len(), 2);
+        let roles: Vec<&str> = r.walks.iter().map(|w| joined(w).0).collect();
+        assert_eq!(roles.iter().filter(|r| **r == "continued").count(), 1);
+        assert_eq!(roles.iter().filter(|r| **r == "ended").count(), 1);
+        let cont = r.walks.iter().find(|w| joined(w).0 == "continued").unwrap();
+        // Seen ∩ Checked = {}: least privilege.
+        assert!(joined(cont).1.is_empty());
+        assert!(cont.path.ends_with("-> Done"), "{}", cont.path);
+        // The join record is a merge node of the disposition graph.
+        let rec = cont
+            .frames
+            .iter()
+            .find(|f| matches!(f.outcome, Outcome::Joined { .. }))
+            .unwrap();
+        assert_eq!(rec.merged_from.len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gate_join_exports_only_the_allowlist() {
+        let r = go("join Merge: gate authority security export Checked;", "").await;
+        let content = r.walks.iter().find(|w| joined(w).0 == "continued").unwrap();
+        // (Seen ∩ Checked) ∪ (Checked ∩ {Checked}) = {Checked}
+        assert_eq!(joined(content).1, ["Checked"]);
+        let authority = r.walks.iter().find(|w| joined(w).0 == "ended").unwrap();
+        assert!(authority.steps.iter().any(|s| matches!(s, StepRecord::Joined { detail, .. } if detail.contains("delivered authority"))));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn race_join_keeps_the_winner_and_its_own_tokens() {
+        let r = go("join Merge: race;", "").await;
+        let winner = r.walks.iter().find(|w| joined(w).0 == "continued").unwrap();
+        let loser = r.walks.iter().find(|w| joined(w).0 == "ended").unwrap();
+        assert_eq!(joined(winner).1.len(), 1, "the winner keeps its own token");
+        assert!(loser.steps.iter().any(
+            |s| matches!(s, StepRecord::Joined { detail, .. } if detail.contains("lost the race"))
+        ));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn all_join_is_incomplete_when_a_sibling_ends_elsewhere() {
+        // `verify` needs evidence the case lacks: the Security branch
+        // escalates at Security and never arrives.
+        let r = go("join Merge: all;", "require evidence == true").await;
+        let waiting = r
+            .walks
+            .iter()
+            .find(|w| {
+                w.steps
+                    .iter()
+                    .any(|s| matches!(s, StepRecord::Joined { .. }))
+            })
+            .unwrap();
+        assert!(waiting.steps.iter().any(|s| matches!(
+            s,
+            StepRecord::Escalated {
+                reason: Escalation::IncompleteJoin,
+                ..
+            }
+        )));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gate_join_blocks_when_authority_never_arrives() {
+        let r = go(
+            "join Merge: gate authority security export Checked;",
+            "require evidence == true",
+        )
+        .await;
+        let content = r
+            .walks
+            .iter()
+            .find(|w| {
+                w.steps
+                    .iter()
+                    .any(|s| matches!(s, StepRecord::Joined { .. }))
+            })
+            .unwrap();
+        assert!(content.steps.iter().any(|s| matches!(
+            s,
+            StepRecord::Escalated {
+                reason: Escalation::BlockedByGate,
+                ..
+            }
+        )));
+    }
+}

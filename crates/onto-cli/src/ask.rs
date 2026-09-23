@@ -129,6 +129,7 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
     println!();
     let mut n = 0;
     let mut outcome = None;
+    let mut combined = false;
     for s in &w.steps {
         match s {
             StepRecord::Followed {
@@ -147,6 +148,23 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                 }
             }
             StepRecord::Forked { .. } => {}
+            StepRecord::Joined {
+                at,
+                role,
+                into,
+                detail,
+                ..
+            } => match role.as_str() {
+                "continued" => println!(
+                    "{pad}   ⤝ the parts of your case came back together at {at} ({detail})"
+                ),
+                "ended" => {
+                    let target = into.map_or(String::new(), |w| format!(" (walk {w})"));
+                    println!("{pad}   ⤝ this part was combined into another part{target} at {at}");
+                    combined = true;
+                }
+                _ => {}
+            },
             StepRecord::Escalated {
                 at,
                 reason,
@@ -174,6 +192,9 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
             println!("{pad}✓ Handled. This follows an existing route and reached {end_name}.");
             println!("{pad}  Route: {route}");
         }
+        None if combined => println!(
+            "{pad}✓ Combined into another part of your case; see that part for the outcome."
+        ),
         None => println!("{pad}… Stopped before reaching an outcome (step limit)."),
         Some((at, reason, proposals)) => {
             let why = match reason {
@@ -182,6 +203,16 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                     format!("at {at}, it was not sure enough which option fits")
                 }
                 Escalation::OpenFrame => format!("{at} is an area known to be incomplete"),
+                Escalation::IncompleteJoin => {
+                    format!(
+                        "the parts of your case were meant to come together at {at}, but one part could not finish"
+                    )
+                }
+                Escalation::BlockedByGate => {
+                    format!(
+                        "{at} needed an authorization from another part of your case that never arrived"
+                    )
+                }
             };
             println!("{pad}⚠ Needs a person. The system stopped because {why},");
             println!(

@@ -79,6 +79,32 @@ impl Entry {
     }
 }
 
+/// How sibling branches of one fork recombine at an object
+/// (`docs/03-joins.md`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Join {
+    /// Wait for every sibling; continue with the intersection of tokens.
+    All,
+    /// The first sibling to arrive continues with its own tokens.
+    Race,
+    /// Content continues once the branch spawned along `authority` has
+    /// arrived, with (content ∩ authority) ∪ (authority ∩ `export`).
+    Gate {
+        authority: String,
+        export: Vec<String>,
+    },
+}
+
+impl Join {
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::All => "all",
+            Self::Race => "race",
+            Self::Gate { .. } => "gate",
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Object {
     pub name: String,
@@ -87,6 +113,8 @@ pub struct Object {
     pub about: Option<Value>,
     pub frame: Frame,
     pub entry: Entry,
+    /// Set when sibling branches recombine here.
+    pub join: Option<Join>,
 }
 
 /// Whether an arrow may be taken from a given case and token set.
@@ -306,6 +334,30 @@ impl Category {
                 }
             }
         }
+        for o in &self.objects {
+            if let Some(Join::Gate { authority, export }) = &o.join {
+                let Ok(a) = self.arrow_id(authority) else {
+                    return bad(format!(
+                        "join at {}: unknown authority arrow `{authority}`",
+                        o.name
+                    ));
+                };
+                if self.object(self.arrow(a).src).frame.primitive != Primitive::Noul {
+                    return bad(format!(
+                        "join at {}: authority `{authority}` must leave a noul frame (only noul frames fork)",
+                        o.name
+                    ));
+                }
+                for t in export {
+                    if self.capability(t).is_none() {
+                        return bad(format!(
+                            "join at {} exports undeclared capability {t}",
+                            o.name
+                        ));
+                    }
+                }
+            }
+        }
         for &s in &self.starts {
             let o = self.object(s);
             if !o.entry.needs.is_empty() {
@@ -395,6 +447,9 @@ impl Category {
             }
             if !o.entry.is_empty() {
                 b.entry(&o.name, o.entry.clone())?;
+            }
+            if let Some(j) = &o.join {
+                b.join(&o.name, j.clone())?;
             }
         }
         if self.object_id(dst).is_err() {
@@ -618,6 +673,7 @@ impl CategoryBuilder {
             about: None,
             frame: Frame::default(),
             entry: Entry::default(),
+            join: None,
         });
         self.object_index.insert(name.to_owned(), id);
         Ok(id)
@@ -668,6 +724,13 @@ impl CategoryBuilder {
     pub fn frame(&mut self, object: &str, frame: Frame) -> Result<(), Error> {
         let id = self.lookup_object(object)?;
         self.objects[id.0 as usize].frame = frame;
+        Ok(())
+    }
+
+    /// Declares `object` a join point.
+    pub fn join(&mut self, object: &str, join: Join) -> Result<(), Error> {
+        let id = self.lookup_object(object)?;
+        self.objects[id.0 as usize].join = Some(join);
         Ok(())
     }
 

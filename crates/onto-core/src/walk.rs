@@ -96,6 +96,10 @@ pub enum Escalation {
     OpenFrame,
     NoneOfThese,
     LowConfidence,
+    /// An all-join cannot complete: a sibling ended elsewhere.
+    IncompleteJoin,
+    /// A gate join's authority branch ended without arriving.
+    BlockedByGate,
 }
 
 impl Escalation {
@@ -104,6 +108,8 @@ impl Escalation {
             Self::OpenFrame => "open_frame",
             Self::NoneOfThese => "none_of_these",
             Self::LowConfidence => "low_confidence",
+            Self::IncompleteJoin => "incomplete_join",
+            Self::BlockedByGate => "blocked_by_gate",
         }
     }
 }

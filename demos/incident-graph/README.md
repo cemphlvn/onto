@@ -52,6 +52,15 @@ onto run demos/incident-graph/incident.onto --jobs demos/incident-graph/jobs --p
   (before: unsure at SecurityEvent).
 - 12 walks incl. 1 branch, 3.67x parallel, 25 judge calls carrying 40 questions.
 
+## Joins (2026-09-23, live)
+
+`join Mitigated: all;` — an incident that forked into independent
+aspects is mitigated only when every aspect is. Live, on "5xx errors
+since the deploy, and separately an API key was posted": the deploy
+branch reached `Mitigated` and waited 5.3 s; the security branch stopped
+at `Rotate` (unsure the old key was confirmed dead); the join escalated
+`incomplete_join` instead of reporting the incident mitigated.
+
 ## What it does not do yet
 
 - No actions are taken; walks model the investigation, not remediation.

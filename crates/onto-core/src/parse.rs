@@ -32,7 +32,8 @@
 use serde_json::Value;
 
 use crate::category::{
-    ArrowMeta, Capability, Category, CategoryBuilder, Entry, Frame, Invariant, PathSpec, Primitive,
+    ArrowMeta, Capability, Category, CategoryBuilder, Entry, Frame, Invariant, Join, PathSpec,
+    Primitive,
 };
 use crate::error::Error;
 use crate::require::Require;
@@ -194,6 +195,36 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
                 instructions,
             },
         );
+    }
+    if let Some(rest) = stmt.strip_prefix("join ") {
+        let (object, rest) = rest.split_once(':').ok_or_else(|| {
+            perr("expected `join Object: all | race | gate authority A export T, …`")
+        })?;
+        let rest = rest.trim();
+        let join = if rest == "all" {
+            Join::All
+        } else if rest == "race" {
+            Join::Race
+        } else if let Some(r) = rest.strip_prefix("gate authority ") {
+            let (authority, tail) = names(r);
+            let [authority] = authority.as_slice() else {
+                return Err(perr("gate names exactly one authority arrow"));
+            };
+            let export = match tail.trim().strip_prefix("export ") {
+                Some(e) => names(e).0,
+                None if tail.trim().is_empty() => Vec::new(),
+                None => return Err(perr(format!("unexpected `{}` in gate join", tail.trim()))),
+            };
+            Join::Gate {
+                authority: authority.clone(),
+                export,
+            }
+        } else {
+            return Err(perr(format!(
+                "unknown join `{rest}` (all, race, gate authority A export T)"
+            )));
+        };
+        return b.join(object.trim(), join);
     }
     if let Some(rest) = stmt.strip_prefix("capability ") {
         b.capability(capability(rest)?);

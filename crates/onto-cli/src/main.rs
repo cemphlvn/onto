@@ -238,6 +238,8 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
                             Escalation::OpenFrame => "frame is open (not MECE)",
                             Escalation::NoneOfThese => "System 1 found no option that fits",
                             Escalation::LowConfidence => "System 1 below threshold",
+                            Escalation::IncompleteJoin => "join could not complete",
+                            Escalation::BlockedByGate => "join gate never authorized",
                         };
                         println!("{} ⇒ escalate to System 2: {why}", cat.object(at).name);
                         for p in proposals {

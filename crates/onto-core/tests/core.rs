@@ -831,3 +831,51 @@ mod authority {
         assert!(laws.witness(o("Research"), "LegalBasis").is_some());
     }
 }
+
+mod joins {
+    use super::*;
+    use onto_core::Join;
+
+    const SRC: &str = r#"category C {
+        capability Checked { issuers: verify; }
+        objects: Alert, Latency, Security, Merge, Done;
+        frame Alert: noul;
+        latency:  Alert -> Latency;
+        security: Alert -> Security;
+        look:   Latency -> Merge;
+        verify: Security -> Merge ensures Checked;
+        finish: Merge -> Done;
+        JOIN
+    }"#;
+
+    #[test]
+    fn join_declarations_parse() {
+        let cat = parse(&SRC.replace(
+            "JOIN",
+            "join Merge: gate authority security export Checked;",
+        ))
+        .unwrap();
+        assert_eq!(
+            cat.object(cat.object_id("Merge").unwrap()).join,
+            Some(Join::Gate {
+                authority: "security".into(),
+                export: vec!["Checked".into()]
+            })
+        );
+        for j in ["all", "race"] {
+            assert!(parse(&SRC.replace("JOIN", &format!("join Merge: {j};"))).is_ok());
+        }
+    }
+
+    #[test]
+    fn gate_authority_and_exports_are_validated() {
+        let err = |j: &str| parse(&SRC.replace("JOIN", j)).unwrap_err().to_string();
+        assert!(err("join Merge: gate authority look;").contains("must leave a noul frame"));
+        assert!(err("join Merge: gate authority nope;").contains("unknown authority arrow"));
+        assert!(
+            err("join Merge: gate authority security export Forged;")
+                .contains("undeclared capability Forged")
+        );
+        assert!(err("join Merge: maybe;").contains("unknown join"));
+    }
+}

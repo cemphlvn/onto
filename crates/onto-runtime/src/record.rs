@@ -33,6 +33,10 @@ pub struct FrameRecord {
     pub outcome: Outcome,
     /// Provisional System-2 proposals made at this visit, if it escalated.
     pub proposals: Vec<Proposal>,
+    /// For a join: the other branches' last records, merged into this one
+    /// (the disposition graph's merge nodes).
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub merged_from: Vec<String>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -82,6 +86,14 @@ pub enum Outcome {
     },
     Failed {
         error: String,
+    },
+    /// Arrived at a join object: `role` is `continued`, `ended` or
+    /// `escalated`; `with` are the sibling walks folded in.
+    Joined {
+        policy: String,
+        role: String,
+        with: Vec<u64>,
+        detail: String,
     },
 }
 

@@ -1,7 +1,31 @@
 # onto — Join Semantics
 
-Status: **design, not built — 2026-09-23.** How parallel branches (from a
-noul fork) recombine. Written before implementation, against `60c0008`.
+Status: **built — 2026-09-23** (designed first against `60c0008`). How
+parallel branches from a noul fork recombine. Implementation:
+`crates/onto-runtime/src/joins.rs`; syntax and validation in core.
+
+**As built:**
+- `join X: all | race | gate authority A export T, …`; the gate's
+  authority must be an arrow leaving a noul frame, and exported tokens
+  must be declared capabilities (the policy validator of
+  `docs/04-trust-model.md`).
+- Walks carry a stack of forks (innermost last); a walk arriving at a
+  join object joins its innermost fork's siblings; walks that never
+  forked pass through.
+- **Deadlock freedom:** a walk waits only on siblings that are still
+  running; a sibling that ended, or waits at another join, resolves the
+  join as incomplete or blocked. Tested under timeouts; stable over
+  repeated runs.
+- Race losers are not interrupted; they end when they arrive.
+- Every join writes a frame record whose `merged_from` lists the other
+  branches' last records: the merge nodes of the disposition graph.
+- Live (incident-graph, `join Mitigated: all`): a deploy branch reached
+  Mitigated and waited 5.3 s; its security sibling stopped at Rotate; the
+  join escalated `incomplete_join`. An incident with an unfinished aspect
+  is not reported mitigated. A successful all-join is covered by tests,
+  not yet shown live: when a case describes actions already taken, the
+  judge hesitates at the arrows for those actions (the graph models what
+  to do, not what was done).
 
 ## 1. Principle
 
@@ -67,9 +91,10 @@ because it is least privilege: a joined walk holds only what every
 branch holds. Gate is the one asymmetric case, where authority is
 transferred, and only through the allowlist.
 
-Provenance: the join produces one frame record whose causal links are
-**all** arriving branches' last records (`after` becomes a list), so the
-disposition graph stays a DAG with the join as a merge node.
+Provenance: the join produces one frame record whose `after` is the
+continuing walk's previous record and whose `merged_from` lists every
+other arriving branch's last record, so the disposition graph stays a
+DAG with the join as a merge node.
 
 ## 5. Laws stay sound
 
@@ -85,10 +110,12 @@ the authority branch's, and contain $T_c \cap T_a$), and Race (the
 continuation is one branch's own state). MAY sets over-approximate. No
 existing law is weakened by adding joins.
 
-## 6. Build order
+## 6. Build order (1–3 done)
 
-1. `join` declarations parsed and validated (join object reachable from a
-   noul fork; `gate authority` names a fork arrow; `export` tokens declared).
+1. `join` declarations parsed and validated (`gate authority` names an
+   arrow leaving a noul frame; `export` tokens declared). Not validated:
+   that a join object is reachable from a noul fork (walks that never
+   forked simply pass through).
 2. Runtime: join table keyed by (fork record, join object); All, Gate, Race;
    `incomplete_join` and `blocked_by_gate`; multi-parent frame records.
 3. Beneficiary view: "the parts of your case came back together at …".

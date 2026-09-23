@@ -18,6 +18,7 @@ use tokio::sync::{Semaphore, mpsc};
 use tokio::task::JoinSet;
 
 use crate::frames::{Claim, FrameLocks, Mode, Policy, Potentiality, PotentialityKind, Resolution};
+use crate::joins::{Arrival, ForkInfo, JoinOutcome, Joins};
 use crate::mem::{self, MemSample};
 use crate::model::{
     Candidate, Focus, FrameRequest, Hop, Judge, ModelError, Pending, ProposalRequest, Proposer,
@@ -108,6 +109,18 @@ pub enum StepRecord {
         at: String,
         error: String,
     },
+    /// Arrived at a join object and the join resolved for this walk.
+    Joined {
+        at: String,
+        policy: String,
+        /// `continued`, `ended` (folded into `into`) or `escalated`.
+        role: String,
+        into: Option<u64>,
+        with: Vec<u64>,
+        tokens: Vec<String>,
+        detail: String,
+        wait_ms: f64,
+    },
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -159,6 +172,7 @@ struct Counters {
     speculative_discarded: AtomicU64,
     forks: AtomicU64,
     branches: AtomicU64,
+    joins: AtomicU64,
     tokens_in: AtomicU64,
     tokens_out: AtomicU64,
 }
@@ -180,6 +194,8 @@ struct Seed {
     /// Capability tokens held when the walk starts (a branch inherits its
     /// parent's, including the effects of the arrow it forked along).
     tokens: BTreeSet<String>,
+    /// Enclosing forks, innermost last: whom this walk may join with.
+    forks: Vec<Arc<ForkInfo>>,
 }
 
 pub struct Engine<J, P> {
@@ -194,6 +210,7 @@ pub struct Engine<J, P> {
     concepts: Mutex<HashMap<String, Vec<u64>>>,
     /// Provisional proposals per frame, shown to later proposers there.
     pending: Mutex<HashMap<ObjId, Vec<(u64, Proposal)>>>,
+    joins: Joins,
     counters: Counters,
     /// Walk ids are unique across `run` calls on one engine, so conceptual
     /// intersections are detected between runs too.
@@ -208,6 +225,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             proposer_slots: Semaphore::new(cfg.proposer_concurrency),
             concepts: Mutex::new(HashMap::new()),
             pending: Mutex::new(HashMap::new()),
+            joins: Joins::default(),
             counters: Counters::default(),
             next_walk: AtomicU64::new(1),
             cat,
@@ -257,6 +275,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 after: None,
                 focus: None,
                 tokens: BTreeSet::new(),
+                forks: Vec::new(),
             };
             running.spawn(self.clone().walk(seed, branch_tx.clone()));
         }
@@ -344,7 +363,10 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             mut after,
             mut focus,
             mut tokens,
+            mut forks,
         } = seed;
+        self.joins.started(id);
+        let mut seq = 0usize;
         tracing::info!(
             target: "onto",
             event = "walk.start",
@@ -391,6 +413,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     at: start.name.clone(),
                     error,
                 });
+                self.joins.ended(id);
                 return WalkReport {
                     walk: id,
                     parent,
@@ -404,9 +427,119 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             }
         }
 
-        'steps: for n in 1..=self.cfg.max_steps {
+        'steps: for _ in 0..self.cfg.max_steps {
             let at = path.dst;
             let object = cat.object(at);
+
+            // A join object: recombine with this walk's innermost fork.
+            if let (Some(join), Some(fork)) = (&object.join, forks.last().cloned()) {
+                let arrival = Arrival {
+                    tokens: tokens.clone(),
+                    last_record: frames.last().map(|f: &FrameRecord| f.id.clone()),
+                };
+                let (outcome, waited) = self.joins.arrive(id, &fork, at, join, arrival).await;
+                self.counters.joins.fetch_add(1, Relaxed);
+                seq += 1;
+                let join_id = format!("w{id}.{seq}");
+                let (role, into, with, detail, merged_from, escalate) = match &outcome {
+                    JoinOutcome::Continue { tokens: t, merged } => {
+                        tokens = t.clone();
+                        forks.pop();
+                        let with: Vec<u64> = merged.iter().map(|m| m.0).collect();
+                        let from: Vec<String> = merged.iter().filter_map(|m| m.1.clone()).collect();
+                        let detail = format!(
+                            "continues holding {{{}}}",
+                            tokens.iter().cloned().collect::<Vec<_>>().join(", ")
+                        );
+                        ("continued", None, with, detail, from, None)
+                    }
+                    JoinOutcome::End { into, reason } => (
+                        "ended",
+                        *into,
+                        into.iter().copied().collect(),
+                        reason.clone(),
+                        Vec::new(),
+                        None,
+                    ),
+                    JoinOutcome::Escalate { incomplete, reason } => {
+                        let e = if *incomplete {
+                            Escalation::IncompleteJoin
+                        } else {
+                            Escalation::BlockedByGate
+                        };
+                        (
+                            "escalated",
+                            None,
+                            Vec::new(),
+                            reason.clone(),
+                            Vec::new(),
+                            Some(e),
+                        )
+                    }
+                };
+                tracing::info!(
+                    target: "onto",
+                    event = "join",
+                    walk = id,
+                    at = %object.name,
+                    policy = join.name(),
+                    role,
+                    into,
+                    wait_ms = ms(waited),
+                    detail = %detail,
+                );
+                frames.push(FrameRecord {
+                    id: join_id.clone(),
+                    after: after.clone(),
+                    walk: id,
+                    focus: focus.as_ref().map(|f| f.arrow.clone()),
+                    tokens: tokens.iter().cloned().collect(),
+                    at: object.name.clone(),
+                    primitive: object.frame.primitive,
+                    closure: if object.closure == Closure::Closed {
+                        "closed"
+                    } else {
+                        "open"
+                    },
+                    claim: ClaimRecord {
+                        mode: Mode::Read,
+                        wait_ms: ms(waited),
+                    },
+                    judge: None,
+                    candidates: Vec::new(),
+                    outcome: Outcome::Joined {
+                        policy: join.name().into(),
+                        role: role.into(),
+                        with: with.clone(),
+                        detail: detail.clone(),
+                    },
+                    proposals: Vec::new(),
+                    merged_from,
+                });
+                after = Some(join_id);
+                steps.push(StepRecord::Joined {
+                    at: object.name.clone(),
+                    policy: join.name().into(),
+                    role: role.into(),
+                    into,
+                    with,
+                    tokens: tokens.iter().cloned().collect(),
+                    detail: detail.clone(),
+                    wait_ms: ms(waited),
+                });
+                if let Some(reason) = escalate {
+                    steps.push(StepRecord::Escalated {
+                        at: object.name.clone(),
+                        reason,
+                        proposals: Vec::new(),
+                        wait_ms: ms(waited),
+                    });
+                }
+                if role != "continued" {
+                    break 'steps;
+                }
+            }
+
             let closed = object.closure == Closure::Closed;
             if closed && cat.out(at).is_empty() {
                 break; // terminal
@@ -424,7 +557,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             };
             let mut guard = self.locks.acquire(cat, Claim::new(cat, id, at, mode)).await;
             let wait_ms = ms(guard.waited);
-            let rec_id = format!("w{id}.{n}");
+            seq += 1;
+            let rec_id = format!("w{id}.{seq}");
             // The focus this visit was made under (a fork below may change it).
             let visit_focus = focus.as_ref().map(|f| f.arrow.clone());
             let record = |judge, candidates, outcome| FrameRecord {
@@ -441,6 +575,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 candidates,
                 outcome,
                 proposals: Vec::new(),
+                merged_from: Vec::new(),
             };
 
             let mut speculative = None;
@@ -556,9 +691,26 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         drop(guard);
                         let (first, rest) = branches.split_first().expect("a fork has branches");
                         let granted = reserve(&budget, rest.len());
+                        let child_ids: Vec<u64> = (0..granted)
+                            .map(|_| self.next_walk.fetch_add(1, Relaxed))
+                            .collect();
+                        let fork = Arc::new(ForkInfo {
+                            record: rec_id.clone(),
+                            members: std::iter::once(id)
+                                .chain(child_ids.iter().copied())
+                                .collect(),
+                            arrow_of: std::iter::once((id, cat.arrow(frame[first.0]).name.clone()))
+                                .chain(
+                                    child_ids
+                                        .iter()
+                                        .zip(&rest[..granted])
+                                        .map(|(c, (i, _))| (*c, cat.arrow(frame[*i]).name.clone())),
+                                )
+                                .collect(),
+                        });
+                        forks.push(fork);
                         let mut spawned = Vec::new();
-                        for &(index, branch_p) in &rest[..granted] {
-                            let child = self.next_walk.fetch_add(1, Relaxed);
+                        for (&(index, branch_p), &child) in rest[..granted].iter().zip(&child_ids) {
                             let (mut child_path, mut child_hops, mut child_tokens) =
                                 (path.clone(), hops.clone(), tokens.clone());
                             self.advance(
@@ -586,6 +738,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                                 after: Some(rec_id.clone()),
                                 focus: Some(self.focus(frame[index])),
                                 tokens: child_tokens,
+                                forks: forks.clone(),
                             });
                         }
                         for &(index, _) in &rest[granted..] {
@@ -733,6 +886,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
             break;
         }
 
+        self.joins.ended(id);
         let report = WalkReport {
             walk: id,
             parent,

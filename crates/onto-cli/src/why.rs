@@ -134,6 +134,22 @@ pub fn print_record(r: &Value, pad: &str) {
         ),
         Some("escalated") => format!("escalated ({})", o["reason"].as_str().unwrap_or("?")),
         Some("failed") => format!("failed: {}", o["error"].as_str().unwrap_or("?")),
+        Some("joined") => format!(
+            "join ({}) {}: {}{}",
+            o["policy"].as_str().unwrap_or("?"),
+            o["role"].as_str().unwrap_or("?"),
+            o["detail"].as_str().unwrap_or(""),
+            r["merged_from"]
+                .as_array()
+                .filter(|m| !m.is_empty())
+                .map_or(String::new(), |m| format!(
+                    "  [merged from {}]",
+                    m.iter()
+                        .filter_map(Value::as_str)
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                ))
+        ),
         _ => "?".into(),
     };
     println!("{pad}  outcome: {outcome}");

@@ -382,6 +382,14 @@ fn print_step(s: &StepRecord) {
             }
         }
         StepRecord::Failed { at, error } => println!("  {at} ✗ {error}"),
+        StepRecord::Joined {
+            at,
+            policy,
+            role,
+            detail,
+            wait_ms,
+            ..
+        } => println!("  {at} ⤝ join ({policy}) {role}: {detail}   waited {wait_ms:.0}ms"),
     }
 }
 
