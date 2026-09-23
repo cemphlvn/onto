@@ -254,6 +254,20 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                     )
                 }
             };
+            // Every option here waits on attested evidence: say so plainly.
+            let waiting = w.frames.last().is_some_and(|f| {
+                !f.candidates.is_empty()
+                    && f.candidates
+                        .iter()
+                        .all(|c| c.disposition == onto_core::walk::Disposition::Unattested)
+            });
+            let why = if waiting {
+                format!(
+                    "at {at} it is waiting for evidence that no trusted source has provided yet"
+                )
+            } else {
+                why
+            };
             println!("{pad}⚠ Needs a person. The system stopped because {why},");
             println!(
                 "{pad}  so it will not guess. This is recorded as a case it cannot handle yet."
@@ -276,6 +290,16 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                     .filter(|c| c.disposition == onto_core::walk::Disposition::BlockedByEntry)
                 {
                     println!("{pad}  {} is not open to this case: {}.", c.to, c.reason);
+                }
+                for c in last
+                    .candidates
+                    .iter()
+                    .filter(|c| c.disposition == onto_core::walk::Disposition::Unattested)
+                {
+                    println!(
+                        "{pad}  {} is waiting for evidence from a trusted source: {}.",
+                        c.to, c.reason
+                    );
                 }
             }
             if !proposals.is_empty() {

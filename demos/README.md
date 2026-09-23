@@ -76,7 +76,7 @@ perform the action ("commit" stays outside the runtime).
 |---|---|---|---|
 | 1 | [**incident-response**](incident-response/) (successor of incident-graph) | race over mitigation plans, then a split into checks that must all pass; attested completion | **runnable** |
 | 2 | [**consent-enforcement**](consent-enforcement/) (successor of consent-paths) | split into content and authority, gate exporting one capability, entry contracts on the protected uses; forged and replayed evidence refused | **runnable** |
-| 3 | **benefits-assembly** | all over income, residency, disability and household evidence (each attested), then a gate for eligibility authority | **first wave** |
+| 3 | [**benefits-assembly**](benefits-assembly/) | split into attested evidence lines, all-join, then a gate for the benefits office's attested approval | **runnable** |
 | 4 | hospital-discharge | all (medication, transport, housing, follow-up) + clinician gate | later: safety-sensitive |
 | 5 | disaster-allocation | race + gate | later: needs capacity |
 | 6 | supply-recovery | race + all | later |
