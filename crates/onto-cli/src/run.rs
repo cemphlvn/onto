@@ -154,10 +154,14 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?;
-    let report = rt.block_on(Engine::new(cat, judge, proposer, cfg).run(jobs))?;
+    let precedents = args.world.precedents(&args.file, &cat)?;
+    let engine = Engine::new(cat, judge, proposer, cfg);
+    engine.remember(precedents);
+    let report = rt.block_on(engine.run(jobs))?;
 
     print_summary(&report, args.telemetry.as_deref());
     args.world.save(&args.file, &report.learned)?;
+    args.world.save_precedents(&args.file, &report.precedents)?;
     if let Some(path) = &args.dispositions {
         let n = write_dispositions(&report, path)?;
         println!("dispositions: {} ({n} frame records)", path.display());

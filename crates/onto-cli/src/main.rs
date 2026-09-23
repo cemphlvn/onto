@@ -10,6 +10,7 @@ mod attest;
 mod laws;
 mod learned;
 mod quotient;
+mod replay;
 mod run;
 mod supervise;
 mod why;
@@ -86,6 +87,9 @@ enum Cmd {
     /// List the learned layer (open world) and whether each arrow still
     /// holds against the declared graph.
     Learned(learned::LearnedArgs),
+    /// Ask the judge again with a recorded state changed (counterfactual):
+    /// does the decision depend on that field?
+    Replay(replay::ReplayArgs),
 }
 
 fn main() -> ExitCode {
@@ -93,6 +97,7 @@ fn main() -> ExitCode {
     let result = match cli.cmd {
         Cmd::Run(args) => run::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Learned(args) => learned::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Replay(args) => replay::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Why(args) => why::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Laws(args) => laws::main(args).map(|()| ExitCode::SUCCESS),
@@ -272,6 +277,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         }
         Cmd::Run(_)
         | Cmd::Learned(_)
+        | Cmd::Replay(_)
         | Cmd::Ask(_)
         | Cmd::Why(_)
         | Cmd::Review(_)

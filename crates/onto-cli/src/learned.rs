@@ -15,6 +15,7 @@ use std::sync::Arc;
 use clap::Args;
 use onto_core::Category;
 use onto_runtime::engine::Learned;
+use onto_runtime::memory::Precedent;
 
 use crate::run::BoxError;
 
@@ -32,6 +33,13 @@ pub struct WorldArgs {
     /// Frames one walk may extend (open world).
     #[arg(long, default_value_t = 3)]
     pub max_expansions: usize,
+    /// Precedents for frames that declare `memory: similar N` (default:
+    /// `<file stem>.memory.jsonl`).
+    #[arg(long)]
+    pub memory: Option<PathBuf>,
+    /// Neither load nor record precedents.
+    #[arg(long)]
+    pub no_memory: bool,
 }
 
 impl WorldArgs {
@@ -67,6 +75,55 @@ impl WorldArgs {
             println!("  retired {arrow}: {why}");
         }
         Ok(Arc::new(cat))
+    }
+
+    fn memory_file(&self, file: &Path) -> PathBuf {
+        self.memory
+            .clone()
+            .unwrap_or_else(|| file.with_extension("memory.jsonl"))
+    }
+
+    /// Precedents from earlier runs, if the category declares memory.
+    pub fn precedents(&self, file: &Path, cat: &Category) -> Result<Vec<Precedent>, BoxError> {
+        let declared = (0..cat.objects().len() as u32)
+            .any(|o| cat.state_of(onto_core::ObjId(o)).memory.is_some());
+        if self.no_memory || !declared {
+            return Ok(Vec::new());
+        }
+        let path = self.memory_file(file);
+        let Ok(text) = std::fs::read_to_string(&path) else {
+            println!("memory: {} (empty)", path.display());
+            return Ok(Vec::new());
+        };
+        let ps: Vec<Precedent> = text
+            .lines()
+            .filter(|l| !l.trim().is_empty())
+            .map(serde_json::from_str)
+            .collect::<Result<_, _>>()
+            .map_err(|e| format!("{}: {e}", path.display()))?;
+        println!("memory: {} ({} precedents)", path.display(), ps.len());
+        Ok(ps)
+    }
+
+    /// Appends this run's decisions at memory frames.
+    pub fn save_precedents(&self, file: &Path, ps: &[Precedent]) -> Result<(), BoxError> {
+        if self.no_memory || ps.is_empty() {
+            return Ok(());
+        }
+        let path = self.memory_file(file);
+        let mut out = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&path)?;
+        for p in ps {
+            writeln!(out, "{}", serde_json::to_string(p)?)?;
+        }
+        println!(
+            "memory: {} precedent(s) appended to {}",
+            ps.len(),
+            path.display()
+        );
+        Ok(())
     }
 
     /// Appends newly learned arrows to the layer.

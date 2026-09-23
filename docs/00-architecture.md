@@ -205,6 +205,12 @@ Rules:
     sees no case at all. `invariant unseen: case.x` is proved on load and
     for every proposal. Records keep the exact state sent (`seen`).
     With no `state` declared, frames see what they always did.
+    `memory: similar N` adds precedents: earlier decisions at the same
+    frame for other cases, **projected onto the frame's current
+    declaration** (so `unseen` covers memory), chosen by lexical
+    similarity, loaded from `<stem>.memory.jsonl`. `onto replay` re-asks
+    the judge with a recorded `seen` state changed (`--drop`, `--set`)
+    next to an unchanged baseline, under the same confidence gate.
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -437,6 +443,8 @@ snapshot. No database until live multi-writer editing is needed.
 | D41 | model input (`state`) is declared per frame, sectioned asserted / observed / inferred, and recorded | data minimization must be a checkable policy, and models must know which facts are evidence and which are guesses |
 | D42 | `unseen` proves field visibility, not text content | free text (`goal`, descriptions) cannot be proved clean; `onto laws` names every frame that sees free text instead |
 | D43 | sealed regions (`sealed:`, `world: closed` + `learnable:`) bound the open world per object | a global open/closed switch was too coarse: in consent-enforcement the open world learned at the consent check; regulated regions need structure only people declare, while new kinds of request may still be learned |
+| D44 | memory is precedents projected onto the current state declaration, only from loaded runs, never the case itself | memory must not become a side channel around `unseen`, and must be reproducible within a run |
+| D45 | counterfactual replay always runs an unchanged baseline beside the change | live, the same state gave confidence 0.47 in the walk and 0.29 in replay: without a baseline, model instability would read as an effect |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -494,8 +502,10 @@ snapshot. No database until live multi-writer editing is needed.
   consent-enforcement shows no person data reaching any model, proved.
 - **Sealed regions (done):** `sealed:`, `learnable:`, `world:`; `onto
   laws` reports them; consent-enforcement learns only new kinds of use.
-- **Next:** `memory: similar N` (episodic, policy-scoped) and
-  counterfactual replay from `seen` (benefits-assembly); usage-based reinforcement and pruning of learned arrows;
+- **Memory and replay (done):** `memory: similar N`, `onto replay`;
+  benefits-assembly: applicant record unseen (proved), a MECE gap
+  (carers) found, precedents shown to change a decision.
+- **Next:** usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).

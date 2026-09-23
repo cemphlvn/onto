@@ -11,6 +11,7 @@ pub mod engine;
 pub mod frames;
 pub mod joins;
 pub mod mem;
+pub mod memory;
 pub mod model;
 pub mod providers;
 pub mod record;

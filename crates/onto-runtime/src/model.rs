@@ -34,6 +34,18 @@ pub struct Candidate {
     pub level: Option<u32>,
 }
 
+impl Candidate {
+    pub fn of(cat: &onto_core::Category, arrow: onto_core::ArrowId) -> Self {
+        let a = cat.arrow(arrow);
+        Self {
+            arrow: a.name.clone(),
+            to: cat.object(a.dst).name.clone(),
+            instructions: a.instructions.clone(),
+            level: a.level,
+        }
+    }
+}
+
 /// The one aspect of a case a branch handles after a fork: the arrow that
 /// spawned it and that arrow's condition.
 #[derive(Clone, Debug, Serialize)]

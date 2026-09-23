@@ -1446,3 +1446,62 @@ mod sealed {
         assert!(skipped[0].1.starts_with("sealed: Bug"), "{skipped:?}");
     }
 }
+
+/// Precedents are projected onto the frame's current declaration: a field
+/// the frame may not see never arrives through memory, and a case is never
+/// its own precedent.
+#[tokio::test(flavor = "multi_thread")]
+async fn memory_shows_projected_precedents_from_other_cases() {
+    use onto_runtime::memory::Precedent;
+    let src = r#"category C {
+        objects: Circumstances, Disability, Done;
+        state Circumstances { goal; case: statement; memory: similar 2; }
+        state { goal; }
+        has_disability: Circumstances -> Disability "a disability is described";
+        none_apply:     Circumstances -> Done "no disability is described";
+        closed: Circumstances;
+        invariant unseen: case.applicant;
+    }"#;
+    let cat = Arc::new(onto_core::parse(src).unwrap());
+    let engine = Engine::new(
+        cat,
+        MockJudge { latency: LATENCY },
+        MockProposer { latency: LATENCY },
+        Config {
+            open_world: false,
+            ..Config::default()
+        },
+    );
+    let precedent = |case: &str, statement: &str| Precedent {
+        frame: "Circumstances".into(),
+        record: format!("w0.{case}"),
+        snapshot: None,
+        case: Some(case.into()),
+        // Written under an older, leakier policy: carries the applicant.
+        saw: json!({"asserted": {"statement": statement, "applicant": {"name": "X"}}}),
+        decided: "has_disability".into(),
+        p: 0.9,
+    };
+    engine.remember(vec![
+        precedent("B-1", "chronic back pain, cannot lift"),
+        precedent("B-2", "back pain after an accident, cannot lift"),
+    ]);
+    let job = Job {
+        from: "Circumstances".into(),
+        goal: "a disability: back pain, cannot lift".into(),
+        case: json!({"id": "B-2", "statement": "back pain, cannot lift", "applicant": {"name": "Y"}}),
+    };
+    let r = engine.run(vec![job]).await.unwrap();
+    let seen = r.walks[0].frames[0].seen.as_ref().unwrap();
+    let cases = seen["precedents"]["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 1, "B-2 is not its own precedent: {seen}");
+    assert_eq!(
+        cases[0]["saw"],
+        json!({"asserted": {"statement": "chronic back pain, cannot lift"}})
+    );
+    assert_eq!(cases[0]["to"], "Disability");
+    assert!(!seen.to_string().contains("applicant"));
+    // This decision becomes a precedent, projected the same way.
+    assert_eq!(r.precedents.len(), 1);
+    assert!(!r.precedents[0].saw.to_string().contains("applicant"));
+}

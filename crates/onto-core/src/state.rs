@@ -14,7 +14,8 @@
 //! Items: `goal` (the requester's free text), `case` (the whole case) or
 //! `case: a.b, c` (only these fields), `observed` (the attested view:
 //! verified observations only), `history` or `history: last N` (the walk's
-//! earlier judgments), `focus`, `tokens`. An override replaces the default
+//! earlier judgments), `memory: similar N` (earlier decisions at this
+//! frame, projected onto the same fields), `focus`, `tokens`. An override replaces the default
 //! for its frames. With no declaration at all a frame sees what it always
 //! did: goal, the whole case, history, focus and tokens.
 //!
@@ -42,6 +43,9 @@ pub struct StateSpec {
     pub history: Option<usize>,
     pub focus: bool,
     pub tokens: bool,
+    /// `memory: similar N`: up to N earlier decisions at this frame, each
+    /// carrying only the fields this frame is allowed to see.
+    pub memory: Option<usize>,
 }
 
 impl StateSpec {
@@ -55,6 +59,7 @@ impl StateSpec {
             history: Some(usize::MAX),
             focus: true,
             tokens: true,
+            memory: None,
         }
     }
 
@@ -89,11 +94,18 @@ impl StateSpec {
                         .ok_or_else(|| format!("expected `history: last N`, got `{v}`"))?;
                     spec.history = Some(n);
                 }
+                ("memory", Some(v)) => {
+                    let n = v
+                        .strip_prefix("similar")
+                        .and_then(|n| n.trim().parse().ok())
+                        .ok_or_else(|| format!("expected `memory: similar N`, got `{v}`"))?;
+                    spec.memory = Some(n);
+                }
                 ("focus", None) => spec.focus = true,
                 ("tokens", None) => spec.tokens = true,
                 _ => {
                     return Err(format!(
-                        "unknown state item `{item}` (goal, case, case: a.b, observed, history, history: last N, focus, tokens)"
+                        "unknown state item `{item}` (goal, case, case: a.b, observed, history, history: last N, memory: similar N, focus, tokens)"
                     ));
                 }
             }
@@ -148,6 +160,9 @@ impl StateSpec {
             None => {}
             Some(usize::MAX) => parts.push("history".into()),
             Some(n) => parts.push(format!("history: last {n}")),
+        }
+        if let Some(n) = self.memory {
+            parts.push(format!("memory: {n} similar precedents (same fields)"));
         }
         if self.focus {
             parts.push("focus".into());

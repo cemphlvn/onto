@@ -177,6 +177,9 @@ pub struct RunReport {
     pub walks: Vec<WalkReport>,
     /// Structure the open world learned in this run, in admission order.
     pub learned: Vec<Learned>,
+    /// Decisions this run made at frames that declare `memory`: the
+    /// precedents later runs may be shown.
+    pub precedents: Vec<crate::memory::Precedent>,
     pub potentialities: Vec<Potentiality>,
     pub wall_ms: f64,
     /// Sum of every model call's latency; `model_ms_sum / wall_ms` is the
@@ -254,6 +257,11 @@ pub struct Engine<J, P> {
     snapshot: Option<String>,
     /// Arrows learned in this engine's lifetime, for the learned layer file.
     learned: Mutex<Vec<Learned>>,
+    /// Precedents frames with `memory: similar N` may be shown: loaded
+    /// ones first, then this engine's own decisions.
+    memory: Mutex<Vec<crate::memory::Precedent>>,
+    /// How many of `memory` were loaded (the rest are new).
+    memory_loaded: AtomicUsize,
     judge: J,
     proposer: P,
     cfg: Config,
@@ -277,6 +285,13 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         self.graph.read().unwrap().clone()
     }
 
+    /// Loads precedents (from an earlier run's memory file).
+    pub fn remember(&self, precedents: Vec<crate::memory::Precedent>) {
+        let mut m = self.memory.lock().unwrap();
+        m.extend(precedents);
+        self.memory_loaded.store(m.len(), Relaxed);
+    }
+
     /// Arrows the open world has learned so far.
     pub fn learned(&self) -> Vec<Learned> {
         self.learned.lock().unwrap().clone()
@@ -295,6 +310,8 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             snapshot: cat.snapshot().map(str::to_owned),
             graph: std::sync::RwLock::new(cat),
             learned: Mutex::new(Vec::new()),
+            memory: Mutex::new(Vec::new()),
+            memory_loaded: AtomicUsize::new(0),
             judge,
             proposer,
             cfg,
@@ -309,6 +326,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             .map(|j| self.cat().object_id(&j.from))
             .collect::<Result<Vec<_>, _>>()?;
         let learned_before = self.learned.lock().unwrap().len();
+        let memory_before = self.memory.lock().unwrap().len();
         let mem_start = mem::sample();
         let sampler = mem::spawn_sampler(self.cfg.mem_sample_every);
         tracing::info!(
@@ -381,6 +399,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             speculate: self.cfg.speculate,
             walks,
             learned: self.learned()[learned_before..].to_vec(),
+            precedents: self.memory.lock().unwrap()[memory_before..].to_vec(),
             potentialities: self.locks.potentialities(),
             wall_ms: ms(wall),
             model_ms_sum: c.model_us.load(Relaxed) as f64 / 1e3,
@@ -1012,6 +1031,21 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     confidence = answer.confidence().map(r4),
                     alternatives = alternatives.len(),
                 );
+                // Frames with memory keep this decision as a precedent.
+                if let Some(_n) = cat.state_of(at).memory
+                    && primitive != Primitive::Split
+                {
+                    let spec = cat.state_of(at);
+                    self.memory.lock().unwrap().push(crate::memory::Precedent {
+                        frame: at_name.clone(),
+                        record: rec_id.clone(),
+                        snapshot: self.snapshot.clone(),
+                        case: job.case["id"].as_str().map(str::to_owned),
+                        saw: crate::memory::project(&visit_seen, &spec),
+                        decided: a.name.clone(),
+                        p,
+                    });
+                }
                 steps.push(StepRecord::Followed {
                     from: at_name,
                     arrow: a.name.clone(),
@@ -1468,15 +1502,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
     }
 
     fn candidate(&self, arrow: ArrowId) -> Candidate {
-        let cat_arc = self.cat();
-        let cat = &*cat_arc;
-        let a = cat.arrow(arrow);
-        Candidate {
-            arrow: a.name.clone(),
-            to: cat.object(a.dst).name.clone(),
-            instructions: a.instructions.clone(),
-            level: a.level,
-        }
+        Candidate::of(&self.cat(), arrow)
     }
 
     fn focus(&self, arrow: ArrowId) -> Focus {
@@ -1588,6 +1614,38 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             inferred.insert("hops".into(), json!(recent));
             s.insert("inferred".into(), Value::Object(inferred));
         }
+        if let Some(n) = spec.memory {
+            // Precedents carry only what this frame may see (projected).
+            let now = crate::memory::project(&Value::Object(s.clone()), &spec);
+            let store = self.memory.lock().unwrap();
+            let found = crate::memory::similar(
+                &store[..self.memory_loaded.load(Relaxed).min(store.len())],
+                &object.name,
+                job.case["id"].as_str(),
+                &now,
+                n,
+            );
+            if !found.is_empty() {
+                let shown: Vec<Value> = found
+                    .iter()
+                    .map(|p| {
+                        json!({
+                            "saw": crate::memory::project(&p.saw, &spec),
+                            "decided": p.decided,
+                            "to": cat.arrow_id(&p.decided).ok().map(|a| cat.object(cat.arrow(a).dst).name.clone()),
+                            "p": r4(p.p),
+                        })
+                    })
+                    .collect();
+                s.insert(
+                    "precedents".into(),
+                    json!({
+                        "note": "earlier decisions at this frame for other cases (not evidence about this case)",
+                        "cases": shown,
+                    }),
+                );
+            }
+        }
         if spec.focus && focus.is_some() {
             s.insert("focus".into(), json!(focus));
         }
@@ -1694,7 +1752,7 @@ fn normalize(s: &str) -> String {
 }
 
 /// Sets `a.b.c` in nested JSON objects.
-fn insert_path(root: &mut Value, dotted: &str, value: Value) {
+pub(crate) fn insert_path(root: &mut Value, dotted: &str, value: Value) {
     let mut cursor = root;
     let parts: Vec<&str> = dotted.split('.').collect();
     for (i, p) in parts.iter().enumerate() {

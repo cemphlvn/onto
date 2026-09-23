@@ -26,6 +26,20 @@ category BenefitsAssembly {
              EvidenceComplete, Preparation, Decision, Ready, Submitted;
     start: Application;
 
+    # What models see (policy). The only judged frame reads the person's
+    # own statement and, as precedents, earlier decisions at this frame
+    # (projected onto the same field). Nothing from the applicant record
+    # (name, birth date, nationality, ethnicity, gender, postcode) reaches
+    # any model: proved on load and for every proposal.
+    state Circumstances { case: statement; memory: similar 3; }
+    state { case: statement; }
+    invariant unseen: case.applicant;
+
+    # New kinds of circumstance may be learned (they need a person); the
+    # evidence lines, joins and submission are sealed.
+    world: closed;
+    learnable: Circumstances;
+
     about Application: "a person asks for support; their situation may span several programs";
     about Submitted: "one coordinated application is submitted for the person";
 
