@@ -427,11 +427,14 @@ snapshot. No database until live multi-writer editing is needed.
 - **Trust-model gaps (done):** snapshots, stale-review refusal, atomic
   promotion. **Attested observations (done):** attesters, `attested`
   preconditions, `onto keygen` / `onto attest`, attested-completion labels.
-- **Open question (from the live run):** with SecOps' signed
-  `key.old_rejected`, the only arrow out of Rotate is eligible, yet the
-  judge was unsure and escalated. Should a closed frame whose single
-  eligible arrow is opened by attested evidence be taken without asking
-  the judge ("decided by evidence")?
+- **Open question, owned by legal review (not an engineering decision):**
+  with SecOps' signed `key.old_rejected`, the only arrow out of Rotate is
+  eligible, yet the judge was unsure and escalated. Should a closed frame
+  whose single eligible arrow is opened by attested evidence be taken
+  without asking the judge ("decided by evidence")? It would let signed
+  evidence outrank a model's hesitation. Until legal decides, the current
+  behaviour stands: the judge decides, and an unsure judge escalates to a
+  person.
 - **Next:** exact-label behavioural quotient; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).

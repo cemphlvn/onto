@@ -146,7 +146,13 @@ authenticate who produced it (signatures are future work, §3).
 | someone edits policy | **not prevented by onto** (§3) |
 | an AI agent with shell access runs `onto promote` | **not prevented**: promotion is procedural (§1) |
 
-## 7. For ethicists: where people are in the loop
+## 7. Decisions reserved for legal review
+
+| question | current behaviour until decided |
+|---|---|
+| May attested evidence decide a transition without the judge ("decided by evidence"), e.g. the single eligible arrow of a closed frame? | no: the judge decides; an unsure judge escalates to a person |
+
+## 8. For ethicists: where people are in the loop
 
 - A person approves every change to the graph. Models draft (proposer),
   critique (supervisor), and route (judge); none of them promotes.
