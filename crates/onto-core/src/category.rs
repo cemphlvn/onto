@@ -125,6 +125,10 @@ pub struct Object {
     pub join: Option<Join>,
     /// What a model sees at this frame, when declared for it (`state X {…}`).
     pub state: Option<crate::state::StateSpec>,
+    /// Open world: `Some(true)` learnable, `Some(false)` sealed, `None` the
+    /// category's `world:` default. Objects the open world created are
+    /// learnable.
+    pub learnable: Option<bool>,
 }
 
 /// Whether an arrow may be taken from a given case and token set.
@@ -265,6 +269,8 @@ pub struct Category {
     starts: Vec<ObjId>,
     /// The category's default `state { … }`, if declared.
     state_default: Option<crate::state::StateSpec>,
+    /// `world: closed;`: frames are sealed unless declared `learnable:`.
+    closed_world: bool,
     out_offsets: Vec<u32>,
     out_arrows: Vec<ArrowId>,
     object_index: HashMap<String, ObjId>,
@@ -310,6 +316,18 @@ impl Category {
             .clone()
             .or_else(|| self.state_default.clone())
             .unwrap_or_else(crate::state::StateSpec::legacy)
+    }
+
+    /// Whether the open world may extend `o`: add arrows leaving it, or
+    /// arrows into it. Sealed frames escalate to a person as in the closed
+    /// world, whatever the run's mode.
+    pub fn learnable(&self, o: ObjId) -> bool {
+        self.object(o).learnable.unwrap_or(!self.closed_world)
+    }
+
+    /// Whether the category declares `world: closed;`.
+    pub fn closed_world(&self) -> bool {
+        self.closed_world
     }
 
     /// Whether any `state` is declared (otherwise every frame sees
@@ -572,6 +590,17 @@ impl Category {
                 ));
                 continue;
             }
+            let sealed = [&p.src, &p.dst]
+                .into_iter()
+                .find(|n| cat.object_id(n).is_ok_and(|o| !cat.learnable(o)));
+            if let Some(n) = sealed {
+                skipped.push((
+                    p.arrow.clone(),
+                    format!("sealed: {n} is sealed; the open world may not extend it"),
+                ));
+                continue;
+            }
+            let is_new = cat.object_id(&p.dst).is_err();
             let (checks, _) = crate::supervise::structural(&cat, p);
             if let Some(c) = checks
                 .iter()
@@ -590,6 +619,11 @@ impl Category {
                     let snapshot = cat.snapshot.clone();
                     cat = next;
                     cat.snapshot = snapshot;
+                    if is_new {
+                        // What the open world created, it may keep extending.
+                        let dst = cat.object_id(&p.dst).expect("just added");
+                        cat.objects[dst.0 as usize].learnable = Some(true);
+                    }
                 }
                 Err(e) => skipped.push((p.arrow.clone(), e.to_string())),
             }
@@ -625,7 +659,11 @@ impl Category {
             if let Some(st) = &o.state {
                 b.state(Some(&o.name), st.clone())?;
             }
+            if let Some(l) = o.learnable {
+                b.learnable(&o.name, l)?;
+            }
         }
+        b.closed_world(self.closed_world);
         if let Some(st) = &self.state_default {
             b.state(None, st.clone())?;
         }
@@ -823,6 +861,7 @@ pub struct CategoryBuilder {
     attesters: Vec<crate::attest::Attester>,
     starts: Vec<ObjId>,
     state_default: Option<crate::state::StateSpec>,
+    closed_world: bool,
     object_index: HashMap<String, ObjId>,
     arrow_index: HashMap<String, ArrowId>,
 }
@@ -865,6 +904,7 @@ impl CategoryBuilder {
             entry: Entry::default(),
             join: None,
             state: None,
+            learnable: None,
         });
         self.object_index.insert(name.to_owned(), id);
         Ok(id)
@@ -976,6 +1016,18 @@ impl CategoryBuilder {
         Ok(())
     }
 
+    /// Declares `object` learnable (`true`) or sealed (`false`).
+    pub fn learnable(&mut self, object: &str, learnable: bool) -> Result<(), Error> {
+        let id = self.lookup_object(object)?;
+        self.objects[id.0 as usize].learnable = Some(learnable);
+        Ok(())
+    }
+
+    /// `world: closed;` seals every frame not declared learnable.
+    pub fn closed_world(&mut self, closed: bool) {
+        self.closed_world = closed;
+    }
+
     /// Declares an application entry point.
     pub fn start(&mut self, object: &str) -> Result<(), Error> {
         let id = self.lookup_object(object)?;
@@ -1072,6 +1124,7 @@ impl CategoryBuilder {
             attesters: self.attesters,
             starts: self.starts,
             state_default: self.state_default,
+            closed_world: self.closed_world,
             out_offsets,
             out_arrows,
             object_index: self.object_index,

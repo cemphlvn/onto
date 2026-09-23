@@ -34,6 +34,12 @@ category ConsentEnforcement {
     state ResearchCheck  { case: request.purpose, request.study; observed; }
     invariant unseen: case.person;      # proved on load and for every proposal
 
+    # Where the open world may grow. New kinds of use may be learned at
+    # UseRequested (they lead to new areas that need a person); the checks,
+    # the gates and the outcomes are sealed: reached only by declared arrows.
+    world: closed;
+    learnable: UseRequested;
+
     about UseRequested: "someone in the organization wants to use a person's data";
     about Sent: "marketing is sent to the person";
     about Study: "the person's data is used in a study";

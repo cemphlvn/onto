@@ -1063,6 +1063,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let mut expanded = None;
             if let Ok(proposals) = &proposals
                 && self.cfg.open_world
+                && cat.learnable(at)
                 && expansions < self.cfg.max_expansions
                 && !proposals.is_empty()
             {

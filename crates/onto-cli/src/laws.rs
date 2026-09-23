@@ -241,7 +241,47 @@ pub fn main(args: LawsArgs) -> Result<(), BoxError> {
         }
     }
     print_seen(&cat);
+    print_world(&cat);
     Ok(())
+}
+
+/// Where the open world may grow, and what that guarantees.
+fn print_world(cat: &Category) {
+    let (mut open, mut sealed) = (Vec::new(), Vec::new());
+    for i in 0..cat.objects().len() as u32 {
+        let o = ObjId(i);
+        if cat.learnable(o) {
+            open.push(cat.object(o).name.as_str());
+        } else {
+            sealed.push(cat.object(o).name.as_str());
+        }
+    }
+    let world = if cat.closed_world() { "closed" } else { "open" };
+    println!(
+        "
+open world   `world: {world}` · runs with --closed-world learn nothing"
+    );
+    println!(
+        "  learnable  {}",
+        if open.is_empty() {
+            "—".into()
+        } else {
+            open.join(", ")
+        }
+    );
+    println!(
+        "  sealed     {}",
+        if sealed.is_empty() {
+            "—".into()
+        } else {
+            sealed.join(", ")
+        }
+    );
+    if !sealed.is_empty() {
+        println!(
+            "  no learned arrow enters or leaves a sealed object: sealed objects are reached only by declared arrows"
+        );
+    }
 }
 
 /// What each frame shows a model (the `state` policy), and the `unseen`

@@ -1388,3 +1388,61 @@ async fn models_see_only_the_declared_state() {
         );
     }
 }
+
+/// Sealed frames are never extended by the open world, and learned arrows
+/// may not enter them; `world: closed` seals everything not declared
+/// learnable.
+mod sealed {
+    use super::*;
+
+    async fn walk(src: &str, goal: &str) -> RunReport {
+        let cat = Arc::new(onto_core::parse(src).unwrap());
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            Config::default(),
+        );
+        let job = Job {
+            from: "Request".into(),
+            goal: goal.into(),
+            case: json!({}),
+        };
+        engine.run(vec![job]).await.unwrap()
+    }
+
+    const TRIAGE_SEALED: &str = r#"category T {
+        objects: Request, Bug, Done;
+        report: Request -> Bug;
+        fix: Bug -> Done;
+        closed: Request, Bug, Done;
+        sealed: Request;
+    }"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_sealed_frame_escalates_to_a_person() {
+        let r = walk(TRIAGE_SEALED, "please refund").await;
+        assert!(matches!(r.walks[0].steps[0], StepRecord::Escalated { .. }));
+        assert!(r.learned.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn closed_world_category_learns_only_where_declared() {
+        let src = TRIAGE_SEALED.replace("sealed: Request;", "world: closed; learnable: Request;");
+        let r = walk(&src, "please refund").await;
+        // Request is learnable; the new object Refund is too (the open
+        // world made it), so the walk goes on past it.
+        assert!(matches!(r.walks[0].steps[0], StepRecord::Expanded { .. }));
+        assert_eq!(r.learned[0].proposal.dst, "Refund");
+        // Bug stays sealed: no learned arrow may enter or leave it.
+        let cat = onto_core::parse(&src).unwrap();
+        let into_bug = onto_core::walk::Proposal {
+            arrow: "escalate".into(),
+            src: "Request".into(),
+            dst: "Bug".into(),
+            ..Default::default()
+        };
+        let (_, skipped) = cat.with_learned(&[into_bug]);
+        assert!(skipped[0].1.starts_with("sealed: Bug"), "{skipped:?}");
+    }
+}

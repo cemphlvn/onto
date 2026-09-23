@@ -194,6 +194,10 @@ What holds:
   every load. A policy change retires learned arrows that no longer pass.
 - **Progress.** A learned arrow may not close a cycle.
 - **Budget.** At most `max_expansions` frames per walk (default 3).
+- **Sealed regions.** `sealed:` / `world: closed` + `learnable:` (policy)
+  bound where learning happens; no learned arrow enters or leaves a
+  sealed object, so everything sealed is reached only by declared arrows.
+  `onto laws` lists both sides.
 - **Labelled.** Records mark learned candidates and `expanded` outcomes;
   `ask` says "through learned structure (not declared policy)".
 - **Attestation is unchanged.** A learned arrow has no `attested`
@@ -212,10 +216,9 @@ What changes, stated plainly:
   show it.
 - **Routing may now use structure no person has seen.** A walk may reach
   an outcome through learned arrows; the answer says so. Where that is
-  unacceptable (regulated decisions), run `--closed-world`, or keep
-  the relevant region `closed:` and guard its outcomes with entry
-  contracts and `attested` preconditions, which learned arrows cannot
-  satisfy on their own.
+  unacceptable (regulated decisions), seal the region (`sealed:`, or
+  `world: closed` with `learnable:` only where new kinds of case may be
+  learned), or run `--closed-world`.
 - **The learned layer is a file.** Anyone who can write it can add
   structure; it is still proved against the policy on load. Learned
   layers are git-ignored by default; commit one deliberately.

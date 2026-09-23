@@ -328,6 +328,21 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
         ("objects", None) => list(value).try_for_each(|o| b.object(o).map(drop)),
         ("closed", None) => list(value).try_for_each(|o| b.close(o)),
         ("start", None) => list(value).try_for_each(|o| b.start(o)),
+        ("sealed", None) => list(value).try_for_each(|o| b.learnable(o, false)),
+        ("learnable", None) => list(value).try_for_each(|o| b.learnable(o, true)),
+        ("world", None) => match value.trim() {
+            "open" => {
+                b.closed_world(false);
+                Ok(())
+            }
+            "closed" => {
+                b.closed_world(true);
+                Ok(())
+            }
+            other => Err(perr(format!(
+                "world: expected open or closed, got `{other}`"
+            ))),
+        },
         (arrow, Some((src, rest))) => {
             let rest = rest.trim_start();
             let end = rest.find(|c: char| c.is_whitespace()).unwrap_or(rest.len());
@@ -336,7 +351,7 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
                 .map(drop)
         }
         (key, None) => Err(perr(format!(
-            "unknown declaration `{key}:` (expected objects, closed, or `name: A -> B`)"
+            "unknown declaration `{key}:` (expected objects, closed, start, sealed, learnable, world, or `name: A -> B`)"
         ))),
     }
 }

@@ -170,10 +170,22 @@ pub fn print_record(r: &Value, pad: &str) {
         _ => "?".into(),
     };
     println!("{pad}  outcome: {outcome}");
+    let learned: Vec<&str> = o["learned"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_str)
+        .collect();
     for p in r["proposals"].as_array().into_iter().flatten() {
+        let arrow = p["arrow"].as_str().unwrap_or("?");
+        let status = if learned.contains(&arrow) {
+            "learned"
+        } else {
+            "provisional"
+        };
         println!(
-            "{pad}  provisional {}: {} -> {}  ({})",
-            p["arrow"].as_str().unwrap_or("?"),
+            "{pad}  {status} {}: {} -> {}  ({})",
+            arrow,
             p["src"].as_str().unwrap_or("?"),
             p["dst"].as_str().unwrap_or("?"),
             p["about"].as_str().unwrap_or("")

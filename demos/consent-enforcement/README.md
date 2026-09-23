@@ -80,6 +80,25 @@ MarketingConsentRequest`; the authority branch went there instead of to
 the gate, so the campaign stayed blocked: learned structure cannot mint
 `MarketingGrant`.
 
+## Where the open world may grow (sealed regions)
+
+```
+world: closed;
+learnable: UseRequested;
+```
+
+Only new *kinds of use* may be learned, at `UseRequested`. Every other
+object is sealed: no learned arrow may leave it or enter it, so the
+checks, gates and outcomes (`Sent`, `Study`) are reached only by declared
+arrows. What the open world learns is an island that needs a person.
+
+Live (2026-09-24): C-1…C-6 unchanged, and C-2 no longer learns at the
+sealed `MarketingCheck`. C-7 ("sell the person's contact details to a
+data broker") learned `broker_sale: UseRequested -> BrokerSaleUse` and two
+review steps after it, then stopped: **needs a person**. No route from
+the island reaches `Sent` or `Study`, and the proposer, too, saw only
+the request.
+
 Limits: the proof is about **which fields** reach a model, not what free
 text says. `request.description` is shown; if a requester writes the
 person's diagnosis into it, the model sees it. Keep shown fields
@@ -101,6 +120,7 @@ onto ask  demos/consent-enforcement/consent.onto --from UseRequested '<a line fr
 | C-4 | EthicsBoard attests `ethics.approved = true` (a study) | **Study**, authorized by the ethics board |
 | C-5 | forged: claims ConsentLedger, signed with another key | **blocked**: "rejected ConsentLedger: signature does not verify" |
 | C-6 | replay: C-1's genuine observation copied into another case | **blocked**: "bound to case `C-1`, not this case" |
+| C-7 | a use the policy does not enumerate (sale to a data broker) | **learned island, needs a person**: new objects after `UseRequested`; sealed outcomes unreachable |
 
 What the first live runs taught: when content steps were judged ("the
 campaign is drafted"), the judge would not assert work that had not

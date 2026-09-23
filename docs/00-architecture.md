@@ -189,7 +189,11 @@ Rules:
     entry contract, and obey **progress**: a learned arrow may not close a
     cycle. Each walk may extend at most `max_expansions` frames (default
     3). Records mark learned candidates and steps; answers reached through
-    them say so.
+    them say so. **Sealed regions:** `sealed: A, B;` or `world: closed;`
+    with `learnable: A, B;` (policy) mark where the open world may grow;
+    no learned arrow leaves or enters a sealed object, so sealed objects
+    are reached only by declared arrows. Objects the open world creates
+    are learnable. A sealed frame escalates to a person in any mode.
 16. **What a model sees is policy.** A System-1 call has no memory: its
     `state` is its whole context. `state { … }` (default) and `state A, B
     { … }` (override) declare it: `goal`, `case` or `case: a.b, …`,
@@ -432,6 +436,7 @@ snapshot. No database until live multi-writer editing is needed.
 | D40 | the proposer is shown the graph's outcomes and the declared arrows that finish into them | live, learned branches kept adding intermediate objects and never reached `Resolved` |
 | D41 | model input (`state`) is declared per frame, sectioned asserted / observed / inferred, and recorded | data minimization must be a checkable policy, and models must know which facts are evidence and which are guesses |
 | D42 | `unseen` proves field visibility, not text content | free text (`goal`, descriptions) cannot be proved clean; `onto laws` names every frame that sees free text instead |
+| D43 | sealed regions (`sealed:`, `world: closed` + `learnable:`) bound the open world per object | a global open/closed switch was too coarse: in consent-enforcement the open world learned at the consent check; regulated regions need structure only people declare, while new kinds of request may still be learned |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -487,6 +492,8 @@ snapshot. No database until live multi-writer editing is needed.
 - **State policy (done):** `state` declarations, sectioned model input,
   `invariant unseen`, `seen` in records, `onto laws` visibility section;
   consent-enforcement shows no person data reaching any model, proved.
+- **Sealed regions (done):** `sealed:`, `learnable:`, `world:`; `onto
+  laws` reports them; consent-enforcement learns only new kinds of use.
 - **Next:** `memory: similar N` (episodic, policy-scoped) and
   counterfactual replay from `seen` (benefits-assembly); usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
