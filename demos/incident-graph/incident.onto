@@ -8,6 +8,12 @@
 # most likely, log the rest). Report is a score frame: severity picks the path.
 
 category Incident {
+    # Trusted sources of observations (public keys only; the secret keys
+    # live with the systems that attest: here, a deploy pipeline and the
+    # security team's key-management service).
+    attester DeployBot { key: ed25519:j61MW549AMCZU87ZTSBD4ulgSmmQW4qAhoYLPazXGCI=; observes: errors.stopped, service.recovered; }
+    attester SecOps    { key: ed25519:G1Zhkxv5y/O7CqgAa9+7ThmAnERQrMSwHtz+EWaa1CI=; observes: key.old_rejected; }
+
     objects: Report, Watch, Major, Alert, Latency, ErrorSpike, SecurityEvent,
              Database, Network, Deploy, Credentials,
              Failover, Rollback, Rotate, Mitigated;
@@ -51,9 +57,14 @@ category Incident {
     rotate: Credentials -> Rotate "revoke and reissue the exposed credential";
     closed: Credentials;
 
-    recover: Failover -> Mitigated "confirm service recovered on the replica";
-    verify:  Rollback -> Mitigated "confirm errors stopped after the rollback";
-    confirm: Rotate -> Mitigated   "confirm the old credential no longer works";
+    # Mitigation is a claim about the world: each arrow into Mitigated needs
+    # an attested observation from a declared, trusted source.
+    recover: Failover -> Mitigated "confirm service recovered on the replica"
+             attested service.recovered == true;
+    verify:  Rollback -> Mitigated "confirm errors stopped after the rollback"
+             attested errors.stopped == true;
+    confirm: Rotate -> Mitigated   "confirm the old credential no longer works"
+             attested key.old_rejected == true;
     closed: Failover, Rollback, Rotate, Mitigated;
 
     # An incident that forked into independent aspects is mitigated only

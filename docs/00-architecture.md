@@ -1,6 +1,6 @@
 # onto — Architecture
 
-Status: **draft 6 — 2026-09-23.** Single source of truth for how onto is
+Status: **draft 7 — 2026-09-23.** Single source of truth for how onto is
 built. Code follows this document; change it here first.
 
 ## 1. What onto is
@@ -34,6 +34,7 @@ propose new structure.
 | disposition | what happened to one candidate arrow at a frame visit: selected · forked · alternative · rejected · deferred · filtered_by_require, with the judge's number and a reason built from the numbers | `walk::Disposition`, `walk::dispose` |
 | capability token | an on/off property a walk holds, set by `ensures` and cleared by `revokes` on arrows; a capability, not a fact: an arrow standing for a real-world fact must `require` the evidence before it `ensures` the token | `Arrow::ensures`, `WalkState::tokens` |
 | capability declaration | which arrows may issue and revoke a token (`capability T { issuers: …; revokers: …; }`); every token used must be declared | `Capability` |
+| attested observation | an Ed25519-signed claim about the world by a declared attester, bound to a case; `attested P` preconditions read only verified ones | `attest.rs`, `onto attest` |
 | join | where sibling branches of one fork recombine: `all` (intersection of tokens), `race` (first arrival), `gate` (authority exports an allowlist); `incomplete_join` / `blocked_by_gate` when a sibling cannot arrive | `Join`, `joins.rs` |
 | declared root | an application entry point (`start: A;`); starting still counts as entering | `Category::starts` |
 | entry contract | what every walk entering an object must hold (`needs` tokens, `require` over the case); inherited by every incoming arrow, present and future; starting at an object counts as entering it | `Entry`, `Gate` |
@@ -331,6 +332,8 @@ category Name {
     capability T { issuers: g; revokers: w; }  # only g may issue T, only w revoke it
     start: A;                                  # declared application root
     join D: all;                               # branches of a fork recombine here (all | race | gate authority g export T)
+    attester Ops { key: ed25519:<base64>; observes: x.done; }   # trusted source (policy)
+    h: C -> D "…" attested x.done == true;     # opens only on a verified, signed observation
     invariant via: A -> D through B | C;       # every path A→D passes B or C (proved)
     invariant never: A -> Z;                   # no path A→Z, even to a future Z (proved)
     invariant rule "no arrow may …";           # judged by the critic
@@ -386,6 +389,8 @@ snapshot. No database until live multi-writer editing is needed.
 | D30 | MUST laws carry exhaustive certificates, MAY laws witnesses, failures counterexamples | a single path is not a proof of "every walk" |
 | D31 | structured joins only (siblings of one fork); all / race / gate; intersection by default, gate exports an allowlist | known sibling sets avoid OR-join semantics; least privilege; authority transfer is explicit |
 | D32 | a walk waits only on running siblings | deadlock freedom without a global scheduler |
+| D33 | attested observations: declared attesters with Ed25519 keys, strict verification over a domain-separated canonical message, field authorization, case binding | a real-world claim must be authenticated, not asserted; replay across cases is refused |
+| D34 | completion is presented only on attested evidence: arrows can require it, joins and answers are labelled attested or not | a walk reaching an object is evidence about the walk, not the world |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
 | D17 | disposition records are a first-class artifact (own file, own schema), with deterministic reasons and causal `after` links | provenance must not depend on reconstructing telemetry; reasons must be reproducible, not generated |
@@ -419,8 +424,15 @@ snapshot. No database until live multi-writer editing is needed.
 - **Joins (done):** all, race, gate; deadlock-free waiting; merge nodes
   in the disposition graph; incident-graph mitigates only when every
   forked aspect is mitigated.
-- **Next:** snapshot hashes in records/reviews and atomic promotion
-  (trust-model gaps); exact-label behavioural quotient; behavioural
+- **Trust-model gaps (done):** snapshots, stale-review refusal, atomic
+  promotion. **Attested observations (done):** attesters, `attested`
+  preconditions, `onto keygen` / `onto attest`, attested-completion labels.
+- **Open question (from the live run):** with SecOps' signed
+  `key.old_rejected`, the only arrow out of Rotate is eligible, yet the
+  judge was unsure and escalated. Should a closed frame whose single
+  eligible arrow is opened by attested evidence be taken without asking
+  the judge ("decided by evidence")?
+- **Next:** exact-label behavioural quotient; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).
 - **M3:** functors between categories; multi-category files.

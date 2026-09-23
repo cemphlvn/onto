@@ -136,7 +136,11 @@ fn split(src: &str) -> Result<(String, Vec<(usize, String)>), Error> {
                     current.push(c);
                     // A `capability Name { … }` block is a whole statement;
                     // its trailing `;` is optional.
-                    if depth == 1 && c == '}' && current.trim_start().starts_with("capability ") {
+                    if depth == 1
+                        && c == '}'
+                        && (current.trim_start().starts_with("capability ")
+                            || current.trim_start().starts_with("attester "))
+                    {
                         statements.push((start_line, current.trim().to_owned()));
                         current.clear();
                     }
@@ -238,6 +242,10 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
         };
         return b.join(object.trim(), join);
     }
+    if let Some(rest) = stmt.strip_prefix("attester ") {
+        b.attester(attester(rest)?);
+        return Ok(());
+    }
     if let Some(rest) = stmt.strip_prefix("capability ") {
         b.capability(capability(rest)?);
         return Ok(());
@@ -320,6 +328,14 @@ fn arrow_meta(mut rest: &str) -> Result<ArrowMeta, Error> {
                 .map_err(|_| perr("`level` needs a whole number"))?;
             meta.level = Some(level);
             rest = &r[end..];
+        } else if let Some(r) = rest.strip_prefix("attested ") {
+            let end = [" ensures ", " revokes ", " require "]
+                .iter()
+                .filter_map(|k| r.find(k))
+                .min()
+                .unwrap_or(r.len());
+            meta.attested = Some(Require::parse(&r[..end])?);
+            rest = &r[end..];
         } else if let Some(r) = rest.strip_prefix("ensures ") {
             let (names, tail) = names(r);
             meta.ensures.extend(names);
@@ -331,7 +347,7 @@ fn arrow_meta(mut rest: &str) -> Result<ArrowMeta, Error> {
         } else if let Some(r) = rest.strip_prefix("require ") {
             // `require P ensures T` reads as a pre/postcondition: the
             // expression ends at an effect keyword.
-            let end = [" ensures ", " revokes "]
+            let end = [" ensures ", " revokes ", " attested "]
                 .iter()
                 .filter_map(|k| r.find(k))
                 .min()
@@ -398,6 +414,38 @@ fn invariant(s: &str) -> Result<Invariant, Error> {
         }
         _ => Err(bad()),
     }
+}
+
+/// `Name { key: ed25519:<base64>; observes: a.b, c; }`
+fn attester(s: &str) -> Result<crate::attest::Attester, Error> {
+    let bad = |msg: &str| perr(format!("attester `{}`: {msg}", s.trim()));
+    let (name, body) = s
+        .split_once('{')
+        .ok_or_else(|| bad("expected `attester Name { key: …; observes: …; }`"))?;
+    let body = body
+        .trim()
+        .strip_suffix('}')
+        .ok_or_else(|| bad("missing `}`"))?;
+    let (mut key, mut observes) = (None, Vec::new());
+    for part in body.split(';').map(str::trim).filter(|p| !p.is_empty()) {
+        let (k, v) = part
+            .split_once(':')
+            .ok_or_else(|| bad("expected `key: …` or `observes: …`"))?;
+        match k.trim() {
+            "key" => key = Some(crate::attest::Attester::parse_key(v.trim()).map_err(|e| bad(&e))?),
+            "observes" => observes.extend(
+                v.split(',')
+                    .map(|x| x.trim().to_owned())
+                    .filter(|x| !x.is_empty()),
+            ),
+            other => return Err(bad(&format!("unknown field `{other}` (key, observes)"))),
+        }
+    }
+    Ok(crate::attest::Attester {
+        name: name.trim().to_owned(),
+        key: key.ok_or_else(|| bad("missing `key`"))?,
+        observes,
+    })
 }
 
 /// `Name { issuers: a, b; revokers: c; }`

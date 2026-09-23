@@ -90,6 +90,9 @@ pub fn print_record(r: &Value, pad: &str) {
     } else {
         println!("{pad}  judge: not asked");
     }
+    for a in r["attested"].as_array().into_iter().flatten() {
+        println!("{pad}  attested: {}", a.as_str().unwrap_or("?"));
+    }
     let wait = r["claim"]["wait_ms"].as_f64().unwrap_or(0.0);
     if wait >= 1.0 {
         println!("{pad}  waited {wait:.0}ms for an intersecting frame");

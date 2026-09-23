@@ -123,6 +123,9 @@ pub enum Gate {
     Open,
     /// The arrow's own `require` failed.
     Require,
+    /// The arrow's `attested` precondition is not met by verified
+    /// observations.
+    Unattested,
     /// The target's entry contract failed: missing tokens (after the
     /// arrow's effects), and/or its case precondition.
     Entry {
@@ -143,6 +146,9 @@ pub struct Arrow {
     pub level: Option<u32>,
     /// Checked in code against the walk's state before any model call.
     pub require: Option<Require>,
+    /// Checked against the case's **attested view** (verified, signed
+    /// observations only), never against plain case facts.
+    pub attested: Option<Require>,
     /// Capability tokens the walk holds after taking this arrow.
     pub ensures: Vec<String>,
     /// Capability tokens the walk loses on taking this arrow (applied first).
@@ -168,6 +174,7 @@ pub struct ArrowMeta {
     pub instructions: Option<Value>,
     pub level: Option<u32>,
     pub require: Option<Require>,
+    pub attested: Option<Require>,
     pub ensures: Vec<String>,
     pub revokes: Vec<String>,
 }
@@ -235,6 +242,7 @@ pub struct Category {
     equations: Vec<Equation>,
     invariants: Vec<Invariant>,
     capabilities: Vec<Capability>,
+    attesters: Vec<crate::attest::Attester>,
     /// Declared application entry points (`start: A, B;`).
     starts: Vec<ObjId>,
     out_offsets: Vec<u32>,
@@ -276,6 +284,12 @@ impl Category {
 
     pub fn capabilities(&self) -> &[Capability] {
         &self.capabilities
+    }
+
+    /// Declared attesters: whose signed observations count, and for which
+    /// fields. Part of the policy.
+    pub fn attesters(&self) -> &[crate::attest::Attester] {
+        &self.attesters
     }
 
     pub fn capability(&self, name: &str) -> Option<&Capability> {
@@ -368,6 +382,25 @@ impl Category {
                             o.name
                         ));
                     }
+                }
+            }
+        }
+        let mut names = BTreeSet::new();
+        for a in &self.attesters {
+            if !names.insert(a.name.as_str()) {
+                return bad(format!("attester {} is declared twice", a.name));
+            }
+            if a.observes.is_empty() {
+                return bad(format!("attester {} observes nothing", a.name));
+            }
+        }
+        for a in &self.arrows {
+            for path in a.attested.iter().flat_map(Require::paths) {
+                if !self.attesters.iter().any(|t| t.observes.contains(&path)) {
+                    return bad(format!(
+                        "`{}` needs attested `{path}`, but no declared attester may observe it",
+                        a.name
+                    ));
                 }
             }
         }
@@ -473,6 +506,7 @@ impl Category {
                 instructions: a.instructions.clone(),
                 level: a.level,
                 require: a.require.clone(),
+                attested: a.attested.clone(),
                 ensures: a.ensures.clone(),
                 revokes: a.revokes.clone(),
             };
@@ -500,6 +534,9 @@ impl Category {
         }
         for c in &self.capabilities {
             b.capability(c.clone());
+        }
+        for a in &self.attesters {
+            b.attester(a.clone());
         }
         for &s in &self.starts {
             b.start(&self.object(s).name)?;
@@ -545,6 +582,12 @@ impl Category {
         let a = self.arrow(arrow);
         if a.require.as_ref().is_some_and(|r| !r.eval(case)) {
             return Gate::Require;
+        }
+        if let Some(att) = &a.attested {
+            let (view, _, _) = crate::attest::attested_view(&self.attesters, case);
+            if !att.eval(&view) {
+                return Gate::Unattested;
+            }
         }
         let entry = &self.object(a.dst).entry;
         let after = a.effect(tokens);
@@ -645,6 +688,7 @@ pub struct CategoryBuilder {
     equations: Vec<(PathSpec, PathSpec)>,
     invariants: Vec<Invariant>,
     capabilities: Vec<Capability>,
+    attesters: Vec<crate::attest::Attester>,
     starts: Vec<ObjId>,
     object_index: HashMap<String, ObjId>,
     arrow_index: HashMap<String, ArrowId>,
@@ -720,6 +764,7 @@ impl CategoryBuilder {
             instructions: meta.instructions,
             level: meta.level,
             require: meta.require,
+            attested: meta.attested,
             ensures: meta.ensures,
             revokes: meta.revokes,
         });
@@ -772,6 +817,11 @@ impl CategoryBuilder {
     /// built, so declarations may come before or after the arrows.
     pub fn capability(&mut self, capability: Capability) {
         self.capabilities.push(capability);
+    }
+
+    /// Declares an attester (policy).
+    pub fn attester(&mut self, attester: crate::attest::Attester) {
+        self.attesters.push(attester);
     }
 
     /// Declares an application entry point.
@@ -861,6 +911,7 @@ impl CategoryBuilder {
             equations: Vec::new(),
             invariants: self.invariants,
             capabilities: self.capabilities,
+            attesters: self.attesters,
             starts: self.starts,
             out_offsets,
             out_arrows,

@@ -130,6 +130,7 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
     let mut n = 0;
     let mut outcome = None;
     let mut combined = false;
+    let mut last_attested: Vec<String> = Vec::new();
     for s in &w.steps {
         match s {
             StepRecord::Followed {
@@ -138,11 +139,16 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
                 confidence,
                 p,
                 alternatives,
+                attested,
                 ..
             } => {
                 n += 1;
                 let sure = confidence.unwrap_or(*p) * 100.0;
                 println!("{pad}{n}. {from} → {to}   ({sure:.0}% sure)");
+                for a in attested {
+                    println!("{pad}   attested by {a}");
+                }
+                last_attested = attested.clone();
                 for a in alternatives {
                     println!("{pad}   (also possible: {}, not pursued)", a.to);
                 }
@@ -189,7 +195,18 @@ fn print_walk(cat: &Category, r: &RunReport, w: &WalkReport, pad: &str) {
     match outcome {
         None if terminal => {
             let route = w.path.split(" : ").next().unwrap_or_default();
-            println!("{pad}✓ Handled. This follows an existing route and reached {end_name}.");
+            // Completion in the world is claimed only on attested evidence.
+            if last_attested.is_empty() {
+                println!("{pad}✓ Reached {end_name} by an existing route.");
+                println!(
+                    "{pad}  Not attested: no trusted source has confirmed the outcome in the world."
+                );
+            } else {
+                println!(
+                    "{pad}✓ Completed: {end_name}, attested by {}.",
+                    last_attested.join("; ")
+                );
+            }
             println!("{pad}  Route: {route}");
         }
         None if combined => println!(

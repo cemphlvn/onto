@@ -18,6 +18,10 @@ file is stale; both are bugs.
 - **Case facts are asserted, not verified.** `require consent.given ==
   true` checks what the case *says*. The guarantee is only as good as the
   system that produces the case.
+- **Attested observations are verified.** `attested errors.stopped ==
+  true` holds only on an Ed25519-signed observation by a declared
+  attester, authorized for that field, bound to this case. A result is
+  presented as completion in the world only on such evidence.
 - **The human step is procedural.** Promotion is a command a person is
   meant to run; nothing authenticates who runs it.
 
@@ -28,6 +32,8 @@ file is stale; both are bugs.
 | **Policy declarations** | `capability … { issuers; revokers }`, `entry … needs / require`, `invariant`, `closed:`, `start:`, arrow `require` | **trusted: the root of trust** | anyone who can edit the `.onto` file | nothing checks *whether a policy is right*; checks only that the graph obeys it |
 | Graph structure | objects, arrows, instructions, equations | trusted once committed | file edit, or `onto promote` (one arrow at a time) | loading validates everything below against the policy |
 | Case facts | the job's JSON (`consent.given`, `processor.region`) | **asserted by the submitter; not verified** | whoever submits the job | `require` evaluates them; nothing checks they are true |
+| Attested observations | signed claims in the case (`observations`) | **verified**: declared attester, strict Ed25519 signature over canonical JSON, field authorization, bound to the case `id` | the attester (holder of the secret key) | `attested` preconditions read only the attested view; rejected observations are reported with the reason |
+| Attester declarations | `attester Name { key; observes; }` | **policy: root of trust** | whoever edits the `.onto` file | the policy validator (unique names, valid keys, every attested field observable) |
 | Model judgments (System 1) | Jev's Choice, Noul, Score answers | **untrusted, calibrated** | the model | gated: code filters first; confidence thresholds; abstention escalates |
 | Proposals (System 2) | an OpenRouter model's suggested arrows | **untrusted** | the model | never applied; reviewed by the supervisor; promoted only by a person |
 | Supervisor semantic checks | rule, duplicate, overlap judgments | **untrusted, calibrated** | the critic model | fail ≥ 0.7, pass ≤ 0.3, unknown between; unknown blocks admission |
@@ -82,6 +88,8 @@ signed commits.
 | **Derived laws**: tokens every walk holds on arrival; walk-level invariant enforcement; dead arrows | exact exploration of (object, tokens) states; certificates, witnesses, counterexamples | case preconditions are **assumed satisfiable** (over-approximates cases, exact for tokens); two scopes: declared roots (application) or all startable objects (category); cost is exponential in the number of tokens |
 | **Starting is entering** | the engine refuses a start where the entry contract fails | runtime engine; the synchronous test walker does not enforce it |
 | **Path equality** | equality saturation (egg) | Equal / Distinct / **Unknown** when limits are hit: never a guess |
+| **Attested observation** | strict Ed25519 verification of `onto-observation-v1` + canonical JSON (attester, case, time, claim); field authorization; case binding | relative to the attester declarations (policy) and the secrecy of the attesters' keys |
+| **Attested completion** | a join is labelled `completion attested` only when every branch arrived by an attested arrow; `ask` says "Completed … attested by …" only then | a statement about signed evidence, not about the attester's honesty |
 
 **Not proved, only judged or asserted:**
 
@@ -92,11 +100,12 @@ signed commits.
 - that a description means what its author intended;
 - that a `closed:` frame is really complete (an assertion; a proposal
   into it is a *challenge*, and only a person can revise the claim);
-- that a successful join reflects **completion in the world**: an
-  all-join means every branch *reached* the join object through judged
-  transitions and code gates. It does not mean the rollback ran or the
-  key was revoked. That needs **attested observations** (next milestone);
-  until then a join is evidence about the walk, not about the world.
+- that a successful join reflects **completion in the world** unless it
+  is labelled `completion attested`: an unattested join means every
+  branch *reached* the join object, nothing more;
+- that an attester is honest, that its clock is right, that its key is
+  not compromised: observations have no freshness bound or key revocation
+  yet, and the time is the attester's own claim.
 
 ## 5. Snapshot atomicity
 

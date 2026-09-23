@@ -330,6 +330,7 @@ fn print_step(s: &StepRecord) {
             p,
             confidence,
             alternatives,
+            attested,
             wait_ms,
         } => {
             let conf = confidence.map_or(String::new(), |c| format!(" conf={c:.2}"));
@@ -342,6 +343,9 @@ fn print_step(s: &StepRecord) {
                 "  {from} --{arrow}--> {to}   [{}] p={p:.2}{conf}{wait}",
                 decided_by.as_str()
             );
+            for a in attested {
+                println!("      attested by {a}");
+            }
             for a in alternatives {
                 println!(
                     "      also held, not followed: {} -> {} (p={:.2})",

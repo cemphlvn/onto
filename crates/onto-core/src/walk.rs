@@ -482,6 +482,9 @@ pub enum Disposition {
     /// Removed by the target's entry contract: tokens the walk would not
     /// hold, or the target's case precondition.
     BlockedByEntry,
+    /// Removed because its `attested` precondition is not met by verified,
+    /// signed observations.
+    Unattested,
 }
 
 /// One candidate's judgment, disposition and the reason for it.
@@ -564,6 +567,32 @@ pub fn dispose(
                     Disposition::BlockedByEntry,
                     format!("{} {}", target.name, why.join(" and ")),
                 )
+            }
+            Gate::Unattested => {
+                let need = arrow
+                    .attested
+                    .as_ref()
+                    .map_or(String::new(), |r| r.to_string());
+                let (_, ok, rejected) = crate::attest::attested_view(cat.attesters(), case);
+                let mut why = format!("needs attested `{need}`");
+                if ok.is_empty() && rejected.is_empty() {
+                    why.push_str("; the case carries no observations");
+                } else {
+                    let valid: Vec<String> = ok
+                        .iter()
+                        .map(|v| format!("{}: {}", v.attester, v.fields.join(", ")))
+                        .collect();
+                    if !valid.is_empty() {
+                        why.push_str(&format!(
+                            "; verified observations do not establish it ({})",
+                            valid.join("; ")
+                        ));
+                    }
+                    for r in rejected {
+                        why.push_str(&format!("; rejected {}: {}", r.attester, r.reason));
+                    }
+                }
+                (Disposition::Unattested, why)
             }
             _ => {
                 let req = arrow

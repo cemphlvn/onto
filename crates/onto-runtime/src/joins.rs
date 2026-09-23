@@ -44,6 +44,9 @@ pub struct Arrival {
     pub tokens: Tokens,
     /// The walk's last frame record before the join (for causal links).
     pub last_record: Option<String>,
+    /// Attestations that opened the arrow this walk arrived by (empty: the
+    /// arrival rests on judgment alone).
+    pub attested: Vec<String>,
 }
 
 /// What a walk does after its join resolves.
@@ -54,6 +57,8 @@ pub enum JoinOutcome {
     Continue {
         tokens: Tokens,
         merged: Vec<(u64, Option<String>)>,
+        /// Every arrival at the join with its attestations (this walk's too).
+        arrivals: Vec<(u64, Vec<String>)>,
     },
     /// This walk ends here: `into` continues for it.
     End { into: Option<u64>, reason: String },
@@ -211,6 +216,7 @@ fn resolve(
                     JoinOutcome::Continue {
                         tokens,
                         merged: merged_except(table, walk),
+                        arrivals: attestations(table),
                     }
                 }
                 Resolution::All { continuing, .. } => JoinOutcome::End {
@@ -244,6 +250,7 @@ fn resolve(
                 JoinOutcome::Continue {
                     tokens: table.arrivals[&walk].tokens.clone(),
                     merged: Vec::new(),
+                    arrivals: vec![(walk, table.arrivals[&walk].attested.clone())],
                 }
             } else {
                 JoinOutcome::End {
@@ -280,6 +287,7 @@ fn resolve(
                 return Some(JoinOutcome::Continue {
                     tokens,
                     merged: vec![(auth, a.last_record.clone())],
+                    arrivals: attestations(table),
                 });
             }
             if gone(inner, key, auth) {
@@ -293,6 +301,14 @@ fn resolve(
             None
         }
     }
+}
+
+fn attestations(table: &Table) -> Vec<(u64, Vec<String>)> {
+    table
+        .arrivals
+        .iter()
+        .map(|(w, a)| (*w, a.attested.clone()))
+        .collect()
 }
 
 fn export_list(export: &[String]) -> String {

@@ -2,6 +2,7 @@
 //!
 //! See `docs/00-architecture.md` for the design.
 
+pub mod attest;
 pub mod category;
 pub mod equality;
 pub mod error;

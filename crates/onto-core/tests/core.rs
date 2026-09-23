@@ -897,3 +897,124 @@ fn categories_know_their_snapshot() {
         .unwrap();
     assert_eq!(ext.snapshot(), None);
 }
+
+mod attestation {
+    use super::*;
+    use base64::Engine as _;
+    use base64::engine::general_purpose::STANDARD as B64;
+    use ed25519_dalek::{Signer, SigningKey};
+    use onto_core::Gate;
+    use onto_core::attest::{attested_view, message};
+    use serde_json::Value;
+
+    fn key(seed: u8) -> SigningKey {
+        SigningKey::from_bytes(&[seed; 32])
+    }
+
+    fn public(k: &SigningKey) -> String {
+        format!("ed25519:{}", B64.encode(k.verifying_key().to_bytes()))
+    }
+
+    fn src() -> String {
+        format!(
+            r#"category C {{
+            attester DeployBot {{ key: {}; observes: errors.stopped; }}
+            objects: Rollback, Mitigated;
+            verify: Rollback -> Mitigated "confirm errors stopped" attested errors.stopped == true;
+        }}"#,
+            public(&key(1))
+        )
+    }
+
+    fn observation(signer: &SigningKey, attester: &str, case: &str, field: &str) -> Value {
+        let claim = json!({ field: true }).as_object().unwrap().clone();
+        let at = "2026-09-23T10:02:00Z";
+        let sig = signer.sign(&message(attester, case, at, &claim));
+        json!({"claim": claim, "attester": attester, "case": case, "at": at, "signature": B64.encode(sig.to_bytes())})
+    }
+
+    fn gate(case: Value) -> Gate {
+        let cat = parse(&src()).unwrap();
+        cat.gate(cat.arrow_id("verify").unwrap(), &case, &Default::default())
+    }
+
+    #[test]
+    fn a_valid_signed_observation_opens_the_arrow() {
+        let case = json!({"id": "INC-1", "observations": [observation(&key(1), "DeployBot", "INC-1", "errors.stopped")]});
+        assert_eq!(gate(case), Gate::Open);
+    }
+
+    #[test]
+    fn nothing_else_opens_it() {
+        let obs =
+            |k: u8, att: &str, case: &str, field: &str| observation(&key(k), att, case, field);
+        let cases = [
+            ("no observation", json!({"id": "INC-1"})),
+            (
+                "a plain fact",
+                json!({"id": "INC-1", "errors": {"stopped": true}}),
+            ),
+            (
+                "a forged key",
+                json!({"id": "INC-1", "observations": [obs(2, "DeployBot", "INC-1", "errors.stopped")]}),
+            ),
+            (
+                "a replay",
+                json!({"id": "INC-2", "observations": [obs(1, "DeployBot", "INC-1", "errors.stopped")]}),
+            ),
+            (
+                "an undeclared attester",
+                json!({"id": "INC-1", "observations": [obs(1, "SomeBot", "INC-1", "errors.stopped")]}),
+            ),
+            (
+                "an unauthorized field",
+                json!({"id": "INC-1", "observations": [obs(1, "DeployBot", "INC-1", "keys.revoked")]}),
+            ),
+        ];
+        for (what, case) in cases {
+            assert_eq!(
+                gate(case),
+                Gate::Unattested,
+                "{what} must not open an attested arrow"
+            );
+        }
+    }
+
+    #[test]
+    fn tampering_with_a_signed_claim_breaks_it() {
+        let mut o = observation(&key(1), "DeployBot", "INC-1", "errors.stopped");
+        o["at"] = json!("2027-01-01T00:00:00Z");
+        let cat = parse(&src()).unwrap();
+        let (_, ok, bad) = attested_view(
+            cat.attesters(),
+            &json!({"id": "INC-1", "observations": [o]}),
+        );
+        assert!(ok.is_empty());
+        assert_eq!(bad[0].reason, "signature does not verify");
+    }
+
+    #[test]
+    fn attesters_are_validated_as_policy() {
+        let s = src();
+        assert!(
+            parse(&s.replace("observes: errors.stopped;", "observes: other;"))
+                .unwrap_err()
+                .to_string()
+                .contains("no declared attester may observe it")
+        );
+        let twice = s.replace(
+            "objects:",
+            &format!(
+                "attester DeployBot {{ key: {}; observes: x; }}\n objects:",
+                public(&key(3))
+            ),
+        );
+        assert!(
+            parse(&twice)
+                .unwrap_err()
+                .to_string()
+                .contains("declared twice")
+        );
+        assert!(parse(&s.replace("key: ed25519:", "key: rsa:")).is_err());
+    }
+}

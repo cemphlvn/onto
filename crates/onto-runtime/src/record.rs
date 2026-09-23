@@ -35,6 +35,10 @@ pub struct FrameRecord {
     pub outcome: Outcome,
     /// Provisional System-2 proposals made at this visit, if it escalated.
     pub proposals: Vec<Proposal>,
+    /// Attestations that opened the arrow this visit followed: who
+    /// observed what, and when (empty: the step rests on judgment alone).
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub attested: Vec<String>,
     /// For a join: the other branches' last records, merged into this one
     /// (the disposition graph's merge nodes).
     #[serde(skip_serializing_if = "Vec::is_empty")]

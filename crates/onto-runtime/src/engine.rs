@@ -89,6 +89,8 @@ pub enum StepRecord {
         confidence: Option<f32>,
         /// Arrows that also held (noul) but were not pursued.
         alternatives: Vec<Alt>,
+        /// Attestations that opened this arrow (empty: judgment alone).
+        attested: Vec<String>,
         wait_ms: f64,
     },
     Forked {
@@ -115,6 +117,9 @@ pub enum StepRecord {
         policy: String,
         /// `continued`, `ended` (folded into `into`) or `escalated`.
         role: String,
+        /// For the continuing walk: every branch arrived by an attested
+        /// arrow, so the join is evidence about the world, not only the walk.
+        completion_attested: bool,
         into: Option<u64>,
         with: Vec<u64>,
         tokens: Vec<String>,
@@ -371,6 +376,8 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         } = seed;
         self.joins.started(id);
         let mut seq = 0usize;
+        // Attestations behind the arrow this walk last followed.
+        let mut last_attested: Vec<String> = Vec::new();
         tracing::info!(
             target: "onto",
             event = "walk.start",
@@ -440,19 +447,45 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 let arrival = Arrival {
                     tokens: tokens.clone(),
                     last_record: frames.last().map(|f: &FrameRecord| f.id.clone()),
+                    attested: last_attested.clone(),
                 };
                 let (outcome, waited) = self.joins.arrive(id, &fork, at, join, arrival).await;
                 self.counters.joins.fetch_add(1, Relaxed);
                 seq += 1;
                 let join_id = format!("w{id}.{seq}");
+                let mut completion_attested = false;
                 let (role, into, with, detail, merged_from, escalate) = match &outcome {
-                    JoinOutcome::Continue { tokens: t, merged } => {
+                    JoinOutcome::Continue {
+                        tokens: t,
+                        merged,
+                        arrivals,
+                    } => {
                         tokens = t.clone();
                         forks.pop();
                         let with: Vec<u64> = merged.iter().map(|m| m.0).collect();
                         let from: Vec<String> = merged.iter().filter_map(|m| m.1.clone()).collect();
+                        // A join is evidence about the world only if every
+                        // branch arrived by an attested arrow.
+                        let unattested: Vec<String> = arrivals
+                            .iter()
+                            .filter(|(_, a)| a.is_empty())
+                            .map(|(w, _)| w.to_string())
+                            .collect();
+                        completion_attested = unattested.is_empty();
+                        let evidence = if completion_attested {
+                            let by: Vec<String> = arrivals
+                                .iter()
+                                .map(|(w, a)| format!("walk {w}: {}", a.join(", ")))
+                                .collect();
+                            format!("completion attested ({})", by.join("; "))
+                        } else {
+                            format!(
+                                "reached, completion NOT attested (walk {} arrived on judgment alone)",
+                                unattested.join(", ")
+                            )
+                        };
                         let detail = format!(
-                            "continues holding {{{}}}",
+                            "{evidence}; continues holding {{{}}}",
                             tokens.iter().cloned().collect::<Vec<_>>().join(", ")
                         );
                         ("continued", None, with, detail, from, None)
@@ -520,12 +553,14 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                     },
                     proposals: Vec::new(),
                     merged_from,
+                    attested: Vec::new(),
                 });
                 after = Some(join_id);
                 steps.push(StepRecord::Joined {
                     at: object.name.clone(),
                     policy: join.name().into(),
                     role: role.into(),
+                    completion_attested,
                     into,
                     with,
                     tokens: tokens.iter().cloned().collect(),
@@ -582,6 +617,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                 outcome,
                 proposals: Vec::new(),
                 merged_from: Vec::new(),
+                attested: Vec::new(),
             };
 
             let mut speculative = None;
@@ -817,6 +853,11 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         },
                     ));
                 }
+                // Who, if anyone, attested what opened this arrow.
+                last_attested = self.evidence(arrow, &job.case);
+                if let Some(f) = frames.last_mut().filter(|f| f.id == rec_id) {
+                    f.attested = last_attested.clone();
+                }
                 after = Some(rec_id.clone());
                 tracing::info!(
                     target: "onto",
@@ -841,6 +882,7 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
                         .iter()
                         .map(|&(i, p)| self.alt(frame[i], p))
                         .collect(),
+                    attested: last_attested.clone(),
                     wait_ms,
                 });
                 self.advance(&mut path, &mut hops, &mut tokens, arrow, primitive, p);
@@ -936,6 +978,20 @@ impl<J: Judge, P: Proposer> Engine<J, P> {
         *tokens = a.effect(tokens);
         path.push(cat, arrow)
             .expect("frame arrows leave the current object");
+    }
+
+    /// The verified observations behind an attested arrow, as
+    /// `Attester: field, … @ time` (empty if the arrow needs none).
+    fn evidence(&self, arrow: ArrowId, case: &Value) -> Vec<String> {
+        let Some(need) = &self.cat.arrow(arrow).attested else {
+            return Vec::new();
+        };
+        let paths = need.paths();
+        let (_, ok, _) = onto_core::attest::attested_view(self.cat.attesters(), case);
+        ok.into_iter()
+            .filter(|v| v.fields.iter().any(|f| paths.contains(f)))
+            .map(|v| format!("{}: {} @ {}", v.attester, v.fields.join(", "), v.at))
+            .collect()
     }
 
     fn alt(&self, arrow: ArrowId, p: f32) -> Alt {

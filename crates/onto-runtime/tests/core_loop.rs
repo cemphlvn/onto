@@ -854,3 +854,97 @@ async fn every_record_names_its_snapshot() {
             .all(|f| f.snapshot.as_deref() == Some(expected.as_str()))
     );
 }
+
+mod attested_joins {
+    use super::*;
+    use base64::Engine as _;
+    use base64::engine::general_purpose::STANDARD as B64;
+    use ed25519_dalek::{Signer, SigningKey};
+
+    fn signer() -> SigningKey {
+        SigningKey::from_bytes(&[7; 32])
+    }
+
+    /// Both branches reach Merge; `look` needs an attested observation,
+    /// `verify` optionally too.
+    fn src(verify_attested: bool) -> String {
+        format!(
+            r#"category C {{
+            attester Ops {{ key: ed25519:{}; observes: latency.fixed, keys.revoked; }}
+            objects: Alert, Latency, Security, Merge, Done;
+            frame Alert: noul;
+            latency:  Alert -> Latency  "slow responses";
+            security: Alert -> Security "leaked credentials";
+            look:   Latency -> Merge "merge" attested latency.fixed == true;
+            verify: Security -> Merge "merge" {};
+            finish: Merge -> Done "done";
+            closed: Alert, Latency, Security, Merge, Done;
+            join Merge: all;
+        }}"#,
+            B64.encode(signer().verifying_key().to_bytes()),
+            if verify_attested {
+                "attested keys.revoked == true"
+            } else {
+                ""
+            }
+        )
+    }
+
+    fn obs(field: &str) -> Value {
+        let claim = json!({ field: true }).as_object().unwrap().clone();
+        let sig = signer().sign(&onto_core::attest::message("Ops", "INC-9", "t0", &claim));
+        json!({"claim": claim, "attester": "Ops", "case": "INC-9", "at": "t0", "signature": B64.encode(sig.to_bytes())})
+    }
+
+    async fn go(verify_attested: bool) -> (bool, String) {
+        let cat = Arc::new(onto_core::parse(&src(verify_attested)).unwrap());
+        let cfg = Config {
+            policy: Policy::Shared,
+            ..Config::default()
+        };
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            MockProposer { latency: LATENCY },
+            cfg,
+        );
+        let case =
+            json!({"id": "INC-9", "observations": [obs("latency.fixed"), obs("keys.revoked")]});
+        let job = Job {
+            from: "Alert".into(),
+            goal: "slow and leaked credentials: merge, then done".into(),
+            case,
+        };
+        let r = tokio::time::timeout(Duration::from_secs(5), engine.run(vec![job]))
+            .await
+            .unwrap()
+            .unwrap();
+        r.walks
+            .iter()
+            .flat_map(|w| &w.steps)
+            .find_map(|s| match s {
+                StepRecord::Joined {
+                    role,
+                    completion_attested,
+                    detail,
+                    ..
+                } if role == "continued" => Some((*completion_attested, detail.clone())),
+                _ => None,
+            })
+            .expect("a continuing join")
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_join_is_attested_completion_only_if_every_branch_arrived_attested() {
+        let (attested, detail) = go(true).await;
+        assert!(attested, "{detail}");
+        assert!(
+            detail.contains("completion attested") && detail.contains("Ops: "),
+            "{detail}"
+        );
+
+        let (attested, detail) = go(false).await;
+        assert!(!attested);
+        assert!(detail.contains("NOT attested"), "{detail}");
+    }
+}

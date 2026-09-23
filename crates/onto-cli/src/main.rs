@@ -6,6 +6,7 @@ use onto_core::walk::{Escalation, Judge, NullProposer, ScriptedJudge, Step, Unif
 use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse, parse::path_spec};
 
 mod ask;
+mod attest;
 mod laws;
 mod run;
 mod supervise;
@@ -62,6 +63,10 @@ enum Cmd {
         #[arg(long, default_value = "")]
         goal: String,
     },
+    /// Generate an Ed25519 key pair for an attester.
+    Keygen(attest::KeygenArgs),
+    /// Sign an observation as an attester (prints the observation JSON).
+    Attest(attest::AttestArgs),
     /// Derive what entry contracts and arrow effects imply.
     Laws(laws::LawsArgs),
     /// Review provisional proposals: structural proofs, then semantic checks.
@@ -83,6 +88,8 @@ fn main() -> ExitCode {
         Cmd::Ask(args) => ask::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Why(args) => why::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Laws(args) => laws::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Keygen(args) => attest::keygen(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Attest(args) => attest::attest(args).map(|()| ExitCode::SUCCESS),
         Cmd::Review(args) => supervise::review_main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Promote(args) => supervise::promote_main(args).map(|()| ExitCode::SUCCESS),
         cmd => run(Cli { cmd }),
@@ -258,7 +265,9 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         | Cmd::Why(_)
         | Cmd::Review(_)
         | Cmd::Promote(_)
-        | Cmd::Laws(_) => {
+        | Cmd::Laws(_)
+        | Cmd::Keygen(_)
+        | Cmd::Attest(_) => {
             unreachable!("handled in main")
         }
     }

@@ -12,3 +12,5 @@ Network: traffic flood from thousands of IPs hitting the login endpoint
 Alert: checkout is slow for everyone, and separately an API key was posted on a public forum
 Report: customers say the whole checkout page is down and nobody can pay
 Report: a button label is misaligned on the settings page
+# Added with attested observations: signed by DeployBot and SecOps for case INC-4411.
+Alert: {"goal": "checkout returns 5xx errors since the 14:02 deploy, and separately an API key was posted on a public forum", "id": "INC-4411", "observations": [{"at": "2026-09-23T00:46:58Z", "attester": "DeployBot", "case": "INC-4411", "claim": {"errors.stopped": true}, "signature": "0QFXFjWgHqY/UiC9pfAlY1dY/et6HMxiliTTekWHLey2MGctAG0EPzIXlJ5kYo8koQQulZXKWzuEbNeIVa0RCQ=="}, {"at": "2026-09-23T00:46:58Z", "attester": "SecOps", "case": "INC-4411", "claim": {"key.old_rejected": true}, "signature": "2LkyalPx71bkZfQOZ4oEFA7FeW1qsPzWeb/S5J/6AKoswsuqsVoLXr9aiD2Z+LOHZ8ah8+bSKsK7FO0Tn0fKCA=="}]}

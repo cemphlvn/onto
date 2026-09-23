@@ -26,10 +26,13 @@ parallel branches from a noul fork recombine. Implementation:
   not yet shown live: when a case describes actions already taken, the
   judge hesitates at the arrows for those actions (the graph models what
   to do, not what was done).
-- **A successful join is not evidence of real-world completion.** It
-  means every branch reached the join object through judged transitions
-  and code gates. Presenting it as "the incident is mitigated" requires
-  attested observations (`docs/04-trust-model.md` §4).
+- **A successful join is evidence of real-world completion only when
+  attested.** Every arrival records the attestations that opened the
+  arrow it came by; the continuing walk's join is labelled
+  `completion attested (walk N: Attester: field @ time; …)` only if every
+  branch arrived attested, and otherwise `reached, completion NOT
+  attested (walk N arrived on judgment alone)`. `onto ask` says
+  "Completed … attested by …" only in the attested case.
 
 ## 1. Principle
 

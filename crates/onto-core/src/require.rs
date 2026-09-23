@@ -84,6 +84,11 @@ impl Require {
         })
     }
 
+    /// The field paths the clauses read, dotted.
+    pub fn paths(&self) -> Vec<String> {
+        self.clauses.iter().map(|c| c.path.join(".")).collect()
+    }
+
     /// True when every clause holds in `state`.
     pub fn eval(&self, state: &Value) -> bool {
         self.clauses.iter().all(|c| c.eval(state))

@@ -55,9 +55,19 @@ onto run demos/incident-graph/incident.onto --jobs demos/incident-graph/jobs --p
 ## Joins (2026-09-23, live)
 
 `join Mitigated: all;` — an incident that forked into independent
-aspects reaches `Mitigated` only when every aspect's walk does. That is a
-statement about the walks, not the world: nothing yet attests that a
-rollback ran or a key was revoked (attested observations are next). Live, on "5xx errors
+aspects reaches `Mitigated` only when every aspect's walk does.
+
+**Attested (2026-09-23).** Every arrow into `Mitigated` needs a signed
+observation from a declared attester (`DeployBot`: errors.stopped,
+service.recovered; `SecOps`: key.old_rejected). The public keys are in
+`incident.onto`; the secret keys are not in the repository; the last line
+of `jobs` carries observations pre-signed for case `INC-4411`. Live: the
+deploy branch passed `verify` on DeployBot's observation (shown as
+`attested by DeployBot: errors.stopped @ …`); the security branch was
+unsure at `Rotate` despite SecOps' observation, so the join was
+`incomplete_join`. The same goal without observations never reaches
+`Mitigated`. A join is labelled `completion attested` only when every
+branch arrived attested. Live, on "5xx errors
 since the deploy, and separately an API key was posted": the deploy
 branch reached `Mitigated` and waited 5.3 s; the security branch stopped
 at `Rotate` (unsure the old key was confirmed dead); the join escalated
