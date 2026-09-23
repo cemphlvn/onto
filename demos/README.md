@@ -44,6 +44,59 @@ Together, wave 1 exposes the whole architecture: support-commons → missing
 categories, incident-graph → concurrent intersections, consent-paths →
 path validity and evidence.
 
+## Next wave: what joins, capabilities and attestation enable (2026-09-23)
+
+Before joins the question was *"what path fits this case?"*. Now it is:
+*which parallel processes must complete, which alternatives may compete,
+and what authority is required before an outcome may be claimed?*
+
+```
+race   find a viable response quickly           (first branch to arrive)
+all    confirm every required condition         (every branch arrives)
+gate   prove authority                          (authority exports an allowlist)
+attest claim completion only on signed evidence (declared attesters)
+```
+
+onto governs the decision up to the point of action; it does **not**
+perform the action ("commit" stays outside the runtime).
+
+### New kinds of beneficiary
+
+| beneficiary | why they benefit | mechanism | status |
+|---|---|---|---|
+| the cross-system person | their outcome needs several institutions to succeed together | all-join over per-institution branches | runnable |
+| the rights-holder | an appropriate action is blocked unless authorized | gate join, capabilities, entry contracts | runnable |
+| the time-critical person | cannot wait for every alternative | race join | runnable (the winner is the first *eligible* arrival: gate the arrows into the join) |
+| the indirectly protected person | never uses the system (a data subject, a child, a customer affected by a deployment) | contracts and gates protect people absent from the interface | runnable |
+| the collective beneficiary | concurrent cases compete for one bed, clinician or server | **needs capacity-bearing resources, which onto does not model yet**; frame claims coordinate decisions, not stock | not yet |
+
+### Portfolio, reassessed
+
+| # | demo | joins | status |
+|---|---|---|---|
+| 1 | **incident-response** (successor of incident-graph) | race over mitigation plans, then all over verification checks; attested completion | **first wave** |
+| 2 | **consent-enforcement** (successor of consent-paths) | gate: a requested use proceeds only when purpose, evidence and an authorized capability meet | **first wave** |
+| 3 | **benefits-assembly** | all over income, residency, disability and household evidence (each attested), then a gate for eligibility authority | **first wave** |
+| 4 | hospital-discharge | all (medication, transport, housing, follow-up) + clinician gate | later: safety-sensitive |
+| 5 | disaster-allocation | race + gate | later: needs capacity |
+| 6 | supply-recovery | race + all | later |
+| 7 | accessibility-journeys | all + race | later |
+| 8 | social-care | all + gate | later: safety-sensitive |
+| 9 | secure-infrastructure-change | all (tests, security review, rollback readiness) + deployment gate, for autonomous agents' changes | candidate for wave 2 |
+| 10 | repair-network | race + all | later |
+
+Together the first wave shows **speed** (race), **authority** (gate) and
+**completeness** (all), which ordinary agent routers do not govern.
+
+### Acceptance for every new demo
+
+- `onto check`, `onto laws` (with `--proofs` for the claims its README makes)
+- `onto quotient`: no name-only identities; the states a demo's promise
+  depends on (eligibility, authorization, completion) are told apart by
+  **structure** (contracts, attestations, joins), not only by descriptions
+- a live run whose README reports what happened, including failures, and
+  never presents an unattested join as completion
+
 ## Layout
 
 Each demo is `demos/<name>/` with its category (`<domain>.onto`), a `jobs`
