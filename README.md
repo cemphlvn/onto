@@ -23,7 +23,8 @@ limits people declared.
 > functors: [`05`](docs/05-functors.md) · the four spaces: [`06`](docs/06-spaces.md) ·
 > what the raster shows, tested: [`07`](docs/07-raster-findings.md) · call economy: [`08`](docs/08-call-economy.md) ·
 > the learned-structure library: [`09`](docs/09-learned-library.md) ·
-> the engine and its Python bindings (design): [`10`](docs/10-bindings.md)
+> the engine and its Python bindings (design): [`10`](docs/10-bindings.md) ·
+> calibrated switches (research): [`12`](docs/12-calibrated-switches.md)
 
 ## The loop
 

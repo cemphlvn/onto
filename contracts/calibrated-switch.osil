@@ -1,0 +1,56 @@
+// onto's calibrated switch, declared in OSIL (docs/12-calibrated-switches.md).
+//
+// A switch is one binary judgment of onto's System 1: does this arrow's
+// condition hold for this case? The concept names what a switch is; its
+// realizations are how it is computed. TypeSafe's Jev is one realization and
+// keeps its own meaning (sovereignty: OSIL never redefines it). onto's own
+// CPU learner is a second, declared here as a potentiality: its capability
+// says which switches it could take, so its payoff is measured on recorded
+// runs before it is built.
+
+concept CalibratedSwitch {
+    equivalent_under { calibration = declared_distribution, abstention = escalate, state = declared_policy }
+    to { jev_remote, cpu_switch_local }
+}
+
+// What replacing one realization by the other must keep, and may drop.
+preserves {
+    decision_semantics
+    calibration
+    abstention
+    state_policy
+    unseen_fields
+    record_provenance
+}
+
+may_lose {
+    latency_profile
+    model_identity
+}
+
+// The local realization: inference on a CPU, per switch.
+model CpuSwitch {
+    purpose: inference
+
+    constraints {
+        device = cpu
+        latency < 5ms
+        memory < 64MB
+        calibration_error <= 0.05
+    }
+}
+
+// Which switches the CPU learner could take. Refused kinds stay with Jev (or
+// a person). The admitted share of recorded switches is the ceiling.
+capability cpu_switch_learner {
+    admits { switch.binary switch.short_text switch.labelled_boundary switch.structured_case }
+    refuses { switch.long_context switch.unlabelled switch.multimodal switch.open_vocabulary }
+}
+
+// Loops of switches that must agree: a path equation, a functor square, an
+// ensemble's shared category. Their agreement labels synthetic cases
+// without a person; their disagreement is a gap.
+capability resonance_check {
+    admits { loop.path_equation loop.functor_square loop.ensemble_shared }
+    refuses { loop.unstructured }
+}
