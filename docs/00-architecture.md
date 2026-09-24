@@ -470,6 +470,9 @@ snapshot. No database until live multi-writer editing is needed.
 | D62 | at an open-world structure gap: library → catalogue (transport) → model; a recall reactivates the arrow and restores active structure that hung from it | the cheapest answer first; a recall is evidence the structure is needed; nothing is admitted that the open world could not already learn, and the proofs run again |
 | D63 | a walk whose frame grew after it was judged judges again before recall, transport or a model; checked after its own recall attempt | live, four tickets judged in the same instant as a recall met their gaps 10 ms later on the old graph: one proposer call (4.2 s) for an answer that existed, four tickets stopped |
 | D64 | dormancy and retirement are a person's act; `--usage` and replay only recommend, and a dormant arrow is audited with `replay --with-arrow` | live, "never taken" meant no one bereaved had applied; with the arrow dormant, bereaved applicants went confidently to `none_apply` and `is_carer` (no gap, no recall); with it present, both took it at 1.00 |
+| D65 | functor discovery: structure decides what is possible (roles; every arrow a path), evidence ranks it (meaning: a judge chooses among admissible targets or none; behaviour: co-visits of the same cases); a model proposes only what these leave open | live, structure alone mapped 2 of 12 objects, behaviour 9, meaning 12; structure rescued a weak judgment (0.28) |
+| D66 | a discovered functor is a proposal with provenance, adopted by a person; authority and contract violations are reported, not pruned | a functor is policy (transport, views, standards, ensembles); the true map of the merger violates authority, and that is the finding |
+| D67 | behaviour keeps testing an adopted functor: pairs the same cases rarely share are flagged | a functor can be sound while the organisations handle those cases differently (live: how-to tickets, closing steps) |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -559,7 +562,7 @@ snapshot. No database until live multi-writer editing is needed.
   | A1 ✓ | M3 phase 3: ensembles (columns, shared category, prediction, surprise) | incident-response ensemble (metrics, logs, complaints) · customers during an outage | agreement; a monitoring blind spot; competing causes; raster item 8 |
   | A2 ✓ | consensus policies; surprise routed by admission | hospital-discharge ensemble (clinical, social) · a patient leaving hospital | a surprise stops an unsafe discharge (assured → a person) |
   | B ✓ | learned-structure library: presence effect (`replay --without-arrow`), active / dormant / retired, recall before catalogue and LLM | incident-response (unused learned arrows) · support-commons (parcel stream) | how an arrow's presence shifts judgments; recall with no model call |
-  | C | M3 phase 4: functor discovery | support-commons, two support organisations merging · their customers | discovered vs hand-written map; wrong candidates caught by the functor checks |
+  | C ✓ | M3 phase 4: functor discovery | support-commons, two support organisations merging · their customers | discovered vs hand-written map; wrong candidates caught by the functor checks |
   | D | M4: a stable API surface, then Python (PyO3) and a C ABI | consent-enforcement · developers | a Python script loads, proves laws, runs with a Python-defined judge, reads records |
   | E | M5: OSIL bridge (functor reports as preservation contracts) | secure-infrastructure-change, or OSIL's own repository governance · to be grounded in OSIL's docs first | an onto functor report and an OSIL preservation claim say the same thing |
 
@@ -573,7 +576,12 @@ snapshot. No database until live multi-writer editing is needed.
   (D61–D64, `docs/09-learned-library.md`). The incident-response layer no
   longer learns since typed escalations (its gaps are evidence gaps), so
   the presence test ran on benefits-assembly.
-- **Next:** C (functor discovery); raster–map–state linking; model-scoped capabilities for learned conceptual spaces; behavioural
+- **Functor discovery (C done):** `onto discover`: structure prunes,
+  meaning (Jev) and behaviour (co-visits of shared cases) rank; the
+  discovered map is a proposal checked like a hand-written one;
+  adopted with `transport` it completes enumerations without a model
+  (D65–D67, `docs/05-functors.md` §7).
+- **Next:** D (M4: stable API, PyO3, C ABI); raster–map–state linking; model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).
 - **M3:** functors between categories; multi-category files.

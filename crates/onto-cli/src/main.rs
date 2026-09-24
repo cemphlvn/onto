@@ -8,6 +8,7 @@ use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse::
 mod ask;
 mod attest;
 mod curate;
+mod discover;
 mod ensemble;
 mod functor;
 mod laws;
@@ -35,19 +36,11 @@ struct Cli {
 #[derive(Subcommand)]
 enum Cmd {
     /// Validate a file and summarise the category.
-    Check {
-        file: PathBuf,
-    },
+    Check { file: PathBuf },
     /// List an object's decision frame (its outgoing arrows).
-    Ls {
-        file: PathBuf,
-        object: String,
-    },
+    Ls { file: PathBuf, object: String },
     /// Type-check a path such as `g.f` and show the simplest equal path.
-    Compose {
-        file: PathBuf,
-        path: String,
-    },
+    Compose { file: PathBuf, path: String },
     /// Decide whether two paths are equal.
     Eq {
         file: PathBuf,
@@ -98,8 +91,6 @@ enum Cmd {
     Ask(ask::AskArgs),
     /// Run many walks concurrently against live models (Jev + OpenRouter) or mocks.
     Run(run::RunArgs),
-    /// List the learned layer (open world) and whether each arrow still
-    /// holds against the declared graph.
     /// What a functor keeps, reflects and leaves uncovered.
     Functor(functor::FunctorArgs),
     /// Draw what a run did, in time: frames × time, from its telemetry.
@@ -108,7 +99,12 @@ enum Cmd {
     Curate(curate::CurateArgs),
     /// Walk each case in every column of an ensemble; compare the columns.
     Ensemble(ensemble::EnsembleArgs),
+    /// The learned-structure library: each learned arrow's state (active,
+    /// dormant, retired), whether it holds, and how it was used.
     Learned(learned::LearnedArgs),
+    /// Find a candidate functor between two categories: structure, then
+    /// meaning (the judge) and behaviour (where the same cases went).
+    Discover(discover::DiscoverArgs),
     /// Carry the learned layer and memory along a version functor.
     Migrate(migrate::MigrateArgs),
     /// Ask the judge again with a recorded state changed (counterfactual):
@@ -124,6 +120,7 @@ fn main() -> ExitCode {
         Cmd::Raster(args) => raster::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Curate(args) => curate::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Ensemble(args) => ensemble::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Discover(args) => discover::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Learned(args) => learned::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Migrate(args) => migrate::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Replay(args) => replay::main(args).map(|()| ExitCode::SUCCESS),
@@ -306,6 +303,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         Cmd::Run(_)
         | Cmd::Learned(_)
         | Cmd::Ensemble(_)
+        | Cmd::Discover(_)
         | Cmd::Curate(_)
         | Cmd::Raster(_)
         | Cmd::Migrate(_)

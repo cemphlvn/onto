@@ -408,7 +408,7 @@ where
 }
 
 /// Polls every future to completion concurrently.
-async fn join_all<F: std::future::Future + Unpin>(mut futs: Vec<F>) -> Vec<F::Output> {
+pub(crate) async fn join_all<F: std::future::Future + Unpin>(mut futs: Vec<F>) -> Vec<F::Output> {
     let mut out: Vec<Option<F::Output>> = futs.iter().map(|_| None).collect();
     std::future::poll_fn(|cx| {
         let mut pending = false;

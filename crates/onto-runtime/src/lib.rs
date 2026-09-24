@@ -8,6 +8,7 @@
 //! See `docs/00-architecture.md` §5.
 
 pub mod curation;
+pub mod discovery;
 pub mod engine;
 pub mod ensemble;
 pub mod frames;

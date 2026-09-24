@@ -21,7 +21,7 @@ F0  declared functor: validated, with image and fiber           (onto-core)
  ├─ in a walk, one category H hierarchy (Choice over groups, then the fiber)
  │                          T transport (empty fiber → the missing arrows)
  ├─ in a walk, many         V voting (columns agree) · S column switch (adjunction)
- └─ finding functors        K discovery (quotient + Jev + LLM)
+ └─ finding functors        K discovery (structure + Jev + behaviour; §7)
 ```
 
 Using a functor is code. Choosing is Jev (Choice, Noul, Score). Only
@@ -238,17 +238,74 @@ ensemble Incident {
 - **Later (phase 3b):** column switch (continue in another column where
   this one lacks the enumeration; returning needs an adjoint pair).
 
-## 7. Later
+## 7. Phase 4: discovery (built, 2026-09-24)
 
-- **Discovery (K)**: candidate object maps from the behavioural quotient
-  (same structural profile), Jev Noul per pair, an LLM only for what
-  structure cannot match; learned functors in the learned layer.
+`onto discover SRC#A TGT#B [--runs a.telemetry,b.telemetry] [--compare
+FILE#F] [--out F.onto]`: a candidate functor, from four sources of
+evidence of different kinds.
+
+**Where a functor can come from.**
+
+| source | what it knows | cost | in onto |
+|---|---|---|---|
+| **structure** | roles: an entry maps to an entry, a terminal to a terminal, a decision to a decision of the same primitive; an object map survives only if every arrow between mapped objects has a path | none | `onto_core::discover::{admissible, search}` |
+| **meaning** | what an object is for: its description, its frame's question, its options, how it is reached | one Jev Choice per ambiguous source object, all in parallel | `onto_runtime::discovery` |
+| **behaviour** | where the same cases actually go in both organisations (the co-visit of cases: Jaccard) | runs over shared cases; the ensemble of `docs/05` §6 without a shared category | `--runs` |
+| **proposal (LLM)** | anything, unchecked | a model call | not needed here; for what the others leave open |
+
+Structure decides what is possible, evidence ranks what is possible: the
+judge **selects among admissible targets** (or none: the functor stays
+partial), never invents. The search maximizes the summed evidence under
+the path constraint (branch and bound).
+
+**Test: two support organisations merging** (`demos/support-commons/
+merger.onto`: Support, and the acquired Helpdesk: different names, a
+different shape, an Orders queue Support lacks, and account recovery
+only after identity verification). Against the hand-written `Merger`:
+
+| evidence | objects mapped as by hand | notes |
+|---|---|---|
+| structure only (declarations shuffled) | **2 of 12** (the forced ones) | 45 222 assignments tried, 40 125 rejected (an arrow had no path); the checks catch `howto` ↦ `verify_identity` (it would grant IdentityCheck authority to a how-to answer) |
+| behaviour only (16 tickets walked by both, closed world) | 9 of 12 | HowTo and FeatureRequest left outside (no shared cases); Login ↦ Verified |
+| meaning (Jev: 10 calls, 1.2 s) | **12 of 12** | FeatureRequest judged only 0.28, rescued by structure (under Roadmap only Suggestion has a path) |
+| meaning + behaviour | **12 of 12** | |
+
+The checks then say the same thing of the discovered map as of the
+hand-written one: `login` ↦ `recover.verify_identity` violates authority
+and contracts. Support restores access without verifying identity. That
+is the merger's real policy gap, found by the functor, not by the search.
+
+**How discovery feeds back into onto.**
+
+- A discovered functor is a **proposal** (a declaration with provenance
+  per object: judged p, co-visited cases, forced by structure), adopted
+  only by a person copying it into policy. A functor is policy: it
+  enables transport, views, standards claims and ensemble columns (D66).
+  Authority and contract violations are reported, not used to prune: the
+  true map may violate them, and that is the finding.
+- **Adopted with `transport`**, it completes the source's enumeration
+  from the target's empty fibers before any model: live, Support learned
+  Helpdesk's Fulfilment (tracking, damage, returns), CardChange and
+  DataRequest queues and their closing steps (10 arrows) with no model
+  call.
+- **Behaviour keeps testing it** (D67): `--compare` with `--runs` flags
+  adopted pairs the same cases rarely share. Live: HowTo ↦ Guidance (0
+  shared cases: Helpdesk routed how-to tickets to Identity or stopped
+  them at Inbox) and Resolved ↦ Closed (Helpdesk's closing steps never
+  fired). The functor is sound; the practice differs, and a person should
+  look. Online, an ensemble over a shared category does the same (§6).
+- **Next:** the object-level evidence is a matrix; with more cases,
+  functors from ensembles of running organisations; an LLM proposal only
+  where structure, meaning and behaviour leave an object open; natural
+  transformations when two functors (hand, discovered) both hold.
+
+## 8. Later
 - **Legal mapping (D)**: the machinery is phase 1; the mapping itself
   needs legal review before any claim is made.
 - `state`/`unseen` across functors; natural transformations between two
   functors (two consistent readings of the same case).
 
-## 8. Demos
+## 9. Demos
 
 | phase | demo | shows |
 |---|---|---|

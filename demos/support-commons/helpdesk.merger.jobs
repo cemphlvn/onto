@@ -1,0 +1,18 @@
+# The merger ticket stream (same ids in both organisations): behavioural
+# evidence for `onto discover --runs`.
+Inbox: {"id": "M-1", "goal": "I was charged twice for my March subscription, please refund one of them", "ticket": "I was charged twice for my March subscription, please refund one of them"}
+Inbox: {"id": "M-2", "goal": "Can you send me an invoice with our VAT number for last quarter?", "ticket": "Can you send me an invoice with our VAT number for last quarter?"}
+Inbox: {"id": "M-3", "goal": "The API has been returning 503 errors since this morning", "ticket": "The API has been returning 503 errors since this morning"}
+Inbox: {"id": "M-4", "goal": "How do I export my reports to CSV?", "ticket": "How do I export my reports to CSV?"}
+Inbox: {"id": "M-5", "goal": "I can't log in, the password reset email never arrives", "ticket": "I can't log in, the password reset email never arrives"}
+Inbox: {"id": "M-6", "goal": "Please add single sign-on with Okta, our security team requires it", "ticket": "Please add single sign-on with Okta, our security team requires it"}
+Inbox: {"id": "M-7", "goal": "My refund for the cancelled plan still hasn't arrived after two weeks", "ticket": "My refund for the cancelled plan still hasn't arrived after two weeks"}
+Inbox: {"id": "M-8", "goal": "I need a receipt for my last payment for my expense report", "ticket": "I need a receipt for my last payment for my expense report"}
+Inbox: {"id": "M-9", "goal": "The dashboard crashes every time I open the analytics tab", "ticket": "The dashboard crashes every time I open the analytics tab"}
+Inbox: {"id": "M-10", "goal": "Where do I find the setting to change my notification emails?", "ticket": "Where do I find the setting to change my notification emails?"}
+Inbox: {"id": "M-11", "goal": "My two-factor codes are rejected and I'm locked out", "ticket": "My two-factor codes are rejected and I'm locked out"}
+Inbox: {"id": "M-12", "goal": "It would be great if you supported dark mode", "ticket": "It would be great if you supported dark mode"}
+Inbox: {"id": "M-13", "goal": "My parcel was marked delivered but I never received it", "ticket": "My parcel was marked delivered but I never received it"}
+Inbox: {"id": "M-14", "goal": "The mug arrived broken, can I get a replacement?", "ticket": "The mug arrived broken, can I get a replacement?"}
+Inbox: {"id": "M-15", "goal": "I want to update the credit card you charge every month", "ticket": "I want to update the credit card you charge every month"}
+Inbox: {"id": "M-16", "goal": "Please delete all the personal data you hold about me", "ticket": "Please delete all the personal data you hold about me"}

@@ -1,0 +1,86 @@
+# Two support organisations merging: Support (support.onto) and the
+# acquired company's Helpdesk. Different names, a different shape, and a
+# policy the other lacks. `Merger` is the map a person wrote; `onto
+# discover` finds one from structure, meaning and behaviour, and the
+# functor checks say what either map keeps and reflects.
+#
+# onto functor  demos/support-commons/merger.onto#Merger
+# onto discover demos/support-commons/merger.onto#Support demos/support-commons/merger.onto#Helpdesk \
+#     --compare demos/support-commons/merger.onto#Merger
+
+import "support.onto";
+
+category Helpdesk {
+    capability IdentityCheck { issuers: verify_identity; }
+
+    # Declared in no particular order: structure alone must not get hints.
+    objects: Inbox, Fulfilment, Roadmap, Identity, Engineering, Money,
+             Returns, Damage, Tracking, Suggestion,
+             DataRequest, Verified, Recovery,
+             Guidance, Incident, CardChange, Paperwork, Reimbursement,
+             Closed;
+
+    about Inbox: "a customer's message, before it is assigned to a queue";
+
+    frame Inbox: choice "Which queue does this message belong to?";
+    to_money:       Inbox -> Money       "payments: what the customer was charged, getting money back, documents for their accounts, how they pay";
+    to_engineering: Inbox -> Engineering "the service is failing, or the customer is stuck using it";
+    to_identity:    Inbox -> Identity    "who the customer is to us: getting into the account, and the personal data we hold";
+    to_fulfilment:  Inbox -> Fulfilment  "physical orders: shipping, delivery, damaged goods, returns";
+    to_roadmap:     Inbox -> Roadmap     "ideas for what the service should do next";
+    closed: Inbox;
+
+    reimburse:   Money -> Reimbursement "return money the customer should not have paid";
+    paperwork:   Money -> Paperwork     "issue receipts, invoices, tax documents";
+    card_change: Money -> CardChange    "change the card or bank account used for payment";
+    closed: Money;
+
+    incident: Engineering -> Incident "something is down or erroring for the customer";
+    guidance: Engineering -> Guidance "walk the customer through a feature that exists";
+    closed: Engineering;
+
+    # Access is restored only after the person is verified.
+    verify_identity: Identity -> Verified "confirm the person is the account holder" ensures IdentityCheck;
+    data_request:    Identity -> DataRequest "a request to see, correct or delete personal data";
+    recover:         Verified -> Recovery "give the verified holder their access back";
+    entry Recovery: needs IdentityCheck;
+    closed: Identity, Verified;
+
+    track:   Fulfilment -> Tracking "where is my parcel";
+    damage:  Fulfilment -> Damage   "the item arrived broken";
+    returns: Fulfilment -> Returns  "send an item back";
+    closed: Fulfilment;
+
+    suggest: Roadmap -> Suggestion "note the idea for product planning";
+
+    refunded:  Reimbursement -> Closed "money returned";
+    documents: Paperwork -> Closed     "document sent";
+    updated:   CardChange -> Closed    "payment method updated";
+    fixed:     Incident -> Closed      "service restored, customer informed";
+    explained: Guidance -> Closed      "the customer knows how";
+    restored:  Recovery -> Closed      "access restored";
+    handled:   DataRequest -> Closed   "data request completed";
+    located:   Tracking -> Closed      "parcel located";
+    replaced:  Damage -> Closed        "replacement sent";
+    received:  Returns -> Closed       "return received";
+    noted:     Suggestion -> Closed    "idea recorded";
+    closed: Reimbursement, Paperwork, CardChange, Incident, Guidance, Recovery,
+            DataRequest, Tracking, Damage, Returns, Suggestion, Closed;
+}
+
+functor Merger: Support -> Helpdesk {
+    objects: Ticket -> Inbox, Billing -> Money, Technical -> Engineering,
+             Account -> Identity, Product -> Roadmap,
+             Refund -> Reimbursement, Invoice -> Paperwork,
+             Outage -> Incident, HowTo -> Guidance, Login -> Recovery,
+             FeatureRequest -> Suggestion, Resolved -> Closed;
+    billing: to_money; technical: to_engineering; account: to_identity; product: to_roadmap;
+    refund: reimburse; invoice: paperwork; outage: incident; howto: guidance;
+    login: recover.verify_identity;
+    request: suggest;
+    issue_refund: refunded; send_invoice: documents; status_page: fixed;
+    answer: explained; reset: restored; log: noted;
+    # Where Support's enumeration is missing (parcels, card changes, data
+    # requests), Helpdesk's queues are proposed before any model is asked.
+    transport;
+}

@@ -108,3 +108,41 @@ chose), live, closed world, no memory:
 Next measurements worth making: ambiguous tickets, and taxonomies in the
 hundreds, where a flat frame's prompt grows and grouping should matter.
 
+
+## Two organisations merging: functor discovery (2026-09-24)
+
+`merger.onto` adds the acquired company's **Helpdesk**: different names,
+a different shape, an Orders queue Support never had, and account
+recovery only after identity verification. `Merger` is the map a person
+wrote; `onto discover` finds one.
+
+```sh
+M=demos/support-commons/merger.onto
+onto discover $M#Support $M#Helpdesk --compare $M#Merger               # structure + meaning (Jev)
+onto run $M#Support  --jobs demos/support-commons/support.merger.jobs  --closed-world --telemetry s.jsonl
+onto run $M#Helpdesk --jobs demos/support-commons/helpdesk.merger.jobs --closed-world --telemetry h.jsonl
+onto discover $M#Support $M#Helpdesk --runs s.jsonl,h.jsonl --compare $M#Merger   # + behaviour
+```
+
+| evidence | objects mapped as by hand |
+|---|---|
+| structure only | 2 of 12 |
+| behaviour only (16 shared tickets) | 9 of 12 |
+| meaning (Jev, 10 calls, 1.2 s) | 12 of 12 |
+| meaning + behaviour | 12 of 12 |
+
+What the merger learns from it:
+
+- **A policy gap.** Discovered or hand-written, `login` maps onto
+  `verify_identity` then `recover`: Support restores access without
+  verifying identity (authority and contract checks).
+- **Missing queues, without a model.** `Merger` declares `transport`:
+  Support tickets about parcels, card changes and data requests are
+  answered from Helpdesk's queues (10 arrows, no model call).
+- **Different practice.** With both runs, the comparison flags adopted
+  pairs the same tickets rarely share: how-to tickets (Helpdesk routed
+  them elsewhere) and closing steps (Helpdesk's never fired).
+
+Beneficiary: customers of both companies during the merger. Their
+tickets land in a queue that exists in the merged organisation, and the
+stricter access policy is visible before the taxonomies are joined.
