@@ -1,6 +1,6 @@
 # onto — Architecture
 
-Status: **draft 7 — 2026-09-23.** Single source of truth for how onto is
+Status: **draft 8 — 2026-09-24** (audited before M4). Single source of truth for how onto is
 built. Code follows this document; change it here first.
 
 ## 1. What onto is
@@ -10,8 +10,18 @@ objects and composable arrows (morphisms) with declared path equations. A
 **walker** starts at an object and repeatedly picks an outgoing arrow.
 Most picks come from a fast, calibrated **System-1** model (e.g. TypeSafe's
 Jev, trained with RLCD). When the category does not enumerate the options
-well enough, the step escalates to a **System-2** language model, which may
-propose new structure.
+well enough, the step escalates, and the escalation is typed: structure
+may be recalled from a library of learned arrows, transported from
+another category through a functor, or proposed by a **System-2**
+language model; missing evidence, a sealed frame or a spent budget stop
+without a model, for a person or for curation.
+
+Two layers of structure: the **declared** policy (`.onto`, written only
+by people) and the **learned** layer (admitted by the open world under a
+per-frame admission regime, replayed through the proofs on every load).
+Several categories relate through **functors** (views, standards,
+versions, transport, discovery) and can walk one case together as an
+**ensemble**, compared in a shared category.
 
 ## 2. Vocabulary
 
@@ -47,35 +57,80 @@ propose new structure.
 | footprint | a frame's object plus its arrows' targets: every node one decision could touch | `frames::Claim` |
 | claim | a walk's hold on a footprint while deciding, `read` (System 1) or `write` (System 2) | `frames::Claim` |
 | potentiality | a logged place where two concurrent walks could meet (node or conceptual) | `frames::Potentiality` |
+| learned layer | structure the open world admitted, kept apart from policy: `<stem>.learned.jsonl`, replayed through the structural proofs on every load | `engine::Learned`, `onto learned` |
+| library state | a learned arrow is `active` (in the graph), `dormant` (out of it, recalled at a gap) or `retired` (a person's decision); never deleted | `engine::ArrowState` |
+| admission regime | how new structure may enter at a frame: `open_world` (what no hard check refutes), `assured` (only what every check passed; the rest held for a person), `sealed` (nothing) | `Admission` |
+| state policy | what a model is shown at a frame (`state { goal; case: a.b; observed; history; memory; … }`), sectioned asserted / observed / inferred; `invariant unseen` proves a field never reaches a model | `state::StateSpec` |
+| precedent | an earlier decision at the same frame for another case, projected onto the frame's current state policy (`memory: similar N`) | `memory::Precedent` |
+| escalation kind | why a walk cannot continue: `structure_gap` (library, catalogue, model), `evidence_gap` (no model), `policy_stop` (curation), `budget_stop` | `walk::EscalationKind` |
+| gap key / gap signal | the identity of a gap (snapshot + frame + kind + missing distinction); a signal is a gap routed off the case's path to curation, with the case as the frame's state policy showed it | `curation::GapSignal`, `onto curate` |
+| module | a file with categories, functors, ensembles and `import`s; `FILE#Name` names one | `parse::Module` |
+| functor | a partial map between categories: objects to objects, arrows to paths, equations kept; authority, contracts and invariants reflected | `functor::Functor`, `onto functor` |
+| transport | at a structure gap, completing a frame from a functor's empty fibers before any model | `lens.rs` |
+| grouped frame | `grouped by F`: a choice made first among the images of the frame's arrows, then within the chosen fiber | `Frame::grouped_by` |
+| ensemble | several categories (columns) walking one case independently, their positions compared in a shared category: agreement (one reaches the other), surprise (neither does) | `ensemble.rs`, `onto ensemble` |
+| discovery | finding a candidate functor: structure prunes, meaning (a judge) and behaviour (co-visits of the same cases) rank | `discover.rs`, `onto discover` |
+| raster event | the trace projection a renderer reads: visits, waits, calls, arrivals, joins, proposals, positions, surprises | `trace::RasterEvent`, `onto raster` |
 
 ## 3. Layers
 
 ```
-        Jev / OpenJev  (System 1, RLCD-calibrated)      LLM (System 2)
-                │ Judge: choice | noul | score over the frame  │ Proposer
-                ▼                                               ▼
-┌──────────────────── onto-runtime (Rust, tokio) ────────────────────┐
-│ engine     one task per walk, parallel model calls    [M1.5 ✓]    │
-│ frames     footprint claims, policies, potentialities [M1.5 ✓]    │
-│ providers  Jev (TypeSafe) judge, OpenRouter proposer  [M1.5 ✓]   │
-│ telemetry  JSON lines · mem: heap counter + RSS       [M1.5 ✓]    │
-└───────────────────────────────┬───────────────────────────────────┘
-┌──────────────────────── onto-core (Rust) ─────────────────────────┐
-│ category   objects + arrows, u32 ids, CSR frames      [M1 ✓]      │
-│ path       type-checked composition                   [M1 ✓]      │
-│ equality   laws + equations as egg rewrites           [M1 ✓]      │
-│ walk       two-tier stepper, provisional proposals    [M1 ✓]      │
-│ delta      append-only log of verified additions      [M2]        │
-│ snapshot   rkyv + mmap, zero-copy load                [M2]        │
-│ functor    structure-preserving maps between cats     [M3]        │
-└──────────┬────────────────────┬──────────────────────┬────────────┘
-     C ABI (cbindgen) [M4]   PyO3 [M4]           OSIL bridge [M5]
-     C/C++ consumers         Jev SDK users        osil-opt (shared egg)
+   Jev / OpenJev (System 1, RLCD-calibrated)            LLM (System 2)
+     │ Judge: choice | noul | score over a frame          │ Proposer
+     │ Critic: the supervisor's semantic checks           │
+     ▼                                                     ▼
+┌──────────────────────── onto-runtime (Rust, tokio) ────────────────────────┐
+│ engine      one task per walk; typed escalations: library → transport →    │
+│             model; MVCC, single-flight; stale judgments judged again       │
+│ frames      footprint claims, policies (shared default), potentialities    │
+│ joins       all · race · gate                                              │
+│ supervisor  review: structural proofs, then one critic request; held       │
+│ record      frame records: the disposition DAG                             │
+│ memory      precedents projected onto the state policy                     │
+│ lens        grouped frames; transport from empty fibers                    │
+│ curation    gap signals, grouped for one proposal per gap                  │
+│ ensemble    columns, positions, agreement / surprise                       │
+│ discovery   functor candidates judged by meaning                           │
+│ trace       telemetry → typed raster events + insights                     │
+│ providers   Jev (TypeSafe) judge and critic, OpenRouter proposer; mocks    │
+│ telemetry   JSON lines · mem: heap counter + RSS                           │
+└────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────── onto-core (Rust, synchronous) ──────────────────────┐
+│ category    objects + arrows, u32 ids, CSR frames; learned layer; admission │
+│ parse       `.onto` modules: categories, functors, ensembles, imports      │
+│ path        type-checked composition                                       │
+│ equality    laws + equations as egg rewrites (Equal / Distinct / Unknown)  │
+│ walk        the step, dispositions, escalation kinds                       │
+│ state       state policy; `unseen` proofs                                  │
+│ require     preconditions over the case, in code                           │
+│ attest      attesters, Ed25519-signed observations                         │
+│ laws        capability laws with proofs; quotient: bisimulation            │
+│ supervise   structural proofs of a proposal                                │
+│ functor     maps between categories and their checks                       │
+│ ensemble    ensemble declarations; structural agreement                    │
+│ discover    admissible roles, search, declarations                         │
+└────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────── onto-cli (the `onto` binary) ───────────────────────┐
+│ check ls compose eq reach laws quotient functor discover                   │
+│ walk ask run ensemble why replay raster                                    │
+│ review promote curate learned migrate keygen attest                        │
+│ today it also holds the "world": loading modules, layers, lenses, the      │
+│ library and precedents; saving learned arrows, recalls, gaps, memory       │
+└────────────────────────────────────────────────────────────────────────────┘
+   web/raster: TypeScript + Apache ECharts, bundled into `onto raster`
+
+   M4: the app API (load · decide → Outcome · actions · pending / answer ·
+       storage), the CLI rebuilt on it; then PyO3 and a C ABI over it
+   M5: OSIL bridge
 ```
 
-`onto-core` stays synchronous and light (egg, thiserror; serde optional)
+`onto-core` stays synchronous and light (egg, serde_json, sha2, ed25519; serde optional)
 so it can sit behind a C ABI. `onto-runtime` adds the async loop and the
-network clients. `onto-cli` (the `onto` binary) is a thin shell over both.
+network clients. `onto-cli` (the `onto` binary) is **not yet** a thin
+shell: it also holds the "world" (loading modules, the learned layer,
+lenses, the library and precedents; saving learned arrows, recalls, gaps
+and memory as files next to the `.onto`). M4 moves that into an app API
+the CLI and the bindings share (§10).
 
 ## 4. The two-tier step
 
@@ -108,10 +163,12 @@ Rules:
    the **learned layer** and the walk continues through it; in the closed
    world (`--closed-world`) it stays provisional. Either way the `.onto`
    file changes only by `onto promote` (a person). See rule 15.
-3. **Learned structure closes gaps permanently**, so the fast path covers
-   more over time: the next walk's System 1 takes a learned arrow without
-   asking System 2. (Mechanism: `<stem>.learned.jsonl`; promotion moves an
-   arrow into the declared file.)
+3. **Learned structure closes gaps**, so the fast path covers more over
+   time: the next walk's System 1 takes a learned arrow without asking
+   System 2. Learned structure is a library, never deleted: active,
+   dormant (recalled at a gap before any catalogue or model) or retired
+   (a person's decision); `docs/09-learned-library.md`. Promotion moves
+   an arrow into the declared file.
 4. A closed frame with no outgoing arrows is a **terminal**; the walk stops.
 5. **The gate is the model's own confidence** when it reports one (Jev
    does), else the top probability. One function, `walk::decide`, holds
@@ -137,10 +194,14 @@ Rules:
 9. **Open frames are judged too.** "Open" means the enumeration is known
    to be incomplete, not that no arrow can fit: an existing arrow that fits
    is followed. Open frames take a read claim like closed ones.
-10. **Waiting at a frame deduplicates.** Proposals are recorded per frame
-    before the claim is released, and the next proposer at that frame is
-   shown them (`pending_here`) and asked to reuse one unchanged when it
-   fits. Same-named proposals then group as conceptual potentialities.
+10. **One answer per gap.** The frame claim is released before any model
+    call (MVCC, D54); proposals are keyed by gap and one is in flight per
+    key (single-flight, D55): a walk meeting the same gap subscribes to
+    the answer. Proposals stay visible per frame (`pending_here`), and the
+    next proposer there is asked to reuse one unchanged when it fits.
+    Same-named proposals group as conceptual potentialities. A walk whose
+    frame grew after it was judged judges again before asking anyone
+    (D63).
 11. **Capabilities, not facts.** Walks carry tokens. An arrow is enabled
     when its own `require` holds on the case and its target's entry
     contract holds on the case and on the tokens the walk would hold after
@@ -182,9 +243,9 @@ Rules:
     contracts, invariants, attesters, closure claims, roots) is policy and
     is never written by a run. The *learned* layer is appended to
     `<stem>.learned.jsonl` and replayed on every load through the same
-    structural proofs, against the current policy: a policy change
-    retires learned arrows that no longer pass; learned arrows can never
-    change policy. Learned arrows carry no capability effects they could
+    structural proofs, against the current policy: a learned arrow that
+    no longer passes under a changed policy is not loaded; learned
+    arrows can never change policy. Learned arrows carry no capability effects they could
     not already have (authority is by declared issuer name), inherit every
     entry contract, and obey **progress**: a learned arrow may not close a
     cycle. Each walk may extend at most `max_expansions` frames (default
@@ -217,6 +278,19 @@ Rules:
     similarity, loaded from `<stem>.memory.jsonl`. `onto replay` re-asks
     the judge with a recorded `seen` state changed (`--drop`, `--set`)
     next to an unchanged baseline, under the same confidence gate.
+17. **An escalation is typed, and only a structure gap asks a model.**
+    Every escalation is classified (`EscalationKind`, D53):
+    - a **structure gap** where structure may be learned: the library
+      (dormant arrows from this frame), then transport (a functor's empty
+      fibers), then the proposer, on the case's path;
+    - an **evidence gap** (an option held back by a missing attestation,
+      precondition or entry contract): no model, the record names what is
+      missing;
+    - a **policy stop** (a sealed frame; a structure gap in a closed-world
+      run): a gap signal for curation, the case does not wait;
+    - a **budget stop**.
+    `docs/08-call-economy.md` measures it; `docs/09-learned-library.md`
+    the library.
 
 Rationale. Following Corballis (*The Recursive Mind*, 2011), recursion is
 treated as a separable capability layered on a non-recursive base: the
@@ -232,11 +306,17 @@ walks run in parallel, bounded per provider (default 16 in flight for the
 judge, 4 for the proposer). Each step:
 
 ```
-claim footprint(A)            read at a closed frame, write at an open one
-  closed: Judge (Jev)         → follow or fork, release, next step
-          else escalate:      upgrade read → write, Proposer (OpenRouter)
-  open:   Proposer
-release; record proposals (provisional) and conceptual intersections
+claim footprint(A) (read)       every frame is judged, open or closed (rule 9)
+  Judge (Jev)                   → follow or fork; release; next step
+  else classify the escalation  (rule 17)
+    evidence / policy / budget  → record, gap signal if curation; stop
+    structure gap               → release the claim (MVCC)
+      frame grew since judged?  → judge again
+      library recall            → admit, judge again
+      transport                 → review, admit, judge again
+      proposer (single-flight)  → review under the frame's admission regime:
+                                   admit (learned) · hold (person) · refuse
+record the frame visit (disposition record, gap key, what was seen)
 ```
 
 ### 5.1 Claims and policies
@@ -247,7 +327,7 @@ so claims cannot deadlock. Whether two intersecting claims wait:
 | policy | waits when | use |
 |---|---|---|
 | `exclusive` (audit mode) | footprints share any node | decision frames that could converge are decided one after another |
-| `shared` | same frame, and one claim is a write | readers of an unchanged frame run together; only frame edits serialize |
+| `shared` (default, D57) | same frame, and one claim is a write | readers of an unchanged frame run together; only frame edits serialize |
 
 Every intersection is logged as a **potentiality**, waited on or not:
 
@@ -270,14 +350,20 @@ logs). Every line has `timestamp`, `level`, `event`:
 
 | event | fields |
 |---|---|
-| `run.start` | category, walks, judge, proposer, policy, speculate, threshold, max_branches, max_fork_depth |
-| `walk.start` / `walk.end` | walk, parent, from, goal / path, steps, elapsed_ms |
+| `run.start` | category, ensemble, walks, judge, proposer, policy, speculate, threshold, max_branches, max_fork_depth |
+| `walk.start` / `walk.end` | walk, parent, category, case, from, goal / path, steps, elapsed_ms |
 | `judge.call` | walk, at, primitive, questions, latency_ms, top_p, holds, fork_p, confidence, input_tokens, output_tokens, attempts, ok (error on failure) |
 | `fork` | walk, at, fork_p, branches, spawned |
 | `proposer.call` | walk, at, speculative, latency_ms, proposals, pending_here, reused, input_tokens, output_tokens, attempts, ok |
 | `proposer.discarded` | walk, at (speculative call aborted) |
 | `step` / `escalate` | walk, from, arrow, to, decided_by, p, confidence, alternatives / walk, at, reason |
 | `potentiality` | kind (node, conceptual, alternative), resolution (waited, coexisted, not_followed), mode, walk, with, at, nodes (comma-joined), wait_ms |
+| `visit` | walk, at, record, claim_wait_ms |
+| `gap` / `gap.subscribe` / `gap.stale` | walk, at, record, kind, reason, gap key, typed route, route / the gap subscribed to / a graph that grew (grown arrows) |
+| `expansion` / `learned` / `held` / `refused` | walk, at, record, source (library, transport, proposer, shared), counts / the arrow admitted, held or refused and why |
+| `recalled` / `restored` | walk, record, arrow, from, to: a dormant arrow recalled; active structure restored with it |
+| `join` | walk, at, record, policy, role, into, merged, wait_ms |
+| `ensemble.start` / `.position` / `.surprise` / `.confirm` / `.outcome` | ensemble, shared, job, column, walk, object, shared position / the conflicting positions / status, agreed, route |
 | `mem.sample` | rss_bytes, heap_bytes, heap_peak_bytes (every 250 ms) |
 | `run.end` | wall_ms, model_ms_sum, judge_calls, judge_questions, proposer_calls, forks, branches, tokens, potentialities, peak_rss_bytes, heap_peak_bytes |
 
@@ -326,6 +412,9 @@ proposal ─▶ well_formed   names, types, target new or existing         (code
   request. Fail at P ≥ 0.7, pass at P ≤ 0.3, unknown between: the
   supervisor does not guess.
 - The base graph must satisfy its own `via`/`never` invariants to load.
+- The frame's admission regime decides what a review admits (rule 15):
+  under `assured` an undecided semantic check **holds** the proposal for
+  a person instead of admitting it.
 - `onto review FILE DISPOSITIONS --out reviews.jsonl` reviews every
   provisional proposal (identical ones merged, sources kept).
 - `onto promote FILE reviews.jsonl rN` is the human step. Only `admit`
@@ -336,7 +425,7 @@ proposal ─▶ well_formed   names, types, target new or existing         (code
   override, sources), and the edit is rolled back if the file would not
   load. Git is the delta log.
 
-### 5.6 Measured (2026-09-23, 6 walks, `examples/triage.jobs`, release build)
+### 5.6 Measured (2026-09-23, 6 walks, `examples/triage.jobs`, release build; before MVCC and the `shared` default)
 
 | run | wall | model time | parallelism | waited | peak RSS | peak heap |
 |---|---|---|---|---|---|---|
@@ -387,8 +476,45 @@ category Name {
     invariant via: A -> D through B | C;       # every path A→D passes B or C (proved)
     invariant never: A -> Z;                   # no path A→Z, even to a future Z (proved)
     invariant rule "no arrow may …";           # judged by the critic
+    invariant unseen: case.person;             # no model ever sees this field (proved)
+
+    frame R: noul parallel "Which plans?";     # every holding arrow runs as a concurrent alternative
+    frame S: split;                            # no judgment: every eligible arrow runs
+    frame T: choice grouped by ByTeam "…";     # choose a group (a functor's image) first, then within it
+
+    state { goal; case: a.b, c; }              # what every model is shown (default)
+    state A, B { case: a; observed; history: last 3; memory: similar 3; focus; tokens; }
+
+    admission: open_world;                     # default regime: open_world | assured | sealed
+    admission A: assured;                      # per frame
+    sealed: B, C;                              # or: world: closed; learnable: A;
 }
 ```
+
+A file is a **module**: categories, functors, ensembles and imports.
+
+```
+import "../../standards/change-control.onto";  # relative to this file; a standard is loaded once
+
+functor F: Name -> Other {
+    objects: A -> X, B -> Y;                   # partial: unmapped objects are outside the domain
+    f: g;  h: k.g;  w: id;                     # an arrow maps to a path (k after g) or an identity
+    capabilities: T -> U;                      # capability names across the two
+    require: authority, contracts, invariants, cover;   # load errors when not met (else reported)
+    by name;                                   # a version: unmapped names map to the same name
+    transport;                                 # empty fibers are proposed at structure gaps
+}
+
+ensemble E {
+    shared: IncidentState;                     # the category positions are compared in
+    column Metrics: MetricsView from Signal;   # a category, its functor into shared, where it starts
+    column Logs: LogsView from Entry;
+    consensus: all;                            # all | quorum N
+}
+```
+
+`FILE#Name` names one category, functor or ensemble of a module on the
+command line.
 
 Statements end with `;` (outside strings and JSON), `#` starts a comment
 (outside strings), objects are declared before use. After `Src -> Dst` an
@@ -401,10 +527,27 @@ namespace.
 ## 8. Storage
 
 The hot operation is a step: read one frame, choose, compose. Frames are
-stored CSR (one contiguous slice per object). M1 keeps the category in
-memory. M2 adds an immutable rkyv snapshot loaded by mmap, plus an
-append-only delta log for verified additions, compacted into a new
-snapshot. No database until live multi-writer editing is needed.
+stored CSR (one contiguous slice per object), and the category lives in
+memory: every demo loads in milliseconds, so the planned rkyv snapshot
+and mmap are not built (not needed at these sizes). A category's
+**snapshot** is the SHA-256 of its source; records, reviews and gap keys
+carry it, and a stale review is refused.
+
+Files, next to `<stem>.onto` (or `<stem>.<Name>.*` for `FILE#Name`):
+
+| file | holds | written by |
+|---|---|---|
+| `<stem>.onto` | declared policy | people (`onto promote` writes a reviewed arrow with provenance); **git is the delta log** |
+| `.learned.jsonl` | the learned library: one arrow per line, its checks, provenance, `state` and `note` | runs (append), recalls and `onto learned` (state changes) |
+| `.memory.jsonl` | precedents for frames that declare `memory` | runs |
+| `.gaps.jsonl` | gap signals for curation | runs |
+| `--dispositions`, `--telemetry`, `--report` | frame records, events, the whole run | runs, on request |
+| reviews, curated proposals | review verdicts; one proposal per gap group | `onto review`, `onto curate` |
+
+Sibling files suit a CLI and a repository. An app needs a storage
+interface instead (a database, an object store): part of the M4 app API.
+Dispositions are written at the end of a run (a crash loses them);
+streaming them is open (§11).
 
 ## 9. Decisions
 
@@ -563,7 +706,7 @@ snapshot. No database until live multi-writer editing is needed.
   | A2 ✓ | consensus policies; surprise routed by admission | hospital-discharge ensemble (clinical, social) · a patient leaving hospital | a surprise stops an unsafe discharge (assured → a person) |
   | B ✓ | learned-structure library: presence effect (`replay --without-arrow`), active / dormant / retired, recall before catalogue and LLM | incident-response (unused learned arrows) · support-commons (parcel stream) | how an arrow's presence shifts judgments; recall with no model call |
   | C ✓ | M3 phase 4: functor discovery | support-commons, two support organisations merging · their customers | discovered vs hand-written map; wrong candidates caught by the functor checks |
-  | D | M4: a stable API surface, then Python (PyO3) and a C ABI | consent-enforcement · developers | a Python script loads, proves laws, runs with a Python-defined judge, reads records |
+  | D | M4: the app API, then Python (PyO3) and a C ABI (re-scoped after the audit below; the API shape is agreed with Cem before code) | consent-enforcement · app developers | D0 the Python README first, as the contract; a developer given only the docs builds the consent app in Python: time to a first correct decision, and whether they had to read Rust |
   | E | M5: OSIL bridge (functor reports as preservation contracts) | secure-infrastructure-change, or OSIL's own repository governance · to be grounded in OSIL's docs first | an onto functor report and an OSIL preservation claim say the same thing |
 
 - **Consensus policies (A2 done):** only columns that concluded count;
@@ -581,44 +724,80 @@ snapshot. No database until live multi-writer editing is needed.
   discovered map is a proposal checked like a hand-written one;
   adopted with `transport` it completes enumerations without a model
   (D65–D67, `docs/05-functors.md` §7).
-- **Next:** D (M4: stable API, PyO3, C ABI); raster–map–state linking; model-scoped capabilities for learned conceptual spaces; behavioural
-  difference in review; streaming records; joins in `onto laws` (sound
-  already, see `docs/03-joins.md` §5, but not reported).
-- **M3:** functors between categories; multi-category files.
-- **M4:** C ABI (cbindgen) and Python bindings (PyO3); Jev `Chooser` adapter
-  (Choice primitive over the frame) in Python.
-- **M5:** OSIL bridge: onto categories as OSIL category-level requirements.
+- **Audit before M4 (2026-09-24).** M1, M1.5, M2, M3 (phases 1–4) and
+  every item above are built and tested. Deferred by design: column
+  switch (phase 3b), natural transformations, legal mapping (legal
+  review), KOfN / Accumulate joins, geometry. Open engineering items:
+  streaming dispositions; joins in `onto laws`; name-based conceptual
+  intersection; policy change as a privileged operation (documented in
+  `docs/04`, not enforced). What an app developer needs and does not
+  have yet, found by walking the developer path:
+  1. **resume**: a walk stopped for a person cannot continue with the
+     person's answer (review and promote change the category, not the
+     case);
+  2. **a typed outcome**: a walk returns a path string and step records,
+     not `{status: done | needs_person | needs_evidence | stopped, at,
+     path, confidence, why}`;
+  3. **the world is in the CLI**: loading layers, lenses, the library and
+     precedents, and saving learned arrows, recalls, gaps and memory live
+     in `onto-cli` (about 1,150 lines), so a binding over `Engine` would
+     copy them;
+  4. **actions**: arrows decide, nothing does; an app maps outcomes to
+     code by hand;
+  5. **entry cost**: a `.onto` file, JSON cases, two keys, 24 `run`
+     flags and 24 `Config` fields before a first decision; a prompt takes
+     five minutes. Onto's advantages (proved guarantees, `why`, learned
+     gaps, small calls) come later, so the entry point should be a
+     prompt: `onto draft` turns a description into a checked category to
+     edit.
+- **M4 (next, D):** D0 the developer contract (the Python README, a
+  20-line example that must work); D1 the app API in Rust (load · decide
+  → Outcome · on(object) actions · pending / answer (resume) · a storage
+  interface · a small default configuration), the CLI rebuilt on it; D2
+  PyO3 (a Python-defined judge included); D3 the C ABI (cbindgen). In
+  parallel: `onto draft` (prompt → category + proofs).
+- **M5 (E):** OSIL bridge: onto categories as OSIL category-level
+  requirements, functor reports as preservation contracts; grounded in
+  `~/oaas` first.
+- **Later:** raster–map–state linking; live raster; model-scoped
+  capabilities for learned conceptual spaces; behavioural difference in
+  review; column switch; natural transformations; geometry (research).
 
 ## 11. Open questions
 
-- How frames should treat arrows that are *derived* by an equation (should
-  a defined composite appear as a choice?).
-- What the pairwise MECE verifier asks the System-1 model, exactly.
-- Fairness under `shared`: a steady stream of readers can delay a writer
-  at the same frame. No starvation seen at this scale; a writer-preference
-  queue is the fix if it appears.
-- Conceptual intersection is name-based. A Jev Noul ("do these two
+- **Resume and outcomes (M4).** How a person's answer re-enters a
+  stopped walk (the same record, a new `after` link, the answer as an
+  attested or asserted fact?), and what an app's Outcome type must say.
+- **Streaming records.** Dispositions are written at the end of a run; a
+  crash loses them. Streaming each record as it is made would make the
+  artifact durable (and a live raster possible).
+- **Privileged policy changes.** `docs/04` makes a policy change a
+  governance operation; nothing enforces it yet (who may run `promote`,
+  who may edit the `.onto`).
+- **Fairness under `shared`** (now the default): a steady stream of
+  readers can delay a writer at the same frame. No starvation seen; a
+  writer-preference queue is the fix if it appears.
+- **Conceptual intersection is name-based.** A Jev Noul ("do these two
   proposals denote the same concept?") would catch synonyms (`Refund` vs
-  `ChargeDispute`).
-- Proposers sometimes re-propose arrows that already exist (`plan`,
-  `specify` from `Feature`); M2 verification must drop them. Frames that
-  keep attracting such proposals are candidates for closing.
-- **Invariants for M2 verification** (from the consent-paths demo): a
-  proposer suggested `Collected -> Marketing`, bypassing consent. The
-  format needs declared invariants (e.g. "every path to Marketing passes
-  Consented", checkable with `Category::paths(.., avoid, ..)`) that every
-  proposal must preserve before promotion.
-- **Semantic checks are conservative to the point of blocking** (live
-  consent review: 0 admit, 5 reject, 2 unknown; many overlap judgments
-  landed in 0.4–0.6). The overlap question needs better wording, or
-  calibration on labelled pairs, before admissions become routine.
-- **Proposers reuse existing arrow names** (`pseudonymize`, `aggregate`);
-  the prompt should require new names, and the supervisor now reports
-  what such a proposal would do anyway.
-- **Dispositions are written at the end of a run.** A crash loses them;
-  streaming each record as it is made would make the artifact durable.
-- **Legal bases are evidence, not inference** (consent-paths): judged from
-  the intended use alone, Jev rightly declines to assume consent or
-  contract. Bases belong in `require` against case facts.
-- Jev Choice holds at most 255 options; wider frames need hierarchical
-  (beam) choice.
+  `ChargeDispute`), in single-flight grouping too.
+- **Semantic checks are conservative** (live consent review: 0 admit, 5
+  reject, 2 unknown; overlap judgments in 0.4–0.6). Admission regimes
+  decide what an unknown does; the overlap question still needs better
+  wording or calibration on labelled pairs.
+- **Dormancy needs a case mix.** "Never taken" measures the runs, not the
+  need (`docs/09` §3); auditing dormant arrows (`replay --with-arrow` on
+  new records) is manual.
+- **Wide frames.** Jev Choice holds at most 255 options; `grouped by`
+  (hierarchical choice through a functor) is the answer where a grouping
+  exists.
+- How frames should treat arrows **derived** by an equation (should a
+  defined composite appear as a choice?).
+- What the pairwise **MECE verifier** asks the System-1 model, exactly.
+- **Decided by evidence** (owned by legal review, §10): may a closed frame
+  whose only eligible arrow is opened by attested evidence be taken
+  without the judge?
+
+Resolved since draft 7: invariants for verification (`via`, `never`,
+`rule`, `unseen`); proposers reusing arrow names (the supervisor reports
+what such a proposal would do); legal bases as evidence (`attested`,
+`require`).

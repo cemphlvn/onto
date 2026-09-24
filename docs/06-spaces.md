@@ -43,8 +43,9 @@ It does **not** map states by itself. It induces a **partial** transport
 of states (2 → 2) only where the policy-refinement checks hold: tokens
 mapped by its capability map, effects preserved, guards, attestations and
 entry contracts reflected (`docs/05-functors.md` §3). Where they fail, a
-state has no image. The planned prediction across columns uses exactly
-this partial transport. Transport of structure moves arrows along a
+state has no image. Ensembles (`docs/05-functors.md` §6) compare
+columns through exactly this map, on positions: a column's position has
+an image only inside its functor's domain. Transport of structure moves arrows along a
 functor; it never moves concept-space claims.
 
 ## 3. Where each part of onto lives
