@@ -208,6 +208,8 @@ pub struct RunReport {
     pub walks: Vec<WalkReport>,
     /// Structure the open world learned in this run, in admission order.
     pub learned: Vec<Learned>,
+    /// Dormant arrows the library answered a gap with (`arrow`, record).
+    pub recalled: Vec<(String, String)>,
     /// Stops for curation (a person's call, off the case's path).
     pub gaps: Vec<crate::curation::GapSignal>,
     /// Decisions this run made at frames that declare `memory`: the
@@ -246,6 +248,40 @@ pub struct Learned {
     /// `F:g` when it completed the enumeration from functor F's arrow g.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transported: Option<String>,
+    /// Its place in the library (active when absent).
+    #[serde(default, skip_serializing_if = "ArrowState::is_active")]
+    pub state: ArrowState,
+    /// Why it is in that state, and who or what put it there.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+}
+
+/// Learned structure is kept, never deleted: a library.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ArrowState {
+    /// In the graph: a candidate at its frame (its presence shapes every
+    /// judgment there).
+    #[default]
+    Active,
+    /// Out of the graph (no presence), recallable: at a structure gap at
+    /// its frame the library answers before a catalogue or a model.
+    Dormant,
+    /// A person's decision: neither in the graph nor recalled.
+    Retired,
+}
+
+impl ArrowState {
+    pub fn is_active(&self) -> bool {
+        *self == Self::Active
+    }
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Active => "active",
+            Self::Dormant => "dormant",
+            Self::Retired => "retired",
+        }
+    }
 }
 
 /// A walk arrived at an object (for ensembles).
@@ -337,6 +373,10 @@ pub struct Engine<J, P> {
     /// Functors from this category the walk uses (hierarchy, transport).
     lenses: Mutex<Vec<Arc<crate::lens::Lens>>>,
     gaps: Mutex<Vec<crate::curation::GapSignal>>,
+    /// Dormant learned arrows, recallable at structure gaps.
+    library: Mutex<Vec<Learned>>,
+    /// Recalls in this engine's lifetime (`arrow`, record).
+    recalled: Mutex<Vec<(String, String)>>,
     /// Receives every arrival (job index, walk, object): how an ensemble
     /// follows this column's positions.
     positions: Mutex<Option<tokio::sync::mpsc::UnboundedSender<PositionEvent>>>,
@@ -366,6 +406,41 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
     /// The current graph (declared + learned so far).
     pub fn cat(&self) -> Arc<Category> {
         self.graph.read().unwrap().clone()
+    }
+
+    /// The library's dormant arrows: out of the graph, recalled at a
+    /// structure gap at their frame before a catalogue or a model is asked.
+    ///
+    /// Takes the whole layer: dormant entries, and active entries that are
+    /// not in the graph because they start where only a dormant arrow
+    /// leads (restored with it when it is recalled).
+    pub fn use_library(&self, entries: Vec<Learned>) {
+        let cat = self.cat();
+        *self.library.lock().unwrap() = entries
+            .into_iter()
+            .filter(|l| match l.state {
+                ArrowState::Dormant => true,
+                ArrowState::Active => cat.arrow_id(&l.proposal.arrow).is_err(),
+                ArrowState::Retired => false,
+            })
+            .collect();
+    }
+
+    /// Dormant arrows from `at` that still hold against the current graph
+    /// (and are not already in it).
+    fn recallable(&self, cat: &Category, at: ObjId) -> Vec<Proposal> {
+        let name = &cat.object(at).name;
+        self.library
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|l| {
+                l.state == ArrowState::Dormant
+                    && &l.proposal.src == name
+                    && cat.arrow_id(&l.proposal.arrow).is_err()
+            })
+            .map(|l| l.proposal.clone())
+            .collect()
     }
 
     /// Functors from this category the walk may use, and the transported
@@ -455,6 +530,8 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             memory_loaded: AtomicUsize::new(0),
             lenses: Mutex::new(Vec::new()),
             gaps: Mutex::new(Vec::new()),
+            library: Mutex::new(Vec::new()),
+            recalled: Mutex::new(Vec::new()),
             flights: Mutex::new(HashMap::new()),
             positions: Mutex::new(None),
             graph_version: AtomicU64::new(0),
@@ -474,6 +551,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             .collect::<Result<Vec<_>, _>>()?;
         let learned_before = self.learned.lock().unwrap().len();
         let gaps_before = self.gaps.lock().unwrap().len();
+        let recalled_before = self.recalled.lock().unwrap().len();
         let memory_before = self.memory.lock().unwrap().len();
         let mem_start = mem::sample();
         let sampler = mem::spawn_sampler(self.cfg.mem_sample_every);
@@ -558,6 +636,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             learned: self.learned()[learned_before..].to_vec(),
             precedents: self.memory.lock().unwrap()[memory_before..].to_vec(),
             gaps: self.gaps.lock().unwrap()[gaps_before..].to_vec(),
+            recalled: self.recalled.lock().unwrap()[recalled_before..].to_vec(),
             potentialities: self.locks.potentialities(),
             wall_ms: ms(wall),
             model_ms_sum: c.model_us.load(Relaxed) as f64 / 1e3,
@@ -1364,6 +1443,166 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             // makes another walk wait; admission is a short write on the
             // graph that re-validates against its current version.
             drop(guard);
+            // Recall: the library answers first. Dormant arrows from this
+            // frame were admitted once (every check passed); the structural
+            // proofs run again against the current graph. Only where the
+            // open world may learn: elsewhere a person decides.
+            if self.cfg.open_world
+                && !self.cfg.assured
+                && cat.admission(at) == onto_core::Admission::OpenWorld
+                && expansions < self.cfg.max_expansions
+            {
+                let found = self.recallable(cat, at);
+                let mut back: Vec<Proposal> = Vec::new();
+                for p in found {
+                    let mut graph = self.graph.write().unwrap();
+                    let (next, skipped) = (**graph).clone().with_learned(std::slice::from_ref(&p));
+                    if !skipped.is_empty() {
+                        continue;
+                    }
+                    *graph = Arc::new(next);
+                    self.graph_version.fetch_add(1, Relaxed);
+                    drop(graph);
+                    self.library
+                        .lock()
+                        .unwrap()
+                        .retain(|l| l.proposal.arrow != p.arrow);
+                    self.recalled
+                        .lock()
+                        .unwrap()
+                        .push((p.arrow.clone(), rec_id.clone()));
+                    tracing::info!(
+                        target: "onto",
+                        event = "recalled",
+                        walk = id,
+                        record = %rec_id,
+                        arrow = %p.arrow,
+                        from = %p.src,
+                        to = %p.dst,
+                    );
+                    back.push(p);
+                }
+                if !back.is_empty() {
+                    // Active structure that hung from what came back.
+                    loop {
+                        let waiting: Vec<Proposal> = self
+                            .library
+                            .lock()
+                            .unwrap()
+                            .iter()
+                            .filter(|l| l.state == ArrowState::Active)
+                            .map(|l| l.proposal.clone())
+                            .collect();
+                        let mut restored = false;
+                        for p in waiting {
+                            let mut graph = self.graph.write().unwrap();
+                            let (next, skipped) =
+                                (**graph).clone().with_learned(std::slice::from_ref(&p));
+                            if !skipped.is_empty() {
+                                continue;
+                            }
+                            *graph = Arc::new(next);
+                            self.graph_version.fetch_add(1, Relaxed);
+                            drop(graph);
+                            self.library
+                                .lock()
+                                .unwrap()
+                                .retain(|l| l.proposal.arrow != p.arrow);
+                            tracing::info!(
+                                target: "onto",
+                                event = "restored",
+                                walk = id,
+                                record = %rec_id,
+                                arrow = %p.arrow,
+                                from = %p.src,
+                                to = %p.dst,
+                            );
+                            restored = true;
+                        }
+                        if !restored {
+                            break;
+                        }
+                    }
+                    tracing::info!(
+                        target: "onto",
+                        event = "expansion",
+                        walk = id,
+                        at = %at_name,
+                        record = %rec_id,
+                        source = "library",
+                        learned = back.len(),
+                        refused = 0,
+                        held = 0,
+                    );
+                    if let Some(h) = speculative.take() {
+                        h.abort();
+                    }
+                    if let Some(last) = frames.last_mut() {
+                        last.proposals = back.clone();
+                        last.outcome = Outcome::Expanded {
+                            reason,
+                            learned: back.iter().map(|p| p.arrow.clone()).collect(),
+                            source: "library".into(),
+                        };
+                    }
+                    steps.push(StepRecord::Expanded {
+                        at: at_name,
+                        reason,
+                        source: "library".into(),
+                        learned: back,
+                        refused: Vec::new(),
+                        held: Vec::new(),
+                        wait_ms,
+                    });
+                    expansions += 1;
+                    after = Some(rec_id);
+                    continue 'steps;
+                }
+            }
+            // Stale judgment: another walk extended this frame (a recall, a
+            // transport, a proposal admitted) after this one was judged.
+            // Judge again on the current graph before asking anyone. Checked
+            // after the recall attempt: a concurrent recall has written the
+            // graph by then (the graph before the library).
+            let grown: Vec<String> = {
+                let now = self.cat();
+                now.out(at)
+                    .iter()
+                    .map(|a| now.arrow(*a).name.clone())
+                    .filter(|n| cat.arrow_id(n).is_err())
+                    .collect()
+            };
+            if !grown.is_empty() {
+                if let Some(h) = speculative.take() {
+                    h.abort();
+                }
+                tracing::info!(
+                    target: "onto",
+                    event = "gap.stale",
+                    walk = id,
+                    at = %at_name,
+                    record = %rec_id,
+                    grown = %grown.join(","),
+                );
+                if let Some(last) = frames.last_mut() {
+                    last.outcome = Outcome::Expanded {
+                        reason,
+                        learned: grown,
+                        source: "concurrent".into(),
+                    };
+                }
+                steps.push(StepRecord::Expanded {
+                    at: at_name,
+                    reason,
+                    source: "concurrent".into(),
+                    learned: Vec::new(),
+                    refused: Vec::new(),
+                    held: Vec::new(),
+                    wait_ms,
+                });
+                after = Some(rec_id);
+                continue 'steps;
+            }
             // Transport: before any LLM, complete the enumeration from a
             // functor whose target knows directions this frame lacks.
             let mut transport_refused: Vec<(String, String)> = Vec::new();
@@ -2092,6 +2331,8 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     .map(|c| format!("{}: {:?}", c.check, c.outcome).to_lowercase())
                     .collect(),
                 transported: None,
+                state: ArrowState::Active,
+                note: None,
             });
             learned.push(p.clone());
         }

@@ -14,7 +14,7 @@ use std::sync::Arc;
 
 use clap::Args;
 use onto_core::Category;
-use onto_runtime::engine::Learned;
+use onto_runtime::engine::{ArrowState, Learned};
 use onto_runtime::memory::Precedent;
 
 use crate::run::BoxError;
@@ -98,7 +98,15 @@ impl WorldArgs {
         }
         let layer = self.layer(file);
         let entries = read(&layer)?;
-        let proposals: Vec<_> = entries.iter().map(|l| l.proposal.clone()).collect();
+        // Only active arrows are in the graph; dormant ones wait in the
+        // library (`Engine::use_library`), retired ones are kept as history.
+        let proposals: Vec<_> = entries
+            .iter()
+            .filter(|l| l.state.is_active())
+            .map(|l| l.proposal.clone())
+            .collect();
+        let shelved = |s: ArrowState| entries.iter().filter(|l| l.state == s).count();
+        let (dormant, retired) = (shelved(ArrowState::Dormant), shelved(ArrowState::Retired));
         let learning = if self.assured() {
             "assured admission everywhere".to_owned()
         } else {
@@ -109,17 +117,27 @@ impl WorldArgs {
         };
         let (cat, skipped) = declared.with_learned(&proposals);
         println!(
-            "world: open · {learning} · learned layer {} ({} arrows loaded{})",
+            "world: open · {learning} · learned layer {} ({} arrows loaded{}{}{})",
             layer.display(),
             proposals.len() - skipped.len(),
             if skipped.is_empty() {
                 String::new()
             } else {
-                format!(", {} retired", skipped.len())
-            }
+                format!(", {} no longer hold", skipped.len())
+            },
+            if dormant > 0 {
+                format!(", {dormant} dormant in the library")
+            } else {
+                String::new()
+            },
+            if retired > 0 {
+                format!(", {retired} retired")
+            } else {
+                String::new()
+            },
         );
         for (arrow, why) in skipped {
-            println!("  retired {arrow}: {why}");
+            println!("  no longer holds: {arrow}: {why}");
         }
         Ok(Arc::new(cat))
     }
@@ -249,6 +267,31 @@ impl WorldArgs {
         Ok(())
     }
 
+    /// Dormant arrows the library answered a gap with are active again: a
+    /// recall is evidence the structure is needed.
+    pub fn save_recalled(
+        &self,
+        file: &Path,
+        recalled: &[(String, String)],
+    ) -> Result<(), BoxError> {
+        if self.closed_world || recalled.is_empty() {
+            return Ok(());
+        }
+        let layer = self.layer(file);
+        let mut entries = read(&layer)?;
+        for (arrow, record) in recalled {
+            if let Some(l) = entries
+                .iter_mut()
+                .find(|l| &l.proposal.arrow == arrow && l.state == ArrowState::Dormant)
+            {
+                l.state = ArrowState::Active;
+                l.note = Some(format!("recalled from the library at {record}"));
+                println!("library: recalled {arrow} at {record}; active again");
+            }
+        }
+        write(&layer, &entries)
+    }
+
     /// Appends newly learned arrows to the layer.
     pub fn save(&self, file: &Path, learned: &[Learned]) -> Result<(), BoxError> {
         if self.closed_world || learned.is_empty() {
@@ -280,6 +323,17 @@ fn sibling(spec: &Path, ext: &str) -> PathBuf {
     }
 }
 
+/// Rewrites the layer (state changes; arrows are never removed).
+pub fn write(layer: &Path, entries: &[Learned]) -> Result<(), BoxError> {
+    let mut out = String::new();
+    for l in entries {
+        out.push_str(&serde_json::to_string(l)?);
+        out.push('\n');
+    }
+    std::fs::write(layer, out)?;
+    Ok(())
+}
+
 pub fn read(layer: &Path) -> Result<Vec<Learned>, BoxError> {
     let Ok(text) = std::fs::read_to_string(layer) else {
         return Ok(Vec::new());
@@ -297,34 +351,160 @@ pub fn read(layer: &Path) -> Result<Vec<Learned>, BoxError> {
 #[derive(Args)]
 pub struct LearnedArgs {
     file: PathBuf,
+    /// Put an arrow in the library: out of the graph, recallable at gaps.
+    #[arg(long, value_name = "ARROW")]
+    dormant: Vec<String>,
+    /// Put an arrow back in the graph.
+    #[arg(long, value_name = "ARROW")]
+    activate: Vec<String>,
+    /// Retire an arrow: kept as history, never in the graph or recalled.
+    #[arg(long, value_name = "ARROW")]
+    retire: Vec<String>,
+    /// Why (recorded with the state change).
+    #[arg(long)]
+    note: Option<String>,
+    /// Frame records of runs (`--dispositions`): how often each learned
+    /// arrow was judged and taken; recommendations only.
+    #[arg(long, value_delimiter = ',')]
+    usage: Vec<PathBuf>,
+    /// Judged at least this often and never taken: recommend dormancy.
+    #[arg(long, default_value_t = 3)]
+    min_judged: usize,
     #[command(flatten)]
     world: WorldArgs,
 }
 
-/// `onto learned FILE`: the learned layer, and whether each arrow still
-/// holds against the declared graph.
+/// How a learned arrow fared in recorded runs.
+#[derive(Default)]
+struct Usage {
+    judged: usize,
+    taken: usize,
+    judgment_sum: f64,
+}
+
+/// `onto learned FILE`: the library of learned structure, each arrow's
+/// state, and whether it still holds against the declared graph. State
+/// changes are a person's act (`--dormant`, `--activate`, `--retire`);
+/// `--usage` only recommends.
 pub fn main(args: LearnedArgs) -> Result<(), BoxError> {
     let layer = args.world.layer(&args.file);
-    let entries = read(&layer)?;
+    let mut entries = read(&layer)?;
+    let changes = args
+        .dormant
+        .iter()
+        .map(|a| (a, ArrowState::Dormant))
+        .chain(args.activate.iter().map(|a| (a, ArrowState::Active)))
+        .chain(args.retire.iter().map(|a| (a, ArrowState::Retired)));
+    let mut changed = false;
+    for (arrow, state) in changes {
+        let l = entries
+            .iter_mut()
+            .find(|l| &l.proposal.arrow == arrow)
+            .ok_or_else(|| format!("{}: no learned arrow `{arrow}`", layer.display()))?;
+        println!("{arrow}: {} → {}", l.state.as_str(), state.as_str());
+        l.state = state;
+        l.note = Some(args.note.clone().unwrap_or_else(|| "by a person".into()));
+        changed = true;
+    }
+    if changed {
+        write(&layer, &entries)?;
+        println!();
+    }
+
+    let mut usage: std::collections::HashMap<String, Usage> = Default::default();
+    for path in &args.usage {
+        let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
+        for r in text
+            .lines()
+            .filter_map(|l| serde_json::from_str::<serde_json::Value>(l).ok())
+        {
+            let taken = r["outcome"]["arrow"].as_str();
+            for c in r["candidates"].as_array().into_iter().flatten() {
+                let (Some(a), Some(j)) = (c["arrow"].as_str(), c["judgment"].as_f64()) else {
+                    continue;
+                };
+                let u = usage.entry(a.to_owned()).or_default();
+                u.judged += 1;
+                u.judgment_sum += j;
+                if taken == Some(a) {
+                    u.taken += 1;
+                }
+            }
+        }
+    }
+
     let mut cat = crate::module::load_category(&args.file)?;
     println!("{} ({} arrows)", layer.display(), entries.len());
+    let mut advice = Vec::new();
     for l in &entries {
         let p = &l.proposal;
-        let (next, skipped) = cat.clone().with_learned(std::slice::from_ref(p));
-        let status = match skipped.first() {
-            Some((_, why)) => format!("RETIRED ({why})"),
-            None => {
-                cat = next;
-                "holds".into()
+        let holds = if l.state.is_active() {
+            let (next, skipped) = cat.clone().with_learned(std::slice::from_ref(p));
+            match skipped.first() {
+                Some((_, why)) => format!("no longer holds: {why}"),
+                None => {
+                    cat = next;
+                    "holds".into()
+                }
             }
+        } else {
+            "in the library".into()
         };
         println!();
-        println!("  {}: {} -> {}   [{status}]", p.arrow, p.src, p.dst);
+        println!(
+            "  {}: {} -> {}   [{} · {holds}]",
+            p.arrow,
+            p.src,
+            p.dst,
+            l.state.as_str()
+        );
         if !p.about.is_empty() {
             println!("    about: {}", p.about);
         }
         println!("    learned at {} ({})", l.record, l.reason);
+        if let Some(n) = &l.note {
+            println!("    note: {n}");
+        }
         println!("    checks: {}", l.checks.join(", "));
+        if !args.usage.is_empty() {
+            match usage.get(&p.arrow) {
+                Some(u) => {
+                    let mean = u.judgment_sum / u.judged as f64;
+                    println!(
+                        "    usage: judged {} time(s), taken {}, mean judgment {mean:.2}",
+                        u.judged, u.taken
+                    );
+                    if l.state.is_active() && u.taken == 0 && u.judged >= args.min_judged {
+                        advice.push(format!(
+                            "{a}: present in {} judgments at {} and never taken (mean judgment {mean:.2}). \
+                             Before `--dormant {a}`: its presence effect (`onto replay … --without-arrow {a}`), \
+                             and whether these runs had a case that needs it at all. A dormant arrow is \
+                             recalled only at a gap, and other options at {} may absorb such a case without \
+                             one: audit later records with `onto replay … --with-arrow {a}`",
+                            u.judged, p.src, p.src, a = p.arrow
+                        ));
+                    }
+                }
+                None => println!("    usage: not reached in these runs"),
+            }
+            if l.state == ArrowState::Dormant {
+                advice.push(format!(
+                    "{a} is dormant: check that {} still escalates the cases it covered \
+                     (`onto replay … --with-arrow {a}` on records at {}); if they are taken \
+                     elsewhere, `--activate {a}`",
+                    p.src,
+                    p.src,
+                    a = p.arrow
+                ));
+            }
+        }
+    }
+    if !advice.is_empty() {
+        println!();
+        println!("recommendations (nothing is changed automatically):");
+        for a in advice {
+            println!("  - {a}");
+        }
     }
     Ok(())
 }

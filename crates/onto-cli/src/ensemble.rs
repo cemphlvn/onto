@@ -83,6 +83,11 @@ pub fn main(args: EnsembleArgs) -> Result<(), BoxError> {
             ..Config::default()
         };
         let engine = Engine::new(cat, judge, proposer, cfg);
+        if !args.world.closed_world {
+            engine.use_library(crate::learned::read(
+                &args.world.part(&c.category).layer(&spec),
+            )?);
+        }
         engine.with_walk_base(1 + k as u64 * 1_000_000);
         columns.push(ColumnRun {
             name: c.category.clone(),
@@ -195,6 +200,7 @@ pub fn main(args: EnsembleArgs) -> Result<(), BoxError> {
         let spec = PathBuf::from(format!("{}#{}", file.display(), c.category));
         let world = args.world.part(&c.category);
         world.save(&spec, &r.learned)?;
+        world.save_recalled(&spec, &r.recalled)?;
         world.save_gaps(&spec, &r.gaps)?;
     }
     // Contradictions are gaps of the shared category.

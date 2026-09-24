@@ -6,6 +6,11 @@
 //! input?) and once with the state changed (`--drop` a field, `--set` one).
 //! A decision that changes under the counterfactual but not under the
 //! baseline depends on that field. Nothing is written; no walk moves.
+//!
+//! `--without-arrow A` asks the same question without A among the
+//! candidates: the **presence effect** of a (learned) arrow. An arrow is
+//! part of every judgment at its frame whether it is taken or not; this
+//! measures what its presence did to the others.
 
 use std::path::PathBuf;
 
@@ -35,6 +40,20 @@ pub struct ReplayArgs {
     /// Replace a field: `asserted.statement=<JSON or text>`.
     #[arg(long)]
     set: Vec<String>,
+    /// Ask without this arrow among the candidates (its presence effect).
+    /// Without `--record`/`--at`: every judged record where it was a
+    /// candidate.
+    #[arg(long, value_name = "ARROW")]
+    without_arrow: Option<String>,
+    /// Ask with this arrow (from the learned layer, e.g. a dormant one)
+    /// added to the candidates: would it have been taken? Without
+    /// `--record`/`--at`: every judged record at its frame.
+    #[arg(long, value_name = "ARROW", conflicts_with = "without_arrow")]
+    with_arrow: Option<String>,
+    /// The learned layer the records were made with (default:
+    /// `<file stem>.learned.jsonl`); every entry, whatever its state.
+    #[arg(long)]
+    learned: Option<PathBuf>,
     /// The confidence gate the walk used (as `onto run --threshold`).
     #[arg(long, default_value_t = 0.6)]
     threshold: f32,
@@ -43,10 +62,33 @@ pub struct ReplayArgs {
 }
 
 pub fn main(args: ReplayArgs) -> Result<(), BoxError> {
-    if args.drop.is_empty() && args.set.is_empty() {
-        return Err("nothing to change: pass --drop FIELD or --set FIELD=VALUE".into());
+    if args.drop.is_empty()
+        && args.set.is_empty()
+        && args.without_arrow.is_none()
+        && args.with_arrow.is_none()
+    {
+        return Err(
+            "nothing to change: pass --drop FIELD, --set FIELD=VALUE or --without-arrow ARROW"
+                .into(),
+        );
     }
-    let cat = crate::module::load_category(&args.file)?;
+    let declared = crate::module::load_category(&args.file)?;
+    let layer = args.learned.clone().unwrap_or_else(|| {
+        let (file, name) = crate::module::target(&args.file);
+        match name {
+            Some(n) => file.with_extension(format!("{n}.learned.jsonl")),
+            None => file.with_extension("learned.jsonl"),
+        }
+    });
+    let entries = crate::learned::read(&layer)?;
+    let proposals: Vec<_> = entries.iter().map(|l| l.proposal.clone()).collect();
+    let (cat, _) = declared.with_learned(&proposals);
+    let without = args.without_arrow.as_deref();
+    let with = args.with_arrow.as_deref();
+    let with_from: Option<String> = match with {
+        Some(a) => Some(cat.object(cat.arrow(cat.arrow_id(a)?).src).name.clone()),
+        None => None,
+    };
     let text = std::fs::read_to_string(&args.dispositions)?;
     let records: Vec<Value> = text
         .lines()
@@ -57,8 +99,24 @@ pub fn main(args: ReplayArgs) -> Result<(), BoxError> {
         .iter()
         .filter(|r| r["judge"].is_object() && r["seen"].is_object())
         .filter(|r| {
-            args.record.iter().any(|id| r["id"] == id.as_str())
-                || args.at.as_deref().is_some_and(|a| r["at"] == a)
+            let judged = |a: &str| {
+                r["candidates"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .any(|c| c["arrow"] == a && !c["judgment"].is_null())
+            };
+            let named = args.record.iter().any(|id| r["id"] == id.as_str())
+                || args.at.as_deref().is_some_and(|a| r["at"] == a);
+            let at_with =
+                || with_from.as_deref().is_some_and(|f| r["at"] == f) && !with.is_some_and(&judged);
+            match (without, with) {
+                (Some(a), _) if args.record.is_empty() && args.at.is_none() => judged(a),
+                (Some(a), _) => named && judged(a),
+                (_, Some(_)) if args.record.is_empty() && args.at.is_none() => at_with(),
+                (_, Some(_)) => named && at_with(),
+                _ => named,
+            }
         })
         .collect();
     if chosen.is_empty() {
@@ -68,10 +126,11 @@ pub fn main(args: ReplayArgs) -> Result<(), BoxError> {
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?;
-    let change = args
-        .drop
-        .iter()
-        .map(|d| format!("without {d}"))
+    let change = without
+        .map(|a| format!("without the arrow {a}"))
+        .into_iter()
+        .chain(with.map(|a| format!("with the arrow {a}")))
+        .chain(args.drop.iter().map(|d| format!("without {d}")))
         .chain(args.set.iter().map(|s| format!("with {s}")))
         .collect::<Vec<_>>()
         .join(", ");
@@ -92,6 +151,16 @@ pub fn main(args: ReplayArgs) -> Result<(), BoxError> {
         }
         let mut cf = req.clone();
         cf.state = cf_state;
+        // The same question, without the arrow among the candidates.
+        let kept: Vec<usize> = (0..names.len())
+            .filter(|i| Some(names[*i].as_str()) != without)
+            .collect();
+        cf.candidates = kept.iter().map(|i| req.candidates[*i].clone()).collect();
+        let mut kept_names: Vec<String> = kept.iter().map(|i| names[*i].clone()).collect();
+        if let Some(a) = with {
+            cf.candidates.push(Candidate::of(&cat, cat.arrow_id(a)?));
+            kept_names.push(a.to_owned());
+        }
         let (base, _) = rt.block_on(judge.judge(req))?;
         let (counter, _) = rt.block_on(judge.judge(cf))?;
         let recorded: Vec<Option<f64>> = names
@@ -105,10 +174,15 @@ pub fn main(args: ReplayArgs) -> Result<(), BoxError> {
                     .and_then(|c| c["judgment"].as_f64())
             })
             .collect();
-        let (b, c) = (probs(&base), probs(&counter));
+        let b = probs(&base);
+        // Counterfactual judgments aligned with `names` (None: not asked).
+        let mut c: Vec<Option<f32>> = vec![None; names.len()];
+        for (k, i) in kept.iter().enumerate() {
+            c[*i] = probs(&counter).get(k).copied();
+        }
         let (db, dc) = (
             decision(&base, &names, args.threshold),
-            decision(&counter, &names, args.threshold),
+            decision(&counter, &kept_names, args.threshold),
         );
         println!();
         println!(
@@ -119,7 +193,23 @@ pub fn main(args: ReplayArgs) -> Result<(), BoxError> {
         println!("    {:<28} recorded  baseline  counterfactual", "arrow");
         for (i, n) in names.iter().enumerate() {
             let rec = recorded[i].map_or("  —  ".into(), |x| format!("{x:.2}"));
-            println!("    {n:<28} {rec:>8}  {:>8.2}  {:>14.2}", b[i], c[i]);
+            let cf = c[i].map_or("—".into(), |x| format!("{x:.2}"));
+            println!("    {n:<28} {rec:>8}  {:>8.2}  {cf:>14}", b[i]);
+        }
+        if let Some(a) = with {
+            let cf = probs(&counter)
+                .get(kept.len())
+                .map_or("—".into(), |x| format!("{x:.2}"));
+            println!("    {a:<28} {:>8}  {:>8}  {cf:>14}", "  —  ", "—");
+        }
+        if let (Answer::Choice(x), Answer::Choice(y)) = (&base, &counter) {
+            let rec = r["judge"]["none_of_these"]
+                .as_f64()
+                .map_or("  —  ".into(), |v| format!("{v:.2}"));
+            println!(
+                "    {:<28} {rec:>8}  {:>8.2}  {:>14.2}",
+                "(none of these)", x.none_of_these, y.none_of_these
+            );
         }
         let stable = db == r["outcome"]["arrow"].as_str().map(str::to_owned);
         if !stable {

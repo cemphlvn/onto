@@ -65,6 +65,7 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
     let engine = Engine::new(cat, judge, proposer, cfg);
     engine.remember(precedents);
     engine.use_lenses(lenses, &entries);
+    engine.use_library(entries);
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?;
@@ -80,6 +81,7 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
         // The graph may have grown during the walk (open world).
         print_answer(&engine.cat(), &report);
         args.world.save(&args.file, &report.learned)?;
+        args.world.save_recalled(&args.file, &report.recalled)?;
         args.world.save_precedents(&args.file, &report.precedents)?;
         if args.why {
             println!();

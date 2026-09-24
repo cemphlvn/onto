@@ -173,6 +173,7 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
     let engine = Engine::new(cat, judge, proposer, cfg);
     engine.remember(precedents);
     engine.use_lenses(lenses, &entries);
+    engine.use_library(entries);
     let report = rt.block_on(engine.run(jobs))?;
 
     print_summary(&report, args.telemetry.as_deref());
@@ -180,6 +181,7 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         print_view(v, &report)?;
     }
     args.world.save(&args.file, &report.learned)?;
+    args.world.save_recalled(&args.file, &report.recalled)?;
     args.world.save_gaps(&args.file, &report.gaps)?;
     args.world.save_precedents(&args.file, &report.precedents)?;
     if let Some(path) = &args.dispositions {

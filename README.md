@@ -21,7 +21,8 @@ limits people declared.
 > positioning: [`01`](docs/01-positioning.md) · semantics: [`02`](docs/02-dispositional-semantics.md) ·
 > joins: [`03`](docs/03-joins.md) · **trust model**: [`04`](docs/04-trust-model.md) ·
 > functors: [`05`](docs/05-functors.md) · the four spaces: [`06`](docs/06-spaces.md) ·
-> what the raster shows, tested: [`07`](docs/07-raster-findings.md) · call economy: [`08`](docs/08-call-economy.md)
+> what the raster shows, tested: [`07`](docs/07-raster-findings.md) · call economy: [`08`](docs/08-call-economy.md) ·
+> the learned-structure library: [`09`](docs/09-learned-library.md)
 
 ## The loop
 
@@ -73,13 +74,18 @@ flowchart LR
     X -->|"violation"| R["Reject, recorded"]
     X -->|"no violation<br/>semantic unknown allowed"| L["Learned layer<br/>active hypothesis, with provenance"]
     L --> F["Future cases use it"]
-    F -.->|"planned"| S["Strengthen · revise · retire"]
-    S -.-> G
+    F --> S["Library<br/>active · dormant · retired"]
+    S -->|"recall before<br/>catalogue and model"| G
 ```
 
 A learned arrow is a hypothesis in use, not a proven fact: it carries its
-provenance (record, checks, source) and can be retired when the policy
-changes (`onto learned`).
+provenance (record, checks, source), and it is never deleted. It stays in
+a library: **active** (in the graph), **dormant** (out of the graph,
+recalled at a gap at its frame before a catalogue or a model is asked),
+or **retired** (a person's decision). Dormancy is a person's act, after
+measuring what the arrow's presence does (`onto learned --usage`,
+`onto replay --without-arrow` / `--with-arrow`):
+[`docs/09`](docs/09-learned-library.md).
 
 ### 2. Assured evolution
 

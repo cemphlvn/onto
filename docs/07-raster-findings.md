@@ -49,7 +49,8 @@ into three checks joined by `all`.
 - The open world learned three arrows here (`verify_rollback`,
   `assess_rollback`, `inspect_checkout_errors`); **none was used**
   afterwards, and stays at those frames grew. Evidence for the planned
-  "strengthen · revise · retire" step of the open-world loop.
+  "strengthen · revise · retire" step of the open-world loop (built as the
+  learned-structure library, `docs/09-learned-library.md`).
 
 A terminal says "parallelism 2.72×". The raster says where the
 parallelism was and that the run's length was decided elsewhere.
@@ -216,8 +217,9 @@ many cases groups into one gap for `onto curate`.
    tickets (6).
 3. **Exclusive policy at an entry frame serializes the judge** (2).
 4. **Learned structure can go unused** (1): three arrows learned, none
-   taken, stays longer. The open world needs the planned retirement
-   step.
+   taken, stays longer. Built as a library rather than retirement
+   (`docs/09-learned-library.md`): "never used in N cases" turned out
+   to measure the case mix, not the need.
 5. **Demo designs meet reality** (4): the gap was elsewhere than
    designed.
 
