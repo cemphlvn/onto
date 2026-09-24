@@ -20,6 +20,7 @@ pub mod mem;
 pub mod memory;
 pub mod model;
 pub mod record;
+pub mod rt;
 pub mod supervisor;
 pub mod telemetry;
 pub mod trace;

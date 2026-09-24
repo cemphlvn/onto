@@ -5,7 +5,7 @@
 use std::collections::{BTreeSet, HashMap};
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use onto_core::category::Closure;
 use onto_core::walk::{
@@ -16,7 +16,6 @@ use onto_core::{ArrowId, Category, ObjId, Path, Primitive};
 use serde::Serialize;
 use serde_json::Value;
 use tokio::sync::{Semaphore, mpsc};
-use tokio::task::JoinSet;
 
 use crate::frames::{Claim, FrameLocks, Mode, Policy, Potentiality, PotentialityKind, Resolution};
 use crate::joins::{Arrival, ForkInfo, JoinOutcome, Joins};
@@ -26,6 +25,7 @@ use crate::model::{
     Proposer, Usage,
 };
 use crate::record::{self, ClaimRecord, FrameRecord, JudgeRecord, Outcome};
+use crate::rt::{self, Instant, JoinSet};
 
 #[derive(Clone, Debug)]
 pub struct Job {
@@ -596,7 +596,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let delay = self.cfg.stagger * i as u32;
             running.spawn(async move {
                 if !delay.is_zero() {
-                    tokio::time::sleep(delay).await;
+                    rt::sleep(delay).await;
                 }
                 engine.walk(seed, tx).await
             });
@@ -1031,7 +1031,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         &tokens,
                         "speculative: started alongside System 1",
                     );
-                    speculative = Some(tokio::spawn(async move {
+                    speculative = Some(rt::spawn(async move {
                         engine.call_proposer(id, req, true).await
                     }));
                 }
@@ -2394,7 +2394,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
 
     fn discard(
         &self,
-        speculative: Option<tokio::task::JoinHandle<Result<Vec<Proposal>, ModelError>>>,
+        speculative: Option<rt::JoinHandle<Result<Vec<Proposal>, ModelError>>>,
         walk: u64,
         at: &str,
     ) {

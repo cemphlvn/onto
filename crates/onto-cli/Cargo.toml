@@ -20,4 +20,4 @@ onto-remote.workspace = true
 onto-runtime.workspace = true
 reqwest.workspace = true
 serde_json.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "sync", "time"] }

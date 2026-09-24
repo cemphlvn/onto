@@ -117,7 +117,7 @@ impl Judge for MockJudge {
     }
 
     async fn judge(&self, req: FrameRequest) -> Result<(Answer, Usage), ModelError> {
-        tokio::time::sleep(self.latency).await;
+        crate::rt::sleep(self.latency).await;
         let goal = req.state["goal"]
             .as_str()
             .unwrap_or_default()
@@ -183,7 +183,7 @@ impl Proposer for MockProposer {
     }
 
     async fn propose(&self, req: ProposalRequest) -> Result<(Vec<Proposal>, Usage), ModelError> {
-        tokio::time::sleep(self.latency).await;
+        crate::rt::sleep(self.latency).await;
         let goal = req.state["goal"]
             .as_str()
             .unwrap_or_default()

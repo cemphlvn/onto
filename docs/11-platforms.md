@@ -45,7 +45,7 @@ half, or both.
 | `onto-models` | `Judge`, `Proposer`, `Critic`; `FrameRequest`, `ProposalRequest`, `Usage`, `ModelError`; type-erased `DynJudge` / `DynProposer` / `DynCritic` next (`docs/10` §4 item 1) | onto-core, serde | native, wasm32 |
 | `onto-remote` | Jev (judge, critic) and OpenRouter (proposer) clients: retries with backoff, one POST per request | onto-models, reqwest, tokio (time) | native (wasm later: reqwest's fetch backend) |
 | `onto-local` | the OpenJev judge (§4) and its batcher, behind a `Backend` trait: `llama.cpp` native, `wllama` through `onto-wasm` | onto-models | native, wasm32 |
-| `onto-runtime` | the engine, joins, frames, supervisor, trace; mocks | onto-core, onto-models, tokio (sync; rt + time on `native`) | native, wasm32 (F2) |
+| `onto-runtime` | the engine, joins, frames, supervisor, trace; mocks | onto-core, onto-models, tokio (sync, macros; rt + time natively); wasm-bindgen-futures, gloo-timers, web-time on wasm32 | native, wasm32 |
 | `onto-ffi` | UniFFI surface: load, run, events, protocols as callback interfaces | onto-runtime, onto-local, onto-remote | iOS, Android, desktop |
 | `onto-wasm` | wasm-bindgen surface; a JS judge (wllama) as a protocol object | onto-runtime, onto-local | browsers |
 
@@ -59,8 +59,12 @@ callers written against the old path keep working.
 2. **The engine has no HTTP client.** An app with only local models
    ships no network code and no keys.
 3. **The engine has no executor of its own.** It uses `tokio::sync`
-   (runtime-free) and asks the `rt` module to spawn, sleep and time out:
-   tokio on `native`, the browser's event loop on `wasm`. On one thread
+   (runtime-free) and asks the `rt` module to spawn, sleep, read the
+   clock (`Instant`: `web-time` on wasm, where `std`'s panics) and collect
+   tasks: tokio natively, the JavaScript event loop on `wasm32`, chosen by
+   target, not by feature. Browser futures that are not `Send` cross the
+   model interfaces in `rt::SingleThread`, sound only on single-threaded
+   wasm (a build with `atomics` does not compile it). On one thread
    the engine is still concurrent: walks interleave while a model call
    is pending.
 4. **One model file everywhere.** Local judges read GGUF through
@@ -108,7 +112,7 @@ device's, so the PWA defaults to the small models.
 | step | builds | test |
 |---|---|---|
 | F1 ✓ | `onto-models` (the contract) and `onto-remote` (providers) out of `onto-runtime`; the runtime has no reqwest | the whole workspace test suite and the CLI unchanged |
-| F2 | the `rt` module; `onto-runtime` builds for `wasm32-unknown-unknown` with a mock judge | a support-commons run in a headless browser matches the native mock run |
+| F2 ✓ | the `rt` module; `onto-runtime` builds and runs on `wasm32-unknown-unknown` | `tests/portable.rs`: triage and the 22 support-commons tickets give the same paths on tokio and on a JavaScript event loop (Node, `wasm-bindgen-test`); a browser run follows with F4 |
 | F3 | `onto-local`: the OpenJev judge over llama.cpp, the batcher; `onto run --judge local:<gguf>` | support-commons (22 labelled tickets) on an M4 Mac: accuracy and p50/p95 beside Jev's 1.4 s |
 | F4 | `onto-wasm` + wllama; the first PWA (support-commons) with a benchmark screen | the same 22 tickets on iPhone 15 Pro – 18 Pro in Safari: accuracy, p50/p95, cases/s, memory |
 | F5 | `onto-ffi` (UniFFI), iOS and Android shells; incident-response, consent, hospital-discharge / benefits apps | each app's demo test, on device, with no network |

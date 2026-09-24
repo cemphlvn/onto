@@ -9,9 +9,9 @@
 //! is routed by the shared category's admission: a person (assured,
 //! sealed) or a gap signal for curation (open world).
 
+use crate::rt::Instant;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
-use std::time::Instant;
 
 use onto_core::ensemble::{Consensus, Ensemble, compatible};
 use onto_core::{Admission, Category, Functor, ObjId};
@@ -120,7 +120,7 @@ where
         let (tracks, shared, functor) = (tracks.clone(), shared.clone(), col.functor.clone());
         let (engine, name, ens) = (col.engine.clone(), col.name.clone(), e.name.clone());
         let starts = starts.clone();
-        listeners.push(tokio::spawn(async move {
+        listeners.push(crate::rt::spawn(async move {
             while let Some(ev) = rx.recv().await {
                 // Learned objects are outside the functor: no position.
                 let Ok(x) = engine.cat().object_id(&ev.object) else { continue };
