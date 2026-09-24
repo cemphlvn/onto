@@ -17,7 +17,7 @@ object, no decorators, no loop, no place where a person must be asked.
 Whoever builds on top decides all of that.
 
 ```
-   apps · agent frameworks · ComposableAI · DSPy · notebooks · services
+   apps · agent frameworks · other libraries · notebooks · services
    ──────────────────── anything, built by others ────────────────────
                               ▲        ▲
         basic  ───────────────┘        │   convenience functions, written in
@@ -30,21 +30,28 @@ Whoever builds on top decides all of that.
 ```
 
 The shape is an hourglass: few concepts at the waist, many uses above,
-the whole engine below. The model is the Rust-core, Python-surface
-projects that do this well: pydantic-core under pydantic (an
-unopinionated engine that frameworks build on), Polars, and embedded
-engines such as DuckDB, Kùzu, LanceDB, delta-rs and DataFusion (a
-library, not a server).
+the whole engine below. It is a library, not a server: embedded in the
+caller's process.
 
-### Precedents (read on GitHub and in the PyO3 / maturin docs, 2026-09-24)
+### Architectural patterns
 
-| project | what it does | what onto takes |
-|---|---|---|
-| pydantic-core | `python-source = "python"`, `module-name = "pydantic_core._pydantic_core"`, a `_pydantic_core.pyi` stub, `py.typed`; `core_schema.py` defines the engine's input as plain typed data (TypedDicts) that pydantic and others build | the layout (`onto._onto`); **declarations as data**: a category can be built from dicts, not only from `.onto` text |
-| lancedb | the async Rust API is authoritative; the sync API runs coroutines on a background event-loop thread, "without messing with users' event loops"; blocking callbacks (embedding models) get a dedicated executor because they starved unrelated work (issue 3310); pluggable embeddings, rerankers, integrations | async first, sync over a background loop; Python model callbacks on a dedicated executor; extension points as protocols, integrations outside |
-| rustworkx / rustworkx-core | a pure-Rust crate with a stable API "for any downstream crate", apart from the Python package | `onto-core` and `onto-runtime` stay a stable Rust API: a connection point for Rust callers too |
-| datafusion-python (`why-ffi.md`), pyo3-polars | Rust has no stable ABI: a Rust extension in another wheel cannot link against the engine; DataFusion crosses an FFI crate and PyCapsules, Polars a plugin ABI | third-party Rust extensions (a Rust judge in someone else's wheel) need a C ABI or PyCapsule boundary: the C ABI's real purpose; bulk data later through the Arrow PyCapsule interface |
-| delta-rs, datafusion-python, lancedb | the binding crate in its own directory beside the core crates | `crates/onto-py`, converting only |
+The patterns this layer is built from (established practice for engines
+with a compiled core and a Python surface):
+
+| pattern | what it means for onto |
+|---|---|
+| **core / binding split** | the Rust crates (`onto-core`, `onto-runtime`) keep a stable Rust API of their own, usable by Rust callers directly; a separate binding crate (`crates/onto-py`) only converts types |
+| **private native module, public Python package** | the compiled module is `onto._onto`; the public package `onto` is Python (`python/onto/`), with `_onto.pyi` stubs and `py.typed`, so editors and type checkers see the whole surface |
+| **declarations as data** | a category, functor or ensemble can come from `.onto` text or from plain data validated by the same builder and proofs; the data schema is mirrored as typed dicts, so code above can generate policy |
+| **async-authoritative core, sync facade** | the async API is the real one (a tokio future is a Python awaitable); the sync API runs it on a background event loop thread and never touches the caller's loop |
+| **dedicated executor for callbacks** | Python judges or proposers that block (a local model, an HTTP call) run on their own executor, so they cannot starve the engine's other work |
+| **protocols as extension points** | a judge, proposer, critic, storage or event sink is any object with the right methods, sync or async; the built-in providers are such objects too |
+| **plugin discovery** | third-party packages register providers (judges, proposers, storage backends, standards) through a declared entry point, without changing onto |
+| **composable components, preassembled defaults** | a runtime is assembled from parts (category, models, library, memory, functors, storage, event sinks), each replaceable; the basic level is a preassembled default, the advanced level assembles it |
+| **optional typed code from the DSL** | a generator may emit typed Python from a `.onto` (object names as literal types, case shapes from `state` and `require`); a convenience, never required |
+| **events as a stream** | everything the engine does is an event on a subscription (in process), so tracing, dashboards and other libraries attach without hooks inside the engine |
+| **one C ABI, many clients** | a stable C boundary serves compiled extensions from other packages (Rust has no stable ABI across separately built libraries) and further language clients; only when someone needs it |
+| **zero-copy bulk data** | many records at once through the Arrow data interface, later |
 
 ## 2. Rules
 
@@ -151,7 +158,9 @@ for walk in report["walks"]:
    walk.
 6. **Replay and signing as library functions** (today in the CLI).
 7. **A data form of declarations**: the schema the builder accepts,
-   mirrored as TypedDicts (pydantic-core's `core_schema` pattern).
+   mirrored as TypedDicts.
+8. **Provider entry points** for plugin discovery, and a registry the
+   basic level reads its defaults from.
 
 Each item is useful to Rust callers and to the CLI on its own; the
 bindings then only convert.
@@ -165,9 +174,8 @@ bindings then only convert.
 - `abi3` wheels (one per platform for every supported Python).
 - Free-threaded CPython declared only once the engine's callbacks are
   audited for it.
-- A C ABI (or PyCapsule) boundary when third-party Rust extensions need
-  to plug into the engine from their own wheels (datafusion's FFI
-  lesson); not before.
+- A C ABI boundary when compiled extensions from other packages need to
+  plug into the engine; not before.
 
 ## 6. Not in this layer (later, separate)
 
