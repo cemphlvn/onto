@@ -109,3 +109,35 @@ Live (Jev + OpenRouter, open world, 20.6 s wall, parallelism 2.85×):
   the joins that depend on it; a sealed or assured check frame would not
   make its siblings wait.
 
+
+## Three perspectives on one outage (ensemble, 2026-09-24)
+
+`perspectives.onto` walks each moment of a shop in three columns that
+never see each other: **Metrics** (sees only `metrics`), **Logs** (only
+`logs`) and **Complaints** (only what customers wrote). Each maps into a
+shared `IncidentState` (Observed → Healthy | Degraded → BadDeploy |
+DatabaseFault | CapacityShortfall | DependencyFault) through a functor.
+Code compares the images: positions agree when one reaches the other
+there, and are a **surprise** when neither does. IncidentState is
+`open_world`, so a surprise becomes a `contradiction` gap signal for
+curation (under `assured` it would stop for a person).
+
+```sh
+onto ensemble demos/incident-response/perspectives.onto#Outage \
+    --jobs demos/incident-response/perspectives.jobs --telemetry t.jsonl --dispositions d.jsonl
+onto raster t.jsonl --dispositions d.jsonl --ensemble demos/incident-response/perspectives.onto#Outage
+```
+
+Live (Jev, 12 judge calls, no proposer calls, 0.72 s):
+
+| case | metrics · logs · complaints | outcome |
+|---|---|---|
+| P-1 a bad deploy | ErrorsUp · DeployErrors · CheckoutBroken | agreed on **BadDeploy** (logs are furthest along) |
+| P-2 the identity provider fails upstream | Normal · Clean · LoginBroken | **surprise** Healthy ⟂ Degraded at Observed: a monitoring blind spot → curation |
+| P-3 a campaign surge exhausts the pool | SaturationUp · DatabaseErrors · SlowPages | **surprise** CapacityShortfall ⟂ DatabaseFault at Degraded: competing causes → curation |
+| P-4 a quiet evening | Normal · Clean · NoReports | agreed on **Healthy** |
+
+Beneficiary: customers during an outage. A dashboard that stays green
+while customers cannot sign in is the case metrics alone would close as
+"healthy"; the ensemble turns it into a signal that the monitoring is
+missing something. See `docs/07-raster-findings.md` §8 for the raster.

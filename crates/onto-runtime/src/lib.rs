@@ -9,6 +9,7 @@
 
 pub mod curation;
 pub mod engine;
+pub mod ensemble;
 pub mod frames;
 pub mod joins;
 pub mod lens;

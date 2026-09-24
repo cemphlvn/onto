@@ -1,4 +1,4 @@
-# onto — What the Raster Makes Visible: Seven Tests
+# onto — What the Raster Makes Visible: Eight Tests
 
 Status: **run live, 2026-09-24** (Jev for judgments, OpenRouter
 `~openai/gpt-luna-latest` for proposals, fresh learned layers, no
@@ -22,7 +22,7 @@ and change.
 | 5 | frame-lock effects | consent-enforcement · people whose data is used | **visible**: claim waits 58.4 s → 13.0 s from exclusive to shared |
 | 6 | repeated structural gaps | support-commons · shoppers with parcel problems | **visible**: 5 escalations from 5 cases on one row |
 | 7 | learning, before and after | benefits-assembly + catalogue · a person applying across programmes | **visible**: escalations 1 → 0 and stay 846 → 383 ms at the learned frame |
-| 8 | surprise between perspectives | incident-response lanes (planned) | **not testable yet**: needs prediction across columns (functors phase 3) |
+| 8 | surprise between perspectives | incident-response ensemble (metrics, logs, complaints) · customers during an outage | **visible**: a blind spot surfaced at 684 ms, before the third column concluded |
 
 Reproduce: `onto run FILE --jobs JOBS --telemetry t.jsonl --dispositions
 d.jsonl [flags]`, then `onto raster t.jsonl --dispositions d.jsonl
@@ -173,13 +173,32 @@ became active; the widow (B-9) and the new mother (B-10) cross
 Circumstances without escalating. "The graph learned something" becomes
 a before/after measurement.
 
-## 8. Surprise between perspectives — not yet testable
+## 8. Surprise between perspectives — incident-response ensemble
 
-It needs several categories walked for the same case and compared
-through functors (phase 3 of `docs/05-functors.md`). The planned test:
-incident-response with metrics, logs and customer-complaint columns, one
-raster band each, a shared incident-state category, and marks where a
-column's prediction was confirmed or contradicted.
+*Customers during an outage.* Four moments of one shop, each seen by three
+columns that never see each other: metrics, logs, customer complaints
+(`onto ensemble demos/incident-response/perspectives.onto#Outage`, then
+`onto raster … --ensemble demos/incident-response/perspectives.onto#Outage`).
+One band per column, then the shared IncidentState band, where each
+column's position is a square, a ring marks confirmation by every
+column, and a bolt marks a surprise.
+
+![8](raster/8-surprise.png)
+
+| case | metrics · logs · complaints (→ IncidentState) | outcome |
+|---|---|---|
+| P-1 bad deploy | Degraded · BadDeploy · Degraded | **agreed on BadDeploy** at 710 ms; logs were the last to conclude and the furthest along |
+| P-2 login outage | Healthy · Healthy · Degraded | **surprise** at 684 ms, at Observed → curation: a monitoring blind spot. Metrics had not concluded yet: two columns were enough |
+| P-3 campaign surge | CapacityShortfall · DatabaseFault · Degraded | **surprise** at 720 ms, at Degraded → curation: competing causes |
+| P-4 quiet | Healthy · Healthy · Healthy | **agreed on Healthy** |
+
+The raster shows where on the shared category the perspectives parted,
+and when: the bolts sit on the rows of the conflicting positions, and
+the time between a column's conclusion and the first surprise is the
+time a blind spot would otherwise stay invisible. The two contradiction
+signals are keyed by divergence and positions
+(`…:Observed:contradiction:Degraded|Healthy`), so the same blind spot in
+many cases groups into one gap for `onto curate`.
 
 ---
 

@@ -63,6 +63,26 @@ impl WorldArgs {
         self.learning == Loop::Assured
     }
 
+    /// The same world for one part of a multi-category run (a column of an
+    /// ensemble): explicit files become `<stem>.<part>.<ext>`, so parts
+    /// never share a learned layer, memory or gap queue.
+    pub fn part(&self, part: &str) -> Self {
+        let split = |p: &Option<PathBuf>| {
+            p.as_ref().map(|p| {
+                let ext = p
+                    .extension()
+                    .map_or(String::new(), |e| e.to_string_lossy().into_owned());
+                p.with_extension(format!("{part}.{ext}"))
+            })
+        };
+        Self {
+            learned: split(&self.learned),
+            memory: split(&self.memory),
+            gaps: split(&self.gaps),
+            ..self.clone()
+        }
+    }
+
     pub fn layer(&self, file: &Path) -> PathBuf {
         self.learned
             .clone()

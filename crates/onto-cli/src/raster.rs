@@ -29,6 +29,10 @@ pub struct RasterArgs {
     /// The category (`FILE` or `FILE#Name`), to order rows as declared.
     #[arg(long)]
     category: Option<PathBuf>,
+    /// The ensemble (`FILE#Name`) of an `onto ensemble` run: rows per
+    /// column, then the shared category's band.
+    #[arg(long, conflicts_with = "category")]
+    ensemble: Option<PathBuf>,
     /// Which run in the file (1 = first; default: the last).
     #[arg(long)]
     run: Option<usize>,
@@ -48,10 +52,16 @@ pub fn main(args: RasterArgs) -> Result<(), BoxError> {
         .filter(|l| !l.trim().is_empty())
         .filter_map(|l| serde_json::from_str(l).ok())
         .collect();
-    // Split into runs at each `run.start`.
+    // Split into runs at each `run.start`; an ensemble's column runs belong
+    // to the run its `ensemble.start` began.
     let mut runs: Vec<Vec<Value>> = Vec::new();
     for e in events {
-        if e["event"] == "run.start" || runs.is_empty() {
+        let starts = match e["event"].as_str() {
+            Some("ensemble.start") => true,
+            Some("run.start") => e["ensemble"].is_null(),
+            _ => false,
+        };
+        if starts || runs.is_empty() {
             runs.push(Vec::new());
         }
         runs.last_mut().expect("pushed").push(e);
@@ -87,13 +97,34 @@ pub fn main(args: RasterArgs) -> Result<(), BoxError> {
             }
         }
     }
-    let rows: Vec<String> = match &args.category {
-        Some(spec) => crate::module::load_category(spec)?
+    let rows: Vec<String> = match (&args.category, &args.ensemble) {
+        (Some(spec), _) => crate::module::load_category(spec)?
             .objects()
             .iter()
             .map(|o| o.name.clone())
             .collect(),
-        None => Vec::new(),
+        // Each column's frames, then the shared band.
+        (None, Some(spec)) => {
+            let (file, name) = crate::module::target(spec);
+            let (module, _) = crate::module::load_module(&file)?;
+            let e = match &name {
+                Some(n) => module.ensemble(n),
+                None => module.ensembles.first(),
+            }
+            .ok_or_else(|| format!("{}: no such ensemble", spec.display()))?;
+            e.columns
+                .iter()
+                .map(|c| c.category.as_str())
+                .chain([e.shared.as_str()])
+                .filter_map(|c| module.category(c))
+                .flat_map(|c| {
+                    c.objects()
+                        .iter()
+                        .map(move |o| format!("{} · {}", c.name(), o.name))
+                })
+                .collect()
+        }
+        (None, None) => Vec::new(),
     };
     let raster = onto_runtime::trace::project(&kept, &rows);
     let events = raster.events.len();

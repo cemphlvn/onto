@@ -138,7 +138,7 @@ can never authorize a data use or a deployment.
 | walk | engine: frame claims, forks, joins (`all`, `race`, `gate`) |
 | disposition | frame records (`--dispositions`, `onto why`); capabilities and attestation decide what may happen |
 | missing distinction | escalation, **typed**: a structure gap (the proposer may help), an evidence gap (only evidence helps: no model), a policy stop (a gap signal for curation), a budget stop |
-| contradiction | today: a join that cannot complete; *planned*: prediction across columns (functors) |
+| contradiction | a join that cannot complete; in an ensemble, columns whose positions do not reach each other in the shared category (a surprise: a person under `assured`, a gap signal under `open_world`) |
 | propose or transport | only for structure gaps where structure may be learned: transport from a functor's empty fibers first, an LLM proposer second; one proposal in flight per gap (single-flight), no frame lock held while a model answers |
 | curation | policy stops and closed-world gaps as gap signals (`<stem>.gaps.jsonl`); `onto curate`: one proposal per gap for review |
 | review | structural proofs (well-formedness, authority, contracts, `via`/`never`, `unseen`, sealed, progress); critic checks (rules, duplicates, overlap), settled by structure where a closed catalogue already decides |
@@ -156,6 +156,7 @@ $onto run     examples/triage.onto --jobs examples/triage.jobs --mock         # 
 $onto ask     demos/support-commons/support.onto --from Ticket "my parcel never arrived" --mock
 $onto laws    demos/consent-enforcement/consent.onto --proofs                  # what is proved
 $onto functor demos/secure-infrastructure-change/controls.onto                 # a policy vs a standard
+$onto ensemble demos/incident-response/perspectives.onto#Outage --jobs demos/incident-response/perspectives.jobs  # perspectives compared (live)
 $onto run     examples/triage.onto --jobs examples/triage.jobs --mock --telemetry t.jsonl --dispositions d.jsonl
 $onto raster  t.jsonl --dispositions d.jsonl --category examples/triage.onto  # what happened, in time
 ```

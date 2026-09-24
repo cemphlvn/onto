@@ -44,6 +44,7 @@ use crate::require::Require;
 pub struct Module {
     pub categories: Vec<Category>,
     pub functors: Vec<crate::functor::Functor>,
+    pub ensembles: Vec<crate::ensemble::Ensemble>,
 }
 
 impl Module {
@@ -54,12 +55,17 @@ impl Module {
     pub fn functor(&self, name: &str) -> Option<&crate::functor::Functor> {
         self.functors.iter().find(|f| f.name == name)
     }
+
+    pub fn ensemble(&self, name: &str) -> Option<&crate::ensemble::Ensemble> {
+        self.ensembles.iter().find(|e| e.name == name)
+    }
 }
 
 enum Block {
     Import(String),
     Category(String),
     Functor(String),
+    Ensemble(String),
 }
 
 /// Top-level blocks of a file, with the line each starts on: `import
@@ -112,10 +118,12 @@ fn blocks(src: &str) -> Result<Vec<(usize, Block)>, Error> {
                 Block::Category(text.to_owned())
             } else if let Some(rest) = text.strip_prefix("functor ") {
                 Block::Functor(rest.to_owned())
+            } else if let Some(rest) = text.strip_prefix("ensemble ") {
+                Block::Ensemble(rest.to_owned())
             } else {
                 return Err(Error::Parse {
                     line: start,
-                    msg: "expected `category Name { … }` or `functor F: A -> B { … }`".into(),
+                    msg: "expected `category Name { … }`, `functor F: A -> B { … }` or `ensemble E { … }`".into(),
                 });
             };
             out.push((start, block));
@@ -168,6 +176,7 @@ pub type Importer<'a> = dyn FnMut(&str, &str) -> Result<(String, String), Error>
 pub fn parse_module_at(id: &str, src: &str, import: &mut Importer) -> Result<Module, Error> {
     let mut module = Module::default();
     let mut decls = Vec::new();
+    let mut ensembles = Vec::new();
     for (line, block) in blocks(src)? {
         match block {
             Block::Import(path) => {
@@ -178,6 +187,7 @@ pub fn parse_module_at(id: &str, src: &str, import: &mut Importer) -> Result<Mod
                 })?;
                 module.categories.extend(m.categories);
                 module.functors.extend(m.functors);
+                module.ensembles.extend(m.ensembles);
             }
             Block::Category(text) => {
                 let mut cat = category(&text, line)?;
@@ -190,6 +200,11 @@ pub fn parse_module_at(id: &str, src: &str, import: &mut Importer) -> Result<Mod
                 }
                 module.categories.push(cat);
             }
+            Block::Ensemble(text) => ensembles.push((
+                line,
+                crate::ensemble::Ensemble::parse(&text)
+                    .map_err(|msg| Error::Parse { line, msg })?,
+            )),
             Block::Functor(text) => decls.push((
                 line,
                 functor_decl(&text).map_err(|e| match e {
@@ -211,6 +226,13 @@ pub fn parse_module_at(id: &str, src: &str, import: &mut Importer) -> Result<Mod
         };
         let f = crate::functor::Functor::build(&d, a, b)?;
         module.functors.push(f);
+    }
+    for (line, e) in ensembles {
+        e.validate(&module).map_err(|err| match err {
+            Error::Parse { msg, .. } => Error::Parse { line, msg },
+            other => other,
+        })?;
+        module.ensembles.push(e);
     }
     Ok(module)
 }

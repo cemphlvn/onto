@@ -17,7 +17,10 @@ export type EventKind =
   | "held"
   | "refused"
   | "escalation"
-  | "failed";
+  | "failed"
+  | "position"
+  | "surprise"
+  | "confirm";
 
 export interface RasterEvent {
   id: number;
@@ -50,7 +53,15 @@ export interface CallEconomy {
   avoided_calls: number; fan_out: number; stale_results: number; learned: number; learned_used: number;
   held: number; utility: number; cost_per_resolved_gap_ms: number | null;
 }
+export interface EnsembleCase {
+  job: number; case: string | null; status: string; agreed: string | null; route: string | null;
+  first_confirm_ms: number | null; first_surprise_ms: number | null;
+  /** (column, object, shared position, ms) */
+  positions: [string, string, string, number][];
+  last: string | null;
+}
 export interface Insights {
+  ensemble: EnsembleCase[];
   calls: CallEconomy;
   wall_ms: number;
   split: Split;
@@ -79,6 +90,7 @@ export interface Raster {
     judge_calls?: number;
     proposer_calls?: number;
     learned?: string[];
+    ensemble?: string | null;
   };
 }
 

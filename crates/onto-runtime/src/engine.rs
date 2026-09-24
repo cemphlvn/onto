@@ -69,6 +69,8 @@ pub struct Config {
     /// wants to show them). Otherwise stops that only a person can act on
     /// become gap signals for curation, and the case does not wait.
     pub review_inline: bool,
+    /// Set when this engine is one column of an ensemble (telemetry).
+    pub ensemble: Option<String>,
     /// Arrival stream: job i starts `i × stagger` after the run starts
     /// (zero: all at once).
     pub stagger: Duration,
@@ -91,6 +93,7 @@ impl Default for Config {
             assured: false,
             stagger: Duration::ZERO,
             review_inline: false,
+            ensemble: None,
         }
     }
 }
@@ -245,6 +248,15 @@ pub struct Learned {
     pub transported: Option<String>,
 }
 
+/// A walk arrived at an object (for ensembles).
+#[derive(Clone, Debug)]
+pub struct PositionEvent {
+    pub job: usize,
+    pub walk: u64,
+    pub object: String,
+    pub at: Instant,
+}
+
 /// The answer to a gap, shared with every walk that subscribed to it.
 #[derive(Clone, Debug)]
 struct FlightResult {
@@ -289,6 +301,8 @@ struct Seed {
     id: u64,
     parent: Option<u64>,
     job: Job,
+    /// The job's index in the run (the same case across ensemble columns).
+    job_index: usize,
     path: Path,
     hops: Vec<Hop>,
     depth: usize,
@@ -323,6 +337,9 @@ pub struct Engine<J, P> {
     /// Functors from this category the walk uses (hierarchy, transport).
     lenses: Mutex<Vec<Arc<crate::lens::Lens>>>,
     gaps: Mutex<Vec<crate::curation::GapSignal>>,
+    /// Receives every arrival (job index, walk, object): how an ensemble
+    /// follows this column's positions.
+    positions: Mutex<Option<tokio::sync::mpsc::UnboundedSender<PositionEvent>>>,
     /// Proposals in flight, by gap key (single-flight).
     flights: Mutex<HashMap<String, FlightRx>>,
     /// Incremented whenever the open world changes the graph.
@@ -383,6 +400,32 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         *self.lenses.lock().unwrap() = lenses;
     }
 
+    /// Starts walk ids at `base` (ensemble columns keep them apart).
+    pub fn with_walk_base(&self, base: u64) {
+        self.next_walk.store(base, Relaxed);
+    }
+
+    /// Reports every arrival to `tx`.
+    pub fn observe(&self, tx: tokio::sync::mpsc::UnboundedSender<PositionEvent>) {
+        *self.positions.lock().unwrap() = Some(tx);
+    }
+
+    /// Stops reporting arrivals (closes the observer's channel).
+    pub fn unobserve(&self) {
+        *self.positions.lock().unwrap() = None;
+    }
+
+    fn report_position(&self, job: usize, walk: u64, object: &str) {
+        if let Some(tx) = self.positions.lock().unwrap().as_ref() {
+            let _ = tx.send(PositionEvent {
+                job,
+                walk,
+                object: object.to_owned(),
+                at: Instant::now(),
+            });
+        }
+    }
+
     /// Loads precedents (from an earlier run's memory file).
     pub fn remember(&self, precedents: Vec<crate::memory::Precedent>) {
         let mut m = self.memory.lock().unwrap();
@@ -413,6 +456,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             lenses: Mutex::new(Vec::new()),
             gaps: Mutex::new(Vec::new()),
             flights: Mutex::new(HashMap::new()),
+            positions: Mutex::new(None),
             graph_version: AtomicU64::new(0),
             transported: Mutex::new(Default::default()),
             judge,
@@ -437,6 +481,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             target: "onto",
             event = "run.start",
             category = self.cat().name(),
+            ensemble = self.cfg.ensemble.as_deref(),
             snapshot = self.snapshot.as_deref(),
             walks = jobs.len(),
             judge = %Judge::name(&self.judge),
@@ -459,6 +504,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 id: self.next_walk.fetch_add(1, Relaxed),
                 parent: None,
                 job,
+                job_index: i,
                 path: Path::id(from),
                 hops: Vec::new(),
                 depth: 0,
@@ -559,6 +605,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             id,
             parent,
             job,
+            job_index,
             mut path,
             mut hops,
             depth,
@@ -577,6 +624,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             event = "walk.start",
             walk = id,
             parent,
+            category = cat.name(),
             case = job.case["id"].as_str(),
             from = %cat.object(path.dst).name,
             goal = %job.goal,
@@ -642,6 +690,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let cat = &*cat_arc;
             let at = path.dst;
             let object = cat.object(at);
+            self.report_position(job_index, id, &object.name);
 
             // A join object: recombine with this walk's innermost fork.
             if let (Some(join), Some(fork)) = (&object.join, forks.last().cloned()) {
@@ -1080,6 +1129,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                                 id: child,
                                 parent: Some(id),
                                 job: job.clone(),
+                                job_index,
                                 path: child_path,
                                 hops: child_hops,
                                 depth: depth + 1,

@@ -40,6 +40,13 @@ pub enum EventKind {
     Refused,
     Escalation,
     Failed,
+    /// A column's position in an ensemble's shared category (point, on
+    /// the shared band).
+    Position,
+    /// Two columns' positions stopped reaching each other.
+    Surprise,
+    /// Every column concluded, and all positions are compatible.
+    Confirm,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -104,6 +111,25 @@ pub struct Insights {
     pub learning: Vec<LearnStat>,
     /// Model calls: what they were for and what they produced.
     pub calls: CallEconomy,
+    /// Per case of an ensemble run: how the perspectives compared.
+    pub ensemble: Vec<EnsembleCase>,
+}
+
+/// One case of an ensemble run (`docs/05-functors.md` §6).
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct EnsembleCase {
+    pub job: u64,
+    pub case: Option<String>,
+    /// `agreed`, `surprise`, `undecided` or `incomplete`.
+    pub status: String,
+    pub agreed: Option<String>,
+    pub route: Option<String>,
+    pub first_confirm_ms: Option<f64>,
+    pub first_surprise_ms: Option<f64>,
+    /// `(column, object, shared position, ms)`: each column's last position.
+    pub positions: Vec<(String, String, String, f64)>,
+    /// The column that concluded last.
+    pub last: Option<String>,
 }
 
 /// Where model calls went, and what they bought (`docs/08-call-economy.md`).
@@ -236,8 +262,61 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
     let ns = |e: &Value| (e["t"].as_f64().unwrap_or(0.0).max(0.0) * 1e6) as u64;
     let s = |e: &Value, k: &str| e[k].as_str().unwrap_or_default().to_owned();
     let start = events.iter().find(|e| e["event"] == "run.start");
-    let end = events.iter().find(|e| e["event"] == "run.end");
-    let category = start.map_or_else(String::new, |e| s(e, "category"));
+    let ends: Vec<&Value> = events.iter().filter(|e| e["event"] == "run.end").collect();
+    let ensemble = start
+        .and_then(|e| e["ensemble"].as_str())
+        .map(str::to_owned);
+    // Several categories walked in one run (an ensemble's columns): rows
+    // are `Category · Frame`, and each event keeps its walk's category.
+    let cat_of: HashMap<u64, String> = events
+        .iter()
+        .filter(|e| e["event"] == "walk.start")
+        .filter_map(|e| Some((e["walk"].as_u64()?, e["category"].as_str()?.to_owned())))
+        .collect();
+    let categories: std::collections::BTreeSet<&String> = cat_of.values().collect();
+    let multi = categories.len() > 1;
+    let category = if multi {
+        ensemble.clone().unwrap_or_else(|| {
+            categories
+                .iter()
+                .map(|c| c.as_str())
+                .collect::<Vec<_>>()
+                .join(" + ")
+        })
+    } else {
+        start.map_or_else(String::new, |e| s(e, "category"))
+    };
+    let owned: Vec<Value>;
+    let events: &[Value] = if multi {
+        owned = events
+            .iter()
+            .map(|e| {
+                let walk = e["walk"].as_u64().or_else(|| {
+                    // `w<walk>.<n>`: events without a walk name their record.
+                    e["record"]
+                        .as_str()?
+                        .strip_prefix('w')?
+                        .split('.')
+                        .next()?
+                        .parse()
+                        .ok()
+                });
+                let Some(c) = walk.and_then(|w| cat_of.get(&w)) else {
+                    return e.clone();
+                };
+                let mut e = e.clone();
+                for k in ["at", "to", "from"] {
+                    if let Some(v) = e[k].as_str() {
+                        e[k] = Value::String(format!("{c} · {v}"));
+                    }
+                }
+                e
+            })
+            .collect();
+        &owned
+    } else {
+        events
+    };
 
     // Walks.
     let mut walks: Vec<Walk> = Vec::new();
@@ -348,10 +427,14 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
                     mechanical: bool,
                     label: String| {
         let id = out.len();
+        let category = match cat_of.get(&walk) {
+            Some(c) if multi => c.clone(),
+            _ => category.clone(),
+        };
         out.push(RasterEvent {
             id,
             record,
-            category: category.clone(),
+            category,
             frame,
             walk,
             kind,
@@ -678,6 +761,50 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
         v.dedup();
     }
 
+    // An ensemble's shared band: where each column is in the shared
+    // category, and the moments the perspectives confirmed or contradicted.
+    if let Some(ens) = &ensemble {
+        let shared = events
+            .iter()
+            .find(|e| e["event"] == "ensemble.start")
+            .map_or_else(|| "shared".to_owned(), |e| s(e, "shared"));
+        let row = |y: &str| format!("{shared} · {y}");
+        for e in events {
+            let (kind, label) = match e["event"].as_str() {
+                Some("ensemble.position") => (
+                    EventKind::Position,
+                    format!(
+                        "{}: {} is {} in {shared}",
+                        s(e, "column"),
+                        s(e, "object"),
+                        s(e, "shared")
+                    ),
+                ),
+                Some("ensemble.surprise") => (
+                    EventKind::Surprise,
+                    format!("surprise in {ens}: {}", s(e, "positions")),
+                ),
+                Some("ensemble.confirm") => (
+                    EventKind::Confirm,
+                    format!("confirmed by every column: {}", s(e, "shared")),
+                ),
+                _ => continue,
+            };
+            let walk = e["walk"].as_u64().unwrap_or(0);
+            push(
+                None,
+                row(&s(e, "shared")),
+                walk,
+                kind,
+                ns(e),
+                None,
+                None,
+                true,
+                label,
+            );
+        }
+    }
+
     // Rows.
     let mut seen: Vec<String> = Vec::new();
     for e in &out {
@@ -720,10 +847,11 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
         "proposer": start.map(|e| s(e, "proposer")),
         "policy": start.map(|e| s(e, "policy")),
         "open_world": start.and_then(|e| e["open_world"].as_bool()),
-        "wall_ms": end.and_then(|e| e["wall_ms"].as_f64()),
-        "model_ms_sum": end.and_then(|e| e["model_ms_sum"].as_f64()),
-        "judge_calls": end.and_then(|e| e["judge_calls"].as_u64()),
-        "proposer_calls": end.and_then(|e| e["proposer_calls"].as_u64()),
+        "ensemble": ensemble,
+        "wall_ms": ends.iter().filter_map(|e| e["wall_ms"].as_f64()).reduce(f64::max),
+        "model_ms_sum": ends.iter().filter_map(|e| e["model_ms_sum"].as_f64()).reduce(|a, b| a + b),
+        "judge_calls": ends.iter().filter_map(|e| e["judge_calls"].as_u64()).reduce(|a, b| a + b),
+        "proposer_calls": ends.iter().filter_map(|e| e["proposer_calls"].as_u64()).reduce(|a, b| a + b),
         "learned": if declared.is_empty() {
             Vec::new()
         } else {
@@ -1072,7 +1200,9 @@ fn insights(r: &Raster, telemetry: &[Value]) -> Insights {
     }
 
     let calls = economy(telemetry, &learning);
+    let ensemble = ensemble_cases(telemetry);
     Insights {
+        ensemble,
         calls,
         wall_ms: wall,
         split,
@@ -1082,6 +1212,45 @@ fn insights(r: &Raster, telemetry: &[Value]) -> Insights {
         joins,
         learning,
     }
+}
+
+fn ensemble_cases(telemetry: &[Value]) -> Vec<EnsembleCase> {
+    let s = |e: &Value, k: &str| e[k].as_str().unwrap_or_default().to_owned();
+    let t = |e: &Value| e["t"].as_f64().unwrap_or(0.0);
+    let mut out = Vec::new();
+    for o in telemetry
+        .iter()
+        .filter(|e| e["event"] == "ensemble.outcome")
+    {
+        let job = o["job"].as_u64().unwrap_or(0);
+        let of = |kind: &'static str| {
+            telemetry
+                .iter()
+                .filter(move |e| e["event"] == kind && e["job"].as_u64() == Some(job))
+        };
+        let mut positions: Vec<(String, String, String, f64)> = Vec::new();
+        for p in of("ensemble.position") {
+            let column = s(p, "column");
+            positions.retain(|x| x.0 != column);
+            positions.push((column, s(p, "object"), s(p, "shared"), t(p)));
+        }
+        let first = |kind: &'static str| of(kind).map(t).reduce(f64::min);
+        out.push(EnsembleCase {
+            job,
+            case: o["case"].as_str().map(str::to_owned),
+            status: s(o, "status"),
+            agreed: o["agreed"].as_str().map(str::to_owned),
+            route: o["route"].as_str().map(str::to_owned),
+            first_confirm_ms: first("ensemble.confirm"),
+            first_surprise_ms: first("ensemble.surprise"),
+            last: positions
+                .iter()
+                .max_by(|a, b| a.3.total_cmp(&b.3))
+                .map(|p| p.0.clone()),
+            positions,
+        });
+    }
+    out
 }
 
 fn dur(ns: u64) -> String {
@@ -1277,5 +1446,45 @@ mod tests {
         assert_eq!((l.visits_before, l.visits_after), (1, 1));
         assert!(r.insights.concurrency.max >= 2);
         assert_eq!(r.parents["w2.1"], ["w1.1"], "a branch follows its fork");
+    }
+
+    #[test]
+    fn ensemble_runs_get_category_rows_and_a_shared_band() {
+        let ev = vec![
+            json!({"event": "ensemble.start", "t": 0.0, "ensemble": "E", "shared": "S"}),
+            json!({"event": "run.start", "t": 0.0, "category": "A", "ensemble": "E"}),
+            json!({"event": "run.start", "t": 0.0, "category": "B", "ensemble": "E"}),
+            json!({"event": "walk.start", "t": 0.1, "walk": 1, "category": "A", "case": "K", "goal": "g"}),
+            json!({"event": "walk.start", "t": 0.1, "walk": 1000001, "category": "B", "case": "K", "goal": "g"}),
+            json!({"event": "visit", "t": 1.0, "walk": 1, "at": "X", "record": "w1.1", "claim_wait_ms": 0.0}),
+            json!({"event": "visit", "t": 1.0, "walk": 1000001, "at": "X", "record": "w1000001.1", "claim_wait_ms": 0.0}),
+            json!({"event": "ensemble.position", "t": 5.0, "job": 0, "column": "A", "walk": 1, "object": "Aok", "shared": "Fine"}),
+            json!({"event": "ensemble.position", "t": 6.0, "job": 0, "column": "B", "walk": 1000001, "object": "Bbad", "shared": "Hurt"}),
+            json!({"event": "ensemble.surprise", "t": 6.0, "job": 0, "walk": 1000001, "positions": "Fine | Hurt", "shared": "Hurt"}),
+            json!({"event": "walk.end", "t": 7.0, "walk": 1}),
+            json!({"event": "walk.end", "t": 7.0, "walk": 1000001}),
+            json!({"event": "ensemble.outcome", "t": 7.5, "job": 0, "case": "K", "status": "surprise", "route": "curation"}),
+            json!({"event": "run.end", "t": 8.0, "wall_ms": 8.0, "judge_calls": 1}),
+            json!({"event": "run.end", "t": 8.0, "wall_ms": 7.0, "judge_calls": 1}),
+        ];
+        let r = project(&ev, &[]);
+        assert_eq!(r.category, "E");
+        // Same frame name in two categories: two rows.
+        assert!(r.frames.contains(&"A · X".to_owned()) && r.frames.contains(&"B · X".to_owned()));
+        assert!(r.frames.contains(&"S · Hurt".to_owned()));
+        let surprise = r
+            .events
+            .iter()
+            .find(|e| e.kind == EventKind::Surprise)
+            .unwrap();
+        assert_eq!(surprise.frame, "S · Hurt");
+        assert_eq!(r.meta["judge_calls"], 2);
+        assert_eq!(r.meta["wall_ms"], 8.0);
+        let c = &r.insights.ensemble[0];
+        assert_eq!(
+            (c.status.as_str(), c.first_surprise_ms),
+            ("surprise", Some(6.0))
+        );
+        assert_eq!(c.last.as_deref(), Some("B"));
     }
 }

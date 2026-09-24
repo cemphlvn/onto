@@ -8,6 +8,7 @@ use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse::
 mod ask;
 mod attest;
 mod curate;
+mod ensemble;
 mod functor;
 mod laws;
 mod learned;
@@ -105,6 +106,8 @@ enum Cmd {
     Raster(raster::RasterArgs),
     /// One proposal per gap signal group, for review (`onto review`).
     Curate(curate::CurateArgs),
+    /// Walk each case in every column of an ensemble; compare the columns.
+    Ensemble(ensemble::EnsembleArgs),
     Learned(learned::LearnedArgs),
     /// Carry the learned layer and memory along a version functor.
     Migrate(migrate::MigrateArgs),
@@ -120,6 +123,7 @@ fn main() -> ExitCode {
         Cmd::Functor(args) => functor::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Raster(args) => raster::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Curate(args) => curate::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Ensemble(args) => ensemble::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Learned(args) => learned::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Migrate(args) => migrate::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Replay(args) => replay::main(args).map(|()| ExitCode::SUCCESS),
@@ -301,6 +305,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         }
         Cmd::Run(_)
         | Cmd::Learned(_)
+        | Cmd::Ensemble(_)
         | Cmd::Curate(_)
         | Cmd::Raster(_)
         | Cmd::Migrate(_)

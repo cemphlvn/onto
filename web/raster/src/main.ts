@@ -64,12 +64,23 @@ const INTERVAL: EventKind[] = ["visit", "claim_wait", "judge_call", "proposer_ca
 const hidden = new Set<number>();
 
 // ---- colour: one hue per case, branches lighter/darker ----
-const roots = [...new Set(R.walks.map((w) => w.root))].sort((a, b) => a - b);
+// A case walked by several columns (an ensemble) has one root per column:
+// they share the case's hue, as branches do.
+const firstRootOfCase = new Map<string, number>();
+for (const w of [...R.walks].sort((a, b) => a.id - b.id)) {
+  if (w.id === w.root && w.case != null && !firstRootOfCase.has(w.case)) firstRootOfCase.set(w.case, w.id);
+}
+const rep = (root: number) => {
+  const c = walkOf.get(root)?.case;
+  return c != null ? firstRootOfCase.get(c) ?? root : root;
+};
+const roots = [...new Set(R.walks.map((w) => rep(w.root)))].sort((a, b) => a - b);
 const hue = new Map(roots.map((r, i) => [r, (i * 137.508 + 200) % 360]));
 const family = new Map<number, number[]>();
 for (const w of [...R.walks].sort((a, b) => a.id - b.id)) {
-  if (!family.has(w.root)) family.set(w.root, []);
-  family.get(w.root)!.push(w.id);
+  const r = rep(w.root);
+  if (!family.has(r)) family.set(r, []);
+  family.get(r)!.push(w.id);
 }
 const dark = () => {
   const t = document.documentElement.getAttribute("data-theme");
@@ -78,12 +89,12 @@ const dark = () => {
 const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 function color(walk: number): string {
   const w = walkOf.get(walk);
-  const root = w?.root ?? walk;
+  const root = rep(w?.root ?? walk);
   const i = Math.min((family.get(root) ?? [walk]).indexOf(walk), 4);
   const l = dark() ? 66 - i * 6 : 42 + i * 7;
   return `hsl(${hue.get(root) ?? 0} 62% ${l}%)`;
 }
-const visible = (e: RasterEvent) => !hidden.has(walkOf.get(e.walk)?.root ?? e.walk) && rowOf.has(e.frame);
+const visible = (e: RasterEvent) => !hidden.has(rep(walkOf.get(e.walk)?.root ?? e.walk)) && rowOf.has(e.frame);
 
 // ---- lanes: concurrent visits of one frame each get a sub-row ----
 // A crowded frame then shows as a stack of bars (a queue), not one blot.
@@ -127,6 +138,7 @@ const PATH = {
   fork: "path://M5 0 L5 5 L1 10 M5 5 L9 10",
   join: "path://M1 0 L5 5 L9 0 M5 5 L5 10",
   cross: "path://M0 0 L10 10 M10 0 L0 10",
+  bolt: "path://M8 0 L2 8 L7 8 L5 14 L12 5 L7 5 Z",
 };
 function symbolOf(k: EventKind): { symbol: string; size: number; offset?: [number, number] } {
   switch (k) {
@@ -139,6 +151,9 @@ function symbolOf(k: EventKind): { symbol: string; size: number; offset?: [numbe
     case "admitted": case "held": case "refused": return { symbol: "circle", size: 7, offset: [9, -10] };
     case "escalation": return { symbol: PATH.cross, size: 11 };
     case "failed": return { symbol: "rect", size: 10 };
+    case "position": return { symbol: "rect", size: 7 };
+    case "surprise": return { symbol: PATH.bolt, size: 16 };
+    case "confirm": return { symbol: "circle", size: 13 };
     default: return { symbol: "circle", size: 6 };
   }
 }
@@ -158,9 +173,10 @@ function pointData() {
       const c =
         e.kind === "admitted" ? css("--good") :
         e.kind === "held" ? css("--warn") :
-        e.kind === "refused" || e.kind === "escalation" || e.kind === "failed" ? css("--bad") :
+        e.kind === "refused" || e.kind === "escalation" || e.kind === "failed" || e.kind === "surprise" ? css("--bad") :
+        e.kind === "confirm" ? css("--good") :
         color(e.walk);
-      const stroked = e.kind === "fork" || e.kind === "join" || e.kind === "escalation";
+      const stroked = e.kind === "fork" || e.kind === "join" || e.kind === "escalation" || e.kind === "confirm";
       const framed = e.kind === "potentiality";
       const opacity = e.kind === "arrival" && !e.mechanical && e.confidence != null ? 0.25 + 0.75 * e.confidence : 1;
       return {
@@ -501,6 +517,11 @@ function legend() {
     ["refused", `<svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="var(--bad)"/></svg>`],
     ["escalation", `<svg width="14" height="12"><path d="M2 1 L12 11 M12 1 L2 11" stroke="var(--bad)" stroke-width="2"/></svg>`],
   ];
+  if (R.insights.ensemble.length) items.push(
+    ["a column's position (shared band)", `<svg width="12" height="12"><rect x="2" y="2" width="8" height="8" fill="currentColor"/></svg>`],
+    ["confirmed by every column", `<svg width="14" height="14"><circle cx="7" cy="7" r="5" fill="none" stroke="var(--good)" stroke-width="2"/></svg>`],
+    ["surprise: perspectives disagree", `<svg width="14" height="14"><path d="M8 0 L2 8 L7 8 L5 14 L12 5 L7 5 Z" fill="var(--bad)"/></svg>`],
+  );
   $("legend").innerHTML = items.map(([k, s]) => `<span>${s}${esc(k)}</span>`).join("");
 }
 
@@ -529,6 +550,18 @@ function insights() {
   const who = (w: number) => { const x = walkOf.get(w); return `${x?.case ?? ""} walk ${w}`.trim(); };
   const list = (rows: string[]) => { const ul = document.createElement("ul"); ul.className = "ins"; for (const r of rows) { const li = document.createElement("li"); li.textContent = r; ul.appendChild(li); } return ul; };
 
+  if (I.ensemble.length) {
+    const said = (c: import("./types").EnsembleCase) => c.positions.map(([col, obj, sh]) => `${col} ${obj} → ${sh}`).join(" · ");
+    out.push(sec(`Perspectives (${R.meta.ensemble ?? "ensemble"})`, list(I.ensemble.map((c) => {
+      const name = c.case ?? `case ${c.job + 1}`;
+      const last = c.last ? `; last to conclude: ${c.last}` : "";
+      switch (c.status) {
+        case "agreed": return `${name} agreed on ${c.agreed}${c.first_confirm_ms != null ? ` at ${fmt(c.first_confirm_ms)}` : ""}: ${said(c)}${last}`;
+        case "surprise": return `${name} surprise at ${fmt(c.first_surprise_ms ?? 0)} → ${c.route === "person" ? "a person" : "curation"}: ${said(c)}${last}`;
+        default: return `${name} ${c.status}: ${said(c)}`;
+      }
+    })), "Agreement is structural: two positions agree when one reaches the other in the shared category."));
+  }
   out.push(sec("Where the time went (all walks)", bar(I.split),
     `Model ${fmt(I.split.judge_ms + I.split.proposer_ms)} · coordination ${fmt(I.split.claim_wait_ms + I.split.join_wait_ms)} over a ${fmt(I.wall_ms)} run.`));
   out.push(sec("Parallelism",

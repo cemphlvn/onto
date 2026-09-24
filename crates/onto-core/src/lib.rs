@@ -4,6 +4,7 @@
 
 pub mod attest;
 pub mod category;
+pub mod ensemble;
 pub mod equality;
 pub mod error;
 pub mod functor;

@@ -1,0 +1,96 @@
+# Three perspectives on one outage, and a shared incident state they are
+# compared in (functors phase 3: ensembles, docs/05-functors.md §6).
+#
+# Each column is its own category with its own judge call and its own
+# `state`: the metrics column sees only the metrics, the logs column only
+# the logs, the complaints column only what customers wrote. A functor
+# maps each column into IncidentState. Code, not a model, compares where
+# the columns ended: two positions agree when one reaches the other in
+# IncidentState (one perspective is only further along), and are a
+# surprise when neither does.
+#
+# onto ensemble demos/incident-response/perspectives.onto#Outage \
+#     --jobs demos/incident-response/perspectives.jobs
+
+category IncidentState {
+    objects: Observed, Healthy, Degraded,
+             BadDeploy, DatabaseFault, CapacityShortfall, DependencyFault;
+    about Healthy: "customers are served normally";
+    about Degraded: "customers are affected; the cause may be unknown";
+    healthy:    Observed -> Healthy;
+    degraded:   Observed -> Degraded;
+    deploy:     Degraded -> BadDeploy;
+    database:   Degraded -> DatabaseFault;
+    capacity:   Degraded -> CapacityShortfall;
+    dependency: Degraded -> DependencyFault;
+    # Contradictions are signals that the model of the world is wrong
+    # somewhere (a blind spot, a missing cause): open to learning.
+    admission: open_world;
+}
+
+category Metrics {
+    objects: Signal, Normal, ErrorsUp, LatencyUp, SaturationUp;
+    start: Signal;
+    state { case: metrics; }
+    frame Signal: choice "What do the service metrics show?";
+    metrics_normal: Signal -> Normal       "error rate, latency and resource use are within their usual range";
+    errors_up:      Signal -> ErrorsUp     "the error rate is clearly above its usual range";
+    latency_up:     Signal -> LatencyUp    "latency is clearly above its usual range while errors are normal";
+    saturation_up:  Signal -> SaturationUp "CPU, memory, connections or queues are near their limits";
+    # A column reports its perspective; investigating is incident
+    # response's work. New kinds of signal may still be learned at Signal.
+    closed: Normal, ErrorsUp, LatencyUp, SaturationUp;
+}
+
+category Logs {
+    objects: Entry, Clean, DeployErrors, DatabaseErrors, DependencyErrors;
+    start: Entry;
+    state { case: logs; }
+    frame Entry: choice "What do the application logs point to?";
+    logs_clean:        Entry -> Clean            "no unusual errors in the logs";
+    deploy_errors:     Entry -> DeployErrors     "errors began with a recent deploy or configuration change";
+    database_errors:   Entry -> DatabaseErrors   "errors come from the database: timeouts, refused or exhausted connections";
+    dependency_errors: Entry -> DependencyErrors "errors come from a third-party service the application calls";
+    closed: Clean, DeployErrors, DatabaseErrors, DependencyErrors;
+}
+
+category Complaints {
+    objects: Report, NoReports, CheckoutBroken, SlowPages, LoginBroken;
+    start: Report;
+    state { case: complaints; }
+    frame Report: choice "What are customers reporting?";
+    no_reports:      Report -> NoReports      "no unusual complaints from customers";
+    checkout_broken: Report -> CheckoutBroken "customers cannot pay or complete an order";
+    slow_pages:      Report -> SlowPages      "customers say pages are very slow or time out";
+    login_broken:    Report -> LoginBroken    "customers cannot sign in";
+    closed: NoReports, CheckoutBroken, SlowPages, LoginBroken;
+}
+
+functor MetricsView: Metrics -> IncidentState {
+    objects: Signal -> Observed, Normal -> Healthy, ErrorsUp -> Degraded,
+             LatencyUp -> Degraded, SaturationUp -> CapacityShortfall;
+    metrics_normal: healthy; errors_up: degraded; latency_up: degraded;
+    saturation_up: capacity.degraded;
+}
+
+functor LogsView: Logs -> IncidentState {
+    objects: Entry -> Observed, Clean -> Healthy, DeployErrors -> BadDeploy,
+             DatabaseErrors -> DatabaseFault, DependencyErrors -> DependencyFault;
+    logs_clean: healthy; deploy_errors: deploy.degraded;
+    database_errors: database.degraded; dependency_errors: dependency.degraded;
+}
+
+functor ComplaintsView: Complaints -> IncidentState {
+    objects: Report -> Observed, NoReports -> Healthy, CheckoutBroken -> Degraded,
+             SlowPages -> Degraded, LoginBroken -> Degraded;
+    no_reports: healthy; checkout_broken: degraded; slow_pages: degraded;
+    login_broken: degraded;
+}
+
+ensemble Outage {
+    shared: IncidentState;
+    column Metrics:    MetricsView    from Signal;
+    column Logs:       LogsView       from Entry;
+    column Complaints: ComplaintsView from Report;
+    consensus: all;
+}

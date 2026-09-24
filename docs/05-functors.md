@@ -154,11 +154,73 @@ LLM proposer asked.
   both catalogue options against `none_apply`). Transport refusals are
   recorded when the walk falls through to the LLM.
 
-## 6. Later
+## 6. Phase 3: ensembles (built, 2026-09-24)
 
-- **Voting (V)** and **column switch (S)**: walks in several categories
-  at once; consensus through a shared category; switching columns needs
-  an adjoint pair to return. After H and T have been used live.
+Several categories walk the **same case** independently, each a column
+with its own judge, its own `state` policy (what it may see), and a
+functor into one **shared** category. Code, not a model, compares where
+the columns are.
+
+```
+ensemble Incident {
+    shared: IncidentState;
+    column Metrics:    MetricsView    from Signal;   # functor MetricsView: Metrics -> IncidentState
+    column Logs:       LogsView       from Entry;
+    column Complaints: ComplaintsView from Report;
+    consensus: all;                                  # all | quorum N
+}
+```
+
+- **Position.** A column's position is the image of its walk's current
+  object in the shared category (when inside its functor's domain).
+- **Agreement is structural.** Two positions are compatible when equal,
+  or when one is reachable from the other in the shared category (one
+  perspective is only further along). They are a **surprise** when
+  neither reaches the other: the perspectives went down different
+  branches. The shared category's structure, declared by people, defines
+  contradiction; no model judges it.
+- **Independence.** Columns never see each other's answers (each judge
+  sees its own column's state), so agreement is evidence, not an echo.
+- **Outcome per case.** `all`: every column's final position is pairwise
+  compatible; the agreed position is the furthest one. `quorum N`: at
+  least N columns form a compatible chain; the others are reported as
+  dissent. Otherwise: surprise.
+- **Surprise is routed by admission.** At an `assured` or `sealed` shared
+  frame the case stops for a person ("the perspectives disagree"). At an
+  `open_world` one it also becomes a gap signal of kind `contradiction`
+  for curation: a sign the model of the world is wrong somewhere. It is
+  the loop's third branch.
+- **Telemetry and raster.** Each column's positions, the moments of first
+  confirmation and first surprise; one raster band per column plus the
+  shared band.
+- **As built.** `onto ensemble FILE#Name --jobs JOBS` runs one engine per
+  column (each with its own judge, learned layer and gap queue:
+  `--learned x.jsonl` becomes `x.<Column>.jsonl`), the same jobs in each,
+  and prints each case's outcome; `--report` writes it as JSON. A case
+  whose columns agree only where they started is **undecided**, not
+  agreed; a confirmation needs every column to have concluded something.
+  A contradiction's gap signal names the **divergence** (the furthest
+  shared object that reaches every position) as its frame, with that
+  frame's options, and its key names the conflicting positions (D58,
+  D59). Tests: `crates/onto-runtime/tests/ensemble.rs` (agreement,
+  blind spot, competing causes, assured → a person, quorum dissent,
+  undecided).
+- **Demo** (`demos/incident-response/perspectives.onto`, live, Jev): a bad
+  deploy → agreed on BadDeploy (metrics and complaints say only
+  Degraded, logs go further); a login outage invisible to metrics and
+  logs → surprise Healthy ⟂ Degraded at Observed, a curation signal
+  (a monitoring blind spot); a campaign surge with pool exhaustion →
+  surprise CapacityShortfall ⟂ DatabaseFault at Degraded (competing
+  causes); a quiet evening → agreed on Healthy. 12 judge calls, no
+  proposer calls, 0.72 s. A first live run left the columns' leaf
+  objects open and the open world extended every one of them (14 learned
+  arrows, 19 s): a column reports a perspective, so its leaves are now
+  `closed` and only its entry frame may learn new kinds of signal.
+- **Later (phase 3b):** column switch (continue in another column where
+  this one lacks the enumeration; returning needs an adjoint pair).
+
+## 7. Later
+
 - **Discovery (K)**: candidate object maps from the behavioural quotient
   (same structural profile), Jev Noul per pair, an LLM only for what
   structure cannot match; learned functors in the learned layer.
@@ -167,7 +229,7 @@ LLM proposer asked.
 - `state`/`unseen` across functors; natural transformations between two
   functors (two consistent readings of the same case).
 
-## 7. Demos
+## 8. Demos
 
 | phase | demo | shows |
 |---|---|---|
