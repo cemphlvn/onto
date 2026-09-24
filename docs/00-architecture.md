@@ -246,7 +246,7 @@ so claims cannot deadlock. Whether two intersecting claims wait:
 
 | policy | waits when | use |
 |---|---|---|
-| `exclusive` (default) | footprints share any node | decision frames that could converge are decided one after another |
+| `exclusive` (audit mode) | footprints share any node | decision frames that could converge are decided one after another |
 | `shared` | same frame, and one claim is a write | readers of an unchanged frame run together; only frame edits serialize |
 
 Every intersection is logged as a **potentiality**, waited on or not:
@@ -417,7 +417,7 @@ snapshot. No database until live multi-writer editing is needed.
 | D5 | in-memory CSR now, rkyv/mmap snapshot next | the step is the hot path |
 | D6 | async runtime in its own crate (tokio, reqwest+rustls) | keeps `onto-core` sync and C-ABI friendly |
 | D7 | Jev over the plain HTTP API, OpenRouter via chat completions with JSON-schema output | no SDK in Rust; both are one POST |
-| D8 | default policy `exclusive`; `shared` opt-in | follows the stated method (intersecting frames wait); `shared` measured faster |
+| D8 | *(superseded by D57)* default policy `exclusive`; `shared` opt-in | follows the stated method (intersecting frames wait); `shared` measured faster |
 | D9 | proposer default `~openai/gpt-luna-latest`, `reasoning.effort = low` | reasoning models otherwise spend the token budget and return no content |
 | D10 | telemetry as JSON lines via `tracing`; heap via counting allocator | greppable, `jq`-able, exact heap numbers |
 | D11 | frames declare a primitive (choice/noul/score); arrows carry instructions (text or JSON) | meaning is not tied to one question type; Jev evaluates all three natively |
@@ -462,6 +462,7 @@ snapshot. No database until live multi-writer editing is needed.
 | D54 | no frame claim is held during a model call (MVCC); admission re-validates under the graph's write lock | a proposer holding a claim made healthy cases wait for an LLM (07 §3, §6); the lock goes, the checks stay |
 | D55 | single-flight per gap key: walks meeting a gap in flight subscribe to its answer | the same gap need not be answered twice; rule 10's reuse without making readers wait |
 | D56 | stops only a person can act on become gap signals for curation (`onto curate`: one proposal per gap, representative cases as the state policy showed them) | a case should not wait for proposals it cannot use; repeated gaps are better answered once, from several cases |
+| D57 | default policy `shared`; `exclusive` stays as an audit mode | with MVCC (D54) waiting is not needed for correctness; intersections are still logged as potentialities; measured: exclusive made an entry frame a queue of 17 and a run 3.6× slower (`docs/07` §2) |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |

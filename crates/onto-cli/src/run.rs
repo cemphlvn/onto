@@ -27,7 +27,7 @@ pub struct RunArgs {
     /// Use the mock proposer only (live Jev, no OpenRouter spend).
     #[arg(long)]
     mock_proposer: bool,
-    #[arg(long, value_enum, default_value_t = PolicyArg::Exclusive)]
+    #[arg(long, value_enum, default_value_t = PolicyArg::Shared)]
     policy: PolicyArg,
     /// Start System 2 alongside System 1 and cancel it when not needed.
     #[arg(long)]

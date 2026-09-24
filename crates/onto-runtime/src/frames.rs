@@ -39,11 +39,12 @@ impl Mode {
 #[serde(rename_all = "snake_case")]
 pub enum Policy {
     /// Any footprint intersection waits: decision frames that could
-    /// converge on a node are decided one after another.
-    #[default]
+    /// converge on a node are decided one after another. An audit and
+    /// experiment mode (D57).
     Exclusive,
     /// Only a write at the same frame waits; other intersections proceed in
-    /// parallel and are logged.
+    /// parallel and are logged as potentialities. The default (D57).
+    #[default]
     Shared,
 }
 
