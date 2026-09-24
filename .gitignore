@@ -6,3 +6,5 @@
 *.memory.jsonl
 # web tooling
 node_modules/
+*.gaps.jsonl
+*.curated.jsonl

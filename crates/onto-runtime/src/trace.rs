@@ -102,6 +102,55 @@ pub struct Insights {
     pub joins: Vec<JoinStat>,
     /// Every learned arrow: the frame before and after it became active.
     pub learning: Vec<LearnStat>,
+    /// Model calls: what they were for and what they produced.
+    pub calls: CallEconomy,
+}
+
+/// Where model calls went, and what they bought (`docs/08-call-economy.md`).
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct CallEconomy {
+    pub judge_calls: usize,
+    pub judge_ms: f64,
+    pub proposer_calls: usize,
+    pub proposer_ms: f64,
+    /// Per escalation kind: escalations, proposer calls and their time.
+    pub kinds: Vec<KindStat>,
+    /// Proposer calls where a proposal could help this case now
+    /// (a structure gap where structure may be learned).
+    pub needed_calls: usize,
+    pub needed_ms: f64,
+    /// Proposer calls whose proposals could only go to review (a sealed
+    /// frame, a closed-world run): they need not block the case.
+    pub deferrable_calls: usize,
+    pub deferrable_ms: f64,
+    /// Proposer calls for evidence gaps or budget stops: new structure
+    /// could not help.
+    pub unnecessary_calls: usize,
+    pub unnecessary_ms: f64,
+    /// Distinct gaps that got a proposer call, and calls beyond one per gap.
+    pub gaps: usize,
+    pub repeated_calls: usize,
+    /// Calls avoided by joining a proposal already in flight for the gap.
+    pub avoided_calls: usize,
+    /// Walks served per proposal in flight (1 = no sharing).
+    pub fan_out: f64,
+    /// Proposals whose graph changed while the model was answering.
+    pub stale_results: usize,
+    pub learned: usize,
+    pub learned_used: usize,
+    pub held: usize,
+    /// (learned and used + held for review) / proposer calls.
+    pub utility: f64,
+    /// Proposer time per gap closed by a learned arrow that was used.
+    pub cost_per_resolved_gap_ms: Option<f64>,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct KindStat {
+    pub kind: String,
+    pub escalations: usize,
+    pub proposer_calls: usize,
+    pub proposer_ms: f64,
 }
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -1022,7 +1071,9 @@ fn insights(r: &Raster, telemetry: &[Value]) -> Insights {
         });
     }
 
+    let calls = economy(telemetry, &learning);
     Insights {
+        calls,
         wall_ms: wall,
         split,
         concurrency,
@@ -1040,6 +1091,109 @@ fn dur(ns: u64) -> String {
     } else {
         format!("{ms:.0} ms")
     }
+}
+
+/// Proposer calls are attributed to the gap event that preceded them for
+/// the same walk and frame.
+fn economy(t: &[Value], learning: &[LearnStat]) -> CallEconomy {
+    let f = |e: &Value, k: &str| e[k].as_f64().unwrap_or(0.0);
+    let mut c = CallEconomy::default();
+    let mut last_gap: HashMap<(u64, String), &Value> = HashMap::new();
+    let mut kinds: BTreeMap<String, KindStat> = BTreeMap::new();
+    let mut gaps_called: BTreeMap<String, usize> = BTreeMap::new();
+    let mut resolved: std::collections::BTreeSet<String> = Default::default();
+    let used: std::collections::HashSet<&str> = learning
+        .iter()
+        .filter(|l| l.used_after > 0)
+        .map(|l| l.arrow.as_str())
+        .collect();
+    for e in t {
+        let key = || {
+            (
+                e["walk"].as_u64().unwrap_or(0),
+                e["at"].as_str().unwrap_or_default().to_owned(),
+            )
+        };
+        match e["event"].as_str().unwrap_or_default() {
+            "judge.call" => {
+                c.judge_calls += 1;
+                c.judge_ms += f(e, "latency_ms");
+            }
+            "gap" => {
+                let k = e["kind"].as_str().unwrap_or_default().to_owned();
+                kinds
+                    .entry(k.clone())
+                    .or_insert_with(|| KindStat {
+                        kind: k,
+                        ..Default::default()
+                    })
+                    .escalations += 1;
+                last_gap.insert(key(), e);
+            }
+            "proposer.call" if e["speculative"] != true || e["discarded"] != true => {
+                let ms = f(e, "latency_ms");
+                c.proposer_calls += 1;
+                c.proposer_ms += ms;
+                let Some(g) = last_gap.get(&key()) else {
+                    continue;
+                };
+                let k = g["kind"].as_str().unwrap_or_default().to_owned();
+                let ks = kinds.entry(k.clone()).or_insert_with(|| KindStat {
+                    kind: k,
+                    ..Default::default()
+                });
+                ks.proposer_calls += 1;
+                ks.proposer_ms += ms;
+                match g["typed_route"].as_str().unwrap_or_default() {
+                    "transport_or_proposer" => {
+                        c.needed_calls += 1;
+                        c.needed_ms += ms;
+                    }
+                    "curation" => {
+                        c.deferrable_calls += 1;
+                        c.deferrable_ms += ms;
+                    }
+                    _ => {
+                        c.unnecessary_calls += 1;
+                        c.unnecessary_ms += ms;
+                    }
+                }
+                *gaps_called
+                    .entry(g["gap"].as_str().unwrap_or_default().to_owned())
+                    .or_default() += 1;
+            }
+            "gap.subscribe" => c.avoided_calls += 1,
+            "gap.stale" => c.stale_results += 1,
+            "learned" => {
+                c.learned += 1;
+                if used.contains(e["arrow"].as_str().unwrap_or_default()) {
+                    c.learned_used += 1;
+                    // The gap this record escalated with.
+                    if let Some(g) = t
+                        .iter()
+                        .find(|g| g["event"] == "gap" && g["record"] == e["record"])
+                    {
+                        resolved.insert(g["gap"].as_str().unwrap_or_default().to_owned());
+                    }
+                }
+            }
+            "expansion" => c.held += e["held"].as_u64().unwrap_or(0) as usize,
+            _ => {}
+        }
+    }
+    c.kinds = kinds.into_values().collect();
+    c.gaps = gaps_called.len();
+    c.repeated_calls = gaps_called.values().map(|n| n.saturating_sub(1)).sum();
+    let flights = c.proposer_calls.max(1) as f64;
+    c.fan_out = (c.proposer_calls + c.avoided_calls) as f64 / flights;
+    c.utility = if c.proposer_calls == 0 {
+        0.0
+    } else {
+        (c.learned_used + c.held) as f64 / c.proposer_calls as f64
+    };
+    c.cost_per_resolved_gap_ms =
+        (!resolved.is_empty()).then(|| c.proposer_ms / resolved.len() as f64);
+    c
 }
 
 #[cfg(test)]

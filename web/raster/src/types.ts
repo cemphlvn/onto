@@ -42,7 +42,16 @@ export interface Walk {
 }
 
 export interface Split { judge_ms: number; proposer_ms: number; claim_wait_ms: number; join_wait_ms: number; other_ms: number }
+export interface CallEconomy {
+  judge_calls: number; judge_ms: number; proposer_calls: number; proposer_ms: number;
+  kinds: { kind: string; escalations: number; proposer_calls: number; proposer_ms: number }[];
+  needed_calls: number; needed_ms: number; deferrable_calls: number; deferrable_ms: number;
+  unnecessary_calls: number; unnecessary_ms: number; gaps: number; repeated_calls: number;
+  avoided_calls: number; fan_out: number; stale_results: number; learned: number; learned_used: number;
+  held: number; utility: number; cost_per_resolved_gap_ms: number | null;
+}
 export interface Insights {
+  calls: CallEconomy;
   wall_ms: number;
   split: Split;
   concurrency: { max: number; mean: number; profile: [number, number][] };

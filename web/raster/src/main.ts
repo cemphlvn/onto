@@ -533,6 +533,21 @@ function insights() {
     `Model ${fmt(I.split.judge_ms + I.split.proposer_ms)} · coordination ${fmt(I.split.claim_wait_ms + I.split.join_wait_ms)} over a ${fmt(I.wall_ms)} run.`));
   out.push(sec("Parallelism",
     `Up to ${I.concurrency.max} walks active at once; ${I.concurrency.mean.toFixed(2)} on average. Work over wall: ${I.critical_path.work_over_wall.toFixed(2)}×.`));
+  const C = I.calls;
+  if (C.proposer_calls) {
+    const parts: [string, number, string][] = [
+      ["needed now", C.needed_ms, "var(--good)"], ["deferrable (review only)", C.deferrable_ms, "var(--warn)"], ["unnecessary", C.unnecessary_ms, "var(--bad)"],
+    ];
+    const tot = parts.reduce((a, p) => a + p[1], 0) || 1;
+    const d = document.createElement("div"); d.className = "split";
+    d.innerHTML = `<div class="split-bar">${parts.map(([, v, c]) => `<i style="width:${(100 * v) / tot}%;background:${c}"></i>`).join("")}</div>` +
+      `<div class="split-keys">${parts.filter(([, v]) => v > 0.5).map(([k, v, c]) => `<span><i style="background:${c}"></i>${esc(k)} ${fmt(v)}</span>`).join("")}</div>`;
+    out.push(sec("Proposer calls: what they were for", d,
+      `${C.proposer_calls} calls for ${C.gaps} gaps (${C.repeated_calls} repeats, ${C.avoided_calls} avoided by sharing, fan-out ${C.fan_out.toFixed(2)}). ` +
+      `${C.learned} learned, ${C.learned_used} used, ${C.held} held: utility ${(100 * C.utility).toFixed(0)}%` +
+      (C.cost_per_resolved_gap_ms != null ? `, ${fmt(C.cost_per_resolved_gap_ms)} of proposer time per resolved gap.` : "."),
+      list(C.kinds.map((k) => `${k.kind.replace("_", " ")}: ${k.escalations} escalations, ${k.proposer_calls} proposer calls, ${fmt(k.proposer_ms)}`))));
+  }
   const cp = I.critical_path;
   out.push(sec("Critical path (what the run waited for)", bar(cp.split),
     `${cp.frames.join(" → ")} · ends at ${fmt(cp.end_ms)} (${cp.records.length} records)`));

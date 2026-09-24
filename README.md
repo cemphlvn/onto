@@ -21,7 +21,7 @@ limits people declared.
 > positioning: [`01`](docs/01-positioning.md) · semantics: [`02`](docs/02-dispositional-semantics.md) ·
 > joins: [`03`](docs/03-joins.md) · **trust model**: [`04`](docs/04-trust-model.md) ·
 > functors: [`05`](docs/05-functors.md) · the four spaces: [`06`](docs/06-spaces.md) ·
-> what the raster shows, tested: [`07`](docs/07-raster-findings.md)
+> what the raster shows, tested: [`07`](docs/07-raster-findings.md) · call economy: [`08`](docs/08-call-economy.md)
 
 ## The loop
 
@@ -137,9 +137,10 @@ can never authorize a data use or a deployment.
 | typed judgments | Jev; confidence gate; `none_of_these` always offered; `grouped by` frames |
 | walk | engine: frame claims, forks, joins (`all`, `race`, `gate`) |
 | disposition | frame records (`--dispositions`, `onto why`); capabilities and attestation decide what may happen |
-| missing distinction | escalation: `none_of_these`, `open_frame`, `low_confidence` |
+| missing distinction | escalation, **typed**: a structure gap (the proposer may help), an evidence gap (only evidence helps: no model), a policy stop (a gap signal for curation), a budget stop |
 | contradiction | today: a join that cannot complete; *planned*: prediction across columns (functors) |
-| propose or transport | transport from a functor's empty fibers first; an LLM proposer second |
+| propose or transport | only for structure gaps where structure may be learned: transport from a functor's empty fibers first, an LLM proposer second; one proposal in flight per gap (single-flight), no frame lock held while a model answers |
+| curation | policy stops and closed-world gaps as gap signals (`<stem>.gaps.jsonl`); `onto curate`: one proposal per gap for review |
 | review | structural proofs (well-formedness, authority, contracts, `via`/`never`, `unseen`, sealed, progress); critic checks (rules, duplicates, overlap), settled by structure where a closed catalogue already decides |
 | learned layer | `<stem>.learned.jsonl`, replayed through the proofs on every load |
 | person decides | `onto review`, `onto promote` (into declared policy, atomically, snapshot-checked) |

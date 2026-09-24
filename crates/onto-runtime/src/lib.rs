@@ -7,6 +7,7 @@
 //! wait for each other, and every intersection is logged as a potentiality.
 //! See `docs/00-architecture.md` §5.
 
+pub mod curation;
 pub mod engine;
 pub mod frames;
 pub mod joins;

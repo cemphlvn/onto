@@ -16,6 +16,7 @@ async fn run(policy: Policy, speculate: bool, goals: &[&str]) -> RunReport {
         policy,
         speculate,
         open_world: false,
+        review_inline: true,
         ..Config::default()
     };
     let engine = Engine::new(
@@ -150,6 +151,7 @@ async fn run_parts(max_branches: usize, from: &str, goal: &str, case: Value) -> 
         policy: Policy::Shared,
         max_branches,
         open_world: false,
+        review_inline: true,
         ..Config::default()
     };
     let engine = Engine::new(
@@ -276,6 +278,7 @@ async fn later_proposers_reuse_pending_proposals_at_the_frame() {
     let cfg = Config {
         policy: Policy::Shared,
         open_world: false,
+        review_inline: true,
         ..Config::default()
     };
     let engine = Engine::new(
@@ -370,6 +373,7 @@ mod dispositions {
         let cfg = Config {
             policy: Policy::Shared,
             open_world: false,
+            review_inline: true,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -429,6 +433,7 @@ mod dispositions {
         let cfg = Config {
             policy: Policy::Shared,
             open_world: false,
+            review_inline: true,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -646,6 +651,7 @@ mod contracts {
         let cfg = Config {
             policy: Policy::Shared,
             open_world: false,
+            review_inline: true,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -730,6 +736,7 @@ mod joins {
         let cfg = Config {
             policy: Policy::Shared,
             open_world: false,
+            review_inline: true,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -908,6 +915,7 @@ mod attested_joins {
         let cfg = Config {
             policy: Policy::Shared,
             open_world: false,
+            review_inline: true,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -991,6 +999,7 @@ mod parallel_race {
             Config {
                 policy: Policy::Shared,
                 open_world: false,
+                review_inline: true,
                 ..Config::default()
             },
         );
@@ -1053,6 +1062,7 @@ mod split_frames {
             policy: Policy::Shared,
             max_branches,
             open_world: false,
+            review_inline: true,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -1132,6 +1142,7 @@ mod sequential_joins {
             policy: Policy::Shared,
             max_branches: 6,
             open_world: false,
+            review_inline: true,
             ..Config::default()
         };
         let engine = Engine::new(
@@ -1257,6 +1268,7 @@ mod open_world {
         for cfg in [
             Config {
                 open_world: false,
+                review_inline: true,
                 ..Config::default()
             },
             Config {
@@ -1355,6 +1367,7 @@ async fn models_see_only_the_declared_state() {
         MockProposer { latency: LATENCY },
         Config {
             open_world: false,
+            review_inline: true,
             ..Config::default()
         },
     );
@@ -1469,6 +1482,7 @@ async fn memory_shows_projected_precedents_from_other_cases() {
         MockProposer { latency: LATENCY },
         Config {
             open_world: false,
+            review_inline: true,
             ..Config::default()
         },
     );
@@ -1620,6 +1634,7 @@ mod functors {
             MockProposer { latency: LATENCY },
             Config {
                 open_world: false,
+                review_inline: true,
                 ..Config::default()
             },
         );
@@ -1653,6 +1668,7 @@ mod functors {
             MockProposer { latency: LATENCY },
             Config {
                 open_world: false,
+                review_inline: true,
                 ..Config::default()
             },
         );
@@ -1773,5 +1789,186 @@ mod loops {
         );
         let r = run(&src, false).await;
         assert!(r.learned.is_empty());
+    }
+}
+
+/// Typed escalations: only a structure gap where structure may be learned
+/// keeps a case waiting for a model.
+mod routing {
+    use super::*;
+    use onto_core::walk::Proposal;
+    use onto_runtime::model::{ModelError, ProposalRequest, Proposer, Usage};
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    /// Counts proposer calls.
+    struct Counting(Arc<AtomicUsize>);
+    impl Proposer for Counting {
+        fn name(&self) -> String {
+            "counting".into()
+        }
+        async fn propose(&self, _: ProposalRequest) -> Result<(Vec<Proposal>, Usage), ModelError> {
+            self.0.fetch_add(1, Ordering::SeqCst);
+            Ok((Vec::new(), Usage::default()))
+        }
+    }
+
+    async fn run(src: &str, from: &str, goal: &str, cfg: Config) -> (RunReport, usize) {
+        let calls = Arc::new(AtomicUsize::new(0));
+        let cat = Arc::new(onto_core::parse(src).unwrap());
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            Counting(calls.clone()),
+            cfg,
+        );
+        let job = Job {
+            from: from.into(),
+            goal: goal.into(),
+            case: json!({"id": "K-1"}),
+        };
+        let r = engine.run(vec![job]).await.unwrap();
+        (r, calls.load(Ordering::SeqCst))
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn an_evidence_gap_asks_no_model_for_structure() {
+        let src = r#"category C {
+            objects: A, B;
+            go: A -> B "go" require case.ok == true;
+            closed: A;
+        }"#;
+        let (r, calls) = run(src, "A", "go", Config::default()).await;
+        assert_eq!(calls, 0, "missing evidence is not a structure gap");
+        let f = &r.walks[0].frames[0];
+        assert_eq!(f.gap.as_ref().unwrap().0, "evidence_gap");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_sealed_gap_becomes_a_curation_signal_and_the_case_does_not_wait() {
+        let src = r#"category C {
+            objects: A, B;
+            go: A -> B "go";
+            closed: A;
+            admission A: sealed;
+        }"#;
+        let (r, calls) = run(src, "A", "something else entirely", Config::default()).await;
+        assert_eq!(calls, 0);
+        assert_eq!(r.gaps.len(), 1);
+        assert_eq!(r.gaps[0].kind, "policy_stop");
+        assert!(r.gaps[0].options[0].starts_with("go → B"));
+        // An interactive session may still compute review proposals inline.
+        let (r, calls) = run(
+            src,
+            "A",
+            "something else entirely",
+            Config {
+                review_inline: true,
+                ..Config::default()
+            },
+        )
+        .await;
+        assert_eq!(calls, 1);
+        assert!(r.gaps.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_learnable_structure_gap_still_asks_the_proposer() {
+        let src = r#"category C {
+            objects: A, B;
+            go: A -> B "go";
+            closed: A;
+        }"#;
+        let (_, calls) = run(src, "A", "something else entirely", Config::default()).await;
+        assert_eq!(calls, 1);
+    }
+
+    /// Proposes `to_refund` after a delay; counts calls.
+    struct Slow(Arc<AtomicUsize>, u64);
+    impl Proposer for Slow {
+        fn name(&self) -> String {
+            "slow".into()
+        }
+        async fn propose(
+            &self,
+            req: ProposalRequest,
+        ) -> Result<(Vec<Proposal>, Usage), ModelError> {
+            self.0.fetch_add(1, Ordering::SeqCst);
+            tokio::time::sleep(Duration::from_millis(self.1)).await;
+            Ok((
+                vec![Proposal {
+                    arrow: "to_refund".into(),
+                    src: req.at,
+                    dst: "Refund".into(),
+                    about: "the customer wants money back".into(),
+                    ..Default::default()
+                }],
+                Usage::default(),
+            ))
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn one_gap_one_proposal_both_walks_continue() {
+        let calls = Arc::new(AtomicUsize::new(0));
+        let cat = Arc::new(onto_core::parse(TRIAGE).unwrap());
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            Slow(calls.clone(), 300),
+            Config::default(),
+        );
+        let jobs = ["please refund", "please refund"]
+            .iter()
+            .map(|g| Job {
+                from: "Request".into(),
+                goal: (*g).into(),
+                case: json!({}),
+            })
+            .collect();
+        let r = engine.run(jobs).await.unwrap();
+        // Two gaps (Request, then the new Refund, which has no arrows),
+        // one proposal each: without single-flight it would be four.
+        assert_eq!(calls.load(Ordering::SeqCst), 2, "one call per gap");
+        for w in &r.walks {
+            assert!(w.path.contains("Request -> Refund"), "{}", w.path);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_reader_never_waits_for_a_proposer() {
+        let calls = Arc::new(AtomicUsize::new(0));
+        let cat = Arc::new(onto_core::parse(TRIAGE).unwrap());
+        let engine = Engine::new(
+            cat,
+            MockJudge { latency: LATENCY },
+            Slow(calls, 1500),
+            Config {
+                policy: Policy::Shared,
+                stagger: Duration::from_millis(150),
+                ..Config::default()
+            },
+        );
+        // The first walk escalates at Request and asks a slow proposer; the
+        // second arrives while it answers and is routed at once.
+        let jobs = ["please refund", "a bug: patch it and ship"]
+            .iter()
+            .map(|g| Job {
+                from: "Request".into(),
+                goal: (*g).into(),
+                case: json!({}),
+            })
+            .collect();
+        let r = engine.run(jobs).await.unwrap();
+        let fix = r
+            .walks
+            .iter()
+            .find(|w| w.goal.starts_with("a bug"))
+            .unwrap();
+        assert_eq!(fix.path, "ship.patch.report : Request -> Done");
+        assert!(
+            fix.elapsed_ms < 1200.0,
+            "waited {} ms behind the proposer",
+            fix.elapsed_ms
+        );
     }
 }

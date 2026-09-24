@@ -458,6 +458,10 @@ snapshot. No database until live multi-writer editing is needed.
 | D50 | overlap/duplicate between options of a closed target frame are settled by that frame, not re-judged | the closed claim is policy people declared; live, a model re-litigating it blocked the catalogue's options |
 | D51 | two evolutionary regimes over one runtime, chosen per frame: open-world learning (semantic unknowns may enter the learned layer as hypotheses with provenance) and assured evolution (unknowns wait for a person); closure, admission and layer are separate concepts | one trust regime cannot serve both a support taxonomy and a consent policy; applications must state how they live with the unknown |
 | D52 | the raster renders a typed trace projection (`trace::RasterEvent`), not telemetry; v1 renderer: Apache ECharts (Canvas) in TypeScript, embedded in one HTML page; deck.gl only if measured scale requires it | the data model must outlive the renderer; a self-contained page needs no server; Canvas handles thousands of marks |
+| D53 | escalations are typed (structure gap, evidence gap, policy stop, budget stop); the proposer serves structure gaps only | a walk that cannot continue does not always need a new arrow: live, 42–84% of proposer time went where no structure could be learned |
+| D54 | no frame claim is held during a model call (MVCC); admission re-validates under the graph's write lock | a proposer holding a claim made healthy cases wait for an LLM (07 §3, §6); the lock goes, the checks stay |
+| D55 | single-flight per gap key: walks meeting a gap in flight subscribe to its answer | the same gap need not be answered twice; rule 10's reuse without making readers wait |
+| D56 | stops only a person can act on become gap signals for curation (`onto curate`: one proposal per gap, representative cases as the state policy showed them) | a case should not wait for proposals it cannot use; repeated gaps are better answered once, from several cases |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -532,7 +536,10 @@ snapshot. No database until live multi-writer editing is needed.
 - **Admission regimes (done):** `admission` per frame (open_world,
   assured, sealed), `held` proposals, `--loop assured`; README states the
   shared core and both loops; `docs/06-spaces.md` names the four spaces.
-- **Next:** the raster view; prediction across columns (functors phase
+- **Call economy (done):** typed escalations, gap keys, MVCC, single-flight,
+  gap signals and `onto curate`; measured before and after each step
+  (`docs/08-call-economy.md`).
+- **Next:** raster–map–state linking; prediction across columns (functors phase
   3); usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound

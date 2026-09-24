@@ -118,6 +118,40 @@ impl Escalation {
     }
 }
 
+/// What kind of stop an escalation is, which decides what may help.
+/// A walk that cannot continue does not always need a new arrow.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize),
+    serde(rename_all = "snake_case")
+)]
+pub enum EscalationKind {
+    /// The known options do not cover the case, where structure may be
+    /// learned: a proposer (or transport) can help.
+    StructureGap,
+    /// A required fact or attestation is missing: only evidence helps,
+    /// never new structure (it would be a bypass).
+    EvidenceGap,
+    /// Policy stops here: a sealed frame, a join a sibling left, an
+    /// authority restriction. A person may change the policy; the case
+    /// cannot.
+    PolicyStop,
+    /// A branch, call or expansion budget is exhausted.
+    BudgetStop,
+}
+
+impl EscalationKind {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::StructureGap => "structure_gap",
+            Self::EvidenceGap => "evidence_gap",
+            Self::PolicyStop => "policy_stop",
+            Self::BudgetStop => "budget_stop",
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Decision {
     /// Follow candidate `index`. `alternatives` are other candidates that

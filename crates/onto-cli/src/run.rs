@@ -61,6 +61,10 @@ pub struct RunArgs {
     /// Start job i after i × this many milliseconds (an arrival stream).
     #[arg(long, default_value_t = 0)]
     stagger: u64,
+    /// Compute review proposals on the case's path (sealed frames,
+    /// closed-world runs) instead of writing gap signals for curation.
+    #[arg(long)]
+    propose_inline: bool,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -157,6 +161,7 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         max_expansions: args.world.max_expansions,
         assured: args.world.assured(),
         stagger: Duration::from_millis(args.stagger),
+        review_inline: args.propose_inline,
         ..Config::default()
     };
 
@@ -175,6 +180,7 @@ pub fn main(args: RunArgs) -> Result<(), BoxError> {
         print_view(v, &report)?;
     }
     args.world.save(&args.file, &report.learned)?;
+    args.world.save_gaps(&args.file, &report.gaps)?;
     args.world.save_precedents(&args.file, &report.precedents)?;
     if let Some(path) = &args.dispositions {
         let n = write_dispositions(&report, path)?;

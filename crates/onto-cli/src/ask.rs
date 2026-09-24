@@ -56,6 +56,8 @@ pub fn main(args: AskArgs) -> Result<(), BoxError> {
         open_world: !args.world.closed_world,
         max_expansions: args.world.max_expansions,
         assured: args.world.assured(),
+        // An interactive session shows what an AI would suggest.
+        review_inline: true,
         ..Config::default()
     };
     let precedents = args.world.precedents(&args.file, &cat)?;

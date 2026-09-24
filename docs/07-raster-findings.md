@@ -202,7 +202,9 @@ column's prediction was confirmed or contradicted.
 5. **Demo designs meet reality** (4): the gap was elsewhere than
    designed.
 
-Candidate changes, for discussion rather than applied: skip the proposer
+Follow-up: typed escalations, MVCC, single-flight and curation were
+built and measured against these same scenarios in
+`docs/08-call-economy.md`. Candidate changes as first listed: skip the proposer
 at sealed frames in open-world runs (keep it for review runs); hold the
 write claim only while admitting, and show pending proposals through a
 lighter mechanism; make `shared` the default for entry frames; start the

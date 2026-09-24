@@ -214,6 +214,13 @@ What changes, stated plainly:
   (recorded "settled by structure"). The catalogue and the functor are
   policy; whoever can edit them decides what is transported. Structural
   proofs, sealed regions and rule invariants still apply.
+- **Curation sees what a judge saw.** Gap signals carry the case as
+  the frame's `state` policy projected it (`seen`), never the raw case;
+  `onto curate` shows a proposer at most a few such examples, so
+  `unseen` holds for curation too.
+- **No lock during model calls; the checks stay.** Proposals are
+  admitted under the graph's write lock after re-running every
+  structural proof against the current version (D54).
 - **Two admission regimes, per frame (D51).** Under `open_world`, a
   semantic check the critic cannot decide does not block learning (the
   arrow enters as a hypothesis with provenance). Under `assured`, it

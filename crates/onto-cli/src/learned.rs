@@ -46,6 +46,9 @@ pub struct WorldArgs {
     /// Neither load nor record precedents.
     #[arg(long)]
     pub no_memory: bool,
+    /// Gap signals for curation (default: `<file stem>.gaps.jsonl`).
+    #[arg(long)]
+    pub gaps: Option<PathBuf>,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
@@ -193,6 +196,34 @@ impl WorldArgs {
         println!(
             "memory: {} precedent(s) appended to {}",
             ps.len(),
+            path.display()
+        );
+        Ok(())
+    }
+
+    /// Appends this run's gap signals (stops a person or curation acts on).
+    pub fn save_gaps(
+        &self,
+        file: &Path,
+        gaps: &[onto_runtime::curation::GapSignal],
+    ) -> Result<(), BoxError> {
+        if gaps.is_empty() {
+            return Ok(());
+        }
+        let path = self
+            .gaps
+            .clone()
+            .unwrap_or_else(|| sibling(file, "gaps.jsonl"));
+        let mut out = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&path)?;
+        for g in gaps {
+            writeln!(out, "{}", serde_json::to_string(g)?)?;
+        }
+        println!(
+            "gaps: {} signal(s) for curation appended to {} (onto curate)",
+            gaps.len(),
             path.display()
         );
         Ok(())

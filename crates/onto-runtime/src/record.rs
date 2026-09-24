@@ -39,6 +39,9 @@ pub struct FrameRecord {
     pub outcome: Outcome,
     /// Provisional System-2 proposals made at this visit, if it escalated.
     pub proposals: Vec<Proposal>,
+    /// For an escalation: what kind of stop it was, and its gap key.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gap: Option<(String, String)>,
     /// A `grouped by` frame's coarse step.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub grouped: Option<crate::lens::GroupRecord>,

@@ -9,7 +9,8 @@ use std::time::{Duration, Instant};
 
 use onto_core::category::Closure;
 use onto_core::walk::{
-    Answer, Decision, Disposition, Escalation, Proposal, candidates, decide, dispose,
+    Answer, Decision, Disposition, Escalation, EscalationKind, Proposal, candidates, decide,
+    dispose,
 };
 use onto_core::{ArrowId, Category, ObjId, Path, Primitive};
 use serde::Serialize;
@@ -64,6 +65,10 @@ pub struct Config {
     /// Otherwise each frame's declared admission decides (`admission X:
     /// assured;`); a run can tighten admission, never loosen it.
     pub assured: bool,
+    /// Compute review proposals on the case's path (an interactive session
+    /// wants to show them). Otherwise stops that only a person can act on
+    /// become gap signals for curation, and the case does not wait.
+    pub review_inline: bool,
     /// Arrival stream: job i starts `i × stagger` after the run starts
     /// (zero: all at once).
     pub stagger: Duration,
@@ -85,6 +90,7 @@ impl Default for Config {
             max_expansions: 3,
             assured: false,
             stagger: Duration::ZERO,
+            review_inline: false,
         }
     }
 }
@@ -199,6 +205,8 @@ pub struct RunReport {
     pub walks: Vec<WalkReport>,
     /// Structure the open world learned in this run, in admission order.
     pub learned: Vec<Learned>,
+    /// Stops for curation (a person's call, off the case's path).
+    pub gaps: Vec<crate::curation::GapSignal>,
     /// Decisions this run made at frames that declare `memory`: the
     /// precedents later runs may be shown.
     pub precedents: Vec<crate::memory::Precedent>,
@@ -235,6 +243,24 @@ pub struct Learned {
     /// `F:g` when it completed the enumeration from functor F's arrow g.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transported: Option<String>,
+}
+
+/// The answer to a gap, shared with every walk that subscribed to it.
+#[derive(Clone, Debug)]
+struct FlightResult {
+    leader: String,
+    proposals: Vec<Proposal>,
+    learned: Vec<Proposal>,
+    refused: Vec<(String, String)>,
+    held: Vec<(String, String)>,
+}
+
+type FlightRx = tokio::sync::watch::Receiver<Option<Arc<FlightResult>>>;
+type FlightTx = tokio::sync::watch::Sender<Option<Arc<FlightResult>>>;
+
+enum FlightRole {
+    Leader(FlightTx),
+    Subscriber(FlightRx),
 }
 
 /// What one expansion admitted, refused, and (governed loop) held.
@@ -296,6 +322,11 @@ pub struct Engine<J, P> {
     memory_loaded: AtomicUsize,
     /// Functors from this category the walk uses (hierarchy, transport).
     lenses: Mutex<Vec<Arc<crate::lens::Lens>>>,
+    gaps: Mutex<Vec<crate::curation::GapSignal>>,
+    /// Proposals in flight, by gap key (single-flight).
+    flights: Mutex<HashMap<String, FlightRx>>,
+    /// Incremented whenever the open world changes the graph.
+    graph_version: AtomicU64,
     transported: Mutex<crate::lens::Transported>,
     judge: J,
     proposer: P,
@@ -380,6 +411,9 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             memory: Mutex::new(Vec::new()),
             memory_loaded: AtomicUsize::new(0),
             lenses: Mutex::new(Vec::new()),
+            gaps: Mutex::new(Vec::new()),
+            flights: Mutex::new(HashMap::new()),
+            graph_version: AtomicU64::new(0),
             transported: Mutex::new(Default::default()),
             judge,
             proposer,
@@ -395,6 +429,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             .map(|j| self.cat().object_id(&j.from))
             .collect::<Result<Vec<_>, _>>()?;
         let learned_before = self.learned.lock().unwrap().len();
+        let gaps_before = self.gaps.lock().unwrap().len();
         let memory_before = self.memory.lock().unwrap().len();
         let mem_start = mem::sample();
         let sampler = mem::spawn_sampler(self.cfg.mem_sample_every);
@@ -476,6 +511,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             walks,
             learned: self.learned()[learned_before..].to_vec(),
             precedents: self.memory.lock().unwrap()[memory_before..].to_vec(),
+            gaps: self.gaps.lock().unwrap()[gaps_before..].to_vec(),
             potentialities: self.locks.potentialities(),
             wall_ms: ms(wall),
             model_ms_sum: c.model_us.load(Relaxed) as f64 / 1e3,
@@ -704,6 +740,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 );
                 frames.push(FrameRecord {
                     grouped: None,
+                    gap: None,
                     held: Vec::new(),
                     seen: None,
                     refused: Vec::new(),
@@ -786,7 +823,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             } else {
                 Mode::Read
             };
-            let mut guard = self.locks.acquire(cat, Claim::new(cat, id, at, mode)).await;
+            let guard = self.locks.acquire(cat, Claim::new(cat, id, at, mode)).await;
             let wait_ms = ms(guard.waited);
             seq += 1;
             let rec_id = format!("w{id}.{seq}");
@@ -807,6 +844,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             let visit_seen = self.state(cat, &job, &path, &hops, &focus, &tokens);
             let record = |judge: Option<JudgeRecord>, candidates, outcome| FrameRecord {
                 grouped: visit_grouped.clone(),
+                gap: None,
                 held: Vec::new(),
                 seen: judge.is_some().then(|| visit_seen.clone()),
                 refused: Vec::new(),
@@ -1190,8 +1228,78 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 after = Some(rec_id);
                 continue 'steps;
             }
-            if reason == Escalation::SplitOverBudget {
-                // Structural: a proposal cannot fix a budget; a person must.
+            // Type the stop and name the gap (measured now; routes later).
+            let (kind, missing) = self.classify(cat, at, reason, frames.last(), expansions);
+            let gap = format!(
+                "{}:{}:{}:{}",
+                self.snapshot
+                    .as_deref()
+                    .map_or("-", |s| &s[..s.len().min(8)]),
+                at_name,
+                kind.as_str(),
+                missing
+            );
+            let typed_route = match kind {
+                EscalationKind::StructureGap if self.cfg.open_world => "transport_or_proposer",
+                EscalationKind::StructureGap | EscalationKind::PolicyStop => "curation",
+                EscalationKind::EvidenceGap => "evidence",
+                EscalationKind::BudgetStop => "stop",
+            };
+            // Only a structure gap where structure may be learned keeps the
+            // case waiting for a model; review proposals may be computed
+            // inline when a session asks for them.
+            let route = match typed_route {
+                "curation" if self.cfg.review_inline => "proposer",
+                other => other,
+            };
+            if let Some(last) = frames.last_mut().filter(|f| f.id == rec_id) {
+                last.gap = Some((kind.as_str().to_owned(), gap.clone()));
+            }
+            tracing::info!(
+                target: "onto",
+                event = "gap",
+                walk = id,
+                at = %at_name,
+                record = %rec_id,
+                reason = reason.as_str(),
+                kind = kind.as_str(),
+                gap = %gap,
+                typed_route,
+                route,
+            );
+            if route == "curation" {
+                let options = cat
+                    .out(at)
+                    .iter()
+                    .map(|a| {
+                        let x = cat.arrow(*a);
+                        let about = x.instructions.as_ref().map_or(String::new(), |i| {
+                            format!(": {}", i.as_str().map_or(i.to_string(), str::to_owned))
+                        });
+                        format!("{} → {}{about}", x.name, cat.object(x.dst).name)
+                    })
+                    .collect();
+                self.gaps.lock().unwrap().push(crate::curation::GapSignal {
+                    key: gap.clone(),
+                    kind: kind.as_str().to_owned(),
+                    frame: at_name.clone(),
+                    reason: reason.as_str().to_owned(),
+                    missing: missing.clone(),
+                    record: rec_id.clone(),
+                    walk: id,
+                    case: job.case["id"].as_str().map(str::to_owned),
+                    snapshot: self.snapshot.clone(),
+                    seen: visit_seen.clone(),
+                    options,
+                });
+            }
+            if matches!(route, "curation" | "evidence" | "stop") {
+                // New structure cannot help this case now: stop without a
+                // model (a person, evidence or curation acts next).
+                if let Some(h) = speculative.take() {
+                    h.abort();
+                }
+                drop(guard);
                 steps.push(StepRecord::Escalated {
                     at: at_name,
                     reason,
@@ -1202,6 +1310,10 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 });
                 break;
             }
+            // MVCC: nothing below holds the frame claim. A model call never
+            // makes another walk wait; admission is a short write on the
+            // graph that re-validates against its current version.
+            drop(guard);
             // Transport: before any LLM, complete the enumeration from a
             // functor whose target knows directions this frame lacks.
             let mut transport_refused: Vec<(String, String)> = Vec::new();
@@ -1209,13 +1321,6 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             if self.cfg.open_world && cat.learnable(at) && expansions < self.cfg.max_expansions {
                 let found = self.transportable(cat, at);
                 if !found.is_empty() {
-                    if mode == Mode::Read {
-                        drop(guard);
-                        guard = self
-                            .locks
-                            .acquire(cat, Claim::new(cat, id, at, Mode::Write))
-                            .await;
-                    }
                     let proposals: Vec<Proposal> = found.iter().map(|(.., p)| p.clone()).collect();
                     let settled = self.settled(cat, at, &found);
                     let Expansion {
@@ -1249,7 +1354,6 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                                 source: source.clone(),
                             };
                         }
-                        drop(guard);
                         steps.push(StepRecord::Expanded {
                             at: at_name,
                             reason,
@@ -1273,33 +1377,102 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         .collect();
                 }
             }
-            let proposals = match speculative {
-                Some(h) => h.await.expect("proposer task panicked"),
-                None => {
-                    if mode == Mode::Read {
-                        // Upgrade: System 2 may extend this frame.
-                        drop(guard);
-                        guard = self
-                            .locks
-                            .acquire(cat, Claim::new(cat, id, at, Mode::Write))
-                            .await;
+
+            // Single-flight: one proposal in flight per gap. A walk that
+            // meets a gap already being answered subscribes to that answer.
+            let learnable_here =
+                self.cfg.open_world && cat.learnable(at) && expansions < self.cfg.max_expansions;
+            let (proposals, leader) = match speculative {
+                Some(h) => (h.await.expect("proposer task panicked"), None),
+                None => match self.flight(&gap) {
+                    FlightRole::Subscriber(mut rx) => {
+                        tracing::info!(target: "onto", event = "gap.subscribe", walk = id, at = %at_name, record = %rec_id, gap = %gap);
+                        let shared = rx
+                            .wait_for(Option::is_some)
+                            .await
+                            .ok()
+                            .and_then(|v| v.as_ref().cloned());
+                        let Some(r) = shared else {
+                            steps.push(StepRecord::Escalated {
+                                at: at_name,
+                                reason,
+                                proposals: Vec::new(),
+                                refused: Vec::new(),
+                                held: Vec::new(),
+                                wait_ms,
+                            });
+                            break;
+                        };
+                        if let Some(last) = frames.last_mut() {
+                            last.proposals = r.proposals.clone();
+                            last.seen = Some(visit_seen.clone());
+                        }
+                        // Two walks needed the same answer: a conceptual
+                        // intersection, recorded as before.
+                        self.note_concepts(id, at, &r.proposals);
+                        if !r.learned.is_empty() && learnable_here {
+                            // The graph grew for this gap: judge again.
+                            if let Some(last) = frames.last_mut() {
+                                last.outcome = Outcome::Expanded {
+                                    reason,
+                                    learned: r.learned.iter().map(|p| p.arrow.clone()).collect(),
+                                    source: format!("shared {}", r.leader),
+                                };
+                            }
+                            steps.push(StepRecord::Expanded {
+                                at: at_name,
+                                reason,
+                                source: format!("shared {}", r.leader),
+                                learned: r.learned.clone(),
+                                refused: Vec::new(),
+                                held: Vec::new(),
+                                wait_ms,
+                            });
+                            expansions += 1;
+                            after = Some(rec_id);
+                            continue 'steps;
+                        }
+                        steps.push(StepRecord::Escalated {
+                            at: at_name,
+                            reason,
+                            proposals: r.proposals.clone(),
+                            refused: r.refused.clone(),
+                            held: r.held.clone(),
+                            wait_ms,
+                        });
+                        break;
                     }
-                    let req =
-                        self.proposal_request(&job, &path, &hops, &focus, &tokens, reason.as_str());
-                    self.call_proposer(id, req, false).await
-                }
+                    FlightRole::Leader(tx) => {
+                        let req = self.proposal_request(
+                            &job,
+                            &path,
+                            &hops,
+                            &focus,
+                            &tokens,
+                            reason.as_str(),
+                        );
+                        let version = self.graph_version.load(Relaxed);
+                        let out = self.call_proposer(id, req, false).await;
+                        (out, Some((tx, version)))
+                    }
+                },
             };
             // Open world: admit what the supervisor lets through, then
-            // re-judge this frame with it (still holding the write claim).
+            // re-judge this frame with it.
             let mut expanded = None;
             let mut refused_here = Vec::new();
             let mut held_here = Vec::new();
             if let Ok(proposals) = &proposals
-                && self.cfg.open_world
-                && cat.learnable(at)
-                && expansions < self.cfg.max_expansions
+                && learnable_here
                 && !proposals.is_empty()
             {
+                if let Some((_, version)) = &leader
+                    && self.graph_version.load(Relaxed) != *version
+                {
+                    // The graph changed while the model answered: admission
+                    // re-validates against the current version.
+                    tracing::info!(target: "onto", event = "gap.stale", walk = id, at = %at_name, record = %rec_id, gap = %gap);
+                }
                 let Expansion {
                     learned,
                     refused,
@@ -1326,8 +1499,24 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                     expanded = Some((learned, refused, held));
                 }
             }
-            // Record before releasing the claim, so a walk waiting on this
-            // frame sees these proposals when its own proposer runs.
+            // Publish to the walks that subscribed to this gap.
+            if let Some((tx, _)) = leader {
+                let result = FlightResult {
+                    leader: rec_id.clone(),
+                    proposals: proposals.as_ref().map(Clone::clone).unwrap_or_default(),
+                    learned: expanded
+                        .as_ref()
+                        .map(|(l, ..)| l.clone())
+                        .unwrap_or_default(),
+                    refused: expanded
+                        .as_ref()
+                        .map_or_else(|| refused_here.clone(), |(_, r, _)| r.clone()),
+                    held: expanded
+                        .as_ref()
+                        .map_or_else(|| held_here.clone(), |(_, _, h)| h.clone()),
+                };
+                self.land(&gap, tx, result);
+            }
             if let Ok(proposals) = &proposals {
                 if let Some(last) = frames.last_mut() {
                     last.proposals = proposals.clone();
@@ -1362,7 +1551,6 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                         .map(|p| (id, p.clone())),
                 );
             }
-            drop(guard);
             if let Some((learned, refused, held)) = expanded {
                 steps.push(StepRecord::Expanded {
                     at: at_name,
@@ -1592,6 +1780,95 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
         out
     }
 
+    /// Leads the proposal for `gap`, or subscribes to the one in flight.
+    fn flight(&self, gap: &str) -> FlightRole {
+        let mut f = self.flights.lock().unwrap();
+        if let Some(rx) = f.get(gap) {
+            return FlightRole::Subscriber(rx.clone());
+        }
+        let (tx, rx) = tokio::sync::watch::channel(None);
+        f.insert(gap.to_owned(), rx);
+        FlightRole::Leader(tx)
+    }
+
+    /// Publishes a gap's answer and closes its flight.
+    fn land(&self, gap: &str, tx: FlightTx, result: FlightResult) {
+        self.flights.lock().unwrap().remove(gap);
+        let _ = tx.send(Some(Arc::new(result)));
+    }
+
+    /// What kind of stop an escalation is, and the distinction it misses.
+    /// Evidence first: if an option was held back by missing evidence and
+    /// no eligible option fitted, new structure cannot help (it could only
+    /// bypass the evidence).
+    fn classify(
+        &self,
+        cat: &Category,
+        at: ObjId,
+        reason: Escalation,
+        rec: Option<&FrameRecord>,
+        expansions: usize,
+    ) -> (EscalationKind, String) {
+        match reason {
+            Escalation::SplitOverBudget => return (EscalationKind::BudgetStop, "branches".into()),
+            Escalation::IncompleteJoin => {
+                return (EscalationKind::PolicyStop, "sibling ended".into());
+            }
+            Escalation::BlockedByGate => return (EscalationKind::EvidenceGap, "authority".into()),
+            _ => {}
+        }
+        let held_back: Vec<String> = rec
+            .map(|r| {
+                r.candidates
+                    .iter()
+                    .filter(|c| {
+                        matches!(
+                            c.disposition,
+                            Disposition::Unattested
+                                | Disposition::FilteredByRequire
+                                | Disposition::BlockedByEntry
+                        )
+                    })
+                    .map(|c| {
+                        let a = cat.arrow_id(&c.arrow).ok().map(|a| cat.arrow(a));
+                        match a {
+                            Some(a) if c.disposition == Disposition::Unattested => format!(
+                                "attested {}",
+                                a.attested
+                                    .as_ref()
+                                    .map_or(String::new(), ToString::to_string)
+                            ),
+                            Some(a) if c.disposition == Disposition::FilteredByRequire => format!(
+                                "require {}",
+                                a.require
+                                    .as_ref()
+                                    .map_or(String::new(), ToString::to_string)
+                            ),
+                            _ => format!("entry of {}", c.to),
+                        }
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
+        if !held_back.is_empty() {
+            let mut m = held_back;
+            m.sort();
+            m.dedup();
+            return (EscalationKind::EvidenceGap, m.join(" & "));
+        }
+        let focus = rec
+            .and_then(|r| r.focus.clone())
+            .map_or(String::new(), |f| format!("@{f}"));
+        let missing = format!("{}{focus}", reason.as_str());
+        if self.cfg.open_world && !cat.learnable(at) {
+            (EscalationKind::PolicyStop, format!("sealed {missing}"))
+        } else if self.cfg.open_world && expansions >= self.cfg.max_expansions {
+            (EscalationKind::BudgetStop, format!("expansions {missing}"))
+        } else {
+            (EscalationKind::StructureGap, missing)
+        }
+    }
+
     /// For each transported proposal, the siblings its duplicate and
     /// overlap questions are settled against: arrows (existing, or
     /// transported in the same batch) mapping onto a *different* option of
@@ -1743,6 +2020,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
                 continue;
             }
             *graph = Arc::new(next);
+            self.graph_version.fetch_add(1, Relaxed);
             drop(graph);
             tracing::info!(
                 target: "onto",
