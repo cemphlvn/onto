@@ -54,7 +54,7 @@ pub struct CaseOutcome {
     pub contradictions: Vec<(String, String)>,
     pub first_confirm_ms: Option<f64>,
     pub first_surprise_ms: Option<f64>,
-    /// For a surprise: `person` or `curation`.
+    /// For a surprise, or an agreement with dissent: `person` or `curation`.
     pub route: Option<String>,
 }
 
@@ -229,8 +229,16 @@ where
                 })
             })
             .collect();
+        // Only columns that concluded something (left their start) count:
+        // a start position reaches everything, so it would agree with any
+        // position without having said anything.
         let ids: Vec<(usize, ObjId)> = last
-            .map(|l| l.iter().map(|(k, v)| (*k, v.0)).collect())
+            .map(|l| {
+                l.iter()
+                    .map(|(k, v)| (*k, v.0))
+                    .filter(|(k, y)| starts[*k] != Some(*y))
+                    .collect()
+            })
             .unwrap_or_default();
         let contradictions: Vec<(String, String)> = ids
             .iter()
@@ -249,8 +257,8 @@ where
             Consensus::All => n,
             Consensus::Quorum(q) => q,
         };
-        let (status, agreed, dissent) = if ids.len() < needed && contradictions.is_empty() {
-            ("incomplete", None, Vec::new())
+        let (status, agreed, dissent) = if ids.is_empty() {
+            ("undecided", None, Vec::new())
         } else if best.len() >= needed {
             let furthest = furthest(
                 &shared,
@@ -265,27 +273,34 @@ where
                 .filter(|(k, _)| !best.contains(k))
                 .map(|(_, n)| n.clone())
                 .collect();
-            if best
-                .iter()
-                .all(|k| furthest.is_some() && starts[*k] == furthest)
-            {
-                ("undecided", None, Vec::new())
-            } else {
-                (
-                    "agreed",
-                    furthest.map(|y| shared.object(y).name.clone()),
-                    dissent,
-                )
-            }
+            (
+                "agreed",
+                furthest.map(|y| shared.object(y).name.clone()),
+                dissent,
+            )
+        } else if contradictions.is_empty() {
+            // Too few columns concluded, and none contradicts another.
+            ("incomplete", None, Vec::new())
         } else {
             ("surprise", None, Vec::new())
         };
-        let route = (status == "surprise").then(|| {
-            let guarded = ids
-                .iter()
-                .any(|(_, y)| shared.admission(*y) != Admission::OpenWorld);
-            if guarded { "person" } else { "curation" }.to_owned()
-        });
+        // A quorum settles the position, but a dissenting column is still a
+        // contradiction: routed like a surprise (D60).
+        let guarded = ids
+            .iter()
+            .map(|x| Some(x.1))
+            .chain(starts.iter().copied())
+            .flatten()
+            .any(|y| shared.admission(y) != Admission::OpenWorld);
+        let route = match status {
+            "surprise" | "agreed" if !contradictions.is_empty() => {
+                Some(if guarded { "person" } else { "curation" }.to_owned())
+            }
+            // A perspective that concluded nothing is not agreement: under
+            // guarded admission a person completes the picture.
+            "incomplete" | "undecided" if guarded => Some("person".to_owned()),
+            _ => None,
+        };
         if route.as_deref() == Some("curation") {
             // The frame is where the perspectives went different ways: the
             // furthest object that still reaches every position. The key

@@ -465,6 +465,7 @@ snapshot. No database until live multi-writer editing is needed.
 | D57 | default policy `shared`; `exclusive` stays as an audit mode | with MVCC (D54) waiting is not needed for correctness; intersections are still logged as potentialities; measured: exclusive made an entry frame a queue of 17 and a run 3.6× slower (`docs/07` §2) |
 | D58 | ensembles: columns agree when one position reaches the other in the shared category; otherwise a surprise | contradiction is defined by structure people declared, not judged by a model; one perspective being further along is not a disagreement |
 | D59 | a surprise is routed by the shared positions' admission: `assured`/`sealed` → a person; `open_world` → a `contradiction` gap signal keyed by where the positions diverge and which positions conflict | the same blind spot across cases is one gap; guarded decisions never learn from a disagreement without a person |
+| D60 | consensus counts only columns that concluded something; a quorum settles the position but a dissent is still a contradiction (a person under guarded admission, a gap signal in open world); under guarded admission an incomplete or undecided case goes to a person | live, a start position (reaches everything) read as agreement while the social column had said nothing; with quorum 2, "medically fit" and "wants to go home" outvoted "no safe home": the number of perspectives must not silence the one that sees the risk |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -552,13 +553,16 @@ snapshot. No database until live multi-writer editing is needed.
   | step | builds | demo · beneficiary | tests |
   |---|---|---|---|
   | A1 ✓ | M3 phase 3: ensembles (columns, shared category, prediction, surprise) | incident-response ensemble (metrics, logs, complaints) · customers during an outage | agreement; a monitoring blind spot; competing causes; raster item 8 |
-  | A2 | consensus policies; surprise routed by admission | hospital-discharge ensemble (clinical, social) · a patient leaving hospital | a surprise stops an unsafe discharge (assured → a person) |
+  | A2 ✓ | consensus policies; surprise routed by admission | hospital-discharge ensemble (clinical, social) · a patient leaving hospital | a surprise stops an unsafe discharge (assured → a person) |
   | B | learned-structure library: presence effect (`replay --without-arrow`), active / dormant / retired, recall before catalogue and LLM | incident-response (unused learned arrows) · support-commons (parcel stream) | how an arrow's presence shifts judgments; recall with no model call |
   | C | M3 phase 4: functor discovery | support-commons, two support organisations merging · their customers | discovered vs hand-written map; wrong candidates caught by the functor checks |
   | D | M4: a stable API surface, then Python (PyO3) and a C ABI | consent-enforcement · developers | a Python script loads, proves laws, runs with a Python-defined judge, reads records |
   | E | M5: OSIL bridge (functor reports as preservation contracts) | secure-infrastructure-change, or OSIL's own repository governance · to be grounded in OSIL's docs first | an onto functor report and an OSIL preservation claim say the same thing |
 
-- **Next:** A2; raster–map–state linking; usage-based reinforcement and pruning of learned arrows;
+- **Consensus policies (A2 done):** only columns that concluded count;
+  a quorum's dissent and an incomplete case under guarded admission go
+  to a person (D60); hospital-discharge ensembles, live.
+- **Next:** B; raster–map–state linking; usage-based reinforcement and pruning of learned arrows;
   model-scoped capabilities for learned conceptual spaces; behavioural
   difference in review; streaming records; joins in `onto laws` (sound
   already, see `docs/03-joins.md` §5, but not reported).

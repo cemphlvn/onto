@@ -556,9 +556,9 @@ function insights() {
       const name = c.case ?? `case ${c.job + 1}`;
       const last = c.last ? `; last to conclude: ${c.last}` : "";
       switch (c.status) {
-        case "agreed": return `${name} agreed on ${c.agreed}${c.first_confirm_ms != null ? ` at ${fmt(c.first_confirm_ms)}` : ""}: ${said(c)}${last}`;
+        case "agreed": return `${name} agreed on ${c.agreed}${c.first_confirm_ms != null ? ` at ${fmt(c.first_confirm_ms)}` : ""}${c.route ? ` · a column dissents → ${c.route === "person" ? "a person" : "curation"}` : ""}: ${said(c)}${last}`;
         case "surprise": return `${name} surprise at ${fmt(c.first_surprise_ms ?? 0)} → ${c.route === "person" ? "a person" : "curation"}: ${said(c)}${last}`;
-        default: return `${name} ${c.status}: ${said(c)}`;
+        default: return `${name} ${c.status}${c.route === "person" ? " → a person" : ""}: ${said(c)}`;
       }
     })), "Agreement is structural: two positions agree when one reaches the other in the shared category."));
   }

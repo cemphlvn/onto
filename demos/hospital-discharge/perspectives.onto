@@ -1,0 +1,102 @@
+# Is this patient ready to go home? Three perspectives, compared in a
+# shared category (functors phase 3: ensembles, docs/05-functors.md §6).
+#
+# The clinical column sees only the clinical summary; the social column
+# only the home situation; the patient column only what the patient said.
+# None sees another's answer. DischargeReadiness is `assured`: when the
+# perspectives disagree, nothing is learned and no one is discharged by
+# the ensemble; a person sees the disagreement first.
+#
+# Two ensembles over the same columns:
+#   Discharge        clinical and social must agree (consensus: all)
+#   WithThePatient   any two of three settle the position (quorum 2);
+#                    a dissenting column still goes to a person
+#
+# onto ensemble demos/hospital-discharge/perspectives.onto#Discharge \
+#     --jobs demos/hospital-discharge/perspectives.jobs
+
+category DischargeReadiness {
+    objects: Assessed, Ready, NotReady,
+             HomeIndependent, HomeWithSupport,
+             ClinicallyUnstable, UnsafeHome, PatientNotReady;
+    about Ready: "the patient can safely leave hospital";
+    about NotReady: "the patient should not leave hospital yet";
+    ready:        Assessed -> Ready;
+    not_ready:    Assessed -> NotReady;
+    independent:  Ready -> HomeIndependent;
+    with_support: Ready -> HomeWithSupport;
+    unstable:     NotReady -> ClinicallyUnstable;
+    unsafe_home:  NotReady -> UnsafeHome;
+    patient_no:   NotReady -> PatientNotReady;
+    # A disagreement about a discharge is a person's decision.
+    admission: assured;
+}
+
+category Clinical {
+    # A column's options change only by people: an unsure column stops.
+    admission: sealed;
+    objects: Review, MedicallyFit, NeedsCare;
+    start: Review;
+    state { case: clinical; }
+    frame Review: choice "From the clinical summary alone: is the patient medically fit to leave hospital?";
+    fit:        Review -> MedicallyFit "observations are stable, treatment can continue outside hospital, and nothing needs hospital monitoring";
+    needs_care: Review -> NeedsCare    "something still needs hospital care or monitoring: unstable observations, a worsening test, a new treatment not yet settled";
+    closed: Review, MedicallyFit, NeedsCare;
+}
+
+category Social {
+    # A column's options change only by people: an unsure column stops.
+    admission: sealed;
+    objects: Home, Independent, SupportArranged, NoSafeHome;
+    start: Home;
+    state { case: home; }
+    frame Home: choice "From the home situation alone: can the patient be safe at home after leaving hospital?";
+    independent:      Home -> Independent     "the patient can manage at home without extra help";
+    support_arranged: Home -> SupportArranged "the patient needs help at home, and that help is in place from the day of discharge";
+    no_safe_home:     Home -> NoSafeHome      "the patient needs help at home that is not in place, or the home itself is not safe for them now";
+    closed: Home, Independent, SupportArranged, NoSafeHome;
+}
+
+category Patient {
+    # A column's options change only by people: an unsure column stops.
+    admission: sealed;
+    objects: Voice, FeelsReady, NotReadyYet;
+    start: Voice;
+    state { case: patient_says; }
+    frame Voice: choice "From what the patient said: does the patient feel ready to go home?";
+    feels_ready:   Voice -> FeelsReady  "the patient wants to go home and feels able to";
+    not_ready_yet: Voice -> NotReadyYet "the patient does not feel ready or safe to go home yet";
+    closed: Voice, FeelsReady, NotReadyYet;
+}
+
+functor ClinicalView: Clinical -> DischargeReadiness {
+    objects: Review -> Assessed, MedicallyFit -> Ready, NeedsCare -> ClinicallyUnstable;
+    fit: ready; needs_care: unstable.not_ready;
+}
+
+functor SocialView: Social -> DischargeReadiness {
+    objects: Home -> Assessed, Independent -> HomeIndependent,
+             SupportArranged -> HomeWithSupport, NoSafeHome -> UnsafeHome;
+    independent: independent.ready; support_arranged: with_support.ready;
+    no_safe_home: unsafe_home.not_ready;
+}
+
+functor PatientView: Patient -> DischargeReadiness {
+    objects: Voice -> Assessed, FeelsReady -> Ready, NotReadyYet -> PatientNotReady;
+    feels_ready: ready; not_ready_yet: patient_no.not_ready;
+}
+
+ensemble Discharge {
+    shared: DischargeReadiness;
+    column Clinical: ClinicalView from Review;
+    column Social:   SocialView   from Home;
+    consensus: all;
+}
+
+ensemble WithThePatient {
+    shared: DischargeReadiness;
+    column Clinical: ClinicalView from Review;
+    column Social:   SocialView   from Home;
+    column Patient:  PatientView  from Voice;
+    consensus: quorum 2;
+}

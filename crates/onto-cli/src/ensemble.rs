@@ -122,7 +122,14 @@ pub fn main(args: EnsembleArgs) -> Result<(), BoxError> {
                     if c.dissent.is_empty() {
                         String::new()
                     } else {
-                        format!(" · dissent: {}", c.dissent.join(", "))
+                        format!(
+                            " · dissent: {} → {}",
+                            c.dissent.join(", "),
+                            match c.route.as_deref() {
+                                Some("person") => "a person sees it before anyone acts",
+                                _ => "a curation signal",
+                            }
+                        )
                     }
                 );
             }
@@ -142,8 +149,29 @@ pub fn main(args: EnsembleArgs) -> Result<(), BoxError> {
                     }
                 );
             }
-            "undecided" => println!("    … undecided: no column concluded anything"),
-            _ => println!("    … incomplete: a column never reached {}", report.shared),
+            _ => {
+                // Columns still where they started (or never positioned).
+                let quiet: Vec<&str> = e
+                    .columns
+                    .iter()
+                    .filter(|col| {
+                        !c.positions
+                            .iter()
+                            .any(|p| p.column == col.category && p.object != col.start)
+                    })
+                    .map(|col| col.category.as_str())
+                    .collect();
+                println!(
+                    "    … {}: {} concluded nothing{}",
+                    c.status,
+                    quiet.join(", "),
+                    if c.route.as_deref() == Some("person") {
+                        " → a person completes the picture"
+                    } else {
+                        ""
+                    }
+                );
+            }
         }
     }
     println!();

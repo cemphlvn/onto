@@ -216,6 +216,25 @@ ensemble Incident {
   objects open and the open world extended every one of them (14 learned
   arrows, 19 s): a column reports a perspective, so its leaves are now
   `closed` and only its entry frame may learn new kinds of signal.
+- **Consensus policies (A2, built).** Only columns that **concluded**
+  something count: a column still at its start reaches every position,
+  so it would otherwise "agree" without having said anything. `all`
+  needs every column concluded and compatible, else `incomplete` (or a
+  surprise). `quorum N` needs N concluded compatible columns; the rest
+  are **dissent**, and a dissent is still a contradiction: routed like a
+  surprise. Under guarded admission an incomplete case also goes to a
+  person (D60).
+- **Demo** (`demos/hospital-discharge/perspectives.onto`, live, Jev):
+  clinical, social and patient columns over an `assured`
+  DischargeReadiness; columns `sealed` (their options change only by
+  people). `Discharge` (clinical, social; all): fit but no safe home →
+  surprise → a person; a new infection with an unsure social column →
+  incomplete → a person (the social gap to curation). `WithThePatient`
+  (quorum 2): "medically fit" and "wants to go home" outvote "no safe
+  home" → agreed on Ready, **with the social dissent sent to a person**;
+  a frightened patient with support in place → agreed, dissent → a
+  person. 15 judge calls, no proposer calls, 0.73 s. A first run with
+  open-world columns learned an arrow at the social frame and took 9.3 s.
 - **Later (phase 3b):** column switch (continue in another column where
   this one lacks the enumeration; returning needs an adjoint pair).
 

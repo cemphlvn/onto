@@ -156,6 +156,7 @@ $onto run     examples/triage.onto --jobs examples/triage.jobs --mock         # 
 $onto ask     demos/support-commons/support.onto --from Ticket "my parcel never arrived" --mock
 $onto laws    demos/consent-enforcement/consent.onto --proofs                  # what is proved
 $onto functor demos/secure-infrastructure-change/controls.onto                 # a policy vs a standard
+$onto ensemble demos/hospital-discharge/perspectives.onto#WithThePatient --jobs demos/hospital-discharge/perspectives.jobs
 $onto ensemble demos/incident-response/perspectives.onto#Outage --jobs demos/incident-response/perspectives.jobs  # perspectives compared (live)
 $onto run     examples/triage.onto --jobs examples/triage.jobs --mock --telemetry t.jsonl --dispositions d.jsonl
 $onto raster  t.jsonl --dispositions d.jsonl --category examples/triage.onto  # what happened, in time

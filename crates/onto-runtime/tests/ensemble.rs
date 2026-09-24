@@ -175,6 +175,39 @@ async fn quorum_reports_dissent_instead_of_surprise() {
     assert_eq!(c.status, "agreed", "{c:?}");
     assert_eq!(c.agreed.as_deref(), Some("Fine"));
     assert_eq!(c.dissent, vec!["C".to_owned()]);
+    // The dissent is still a contradiction.
+    assert_eq!(c.route.as_deref(), Some("curation"));
+    assert_eq!(r.gaps.len(), 1);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn under_assured_admission_a_quorum_does_not_silence_a_dissent() {
+    let r = ensemble("assured", "quorum 2", &["aok bok cslow"]).await;
+    let c = &r.cases[0];
+    assert_eq!(
+        (c.status.as_str(), c.agreed.as_deref()),
+        ("agreed", Some("Fine"))
+    );
+    assert_eq!(c.route.as_deref(), Some("person"));
+    assert!(r.gaps.is_empty());
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn a_column_that_concludes_nothing_is_not_agreement() {
+    // C says nothing; A and B agree. Its start position reaches
+    // everything, but it does not count.
+    let r = ensemble("open_world", "all", &["aerr blog"]).await;
+    assert_eq!(r.cases[0].status, "incomplete", "{:?}", r.cases[0]);
+    assert_eq!(r.cases[0].route, None);
+    let r = ensemble("assured", "all", &["aerr blog"]).await;
+    assert_eq!(r.cases[0].route.as_deref(), Some("person"));
+    // A quorum of the columns that did conclude is enough.
+    let r = ensemble("assured", "quorum 2", &["aerr blog"]).await;
+    assert_eq!(
+        (r.cases[0].status.as_str(), r.cases[0].agreed.as_deref()),
+        ("agreed", Some("Code"))
+    );
+    assert_eq!(r.cases[0].route, None);
 }
 
 #[tokio::test(flavor = "multi_thread")]
