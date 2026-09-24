@@ -20,7 +20,8 @@ limits people declared.
 > Design: [`docs/00-architecture.md`](docs/00-architecture.md) ·
 > positioning: [`01`](docs/01-positioning.md) · semantics: [`02`](docs/02-dispositional-semantics.md) ·
 > joins: [`03`](docs/03-joins.md) · **trust model**: [`04`](docs/04-trust-model.md) ·
-> functors: [`05`](docs/05-functors.md) · the four spaces: [`06`](docs/06-spaces.md)
+> functors: [`05`](docs/05-functors.md) · the four spaces: [`06`](docs/06-spaces.md) ·
+> what the raster shows, tested: [`07`](docs/07-raster-findings.md)
 
 ## The loop
 

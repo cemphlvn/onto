@@ -85,6 +85,43 @@ function color(walk: number): string {
 }
 const visible = (e: RasterEvent) => !hidden.has(walkOf.get(e.walk)?.root ?? e.walk) && rowOf.has(e.frame);
 
+// ---- lanes: concurrent visits of one frame each get a sub-row ----
+// A crowded frame then shows as a stack of bars (a queue), not one blot.
+const MAX_LANES = 10;
+const laneOfRecord = new Map<string, number>();
+const lanesOfFrame = new Map<string, number>();
+{
+  const byFrame = new Map<string, RasterEvent[]>();
+  for (const e of R.events) if (e.kind === "visit" && e.record) {
+    if (!byFrame.has(e.frame)) byFrame.set(e.frame, []);
+    byFrame.get(e.frame)!.push(e);
+  }
+  for (const [frame, vs] of byFrame) {
+    vs.sort((a, b) => a.start_ns - b.start_ns);
+    const ends: number[] = [];
+    for (const v of vs) {
+      let lane = ends.findIndex((end) => end <= v.start_ns);
+      if (lane < 0) { lane = ends.length < MAX_LANES ? ends.length : ends.indexOf(Math.min(...ends)); if (lane === ends.length) ends.push(0); }
+      ends[lane] = v.end_ns ?? v.start_ns;
+      laneOfRecord.set(v.record!, lane);
+    }
+    lanesOfFrame.set(frame, Math.max(1, ends.length));
+  }
+}
+const laneOf = (e: RasterEvent) => (e.record ? laneOfRecord.get(e.record) ?? 0 : 0);
+/** Offset of a lane from the row centre, and the lane height, in pixels. */
+function lanePx(frame: string, lane: number, band: number): [number, number] {
+  const n = lanesOfFrame.get(frame) ?? 1;
+  const usable = band * 0.84;
+  const h = usable / n;
+  return [-usable / 2 + h * (lane + 0.5), h];
+}
+const bandPx = () => {
+  if (!chart) return 40;
+  const top = 36, bottom = 64;
+  return (chart.getHeight() - top - bottom) / Math.max(1, R.frames.length);
+};
+
 // ---- shapes ----
 const PATH = {
   fork: "path://M5 0 L5 5 L1 10 M5 5 L9 10",
@@ -117,6 +154,7 @@ function pointData() {
     .filter((e) => !INTERVAL.includes(e.kind) && visible(e))
     .map((e) => {
       const s = symbolOf(e.kind);
+      const [dy] = lanePx(e.frame, laneOf(e), bandPx());
       const c =
         e.kind === "admitted" ? css("--good") :
         e.kind === "held" ? css("--warn") :
@@ -129,7 +167,7 @@ function pointData() {
         value: [ms(e.start_ns), rowOf.get(e.frame)!, e.id],
         symbol: s.symbol,
         symbolSize: s.size,
-        symbolOffset: s.offset ?? [0, 0],
+        symbolOffset: [(s.offset ?? [0, 0])[0], (s.offset ?? [0, 0])[1] + dy],
         itemStyle: stroked
           ? { color: "none", borderColor: c, borderWidth: 2, opacity }
           : framed
@@ -145,7 +183,7 @@ function forkData() {
     for (const w of R.walks.filter((w) => w.parent === f.walk)) {
       const first = R.events.find((e) => e.walk === w.id && e.kind === "arrival");
       if (first && visible(first) && first.start_ns >= f.start_ns - 1e6) {
-        out.push({ value: [ms(f.start_ns), rowOf.get(f.frame)!, ms(first.start_ns), rowOf.get(first.frame)!, w.id] });
+        out.push({ value: [ms(f.start_ns), rowOf.get(f.frame)!, ms(first.start_ns), rowOf.get(first.frame)!, w.id, f.id, first.id] });
       }
     }
   }
@@ -165,7 +203,7 @@ function causalData() {
   return pairs
     .map(([a, b]) => [anchor(a, true), anchor(b, false)] as const)
     .filter(([a, b]) => a && b && visible(a) && visible(b))
-    .map(([a, b]) => ({ value: [ms(a!.start_ns), rowOf.get(a!.frame)!, ms(b!.start_ns), rowOf.get(b!.frame)!, b!.walk] }));
+    .map(([a, b]) => ({ value: [ms(a!.start_ns), rowOf.get(a!.frame)!, ms(b!.start_ns), rowOf.get(b!.frame)!, b!.walk, a!.id, b!.id] }));
 }
 
 // ---- render items ----
@@ -175,10 +213,14 @@ function renderInterval(params: CustomSeriesRenderItemParams, api: CustomSeriesR
   const a = api.coord([api.value(1), row]);
   const b = api.coord([api.value(2), row]);
   const band = (api.size!([0, 1]) as number[])[1];
-  const h = e.kind === "visit" ? band * 0.22 : e.kind === "join_wait" ? band * 0.08 : band * 0.46;
+  const [dy, laneH] = lanePx(e.frame, laneOf(e), band);
+  const h =
+    e.kind === "visit" ? Math.min(laneH * 0.3, 6) :
+    e.kind === "join_wait" ? Math.min(laneH * 0.14, 3) :
+    Math.min(laneH * 0.72, 13);
   const cs = params.coordSys as unknown as { x: number; y: number; width: number; height: number };
   const shape = echarts.graphic.clipRectByRect(
-    { x: a[0], y: a[1] - h / 2, width: Math.max(1.5, b[0] - a[0]), height: h },
+    { x: a[0], y: a[1] + dy - h / 2, width: Math.max(1.5, b[0] - a[0]), height: h },
     { x: cs.x, y: cs.y, width: cs.width, height: cs.height },
   );
   if (!shape) return null;
@@ -193,8 +235,12 @@ function renderInterval(params: CustomSeriesRenderItemParams, api: CustomSeriesR
 }
 function renderLink(dashed: boolean, width: number, alpha: number) {
   return (_: CustomSeriesRenderItemParams, api: CustomSeriesRenderItemAPI): CustomSeriesRenderItemReturn => {
+    const band = (api.size!([0, 1]) as number[])[1];
+    const ea = byId.get(api.value(5) as number), eb = byId.get(api.value(6) as number);
     const a = api.coord([api.value(0), api.value(1)]);
     const b = api.coord([api.value(2), api.value(3)]);
+    if (ea) a[1] += lanePx(ea.frame, laneOf(ea), band)[0];
+    if (eb) b[1] += lanePx(eb.frame, laneOf(eb), band)[0];
     const mx = (a[0] + b[0]) / 2;
     return {
       type: "bezierCurve",
@@ -275,6 +321,7 @@ function mount() {
   chart?.dispose();
   chart = echarts.init($("chart"), dark() ? "dark" : undefined, { renderer: "canvas" });
   chart.setOption(option());
+  refresh(); // lane offsets of points need the chart's size
   chart.on("click", (p) => {
     const d = (p as { value?: number[] }).value;
     if (!d) return;
@@ -493,7 +540,9 @@ function insights() {
   out.push(sec("Busiest frames", list(busy.map((f) =>
     `${f.frame}: ${fmt(f.time_ms)} in ${f.visits} visits (${f.cases} cases) · model ${fmt(f.model_ms)} · claim wait ${fmt(f.claim_wait_ms)}${f.max_queue > 1 ? `, queue up to ${f.max_queue}` : ""}`))));
   if (I.joins.length) out.push(sec("Joins", list(I.joins.map((j) =>
-    j.policy === "race"
+    j.outcome === "incomplete"
+      ? `${j.frame} (${j.policy}) incomplete: ${who(j.decisive)} never arrived; ${j.arrivals.length} branch(es) waited ${fmt(j.spread_ms)}`
+      : j.policy === "race"
       ? `${j.frame} (race): ${who(j.decisive)} won${j.arrivals.length > 1 ? `, the next ${fmt(j.spread_ms)} later` : ""}`
       : `${j.frame} (${j.policy}): waited for ${who(j.decisive)}, the last of ${j.arrivals.length}, ${fmt(j.spread_ms)} after the first`))));
   const gaps = I.frames.filter((f) => f.escalations > 1).sort((a, b) => b.escalations - a.escalations);
@@ -513,6 +562,6 @@ $("show-insights")?.addEventListener("click", insights);
   window: windowSummary,
 };
 all();
-window.addEventListener("resize", () => chart?.resize());
+window.addEventListener("resize", () => { chart?.resize(); refresh(); });
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", all);
 new MutationObserver(all).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });

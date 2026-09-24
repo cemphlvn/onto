@@ -157,9 +157,12 @@ pub struct JoinStat {
     pub continued: u64,
     /// `(walk, ms it reached the join)`, in arrival order.
     pub arrivals: Vec<(u64, f64)>,
-    /// The branch that arrived last (all) or first (race).
+    /// The branch that arrived last (all), first (race), or never came
+    /// (an incomplete join).
     pub decisive: u64,
     pub spread_ms: f64,
+    /// `continued`, or `incomplete` when a sibling ended without arriving.
+    pub outcome: String,
 }
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -256,7 +259,9 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
                 continue;
             }
             let claimed = ns(e);
-            let next = bounds[i + 1..].iter().map(|b| b.0).find(|t| *t >= claimed);
+            // The next visit or join of this walk ends this visit (its
+            // recorded start can round a hair before this claim).
+            let next = bounds.get(i + 1).map(|b| b.0);
             let end = next
                 .or_else(|| walk_end.get(w).copied())
                 .unwrap_or(claimed)
@@ -406,14 +411,15 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
             }
             "proposer.call" => {
                 let st = t.saturating_sub(ms_of("latency_ms"));
+                let rec = containing(walk, t, Some(&at));
                 let label = format!(
                     "proposer at {at}: {} proposal(s), {}",
                     e["proposals"],
                     dur(t - st)
                 );
                 push(
-                    containing(walk, t, Some(&at)),
-                    at,
+                    rec.clone(),
+                    at.clone(),
                     walk,
                     EventKind::ProposerCall,
                     st,
@@ -421,6 +427,18 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
                     None,
                     false,
                     label,
+                );
+                // Every proposal round is a mark: a row of them is a gap.
+                push(
+                    rec,
+                    at.clone(),
+                    walk,
+                    EventKind::Proposal,
+                    t,
+                    None,
+                    None,
+                    false,
+                    format!("proposer: {} proposal(s) at {at}", e["proposals"]),
                 );
             }
             "join" => {
@@ -487,17 +505,20 @@ pub fn project(events: &[Value], declared: &[String]) -> Raster {
             "expansion" => {
                 let record = e["record"].as_str().map(str::to_owned);
                 let n = |k: &str| e[k].as_u64().unwrap_or(0);
-                push(
-                    record.clone(),
-                    at.clone(),
-                    walk,
-                    EventKind::Proposal,
-                    t,
-                    None,
-                    None,
-                    false,
-                    format!("{} at {at}", s(e, "source")),
-                );
+                // Proposer rounds are marked at their call; transport here.
+                if e["source"] == "transport" {
+                    push(
+                        record.clone(),
+                        at.clone(),
+                        walk,
+                        EventKind::Proposal,
+                        t,
+                        None,
+                        None,
+                        false,
+                        format!("transport at {at}"),
+                    );
+                }
                 for (k, kind, word) in [
                     ("learned", EventKind::Admitted, "learned"),
                     ("held", EventKind::Held, "held for a person"),
@@ -902,6 +923,50 @@ fn insights(r: &Raster, telemetry: &[Value]) -> Insights {
             arrivals,
             decisive,
             spread_ms: spread,
+            outcome: "continued".into(),
+        });
+    }
+    // Incomplete joins: the waiting walks, and the sibling that never came.
+    let mut seen_incomplete: Vec<(String, u64)> = Vec::new();
+    for c in telemetry
+        .iter()
+        .filter(|e| e["event"] == "join" && e["role"] == "escalated")
+    {
+        let detail = c["detail"].as_str().unwrap_or_default();
+        let Some(missing) = detail
+            .split("walk(s) ")
+            .nth(1)
+            .and_then(|x| x.split(|ch: char| !ch.is_ascii_digit()).next())
+            .and_then(|x| x.parse::<u64>().ok())
+        else {
+            continue;
+        };
+        let at = c["at"].as_str().unwrap_or_default().to_owned();
+        if seen_incomplete.contains(&(at.clone(), missing)) {
+            continue;
+        }
+        seen_incomplete.push((at.clone(), missing));
+        let mut arrivals: Vec<(u64, f64)> = telemetry
+            .iter()
+            .filter(|e| {
+                e["event"] == "join"
+                    && e["role"] == "escalated"
+                    && e["at"] == at.as_str()
+                    && e["detail"] == detail
+            })
+            .filter_map(|e| Some((e["walk"].as_u64()?, ms_f(e, "t") - ms_f(e, "wait_ms"))))
+            .collect();
+        arrivals.sort_by(|a, b| a.1.total_cmp(&b.1));
+        let first = arrivals.first().map_or(0.0, |a| a.1);
+        joins.push(JoinStat {
+            record: c["record"].as_str().unwrap_or_default().to_owned(),
+            frame: at,
+            policy: c["policy"].as_str().unwrap_or_default().to_owned(),
+            continued: 0,
+            arrivals,
+            decisive: missing,
+            spread_ms: ms_f(c, "t") - first,
+            outcome: "incomplete".into(),
         });
     }
 
@@ -914,7 +979,11 @@ fn insights(r: &Raster, telemetry: &[Value]) -> Insights {
         let t = (ms_f(l, "t") * 1e6) as u64;
         let source = telemetry
             .iter()
-            .filter(|e| e["event"] == "expansion" && e["record"] == l["record"])
+            .filter(|e| {
+                e["event"] == "expansion"
+                    && e["record"] == l["record"]
+                    && e["learned"].as_u64().unwrap_or(0) > 0
+            })
             .find_map(|e| e["source"].as_str())
             .unwrap_or("proposer")
             .to_owned();
@@ -1013,5 +1082,46 @@ mod tests {
             Some("w1.2")
         );
         assert_eq!(r.walks[0].case.as_deref(), Some("K-1"));
+    }
+
+    #[test]
+    fn insights_blame_the_last_branch_and_count_before_after_learning() {
+        let v = |t: f64, w: u64, at: &str, rec: &str| json!({"event": "visit", "t": t, "walk": w, "at": at, "record": rec, "claim_wait_ms": 0.0});
+        let ev = vec![
+            json!({"event": "run.start", "t": 0.0, "category": "C"}),
+            json!({"event": "walk.start", "t": 0.0, "walk": 1, "goal": "g"}),
+            json!({"event": "walk.start", "t": 1.0, "walk": 2, "parent": 1, "goal": "g"}),
+            v(0.0, 1, "A", "w1.1"),
+            json!({"event": "fork", "t": 1.0, "walk": 1, "at": "A", "record": "w1.1", "spawned": "2"}),
+            v(1.0, 2, "B", "w2.1"),
+            v(1.0, 1, "C", "w1.2"),
+            // walk 1 reaches the join at 3, waits until 9; walk 2 arrives at 9.
+            json!({"event": "join", "t": 9.0, "walk": 1, "at": "J", "record": "w1.3", "merged": "w2.1", "policy": "all", "role": "continued", "wait_ms": 6.0}),
+            json!({"event": "join", "t": 9.0, "walk": 2, "at": "J", "record": "w2.2", "policy": "all", "role": "ended", "into": 1, "wait_ms": 0.0}),
+            // learning at K: an escalation before, a use after.
+            v(10.0, 1, "K", "w1.4"),
+            json!({"event": "escalate", "t": 11.0, "walk": 1, "at": "K", "reason": "none_of_these"}),
+            json!({"event": "learned", "t": 12.0, "record": "w1.4", "arrow": "new", "from": "K", "to": "N"}),
+            json!({"event": "step", "t": 13.0, "walk": 1, "from": "K", "arrow": "new", "to": "N", "decided_by": "choice", "p": 1.0}),
+            v(14.0, 1, "K", "w1.5"),
+            json!({"event": "walk.end", "t": 15.0, "walk": 1}),
+            json!({"event": "walk.end", "t": 9.0, "walk": 2}),
+        ];
+        let r = project(&ev, &[]);
+        let j = &r.insights.joins[0];
+        assert_eq!(
+            (j.frame.as_str(), j.decisive),
+            ("J", 2),
+            "the join waited for walk 2"
+        );
+        assert!((j.spread_ms - 6.0).abs() < 1e-6);
+        let l = &r.insights.learning[0];
+        assert_eq!(
+            (l.escalations_before, l.escalations_after, l.used_after),
+            (1, 0, 1)
+        );
+        assert_eq!((l.visits_before, l.visits_after), (1, 1));
+        assert!(r.insights.concurrency.max >= 2);
+        assert_eq!(r.parents["w2.1"], ["w1.1"], "a branch follows its fork");
     }
 }

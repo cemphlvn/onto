@@ -1,0 +1,69 @@
+# Hospital Discharge: a patient leaves hospital only when every part of
+# going home is in place, and a clinician signs off.
+#
+# 1. Discharge splits (no judgment) into four lines: medication
+#    (reconciled by the pharmacy, attested), transport (judged: how does
+#    the patient get home?), care at home (judged: what support is needed
+#    there?) and follow-up (booked, mechanical).
+# 2. `join ReadyToLeave: all` waits for every line.
+# 3. The clinician's signed sign-off issues DischargeGrant; Discharged
+#    needs it on entry.
+#
+# The care-at-home options are deliberately few: a patient who needs
+# something they do not name sends that line to the open world, and the
+# raster shows which line the whole discharge waited for.
+
+category HospitalDischarge {
+    attester Pharmacy  { key: ed25519:2tCwt3uPxtj+oM7rnTemulCTm1LjRyi9R8U52P3Yoa8=; observes: medication.reconciled; }
+    attester Clinician { key: ed25519:AijaaZkp2Dvhg+y5OBzVb8lIy6usfUEmt+So2HPYmQI=; observes: discharge.signed; }
+
+    capability DischargeGrant { issuers: signed_off; }
+
+    objects: Discharge, Medication, Transport, HomeCare, FollowUp,
+             ReadyToLeave, SignOff, Discharged;
+    start: Discharge;
+
+    state { case: summary, home, mobility; }
+    invariant unseen: case.patient;
+    admission: sealed;
+    admission HomeCare: open_world;     # new kinds of home support may be learned
+
+    about Discharge: "a patient is medically fit to leave hospital";
+    about Discharged: "the patient has left hospital";
+
+    frame Discharge: split;
+    medication_line: Discharge -> Medication;
+    transport_line:  Discharge -> Transport;
+    homecare_line:   Discharge -> HomeCare;
+    followup_line:   Discharge -> FollowUp;
+    closed: Discharge;
+
+    frame Medication: split;
+    reconciled: Medication -> ReadyToLeave "the pharmacy reconciled the medicines to take home"
+                attested medication.reconciled == true;
+
+    frame Transport: choice "How does the patient get home?";
+    family_car:  Transport -> ReadyToLeave "family or friends collect them by car";
+    taxi:        Transport -> ReadyToLeave "they can travel alone by taxi";
+    patient_transport: Transport -> ReadyToLeave "they need non-emergency patient transport (wheelchair or stretcher)";
+
+    frame HomeCare: choice "What support does the patient need at home?";
+    no_support:  HomeCare -> ReadyToLeave "none: they manage on their own or with the people they live with";
+    care_visits: HomeCare -> ReadyToLeave "carers visiting to help with washing, dressing or meals";
+    equipment:   HomeCare -> ReadyToLeave "equipment such as a walking frame, a commode or a raised toilet seat";
+
+    frame FollowUp: split;
+    booked: FollowUp -> ReadyToLeave "book the follow-up appointment";
+
+    closed: Medication, Transport, HomeCare, FollowUp;
+    join ReadyToLeave: all;
+
+    frame ReadyToLeave: split;
+    sign_off: ReadyToLeave -> SignOff;
+    closed: ReadyToLeave;
+    frame SignOff: split;
+    signed_off: SignOff -> Discharged "the clinician signs the discharge"
+                attested discharge.signed == true ensures DischargeGrant;
+    entry Discharged: needs DischargeGrant;
+    closed: SignOff, Discharged;
+}

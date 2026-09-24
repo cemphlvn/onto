@@ -152,7 +152,10 @@ the first renderer: the projection is its own type, so deck.gl (for runs
 too large for ECharts, measured first), a figure exporter or a live view
 (SSE) can consume the same events.
 
-Build order from here: raster–map–state linking; one band per category for
+Seven of the raster's claims were tested live, one project each, in
+`docs/07-raster-findings.md`. Lanes: concurrent visits of one frame get
+their own sub-row, so a queue reads as a stack. Build order from here:
+raster–map–state linking; one band per category for
 phase 3 of the functors; surprise and prediction signals; geometry last,
 as research.
 

@@ -97,7 +97,7 @@ onto raster t.jsonl --dispositions d.jsonl --category demos/incident-response/in
 
 Live (Jev + OpenRouter, open world, 20.6 s wall, parallelism 2.85×):
 
-![raster of a live incident-response run](../../docs/raster-incident-response.png)
+![raster of a live incident-response run](../../docs/raster/1-parallelism.png)
 
 
 - every judgment of all four incidents was made in the first ~1.5 s; the
