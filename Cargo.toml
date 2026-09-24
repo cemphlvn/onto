@@ -1,6 +1,12 @@
 [workspace]
 resolver = "3"
-members = ["crates/onto-core", "crates/onto-runtime", "crates/onto-cli"]
+members = [
+    "crates/onto-core",
+    "crates/onto-models",
+    "crates/onto-remote",
+    "crates/onto-runtime",
+    "crates/onto-cli",
+]
 
 [workspace.package]
 version = "0.1.0"
@@ -10,6 +16,8 @@ repository = "https://github.com/cemphlvn/onto"
 
 [workspace.dependencies]
 onto-core = { path = "crates/onto-core" }
+onto-models = { path = "crates/onto-models" }
+onto-remote = { path = "crates/onto-remote" }
 onto-runtime = { path = "crates/onto-runtime" }
 egg = { version = "0.11.0", features = ["deterministic"] }
 thiserror = "2"

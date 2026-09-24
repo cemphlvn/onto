@@ -9,7 +9,7 @@ repository.workspace = true
 [dependencies]
 memory-stats.workspace = true
 onto-core = { workspace = true, features = ["serde"] }
-reqwest.workspace = true
+onto-models.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

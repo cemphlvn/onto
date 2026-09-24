@@ -1,5 +1,7 @@
-//! Live model clients: Jev (TypeSafe System One) as the chooser, any
-//! OpenRouter chat model as the proposer.
+//! Remote model clients: Jev (TypeSafe System One) as the judge and
+//! critic, any OpenRouter chat model as the proposer. The engine calls
+//! them concurrently, up to `judge_concurrency` / `proposer_concurrency`
+//! requests in flight.
 
 use std::time::Duration;
 
@@ -8,12 +10,16 @@ use onto_core::category::NONE_OF_THESE;
 use onto_core::walk::{Answer, Distribution, Proposal};
 use serde_json::{Value, json};
 
-use crate::model::{
+use onto_models::{
     Candidate, Critic, FrameRequest, Judge, ModelError, NoulQuestion, ProposalRequest, Proposer,
     Usage,
 };
 
 const MAX_ATTEMPTS: u32 = 4;
+
+fn transport(e: reqwest::Error) -> ModelError {
+    ModelError::Http(e.to_string())
+}
 
 /// POSTs JSON, retrying 429/529/5xx and transport errors with exponential
 /// backoff (250ms, 500ms, 1s).
@@ -29,7 +35,7 @@ async fn post_json(
         let result = http.post(url).bearer_auth(key).json(body).send().await;
         let retry = match result {
             Ok(resp) if resp.status().is_success() => {
-                let v = resp.json::<Value>().await?;
+                let v = resp.json::<Value>().await.map_err(transport)?;
                 return Ok((v, attempt));
             }
             Ok(resp) => {
@@ -41,7 +47,7 @@ async fn post_json(
                 }
                 err
             }
-            Err(e) => ModelError::Http(e),
+            Err(e) => transport(e),
         };
         if attempt >= MAX_ATTEMPTS {
             return Err(retry);
