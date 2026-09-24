@@ -1,0 +1,124 @@
+# Keyed calls from the client: an on-device model or reasoner gets an
+# answer from an external model API, with the API key held in the
+# device's secure custody. No server takes part.
+#
+# Compiled by hand from ../osil/secret-custody.osil (SecretCustody) and
+# ../osil/keyed-call.osil (KeyedCall), following the mapping in
+# ../README.md; an `osil -> onto` compiler replaces the hand step later.
+#
+# What onto proves here: the order of the steps (presence before release,
+# release before sending), that no route exports the secret, and that no
+# model is ever shown it. What only the platform enforces: that the
+# wrapping key cannot leave secure hardware and that presence was really
+# verified. Each platform's adapter (../onto/adapters/) maps into KeyedCall
+# with a functor; its report is that platform's gap analysis.
+
+# ---- contract 1: custody of one secret on this device --------------------
+
+category SecretCustody {
+    capability Presence  { issuers: prove_presence; }
+    capability Plaintext { issuers: unwrap; revokers: zeroize; }
+
+    objects: Sealed, Challenged, Present, Unwrapped, Used, Zeroized, Denied, Exported;
+    start: Sealed;
+
+    about Sealed:     "the secret rests on this device, encrypted under a key that cannot be exported from the device's secure hardware";
+    about Challenged: "a release was requested and the platform is asking the person to be present";
+    about Present:    "the platform's authenticator verified the person: biometric or device credential";
+    about Unwrapped:  "the secret's plaintext is in this process's memory, for one use";
+    about Used:       "the plaintext was written into one request to the origin the secret is bound to";
+    about Zeroized:   "the plaintext buffer was overwritten and released";
+    about Denied:     "the person declined or the check failed; the secret stays sealed";
+    about Exported:   "the plaintext left the custody boundary other than into one request to its bound origin";
+
+    challenge:      Sealed -> Challenged  "a release of the secret is requested";
+    prove_presence: Challenged -> Present "the authenticator verified the person"
+                    require case.presence.verified == true ensures Presence;
+    deny:           Challenged -> Denied  "the person declined or verification failed"
+                    require case.presence.verified == false;
+    unwrap:         Present -> Unwrapped  "the secure hardware decrypts the secret into this process" ensures Plaintext;
+    use:            Unwrapped -> Used     "the plaintext is written into one request to the bound origin"
+                    require case.origin_bound == true;
+    zeroize:        Used -> Zeroized      "the plaintext buffer is overwritten and released" revokes Plaintext;
+
+    frame Challenged: split;
+    closed: Challenged;
+
+    entry Unwrapped: needs Presence;
+    invariant via:   Sealed -> Unwrapped through Present;
+    invariant never: Sealed -> Exported;
+
+    state { goal; case: provider, purpose; }
+    invariant unseen: case.secret;
+
+    admission: sealed;
+}
+
+# ---- contract 2: one keyed call to an external model API ------------------
+
+category KeyedCall {
+    capability PresenceProven { issuers: present; }
+    capability KeyReleased    { issuers: release; revokers: forget; }
+
+    objects: Requested, Scoped, Challenged, Present, Released, Sent, Answered,
+             Forgotten, Refused, Leaked;
+    start: Requested;
+
+    about Requested:  "an on-device model or reasoner asks an external model API for an answer";
+    about Scoped:     "the request names one provider, and custody holds a key bound to that provider's origin";
+    about Challenged: "custody asks the person to be present before it releases the key";
+    about Present:    "the person was verified by the platform";
+    about Released:   "custody released the key into this process for this one request";
+    about Sent:       "one TLS request went to the bound origin, the key only in its authorization header";
+    about Answered:   "the provider's answer came back to the caller, without the key";
+    about Forgotten:  "the key's plaintext was zeroized";
+    about Refused:    "no call was made: no key is bound to that provider, or the person declined";
+    about Leaked:     "the key reached the caller, a model, a log, or any origin other than the bound one";
+
+    scope:      Requested -> Scoped  "a key bound to the named provider's origin exists in custody"
+                require case.key.bound_to_provider == true;
+    unscoped:   Requested -> Refused "no key is bound to the named provider"
+                require case.key.bound_to_provider == false;
+    challenge:  Scoped -> Challenged "custody asks for the person's presence";
+    present:    Challenged -> Present "the person is verified"
+                require case.presence.verified == true ensures PresenceProven;
+    decline:    Challenged -> Refused "the person declined or verification failed"
+                require case.presence.verified == false;
+    release:    Present -> Released  "custody releases the key for this request" ensures KeyReleased;
+    send:       Released -> Sent     "the key goes only into the authorization header of one TLS request to the bound origin"
+                require case.origin_bound == true;
+    answer:     Sent -> Answered     "the answer returns to the caller; the key does not";
+    forget:     Answered -> Forgotten "the key's plaintext is zeroized" revokes KeyReleased;
+
+    frame Requested: split;
+    frame Challenged: split;
+    closed: Requested, Challenged;
+
+    entry Released: needs PresenceProven;
+    entry Sent:     needs KeyReleased;
+    invariant via:   Requested -> Sent through Present;
+    invariant via:   Requested -> Sent through Released;
+    invariant never: Requested -> Leaked;
+
+    state { goal; case: provider, purpose; }
+    invariant unseen: case.key;
+
+    admission: sealed;
+}
+
+# KeyedCall realizes SecretCustody: every step custody requires is a
+# visible step of the call (docs/00 D46: policy is reflected on objects).
+functor Custody: KeyedCall -> SecretCustody {
+    objects: Scoped -> Sealed, Challenged -> Challenged, Present -> Present,
+             Released -> Unwrapped, Sent -> Used, Answered -> Used,
+             Forgotten -> Zeroized, Refused -> Denied;
+    challenge: challenge;
+    present: prove_presence;
+    decline: deny;
+    release: unwrap;
+    send: use;
+    answer: id;
+    forget: zeroize;
+    capabilities: PresenceProven -> Presence, KeyReleased -> Plaintext;
+    require: authority, contracts, invariants;
+}
