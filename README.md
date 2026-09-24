@@ -22,7 +22,8 @@ limits people declared.
 > joins: [`03`](docs/03-joins.md) · **trust model**: [`04`](docs/04-trust-model.md) ·
 > functors: [`05`](docs/05-functors.md) · the four spaces: [`06`](docs/06-spaces.md) ·
 > what the raster shows, tested: [`07`](docs/07-raster-findings.md) · call economy: [`08`](docs/08-call-economy.md) ·
-> the learned-structure library: [`09`](docs/09-learned-library.md)
+> the learned-structure library: [`09`](docs/09-learned-library.md) ·
+> the engine and its Python bindings (design): [`10`](docs/10-bindings.md)
 
 ## The loop
 

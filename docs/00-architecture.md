@@ -706,7 +706,7 @@ streaming them is open (§11).
   | A2 ✓ | consensus policies; surprise routed by admission | hospital-discharge ensemble (clinical, social) · a patient leaving hospital | a surprise stops an unsafe discharge (assured → a person) |
   | B ✓ | learned-structure library: presence effect (`replay --without-arrow`), active / dormant / retired, recall before catalogue and LLM | incident-response (unused learned arrows) · support-commons (parcel stream) | how an arrow's presence shifts judgments; recall with no model call |
   | C ✓ | M3 phase 4: functor discovery | support-commons, two support organisations merging · their customers | discovered vs hand-written map; wrong candidates caught by the functor checks |
-  | D | M4: the app API, then Python (PyO3) and a C ABI (re-scoped after the audit below; the API shape is agreed with Cem before code) | consent-enforcement · app developers | D0 the Python README first, as the contract; a developer given only the docs builds the consent app in Python: time to a first correct decision, and whether they had to read Rust |
+  | D | M4: onto as an embeddable engine with unopinionated Python bindings (primitives, protocols, values; basic and advanced levels), then a C ABI; `docs/10-bindings.md` | consent-enforcement · developers | a developer given only the docs builds the consent app in Python, basic and customized: time to a first correct decision, and whether they had to read Rust |
   | E | M5: OSIL bridge (functor reports as preservation contracts) | secure-infrastructure-change, or OSIL's own repository governance · to be grounded in OSIL's docs first | an onto functor report and an OSIL preservation claim say the same thing |
 
 - **Consensus policies (A2 done):** only columns that concluded count;
@@ -742,20 +742,29 @@ streaming them is open (§11).
      precedents, and saving learned arrows, recalls, gaps and memory live
      in `onto-cli` (about 1,150 lines), so a binding over `Engine` would
      copy them;
-  4. **actions**: arrows decide, nothing does; an app maps outcomes to
-     code by hand;
+  4. **actions**: arrows decide, nothing does (by design at the engine
+     level: acting is the caller's; see the application library after
+     M4);
   5. **entry cost**: a `.onto` file, JSON cases, two keys, 24 `run`
      flags and 24 `Config` fields before a first decision; a prompt takes
      five minutes. Onto's advantages (proved guarantees, `why`, learned
      gaps, small calls) come later, so the entry point should be a
      prompt: `onto draft` turns a description into a checked category to
      edit.
-- **M4 (next, D):** D0 the developer contract (the Python README, a
-  20-line example that must work); D1 the app API in Rust (load · decide
-  → Outcome · on(object) actions · pending / answer (resume) · a storage
-  interface · a small default configuration), the CLI rebuilt on it; D2
-  PyO3 (a Python-defined judge included); D3 the C ABI (cbindgen). In
-  parallel: `onto draft` (prompt → category + proofs).
+- **M4 (next, D):** onto as an **embeddable engine** with native
+  Python bindings: mechanism, not policy (`docs/10-bindings.md`). The
+  bindings expose primitives, protocols (a Python object can be the
+  judge, proposer or critic) and state as values, at a basic and an
+  advanced level; they prescribe no way of building an app. First the
+  engine work (type-erased models, the world as values out of the CLI,
+  events and records as a stream, resume and step), then `onto-py`
+  (PyO3, maturin, abi3), then a C ABI if a consumer appears. `onto
+  draft` (prompt → category + proofs) is a later, separate tool.
+- **After M4, separate:** an application library on the bindings, with
+  opinions: connection mechanisms, self-expansion limits and automatic
+  admission per part, which parts bring in a person, loop architectures
+  and decision processes, and a developer experience where writing an
+  onto application by hand is easier than writing prompts.
 - **M5 (E):** OSIL bridge: onto categories as OSIL category-level
   requirements, functor reports as preservation contracts; grounded in
   `~/oaas` first.
@@ -765,9 +774,10 @@ streaming them is open (§11).
 
 ## 11. Open questions
 
-- **Resume and outcomes (M4).** How a person's answer re-enters a
-  stopped walk (the same record, a new `after` link, the answer as an
-  attested or asserted fact?), and what an app's Outcome type must say.
+- **Resume (M4).** How an answer from outside (a person, another system)
+  re-enters a stopped walk: the same record or a new one with an `after`
+  link; the answer as an asserted or attested fact; what the record says
+  about where it came from.
 - **Streaming records.** Dispositions are written at the end of a run; a
   crash loses them. Streaming each record as it is made would make the
   artifact durable (and a live raster possible).
