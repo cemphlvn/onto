@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer believes their situation is: their account is locked or disabled by the service. They describe it that way, sincerely and plainly (they are mistaken, but the message must read as that situation).\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303470-qlErsUoM3taJjfQBWQ80",
+  "object": "chat.completion",
+  "created": 1790303470,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I can\u2019t get into my profile this morning, and the sign-in page says access has been restricted. Could someone check why you shut it off?\",\"It looks like you\u2019ve blocked my login. I haven\u2019t changed anything, but now it won\u2019t let me past the password screen.\",\"I\u2019m pretty sure my profile has been suspended. I\u2019ve tried signing in on my phone and laptop, and both give me the same notice.\",\"Why was my access cut off? I was using the app normally yesterday, and today it says I\u2019m not allowed in.\",\"I think someone at your end has turned off my profile by mistake. Can you restore it?\",\"I can\u2019t open my account page anymore\u2014the site says my access is unavailable. Please tell me what happened.\",\"My sign-in suddenly stopped working, and I\u2019m seeing a message that my profile has been restricted. I need to get back in for work.\",\"It says my access has been revoked, but I didn\u2019t ask for that. Can you look into it?\",\"I\u2019ve been shut out of my profile since last night. I\u2019m sure this is something your team can fix, but I can\u2019t find a way to appeal it.\",\"Could you check whether my profile was deactivated? The login page won\u2019t let me in, even though I\u2019m entering the right details.\",\"I\u2019m getting a notice that I can\u2019t use my profile right now. I think it\u2019s been taken offline on your side\u2014what do I need to do?\",\"Please help me regain access. Your site appears to have blocked my profile, and I haven\u2019t received any explanation.\" ]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdzxu_eozKnPUzQ7AIF06xrpxjTLanvT8GQqICWDVC__FMNrjyK9A1amWsHD4wSBKJs5H_2pUDXfUgo3130a6lE8F2fmMKj8Ogwx0nfUUwwrlzG6nbvch-tDcwARS8_k3Dsi8uYU2zaF9LYAhYNiHfa0VPRSS4y07gdJcpEMXtWYW77r2oUHt3NVMWpcUO6oe0-m-PhOhn-ExOmpxqix74TS2dOpMfTDxqViQJQPZtpcdMA0joSGsO3VOdM0XjzC6fmoQJaPZ5M2RGWOfxBun2XrxGU2kJQu98HoVL9sUCxYRbCiOfMgNmX2awRwt4Mndp7s3MJmxcAf_Qk6XJ7WmotLWKSh3TP0fJib2O3z9M0SqTruYgYVm-dKrsXnaSw4ZDJ3DyjmPHX5R9w2Q7pl00xvmYK_ioVcElZ-SIr6dSVEylm-DJ7r8EZ4ZTwn2FwpgRkLImE3Soh3bRHlf9RgfKBhpVnUWnKQEJR0KKhVzrEW4orwlxF8IO8_9nP8svJ4c5xXuK3iL4wgaCXH9CkUu0e7e793S60qPie_q0m0eyQg1X0SHGF6H5QQt3tQtdCnUvigt7isezQI8FJx1AEHKa3iJiSWAEmNdVklVrz5R_eMQjCdU9mM60XQOHKeg0Q5bi4lSG-s0YP1--PFZHLVkA7zRvPFBUBi4cVsomGMGtYrmNTdi-KjK1TDOioaHR5W3LJBtyuoHPgDM_2Q0J043soUcjBW0THZbJbQfJQ8QaozFWQuTd_07_RzM4LxB4gzDqGIhG6ZgWRvmIuRvKcU8vMPkH3FActuRJkQTi7kzouium_CapHDcCgd52zo0lUDQhi5PV8oifWxrkeVZZ0CtAwSRAol_5KO1sM7sFZzA_Va-db93uKzpgAbAE9wrTljYc6RMcsQ4XxG8tU7mFC50TjO2ap5aIKNagwimDCBE8m4kn_vAJFtvWUpkMBqfnwEe_ZzGpOjDCQ5UD6IdyRTAeS4QWeqtwAqSaO1NJ6BH84tNL1EoFx389mZ8NnJYmkmGMz8L2MpK3vBbFnjltgaz14GQ4CBwxJ8SBTMqmaoOE_7DHUAsBaQJbu4uist_G3k8VZjfa-aEGeK_eguChzwj1Y_OweZb9Ci-YDRwyWbgsIy8-_zYwHcql6m0YorW_WqR1c7PNQi50h35ILChUhlFFIy9OF_1gqBDKRShffUOrdQ58sBcDwK_-uQFXCCZJnINlO5uGcYNj0qyGwbStDN4SY_ce7W54QKLwoxiFATvqtMvpnbi8vZVkTPoN010OA0sVzQLKcrTaF1wDBIjlgcwSbb-wmoKwgEIz8nw2l-c3gWi6bThgClXJS2JoP54EScJuxi2RCx6cx8bVR6bJ7YNHJiyex7hIbLQ-dqy65Lt1QsJVOFggNiZUFioBgWkW_bkOfUGJo5Qpns4HESGD0nLEygpRsX7ioOQGOD4sKkecrbeB8B_NYKBZd7GdsFZA_WZAnJKL_kx7uKUucsN4CfuThQkmF_Kb6BVz10E3yr_UG7SRJJasMWZ7Sg8pLr-d_1AJoeQxe4F6UrHCpDZ0qhlDWbvLG8G90rMjLRRfDbFQbXBnWPygVMMr5h1P5D_pyPcqDQqD6Wm-jLs6XVdCIgtNtfizW-SgCqDgKKo2l6quzohgWXZiSGeGJqc9CJwDq3tDopVZQNnwpnO0pC5o4v30N8nuf5qUEL3QD3HNowMvxGQLJrQ7Xx2K7KAcE6i6wyCDxyq_HAKPUTlkAY5GVvOw0mzlsJWLaFiw4xaC2fkxvJY0S985a9yaQnMOix4ruG43i0Ju-JRz20p_qE5bq6VqMIKoxKODotDQ3Q5NoBGOt74ayqLFEgZePvJxi-0tpUR6nqT5vojUKSo8Iv2rY_UEw1QB8Runx5pO5shb6XAKEsWvw5qzbjZxJNFdZmz2dIB5Sct9r88SdwphGqoLO_lXcAO3rsaHifsLECY73dsJ0tYsH2sjGAz8PSRMK4J96SueVooERs6AUC0RypT9pOeKpdCQOILJggUCEavqhFvW9wou1AOGyiGCh4lZPxliJqzQ7xR3YqpBG-8Kjr6DV3N91ghZ8-bTSnw7-MtuguEh6aivQmVGRKWVNz1BbjvCM96eanufCYs0_7qf3v29acYHxzBx0vOJBdjXXYVp7YhQdUiGRYIUHi2FXW_WfMaFOTtmKvMXvncEiqutGyp2HqNCn3ou3d8y3WBWRvwpTRvvFaEMOU3sauZlkrc7xrHBmn4YYCvQD-ylqE0K-_5HKq2lIhn-l6UNR8RpcnRIWGiPGKkgzfabr6cHH7eLHW2VkCaotl8RXV850PrCH43FU_2P_xigYYSm-Xc-r97Ipsv0XlQl7q6SVt2E2o2F4gSUgExmA1Zz8qVIpfGA_SO5sRGLyDIV5VSzzbXmH2Foo0LU0igzN1wGbEKgByRqxj7-gvi0PnGhq_ny6RaSkTU8pTyhAtm0F8QxF1FgMlHJ7HixMkTfwgZBy7x1VAncz9uy9rVe8J5A-J1B6UQ_lO9HIINLxjpxWiUPTxT7nIUziX1HcDF3MrboCqU-C5626YpAov1I-SrF_sr1Kbg5AbrL3PfMUIIuz6T2YShmWD5fM5j6tORI5vazjiy8G05kbEx1vcQzpmdzaBzamoPTrId9eYrmLqnO_6Ck-pc-iNqbfwCESk9lADvO9i2uS8uGWH8--GBUs5kIyrQzmEpmaIPFpYvXAHe53pKdY_L04X2EuTmHWwe-A=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_098b904146501faa016ab5dcef1f3c87d1986d59a2157fd4b2",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 103,
+   "completion_tokens": 550,
+   "total_tokens": 653,
+   "cost": 0.0002853,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002853,
+    "upstream_inference_prompt_cost": 1.03e-05,
+    "upstream_inference_completions_cost": 0.000275
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 211,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I can\u2019t get into my profile this morning, and the sign-in page says access has been restricted. Could someone check why you shut it off?",
+  "It looks like you\u2019ve blocked my login. I haven\u2019t changed anything, but now it won\u2019t let me past the password screen.",
+  "I\u2019m pretty sure my profile has been suspended. I\u2019ve tried signing in on my phone and laptop, and both give me the same notice.",
+  "Why was my access cut off? I was using the app normally yesterday, and today it says I\u2019m not allowed in.",
+  "I think someone at your end has turned off my profile by mistake. Can you restore it?",
+  "I can\u2019t open my account page anymore\u2014the site says my access is unavailable. Please tell me what happened.",
+  "My sign-in suddenly stopped working, and I\u2019m seeing a message that my profile has been restricted. I need to get back in for work.",
+  "It says my access has been revoked, but I didn\u2019t ask for that. Can you look into it?",
+  "I\u2019ve been shut out of my profile since last night. I\u2019m sure this is something your team can fix, but I can\u2019t find a way to appeal it.",
+  "Could you check whether my profile was deactivated? The login page won\u2019t let me in, even though I\u2019m entering the right details.",
+  "I\u2019m getting a notice that I can\u2019t use my profile right now. I think it\u2019s been taken offline on your side\u2014what do I need to do?",
+  "Please help me regain access. Your site appears to have blocked my profile, and I haven\u2019t received any explanation."
+ ]
+}

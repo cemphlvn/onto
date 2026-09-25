@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer's situation: they cancelled or returned something and want their money back (there was only one charge). They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303377-bKvKHboQxlHaVch5Q2Qe",
+  "object": "chat.completion",
+  "created": 1790303377,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I sent the headphones back last week, but I haven\u2019t seen the payment come through yet. Could you check on it?\",\"I called to stop my order before it shipped, and the single payment is still showing on my card. When should I expect it to be reversed?\",\"My jacket went back to your warehouse a few days ago. I only paid once, but that amount hasn\u2019t been credited yet.\",\"I changed my mind and asked for the order to be stopped. Can you let me know when the charge will be cleared?\",\"The shoes were delivered back to you, but I\u2019m still waiting for the amount I paid to show up in my account.\",\"I gave up my subscription before the next billing date, but the payment from this month hasn\u2019t been returned. There was just the one payment.\",\"I dropped the coffee maker off for a return yesterday. Could you tell me how long it usually takes for the credit to appear?\",\"I cancelled the booking, and I\u2019m trying to find out when the payment will be sent back. I see one charge on my statement.\",\"I mailed the item back using your label, but I haven\u2019t received the credit for it yet. Would you look into that for me?\",\"I asked to have my order withdrawn before it went out, but the payment is still pending. What happens next?\",\"The headphones weren\u2019t right for me, so I shipped them back. I\u2019m only looking for the return of the one payment I made.\",\"I stopped my membership earlier this month, but I haven\u2019t gotten the latest payment back. Can someone check the status?\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdyU9Y9WIwDfph6blkPp5NASunSiKFPL9vPEFMxpfJAg6fsmKpNoijnuP7gsKgdYhC7VtunamXnV5LH2nFc1Tc90co7P_W2awxPslCgBLl4uvAG6KP7FNtaYCkVsPNhFL33I8sj3oXxWdwWkPsHUhnt6wlZnG0-jLpS2W04leiH5SSoo18bp9G84DkSj-lBnoTPEZrx2mPJav29vZ30J7azGZV9TCkac2uKv3mEVEGtoSm_iN5wfQ0JDmzuZNzaa-wCdN8efBGLYaFdcr1-trXWhS75jcmVnws3R-rzP5cpGbCGFA2Ns3oXuxxyw0QOIPcvhCXqSX17bWMrtjwaCdzwyazeAjVaKq4xcWGebDKQmTG86isuUyYXfs-O7bBz4afFRj5encG3liPW4qW19uAs7mQLQYUfCYZt5vrkPQhCYj4tWxOj78OH0laLlFQF7WiH39KjKN9TW92el6IW-PSceTe90mze7XmJ_5Oqw0Vw3LpVKVP6SuLf0oqWdBZ_2TEss_tIgimy69gmF1oM8rBByTSaEJymEZWLLdcaqP2eY0mrAg3y7gZUD0O7lWMA3852jud2RwBJsFa8NoFIecsRcihnY__smeYupzQtK66mHI1vIr4Y4CIwTwUEjiU9w00F_fKOXOmYEGm0v7q20p-FdZLgB022aEhrOuDlki-x8PSjoUExIQwRuwD6z1cu0vAuWWzZ43M4ncI-k4L8Mw9Njq2sdDme9YF2gyT6ZQsNEiT6BF79-cLN0EgaaE6ySsJIcgNgRVn2_G4ToSgLcJTld_Jlb6kvZsb9Nhat_G1Rr40w0RSq8etFHZl62ZeOuyl8bez3cPTECGvXD7wjSHXCRE234gQRheK4H2-dvGqOY0-dIFu8-7mJQpVbKpamHn2xTGeJBhVtOId4UxNDjiD1HIqfo8Yb0FbWTfEOLzQd70NvCv0EDENpHkeMo9Azx9E9n16U46zZipOLisV1YCDceEqivcNUM8w6xavWDkjR8HnBmBGETcX4HjPyS-0R7gFGvQbdQeQ9kllMQrqTPEY6BDVrAEIvtNGHKG82aUVk774W2BeHXd0u2vse_FrNW5HHS649clbba6lGKO65DWdz7zRPUmS18fc6DM9-vbKKaoDsSmpbTVcfpcpHeDGnuRgvJiUSFpytJ8HsOWN6hTYNbgimLixznLtjLVDfN-J6dgwgJd1CK-lwW_9lWmJ1CKBP4Lv4R1_ETGkTF4uACgKFrddqvLOalErDC7Rhs8uCglqaUFTO-QabZSrMwCF4w2MFGLS4wBs9KdN9h_-F4eRGTmGbzAByyiuAO_rRFPAUosM-OYvAYF65n1SACWdbLRDJLnMIu_KbD_KCZ-qVDY597-JHc2f2t1yjwxvyPu_jrDnj8x4CyKPjby6NmfY-Rmr8rgumh81H7n_sqgWf34MOcrcIm15wjbTgVkkA3enJdWGMbMz1bU51Vx1DtKXpZV846Af5i80jjXw-9INja0yW21EhHvZQ6EFkGr0fezj3-MARMiF3qQKoqIiHtc-4T1WzUtrYKRf9n7Lq2aLiOpm4uYS2yH2w9jIUpbdvFCqxfqDJ73BKioDNLEiYxLs8gDnKh3SraWmmqdJoLydUm-4YkRVPxzj9f1MjVXsbeQ1wQ-wgeNjNN0iK5xCYWmwewnkqt-XvMTPZdd1sUSelNdKrIkahgSxMKCqIFLQydUhSk3Di_GKBi7sAlSbTCI6wkq__gAQw7OVM9ulRttHNV6gWvrNRw7hkIM11cWdqpAzjQGC8-KsXELMESsBn_jh3Zqv0WarZzQVBwGztCz99nDKpQqzCK5HX35kGSdFltUaAwYqcPoLyFrslvSTXeL5K4S16jnTeEyfEXAtidLcAkMXZNUrLHVVPb_q4t6anaVu4G3vxmmcXHZPpbyWz3H8H1yFhheWvKFdh71FtHFQCQ6p1JgtvzVN26vWXWngCjGbfLS50luiWimFKeAZ0-seJYweaOmFZt5ZD9barsPXB5Yw6eEprJHeyS3mfESRcurDGBDgHorw2T4YzLJh27whgGyD_zchFgVNoL4GaiS-ouKBvlBT6DaExV1ny0T0GITKTj4G2kiKs-IsADeRLxcOAVrIDQUtSNAK3Rzh0VWW9ndjfo9jHkvj3t2B7BKqoKwvuc1V9WIsET5E8vTrcVQQlypCkyOptGKm3JOrxm3Neo3gjglO14hzm9wQx7FCIPcQR6vEkDbekzFYyl7XmiUhuz6qjT.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_03fef2d67699c145016ab5dc92a27087d1ab694c5f6f363cd8",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 89,
+   "completion_tokens": 473,
+   "total_tokens": 562,
+   "cost": 0.0002454,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002454,
+    "upstream_inference_prompt_cost": 8.9e-06,
+    "upstream_inference_completions_cost": 0.0002365
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 136,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I sent the headphones back last week, but I haven\u2019t seen the payment come through yet. Could you check on it?",
+  "I called to stop my order before it shipped, and the single payment is still showing on my card. When should I expect it to be reversed?",
+  "My jacket went back to your warehouse a few days ago. I only paid once, but that amount hasn\u2019t been credited yet.",
+  "I changed my mind and asked for the order to be stopped. Can you let me know when the charge will be cleared?",
+  "The shoes were delivered back to you, but I\u2019m still waiting for the amount I paid to show up in my account.",
+  "I gave up my subscription before the next billing date, but the payment from this month hasn\u2019t been returned. There was just the one payment.",
+  "I dropped the coffee maker off for a return yesterday. Could you tell me how long it usually takes for the credit to appear?",
+  "I cancelled the booking, and I\u2019m trying to find out when the payment will be sent back. I see one charge on my statement.",
+  "I mailed the item back using your label, but I haven\u2019t received the credit for it yet. Would you look into that for me?",
+  "I asked to have my order withdrawn before it went out, but the payment is still pending. What happens next?",
+  "The headphones weren\u2019t right for me, so I shipped them back. I\u2019m only looking for the return of the one payment I made.",
+  "I stopped my membership earlier this month, but I haven\u2019t gotten the latest payment back. Can someone check the status?"
+ ]
+}

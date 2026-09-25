@@ -1,0 +1,78 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer believes their situation is: they cancelled or returned something and want their money back (there was only one charge). They describe it that way, sincerely and plainly (they are mistaken, but the message must read as that situation).\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303370-dXn6OkFP2xJqh63OlJhq",
+  "object": "chat.completion",
+  "created": 1790303370,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I canceled the headphones before they shipped, but the payment still went through. Could you send the money back?\",\"I mailed the jacket back last week and haven\u2019t seen the refund yet. Please let me know when it should arrive.\",\"I changed my mind and canceled my order, but I\u2019m still out the amount I paid. Can you take care of that for me?\",\"The shoes didn\u2019t fit, so I sent them back. I paid for them already and would appreciate a refund.\",\"I canceled my subscription order right after placing it, but the payment is still showing on my account. Please return it.\",\"I dropped the coffee maker off with the courier a few days ago. I\u2019m waiting for the payment to be returned\u2014could you check on it?\",\"I asked to stop the lamp order before it went out, but the money was taken anyway. How do I get it back?\",\"I sent the dress back because the color wasn\u2019t what I expected. I haven\u2019t received my money yet, and I\u2019d like an update.\",\"I no longer need the replacement filter, so I canceled the order. The payment has already come out of my account; please refund it.\",\"The book arrived damaged, and I shipped it back as instructed. Could you return the amount I paid?\",\"I canceled my booking a couple of days ago, but I\u2019m still waiting for the money to come back. Would you check the status?\",\"I returned the charger using the label you provided. I paid for it when I ordered, so I\u2019m hoping you can send that payment back soon.\"]}",
+     "refusal": null,
+     "reasoning": "**Creating refund messages**\n\nI need to develop messages for situations where customers are requesting a refund for a canceled or returned order, ensuring there's only one charge mentioned. I should avoid using the exact phrases like \u201ccanceled\u201d or \u201creturned\u201d directly, but still convey the essence of the situation. It\u2019s crucial to express that they want their money back without replicating their words. I\u2019ll generate 12 varied messages in JSON format, focusing on \u201corder\u201d and \u201crefund\u201d instead of \u201ccharge.\u201d**Crafting varied refund messages**\n\nI need to include a total of 12 messages that reflect the customer's voice and ensure they're valid in JSON format. It's important to emphasize that there should only be one payment mentioned, avoiding any accusations of extra charges. The customers are expressing that they believe their money was still taken for canceled orders or returned goods. I'll also ensure that each message reflects distinct product situations for a more personalized approach.",
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Creating refund messages**\n\nI need to develop messages for situations where customers are requesting a refund for a canceled or returned order, ensuring there's only one charge mentioned. I should avoid using the exact phrases like \u201ccanceled\u201d or \u201creturned\u201d directly, but still convey the essence of the situation. It\u2019s crucial to express that they want their money back without replicating their words. I\u2019ll generate 12 varied messages in JSON format, focusing on \u201corder\u201d and \u201crefund\u201d instead of \u201ccharge.\u201d**Crafting varied refund messages**\n\nI need to include a total of 12 messages that reflect the customer's voice and ensure they're valid in JSON format. It's important to emphasize that there should only be one payment mentioned, avoiding any accusations of extra charges. The customers are expressing that they believe their money was still taken for canceled orders or returned goods. I'll also ensure that each message reflects distinct product situations for a more personalized approach.",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdyPDFiNbOb_eCndrUfpEyee_aBckHrkT0rYDLFJq0emZeu4i4jZ6LyEIoDW3_I3ufHYcRDXgfO9BsmHVsE7FkpUaoHKSrNNl830TNUc8alaHIASwQftdWHItdz6PXkU4zwdmU9CJ6j2Dxf14wQvkuWo3X9EjlgZINsIb-jBd1MQ2fJ8ZzmhW8EhqmgChKw273uHa-qeWjiPcf0tjZUG-5e5tL3DbEaRnuzC8NWZqt6RhIQtXTe8DW1eR1D7zNxdrk_UV5-98Ob4KDF8H2RhhueWdz97QU4tvV5z2WMfzKrUd-GEV0G2u8lfGIw3K6qpx_xBkONzR0pELeJwvVuWq3F_zy7-4DFWIF6lphrcCe_omRCRP2p3Q99bZyG_F3il41DyifPdkhQR380FiXYx1EDggJNp9OvCDKkVuXlSffuIB7uHJF7RFJ7vtviIzZHkW_0LO70Fd5nbUXfv9V71bpAPMLbVwZf0sg-vEG8NJHFbTnRj2lhEPoML0aFijk5WUXVCzvvojdfSAdEWQOlFICLkcEyhpzZfbBxMKolaD09xJx17qIOT9kqpor8btq7uXNuzaU-IfniStzYVEt0YdNpvH80YqLr_Dcj4Nbgv4T7q_fUTWkkQGJaFoNDI9yx-ZqEB1O7g8eIstjBW3bzT8YjALpQAs8KJU3LHqM5kNbLeOa0sGZjkL_QhTuP1mbImMhUdpYKDLT_Zc9rOKR_ktm1YdP-IYcKT26RPGGwPcViJsMYEzvuBRbHo4vdECfOVI6fVo5DkY_iIQavpWFeU3PPaZfQlDLKUOkx5ocypfOAUkgjlI94GZKkeHgnzD-iGc86biXHMgEcTduxID7f8bQ8kJtMjXmafnlNKWAFi2KYMG-pkfTX-jbm3-CryOeQP_BdsfnnGJ065d94hxFVhiXQG-1npQQZJlXSyik-GEO1kYH718gft8gi_4wPIlkANxzn6KXtC61NY4aM2PgG2Qw6FdzeSg6N4f8KPMQrvQeSz4r4oF5UroRLioAMT5g3YNEGLspR1Y_c3JTzYAJO8aPESho8mS8moYmUsU88OSbU6xyhfgQvZuDoZjJowvbbOYpd0yTTeyjg0xoMBRAO_iQPqWNM1xkRmDd0FWIau0MedM_Bu8OzgfGio6wbsyDXCeY6Ukvgb_ChE8p5J1ssyOWYGQEkc_nLCkFhNUvtpIY13WOtjztoQc12CYExvs10_8MY92TA9cWejvhTxwVfFWTHhbAFE5b1YfPfnpHY0ORT0ITZHhotf4K5aTB1HY_tDUJCEzeXQ-p_rIXGfEBuCVggHVcsuC2K2AbjCaC_PA3P7FXRJhorY9PamBKNxQXF9EKahrG9o6I6lLj0HY_PxuSSJU4m_clIj4EbqXI13_74drVlkb65svYGLx8ws5kYhe2FhGwcbFlAt9_41AjD7TGcPamUtHPJJ2GA4TnWHNHlMgA6BiM-MGuu_KDuYmdLf2OyUenP-r99RkoOw-4uFM7RKewEf8SeOMH7s8uhkKg8hmfUgelfx4TMpzr4nUhJdhmcVsdJya7LMnGkCScxnFm9PrPbfgfHMwLfDZlbuVUEIuazOCE9s86_enFixOPMFpwc4yhAdKjlXDONowQzCyBQbhesJQJr1AseMEbn_50eXWa5QBxZZTjphUThd41gn8QYSZ4VY3i3LOL-hQQqa14amiSUkqBy4A63yV-CWg2VDl-w243YgQeEDn32xYvAh7o6VTtX9OpLy9Bs6-8zjPM3wz7EZ81gt1cUYKFD6N4XtYsKTFhgZX-HhGttdGnJ9BrHKd9WXh3tbXXGPmqPzSqZu0BRapSuTKW6ONsZi8FcoVF_6hKdJu3mVAzlPMf7H9mx2yqY4MUTyqLzIzwH3JnN25LHbSgYQuwHAaVqp0QV0PSaz2z5RJ6sVyHDq89BW9haAYFnnVwLEoiiEzS6wOkYrYZKhFueIQDkoabonRqOfFf8-lW-aT--1I9RAWHaUpkGrXusnsoxCNa7EocS4XTSFwFyBCtxMHFBOIUFWlvt5UGBIuycyXpMLmD5YGPmZ3fDYLNSL-FLE70RXdvaHJQFooQFr27tL9FdBdobcjeUQMu6mBy2AGH5n1tN9v__eJMeCQ7IsrP3fGHiRRpKKY05FcpkfEvSg_95qOEkRIJi1j-UwGRjmOqzY1AvLCFgDD8c3NDSHObKSNmb1vz5h_XIjsl5QisDnKe7BonCN5I00bpw5itUxk4W_bkJbgzh2mFw10_BLQjAHjG92ll03KjDP1pk0MlHqE5sSlefCVJDytbEJmge966S4o9E8GMYWpABqhVm286jEeCrD7Ncl47zjIWRNZSnUHLJh1hI0YBW5yUU0BxMs_Hv8J89WrYzwxY-rAE2_R96f9x1_wK8gk60suwVuXIGhuCOZvGS98-A76bpqVahH9stTBvfuiGEsnRl3N4PyUDnm1LRu39x93IsjBMbMa1otGDRiAqBgdgfnohqO8Iv8XMpLq2vsICXL-O0yjzqRdPLQm0YgSUnDrQbG8gBB6_CAseV4iioEZk6T38YP_weuYldtvk9AdDnwHyvQqwO0t8njnIU5PN2M5xREUhr3g0P9_Uh1btmBsabRG5SFLban-Y56HTMPpuzBRUCPQVIFVzOjrCPl580I83HbWCfuodnFgnTXPp0362lVcldZ5QtqQjpJuLZz3DMCUw-vFIaSUR-kLxdJ-rly4os_Cu10pNrbRpyGXHipTICkM2TpgwBuM_lYvLyVLEeOq-FuFPo4LOVvRfRsD0UWuWoP4n3PJpF1o-_Y7HyeAY1iYbftzEEx1mlrLz3o3yx8hacXmNNHe3PWeBjtj0RzHHFR0oPBOTS53mQEIt7pdnia9k2NT6kssFXrWkQEFbS_tlJi_2415plrl4bWFM0aDbfgwR_pNnD_c5BELz6b0W9aK_mIuF3XsiN1_bt_vJkHpandeVbY-T5TdvRZVqxvoPOHmTuUwKbWmoZOMXoNsfLCbVA=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_037c368f94e22696016ab5dc8b86ec87d19f5ad3b3fc2a0772",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 110,
+   "completion_tokens": 564,
+   "total_tokens": 674,
+   "cost": 0.000293,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.000293,
+    "upstream_inference_prompt_cost": 1.1e-05,
+    "upstream_inference_completions_cost": 0.000282
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 231,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I canceled the headphones before they shipped, but the payment still went through. Could you send the money back?",
+  "I mailed the jacket back last week and haven\u2019t seen the refund yet. Please let me know when it should arrive.",
+  "I changed my mind and canceled my order, but I\u2019m still out the amount I paid. Can you take care of that for me?",
+  "The shoes didn\u2019t fit, so I sent them back. I paid for them already and would appreciate a refund.",
+  "I canceled my subscription order right after placing it, but the payment is still showing on my account. Please return it.",
+  "I dropped the coffee maker off with the courier a few days ago. I\u2019m waiting for the payment to be returned\u2014could you check on it?",
+  "I asked to stop the lamp order before it went out, but the money was taken anyway. How do I get it back?",
+  "I sent the dress back because the color wasn\u2019t what I expected. I haven\u2019t received my money yet, and I\u2019d like an update.",
+  "I no longer need the replacement filter, so I canceled the order. The payment has already come out of my account; please refund it.",
+  "The book arrived damaged, and I shipped it back as instructed. Could you return the amount I paid?",
+  "I canceled my booking a couple of days ago, but I\u2019m still waiting for the money to come back. Would you check the status?",
+  "I returned the charger using the label you provided. I paid for it when I ordered, so I\u2019m hoping you can send that payment back soon."
+ ]
+}

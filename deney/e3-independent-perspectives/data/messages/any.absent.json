@@ -1,0 +1,84 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 24 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer writes that something is wrong and asks for help, but gives no specifics at all.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303477-LHVk6OItNeYdPymUosrL",
+  "object": "chat.completion",
+  "created": 1790303477,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"Hi, I\u2019m having a problem and could use some help.\",\"Hello, I\u2019m not sure what\u2019s going on, but I need a hand.\",\"Could someone help me figure out an issue I\u2019m having?\",\"I\u2019ve run into a problem and would appreciate some guidance.\",\"Hey, I could use a little help with an issue.\",\"I\u2019m having trouble and don\u2019t know where to start. Can you help?\",\"Something isn\u2019t working as expected on my end. Please advise.\",\"Hi there, I need help sorting out a problem.\",\"I can\u2019t quite figure out what\u2019s happening. Could you assist?\",\"I\u2019m stuck with an issue and would be grateful for some help.\",\"Would you be able to help me? I\u2019ve encountered a problem.\",\"Hello! I need a hand with something that isn\u2019t going right.\",\"I\u2019m having an issue and could use some guidance when you have a moment.\",\"Not sure what happened, but I could use your help.\",\"Could you take a look and help me work through a problem?\",\"I\u2019m running into trouble and would appreciate assistance.\",\"Hi, I need help resolving an issue. What should I do?\",\"I\u2019ve got a problem I can\u2019t sort out on my own. Can you help?\",\"I\u2019m having a bit of a hard time with something and need assistance.\",\"Could someone please help me? I\u2019m not sure how to fix this.\",\"Hello, I\u2019ve encountered an issue and would appreciate your advice.\",\"I\u2019m not sure what to do next. Could you help me out?\",\"There seems to be a problem on my end. Any help would be appreciated.\",\"Hey, I\u2019m having some trouble and could use a hand when you\u2019re available.\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdz4m3Rpar3XrGRRL8I67higvHCwIQ9izIKPIa-AZHwUv-hzaxUHAakdTFHiXGSmdTpkXhiYt0KYob5S9XYQONjRSf5B-z3npaOt0NDWt0sCPy9L2jz4Uww0kNLSsjoaiZ0c7ks9N2ZZeI2yYkVys4EZFa8-gtPY-eLH0MWkyUhhT0qrOHK6Z00OdDNzb9zEJHIXNF99M2DM1PyehPn6VTl0FkSwu9chmvsQ7iUqQhMhx5b-hWq6MhsVV0wAvIkkcDHzLueWIuvTJCDKwuy_e_DQn61J1a-9WzRkjjB6-loMdaoSapYVGRpwBma2nhjh7uteoy4J7hL4SgEQ6jp7QQOOpf5jLDly_BRtdW6UB940UcFzmTfEDgLzh3lwhDpzfcgtXfbk5q0cd1PX3IUOUzaf7bIQdsejNdPwnQzFblWE5-camPSnz88vwx_X0xr2_54ps5UXKGsEoPnZoLfEDy0oV1gsnndqzfTbGSNwbnrWiNxDMbnppLgy4PSwFD2bScMFB_mGLD3MKhOU_FLUrRB0_Rcd-SB5wbpEUS59nJKhwhg0xD3eBFEucrj8NIj3Vfwu6lbmUGvGpSUJxkNBtXMMyWOtc_Uo0xQwtstsRlVBdehHRm2x3r451lOIAL8iur8IYqdRkU2rnSA2FZanCDHv-795IiDZoWGcVXsByxNananm4qWlkTq2vno9rmC7NGkJ9S3N7VbwZnzXWwWPGfQ6686EGIH3KBfyBAyNm3qzLdGLv2vMl6R_Lnt08HFSTlm6Vat3FwIzcmwDoSVPvDInH6UQ-hWajz1N-6cndyqE-SH4_5aXqvG4PQuJLvlR_tdS_F3i7oo2E6SFdj1ZpCaMXXnfk2DXv6l-7OQjvr9JgB2W5Wl6fLpD7ax4MuG5n_hsQOAWCa0DkM94mApzatIk1WJPdNjxmxd-FEYitMUZBnfgNY6ibguf-suMxpdgoe8KHeMiKSOSp7-OFulxY5F-8vNOIX_V4PxbwDclRnSm-ZIBdRxgiY5VIobsYNTNMM0VYUkNGLYQ6JoeOdbpkMhr5K93RRABwzqJww94AM-Erb2stveTTNUBg3-pmfYDIZ6q1kS4VlAndAmD5lq2Kd0dpXISnaHbtM8z4CVi21Z1tYP8CQ3ge__TuzfxR6r3JSbXNyYMCau2UYd4dzjFqgSBcUkOuE1Eurjdua61HnPAzF6pIj0DnZkcDqBsoUAthzBEEphigwW52O3J6FJxXkAJjoupK0Kux3NysDYgiaTgpmLPqf5ETMDYxoucfDPKLLtvuZeZXYGSVhL9mO1dzT5l6HXmroJMkCVVhv-Npep32wMNu74aoFDA1pB5Ehl2RoWvnVzHDa0fPUGp-1u2cumdz2J5H1wTIxckZrMGgtx2dIF6Y0mvrUKYnbpheVROMFO5PLq2H3APgId0_cnyFL29BTftXFlP9_WR0qWh0S40w5DVRXzfbk4v3mRK2s986bJJJ3jr6vOmxd0mI3mivfMoZhGq7VX-FzsdzUW37zAmmUvU6v5RZ4_6TPmefUKdppMbhqXmK9GZkoHQoCOVj5gvZ7oBQ8343ZN2Z6KX2UGx1qVXf4SvLiijmypvm2H10_wvGrLuEHr2PU82HzNuzCWDt77n_bLY1PFZ-381eWR7bIECDSOCgRhGC2bi4OWTSuTs9K8h4emtCGV6kFL5T8SLgr28ctlhylQ7KByh_gRSk5eZ7xeLoumg1xiwcFxiKCcT5utqLcLr-PkhOvRU-k0r4u0D0fBzKf-7ry2RWy63qTI_b9mjkENgb8cIUOHZLNus10DK8M4KlMB3IXkN07bZBm5fBkZjv6msGyZ1MMX4ddkNwRSi2kgjLT8PRaWjZw9NXVzPTN6QDfAtXn0ylAAKGQuXISglDJcJxxdDNt1lWrpbP8Obfj3dVbl6jUyY0qKCt4OdwLnC4lGAbdPlt7OVp0D8YFFmSq5B_3_2L3ANqmmL4P95_jG6hJeDDBJhwrKV4TMBudj765u4QbT-LD0-D-z9Ujk7TyIDLqXkdqDGA6uww4PexN19SSd9g3dVMzxkUKXUShqFAi2OmDaROVg2Mx7H67XNI2QGHh07uIxgwCKRTI9L3SCqCV7Ze9qeUFGhcFFgiPdIGURaC6CwgZKYAz7h4d9mhSwnfBBmow6Eg9c_UJDg5hRizYbxb_Tzz0frZSJm4T6QItWLZg0OsWbiwtb4-RJ3iU_pxIOqmlaZjFGtzzf9txi6scaW9EIgHeAA1LBjknegC-_5HbchTg2b9tZ7PChsjwI7Lqybi6tYRUzv5R18x4IbdqAY5FyayPrVpL-hsYZy2ddD5xp0KgXe11hUkv_LluyL8x7Klzl7ljZp1NBqX4rWqeq-IMIeLntyhTRYJzA7vK9xEJSe5aJto3z765sHIPZQTSdiqxAg2DOtq9hzyMTe2Ndcf2m7Gdl5RlXZV5R3DreWz4XNpOzyPFZLdamVmtneKWhq2WOaJDXFWAvD_giquxA9zAq-8Xi967DOhzvKEceTecdKzI8zGUJc8EHwGybyfoDup6YrKU9KO1RqMmPSlS9N0sCJe5Ep.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0877f2e03b6f750b016ab5dcf6aa8887d1852491cde5467839",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 82,
+   "completion_tokens": 533,
+   "total_tokens": 615,
+   "cost": 0.0002747,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002747,
+    "upstream_inference_prompt_cost": 8.2e-06,
+    "upstream_inference_completions_cost": 0.0002665
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 176,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "Hi, I\u2019m having a problem and could use some help.",
+  "Hello, I\u2019m not sure what\u2019s going on, but I need a hand.",
+  "Could someone help me figure out an issue I\u2019m having?",
+  "I\u2019ve run into a problem and would appreciate some guidance.",
+  "Hey, I could use a little help with an issue.",
+  "I\u2019m having trouble and don\u2019t know where to start. Can you help?",
+  "Something isn\u2019t working as expected on my end. Please advise.",
+  "Hi there, I need help sorting out a problem.",
+  "I can\u2019t quite figure out what\u2019s happening. Could you assist?",
+  "I\u2019m stuck with an issue and would be grateful for some help.",
+  "Would you be able to help me? I\u2019ve encountered a problem.",
+  "Hello! I need a hand with something that isn\u2019t going right.",
+  "I\u2019m having an issue and could use some guidance when you have a moment.",
+  "Not sure what happened, but I could use your help.",
+  "Could you take a look and help me work through a problem?",
+  "I\u2019m running into trouble and would appreciate assistance.",
+  "Hi, I need help resolving an issue. What should I do?",
+  "I\u2019ve got a problem I can\u2019t sort out on my own. Can you help?",
+  "I\u2019m having a bit of a hard time with something and need assistance.",
+  "Could someone please help me? I\u2019m not sure how to fix this.",
+  "Hello, I\u2019ve encountered an issue and would appreciate your advice.",
+  "I\u2019m not sure what to do next. Could you help me out?",
+  "There seems to be a problem on my end. Any help would be appreciated.",
+  "Hey, I\u2019m having some trouble and could use a hand when you\u2019re available."
+ ]
+}

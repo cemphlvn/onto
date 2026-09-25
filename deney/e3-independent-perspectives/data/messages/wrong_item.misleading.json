@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer believes their situation is: their order has not arrived; it is late or lost in transit. They describe it that way, sincerely and plainly (they are mistaken, but the message must read as that situation).\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303443-1yVAPThidu1bXVRz4tM4",
+  "object": "chat.completion",
+  "created": 1790303443,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"The tracking page still says it\u2019s on the way, but that hasn\u2019t changed since Monday. Could you check where my package is?\",\"I was expecting this a few days ago, and there\u2019s still nothing at my door. Do you know when it might turn up?\",\"My tracking hasn\u2019t updated in over a week, and I\u2019m starting to think the parcel got sent somewhere else. Can someone look into it?\",\"The delivery date came and went, but I haven\u2019t received anything. Is there any way to find out what happened?\",\"I\u2019ve checked with my neighbors and looked around the building, but no box has appeared. The tracking just says it\u2019s moving through the network.\",\"This was meant to arrive before the weekend, and it still hasn\u2019t shown up. Could you tell me if it\u2019s still coming?\",\"I\u2019m not sure what\u2019s going on with this shipment\u2014the tracking has been stuck at the same location for days. Please let me know if you can see more detail.\",\"Nothing has arrived, even though the carrier marked the package as nearly here last week. Could it be delayed somewhere?\",\"I\u2019ve been waiting longer than expected and the tracking link isn\u2019t giving me anything useful. Can you help me figure out where the parcel is?\",\"The package hasn\u2019t turned up, and the estimated delivery day was yesterday. Should I keep waiting, or does this need to be investigated?\",\"I think my delivery may have gone missing somewhere along the way. There haven\u2019t been any new tracking updates, and I still don\u2019t have it.\",\"Could you check on my shipment? It was supposed to be here already, but I haven\u2019t seen it and the tracking hasn\u2019t changed.\" ]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdzXuu3ImgLmv5w2K_ymglti3UXMPpoXEZvGSXkbI-C6dSEbHDQp2px17S_ce2-DDxiDscivKuTAz6SYn6McZL2LHqSiFHZqIaoDzR_S9m4KAdqXFgqwN06_HLw1wBbzrmm02d4IvAqXYejTWN5uQEo7JJXsKQ1yIEYwCbW285_22iQQvXTworhoKrdizZ1KXsZW1M2eKQbWPsRmlJrtCMgfbU8mvWRSs5UZGIGE2yiW6Eddxikut03KkHcS1KLEIMR7metxSZCgPbsE6XawRgK1FQo6B_YdGddvhMp-rrRIWxfEzz8bJKvu90eS6uIATRZj6lio9cg9x99MjRpKpZJQvFt1nwXYEjMz3RJrZeCuIyw7QxF9cYGr4-0dUiOwIuSP-dtUqEGb7U9U-Wn7gB7JfZ5jwDm5fK6hxVwV4AGIHzvbyqrfkGfGmwPOtkw3IARsCYs8bZMeO2oblYhE6rel_yUvu4OHt3LLPVDqF_8tKM8jw6VvBTi3quFvXEsuwI1xZNWJes2T5aejFEBazw8uFPXO5y2kvdSnGR2r1ySPdY--SxtpWscZaznd1mHc3_0LO2qZPtOQHTcMDTT5OO5-BiMMupCo_01p8TXejN7F2rS0NyrKk40FADL59WSppPS7RwKxLpvHIr4pg9td1gt8ihHJ2-qDcu8lvt3zSmulUSkip4ZJyRal4eudKAQznnt81Sm3fSLwtqhZUZedDIAcKWoJSPpd9Pp_1a6c4446oL7ddq-lwVSGNzUfdo73xfWU4_D3qfxFWdLgaILwV9jEEWz61bATteNUAclmID2bWBBqtlhojjH7cGOtWuGv7DBpkRGO2-48oirypgdp8ySdtpm5HBcn9oRzXSYy3SbMc38qxkm_Ki12OOOsSymBBbAlaVR0MTQyay2FmSdTGwWsRAabGz4I5a9xYeualFhLOWoLI9UF8TDZ-WIwpkr9GnZT8FDe3HqPPCUOyvnzZphkt7RvFo9s8665gyNbF6mE5mc-Sq8_QoAClSK-W5rla5Q7F4Byyi4Zl6fWVPQpkZz4vdPBb5-8Iis1EaYg-nIV927aZy51WIVMq7bmk3rQBr2S61Pz_Bl2MTogFdsFmZ7RyCnoH06qkB6b0FgRZequh9Xb91XnkXC4FLC7rqp3NFAO8DXMcVMJ6ON6B7jzqGDAl_80xuLpxHEr1tgWVGrSE4khcHwJ07avcB3AVxYfFCRDnZMgpKh83FVlTHABZoZyAvUSM1mzj7eVOeKkd878m4Vb2FJiD7_YfYexdnHyIeNN-AELYKz1Z3-4_28eIIzwv10GuVJ3QhBZaSMeogs0di6BtPtIpztIVbQgASg6UF_0zOM-q5aPU5Ir3-gtg_oDbaL8Pb7jzofyR_Hrl7D4WNQ2fncaJfqiWhV4Dzw0rW4r3INMfUltn9Afxc9LN2VCeRI4HdBjz8yulhz3Z5PZ-jrzURwyJOM0eUnDNW9EahXtdjbmq5FsTFJfY9ioZpWCzqsacLOs1VWbdCGXnlGE6KFOuceKmY57V4lqtpKhEGj03L0n1CHY-4X48lgeKWado1AYKW87pJVQx9hB_uQcOMeiVQpp-MFkmoSs0INqZyZBQlzUhYt8oze3pO0boNIDoKfLBsa9NyEjNlzbX5H92L8BWZ5q9Zwp4xpiDEajiYJwYhEOlXVnVtJhJpWlCyRP90OIKP4PFtGFgD1XJJVa4GDhKrCzA3AQhHsVXuIOd88JAOkNY5x-lWFBb2VuTp_a_8UfVZRVOoZiFS9TG8YZ6aihIQ9Qs4xdmFy0ZxtM_BOYxxBy2BELAUn4UWIHAi7z25O--IayHDg1pBpWH8RPWeGAyiXV8huAn66CPfO8hiOtK_g4MvKiv3KX1ND5AEoJU616qTA7e3RNkL7af7Ofw_6wPT05U7-5_f18H--547YNGX3GNopxaSi6K5-kl_VYsqPbFIMM9MFzq-0Ly90lnHEHlgHTIU7leVYE0YRaYlvU383TVCsfEoxK-KpaQ3PPU3ookhQP-xfBmWqJdLLRMPQAC9wSxDTMa0mbZFsJ2r5AqscrWOvr6_8kSzYekx2SaIIeFBMpEq144RPkbOBMEkM7FREYNHxhKaEK2k4sf2Sv5S2jBk1PVZEf1b41Mo72hzp-c7fNyR__rMll0tk_cVenA8HZr3CKy3nwkxFtsPBpSjpHLY19YEcqpO8jaxcxUPhqrZHMhNKKu9gwdnVSLY_wM1dCNe5MKua-o2wus9Wu5Tx177_klrma5rHTu7117-YnVexIlzMr7lLtFeQxnOoNMd6JFNveJlfTpk1vbVhiDbwf_Tg8kWgZSqStmR-kytjtcnyc8xD3WzrftOwxTbxPHHwBdM1eyrsZpkDjw90vY7ZBeNj14W857ZROKOuxv_IIFV15_m9vPBMeafUk6KsOz9bVZjLIJRcgLRD_mDVrYt4NaqeA17GsgcCZxrF8_nwSXlKhekc2L2KgbSrtTwuNDUpXExqIpe9Sqay7me8dxDoazWvRJdTIX0NwQ6-qHT5ETKqgoHRgKnXh-lB1yGtSVAydmhyNr2sVqlBIeKlshL1GFAcClqCsFVZA2qYwrRO1WJ9NCrdJ1tYTYPSBsEUMo06ZecgeLnXFBNihMNwm4FpFJfC47VuJFci5YkcAd-66w2Slc-QKOAIZm18rqKs=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_010fd768a62ca1ca016ab5dcd4970887d1aa1ad306549008b6",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 107,
+   "completion_tokens": 562,
+   "total_tokens": 669,
+   "cost": 0.0002917,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002917,
+    "upstream_inference_prompt_cost": 1.07e-05,
+    "upstream_inference_completions_cost": 0.000281
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 205,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "The tracking page still says it\u2019s on the way, but that hasn\u2019t changed since Monday. Could you check where my package is?",
+  "I was expecting this a few days ago, and there\u2019s still nothing at my door. Do you know when it might turn up?",
+  "My tracking hasn\u2019t updated in over a week, and I\u2019m starting to think the parcel got sent somewhere else. Can someone look into it?",
+  "The delivery date came and went, but I haven\u2019t received anything. Is there any way to find out what happened?",
+  "I\u2019ve checked with my neighbors and looked around the building, but no box has appeared. The tracking just says it\u2019s moving through the network.",
+  "This was meant to arrive before the weekend, and it still hasn\u2019t shown up. Could you tell me if it\u2019s still coming?",
+  "I\u2019m not sure what\u2019s going on with this shipment\u2014the tracking has been stuck at the same location for days. Please let me know if you can see more detail.",
+  "Nothing has arrived, even though the carrier marked the package as nearly here last week. Could it be delayed somewhere?",
+  "I\u2019ve been waiting longer than expected and the tracking link isn\u2019t giving me anything useful. Can you help me figure out where the parcel is?",
+  "The package hasn\u2019t turned up, and the estimated delivery day was yesterday. Should I keep waiting, or does this need to be investigated?",
+  "I think my delivery may have gone missing somewhere along the way. There haven\u2019t been any new tracking updates, and I still don\u2019t have it.",
+  "Could you check on my shipment? It was supposed to be here already, but I haven\u2019t seen it and the tracking hasn\u2019t changed."
+ ]
+}

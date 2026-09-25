@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer believes their situation is: their order arrived with a different item than they ordered. They describe it that way, sincerely and plainly (they are mistaken, but the message must read as that situation).\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303415-jTaF93yNo9QmkjiIMEw5",
+  "object": "chat.completion",
+  "created": 1790303415,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I opened the box and found a blue mug inside, but I was expecting the black one. Could you help me sort this out?\",\"The package showed up today, and it has a phone case for a different model. Mine is supposed to fit an iPhone 14.\",\"I received a set of measuring cups instead of the baking tray I was waiting for. Please let me know what I should do next.\",\"Hi, I think there\u2019s been a mix-up with my delivery. The box contains a medium sweatshirt, though I bought a large.\",\"I just unpacked everything and found a dog leash, not the cat carrier I was expecting. Can you check what happened?\",\"This isn\u2019t the lamp I chose\u2014the one in the parcel is a small desk lamp, while I was expecting the floor lamp.\",\"My delivery came this morning, but the box has a jar of face cream in it. I was waiting for the sunscreen.\",\"I seem to have someone else\u2019s product: there\u2019s a pack of coffee filters here, but I was expecting tea bags.\",\"I got the green version of the backpack, but I was looking forward to the red one. Could you arrange an exchange?\",\"The parcel arrived, and inside was a set of screwdrivers instead of the garden shears I purchased. I\u2019d appreciate some help fixing this.\",\"I ordered a hardcover cookbook, but the package has a paperback novel in it. Please tell me how to get the right book.\",\"Something\u2019s not right with my shipment. I received a size 8 pair of shoes, although I was expecting size 10.\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdy58v08uMZ3tcx-u0uOuvIetaTEd-6D81c8BfvuVR1CUyWBkfSTEPU97tr-pOvBHODdh3-lgQhokZgKdDpm36NWTN8Cr6bjMqznid8i8LOnuH5aGaYwRYqdveca2Mf3dUMCv6we_UL5-HTc0qc2OGZJavDcdXoL4SIjikelloVUrZ66gnb7Tikb9tF4LFGGqExETCrHFUuiPd6qZPqUkzG9ill_foDePt2HBZq2x8oLqqEZVtGahI8rupWyz-pjEVsWjihz8CVFTkhXFUYTpc7Sju8UWiEWarBq1Nn2SACkVe-9zh72r7PnbVgsn_AKnu54KBvhE8Cg08ZfTdN-RSCmX9dk7tHB9X8pTeUYAbvncUdW3bIYDu5N2SVkkawgPTk55TiQmfNqk7_VmPt0NnUWQ3GymJl5ryr-N6YXH8Qo8BlKMHh4KJ75qlY569DFuu3Gr7kZp-xqBgTKn1bSneUcn-hVJ40DwqdNJl_KrDWWNvtCAQ2QQ0GSIqXeESlqC2lcEgSWvHbbWh9EavyQuLjFi7iIFWo0pO_9U1B_-xrmPbqqlg86dG9GhIir9S_swO-_ruMtcdkd-_cin6Pg5QzuG7Wyoe55eYI132C4JPULGifd1vulVGkKzrU7h67Rzlmt6YoczJ8ncIQv_HU8sZxObK4j5YQ2P_AiflFbqn2NoRUq3P9zCzeMfwwSTk5lsw82iWvi5dtwPaI_MoAwIcjo_v8jlIXYxqg_NR6m3ErelNB0sBUHETk4LDnLE_bM7iqDHFGcp17hzY2L6hO-mPAl8K9HE2GRU9LImxOdHu2Zqxe8-eoPvJGFnUGm3jwPRsS1rWjbgfX_TRW8qUXV0ZCfMv26fG2Uc8XNxynh8h2M_bdHBvHpDyIBa8xGId2R7H7jnAjCo8e0sqEt3Cjvd_JV6kbvxLpKiJLsdCzjsTE2CLFTc7xJOGyAFErGtXOW7h_1aHLyulx9diyw7NBFYKCDzA8dR5bN4OW6D-LpCeYif7M9cIslogzDJ5OdhAUXR86Vf-uO8MuoQkkzlmHSdkPM5_LbENiirdoLMy34Nzh34Y4QVNaw3mUS0zvLRT0G6GZvWHGCkmrS3YOXqbj2TYsH55gVsclEyeDT20cVJilgQqyWslSlrcol6TwRhJM3iw3hJuRpYMmHEP_r1kEJXqNvFvIgHl3UWePVH6Z0gcWJLKP_4xOMY20e6F9M6C0b_kpSsE2eoORW5lfTVRCCdipPy1fDIKV0NWwPupQ0PsXbbxiysZB0lTnoBUUZrSDaDiBKbTc1B4L2JZZOszHA4uygzLRqMOIS7sVzHRRIaK5TkrRaGyUuJZDPElrTKCkg7YG3gqaODjQl7lVyNqCCnjx6qdUsa8jbQzfKBruKAsiSZ-xcNKelk6SjWFitJBmhDKtaEdm1Ra2iCaknIKZLno_hYS7VoqexTqPzpLMptHIgt1xJcxTr3LZxil4CoCB50hUQ8OvR9Ag3it9oZ3x_yfsV_RHJFDR48FbBvh_sRzMhEZip5hz6hzR5MwIFNNid5MvH9XOaD6kz7Dg0MwwbvX5JpffskM1TgeMC3HDkxa8BB_Mg4MrzUt0EP7yML7xYRJX5Sb5fDGFGGFtQCNvqr9rKRe25Dv8Ka4_BeEMHSM--Uslkp8kmtZNp7jN5Tdiq1icJHormWqBohlYUY7qW8GOKYmQhlvLRwTXxKNWDudvqx5xjbIOEb2JRe7EtMqih6GDTU92RiIpKt3zEeoIER-SxE9xwcbC1pdOpboq2W1wKGzdZ0U048dVVtjj2RMaE9SrcVdYUSGLY3wiVfQdi4SjvI1lNimgPkOjquPzPX35d62Ik12mnO94wol--Zjms0ynaB4q4I81M-tK1psqTjYaxcr4tyRaPnzSqIuSNCBS-ePwCdGfZg1M32E6foymRDqRv5pWrvPieLU3Tt-dPzUySjDyimHYSgyz0iUQgAuZ0N_EeoTOGrvvUwdMXikCptfyFHWXnt2Jmz3wzzWaRgZpxPl1OJAnrR1hqOpDx9LtTSW4zbVI-uYvTP9nOzc-DClZBInzy79xANM5HNBT7j9BVnaHuRC1NSDB0lizrBOkjHBE=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0037e90b738b5d24016ab5dcb7e75087d1a6dbf1a572328ea9",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 104,
+   "completion_tokens": 446,
+   "total_tokens": 550,
+   "cost": 0.0002334,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002334,
+    "upstream_inference_prompt_cost": 1.04e-05,
+    "upstream_inference_completions_cost": 0.000223
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 113,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I opened the box and found a blue mug inside, but I was expecting the black one. Could you help me sort this out?",
+  "The package showed up today, and it has a phone case for a different model. Mine is supposed to fit an iPhone 14.",
+  "I received a set of measuring cups instead of the baking tray I was waiting for. Please let me know what I should do next.",
+  "Hi, I think there\u2019s been a mix-up with my delivery. The box contains a medium sweatshirt, though I bought a large.",
+  "I just unpacked everything and found a dog leash, not the cat carrier I was expecting. Can you check what happened?",
+  "This isn\u2019t the lamp I chose\u2014the one in the parcel is a small desk lamp, while I was expecting the floor lamp.",
+  "My delivery came this morning, but the box has a jar of face cream in it. I was waiting for the sunscreen.",
+  "I seem to have someone else\u2019s product: there\u2019s a pack of coffee filters here, but I was expecting tea bags.",
+  "I got the green version of the backpack, but I was looking forward to the red one. Could you arrange an exchange?",
+  "The parcel arrived, and inside was a set of screwdrivers instead of the garden shears I purchased. I\u2019d appreciate some help fixing this.",
+  "I ordered a hardcover cookbook, but the package has a paperback novel in it. Please tell me how to get the right book.",
+  "Something\u2019s not right with my shipment. I received a size 8 pair of shoes, although I was expecting size 10."
+ ]
+}

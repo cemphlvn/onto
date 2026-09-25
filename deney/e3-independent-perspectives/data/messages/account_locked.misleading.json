@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer believes their situation is: someone else got into their account. They describe it that way, sincerely and plainly (they are mistaken, but the message must read as that situation).\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303457-unCpzPSUppig1fQas9US",
+  "object": "chat.completion",
+  "created": 1790303457,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I can\u2019t sign in anymore, and the password reset email went to an address I don\u2019t recognize. I\u2019m worried another person has taken over my profile.\",\"There\u2019s a purchase in my history that I didn\u2019t make, and the delivery address isn\u2019t mine. Please help me secure my account.\",\"I got an alert about a login from another country while I was asleep. I think my account has been accessed without my permission.\",\"My profile photo and contact email were changed overnight. I didn\u2019t make those changes, so I believe somebody has been using my account.\",\"I keep getting signed-out notifications, and my saved devices list shows a phone I\u2019ve never owned. Can you check whether my account is compromised?\",\"I received a password reset message I never requested, followed by a notice that my password had been updated. I\u2019m locked out now.\",\"There are messages in my inbox that I didn\u2019t send. It looks like another person is using my account, and I need help stopping them.\",\"I noticed a new payment method on my profile that isn\u2019t mine. I\u2019m certain I didn\u2019t add it, and I\u2019m concerned my account was accessed by someone else.\",\"My order history has several unfamiliar items, and the shipping details have been changed. I didn\u2019t authorize any of this.\",\"I got an email saying my account was signed in from a new browser, but I haven\u2019t used any other device. Please help me figure out what\u2019s going on.\",\"The recovery phone number on my profile has been replaced with a number I don\u2019t recognize. I think someone has taken control of my account.\",\"I can still get into the app, but my settings and recent activity look completely different. I didn\u2019t change them, and I\u2019m worried another user has access.\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdzj1_AQvekH-LzObcPBV47QfHTA-QNgVPsalnmgGQ8DE03Sq-YCAWRZK7aXLQLx0tiq_7W_4BJmJXgHX_JpXEVtHTZ1J36hG6evrPhlMC3bnV4FN2E6SoydEW-9e1EPaYXUkbbR2IBlWFjBb9YwdH6ZjLNOTSRbJct2r2_3fH5wEVUPHXC58Peb9Ki6NL2iCnDuRcFEvsz1I5iEaz0_NP1yRP9UK5K9p6l_eBjtyc-nGAEdJ1JwbmAfVDN9gqOw28Z7QmA4L7PEwdlKGBJ1lPQwWCHamMoIxrQOSkQYc43KQnq5Lnu-o7NKv-1ayFNuveB-txWzqBT6RiSepYKTM7agnxTbF8S4S5LUfEbYsWQNoqMjDrwGB3IqZJSPDccpRqIhoGaDmv8_7dECrdJPoZ1etoyelfTDGQHqfWFmqAZvgj3LaBhtPCa2a0pmS7GAhVjIhTNK0CR9KwlM-U0nP0LkrkCwz4PgvqhT9qLrQLZ-suoJfrhh88tZ7E5bjrMxU5hYF3cOhurhlgMlQ2NfQy2MBD7Q_SNopqCV3e75H_mwJjfd-4xE1mpQ9cA_dqk3mCjiIDjIGNkz6T5pkgUdjum2BZSmQb_LNKLUriJWNLdLXtU7TmA-t3gNna6ekOzSQeajsNEPgy0phzsRSok7LRXMs-9jRmGsWSIX13f0zsCsEdGnMHEdHad3PcaiBylI7pJkGxX32XYqAeoSDShIS0oW6oxhBPqUTjXqQPtki17SzcKWY0rAOgWhu_LJGUfL7GPFLfWv-RY2vw8DTWclyaQv8Z1j8gEvcY_45WDsK5TMmvS5GmI0ARgEUZkSbxGOmgucfG0eGaO1VID-SnOS2Hw-zXvoJVB3FPZmx2q-_5ezV3T57Lqjq8a_nsrw6x7gLHV20hyKffY6qocSqFRz5K83gVopVEhbuOXXU0uGjCyWr2a7JrUZrazSC_PCBOSisOtTEnACpYnu58V9HJRl3SpDfTGiakXwp4mnbFrql16pWRgmHyT20Bui4HtCejopmUDOj_yFi7ZScw5bBlg5XarSNwTnbiUQ4SS9oTOYcVfcabsO43KiuaNBPeYm8AdwN6rMZ9rStEruuUA-qXyR3-O0D_9c4gKAqkpzqBEwJdbxqdIyv1HR_6kXygsixK56P8_0vxj-Afq3Oyb4JNMImiKKj1iIEHb_vbkxuc_401H3r79Gup7xo5PlJyb-edSZSX1l-T_O-DpWRkZs6J4rI0BjfGCSjPX3U8Dfq4Iqhq7mo10hJzXNV7yYVwF-REQ19OfWTz6ryMgxF71xgFxfnW4c3bl-YrpHTNcfHebNhFj5ZMP5RY1XVBaK7NyLCyliQijXyKnarbdAMFzzGyZujZ3XcsZ_fmYWIrMVOyG9RmUndSsJNMonn0h-aN2IPEgLqYaUdVUWT2kwC3HlbBgC4wmn6ryKKDVudJ1eHbyymASV6dJYhgBwwVo-7P8r7lNgA-agaeEKUwfZUe5hIamSLXmjbgDvGDIUZ8InARM7IpZlz4Vv9ptiPnF4dnAcpuVBhCm4U2R2c2-tJsbsxCMK7rNiniA8Iyi81QuS3WjSaXTerWmpQrr-Pu9C0znsuIVTK6WLGeuyNFl042S-L4OacowA2B67Vlrl4ZauI6BELA-syyZWTQ91McGm17H7PohMxKq8frRQ7OFY_mqeKsLCgTxTO1D4JDMU61Gc6LtWxFRNtlKCmb0LtAm98yGp9-l0G7n2IhOXlqMs3NkJjmUXGO-O45lpWWJmK836wAzqb4zSY5Jrn3fYoOyj4ZmRSibEqC-75kLFOI2dnQBCX1f4jZEDuL4pJgeuMCHoGI1_ulaDSRycsaXcXSakzOc5rS-_kW0nQstoW003UJbwl_voYfQH_YyU2YazkFdQ3pmnI_Gui2Z7FXTOsvr1EhNPr9dh3E1qned69aYkyrtJ0ocI0YyVo5moYFRScEZn42EBowKTVBGFhwQdxMZA1AVqVbil4UBHRN8V24dK5e4osa3JOMHx-22BKqStt2tpAGxLP8fn22jDA1rtHOts6_JwucKuH4p6jF2asVz1i80PrfrDo00wqvdKFVb5jEAw08qU4XPKBpnKdLxen7MG2bTeO86Iji-ApofnSO9b7y0encSzbfNeKg==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_03f5ce5b7524e3ea016ab5dce1f8a487d1b421a3d20f0a416a",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 100,
+   "completion_tokens": 487,
+   "total_tokens": 587,
+   "cost": 0.0002535,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002535,
+    "upstream_inference_prompt_cost": 1e-05,
+    "upstream_inference_completions_cost": 0.0002435
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 120,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I can\u2019t sign in anymore, and the password reset email went to an address I don\u2019t recognize. I\u2019m worried another person has taken over my profile.",
+  "There\u2019s a purchase in my history that I didn\u2019t make, and the delivery address isn\u2019t mine. Please help me secure my account.",
+  "I got an alert about a login from another country while I was asleep. I think my account has been accessed without my permission.",
+  "My profile photo and contact email were changed overnight. I didn\u2019t make those changes, so I believe somebody has been using my account.",
+  "I keep getting signed-out notifications, and my saved devices list shows a phone I\u2019ve never owned. Can you check whether my account is compromised?",
+  "I received a password reset message I never requested, followed by a notice that my password had been updated. I\u2019m locked out now.",
+  "There are messages in my inbox that I didn\u2019t send. It looks like another person is using my account, and I need help stopping them.",
+  "I noticed a new payment method on my profile that isn\u2019t mine. I\u2019m certain I didn\u2019t add it, and I\u2019m concerned my account was accessed by someone else.",
+  "My order history has several unfamiliar items, and the shipping details have been changed. I didn\u2019t authorize any of this.",
+  "I got an email saying my account was signed in from a new browser, but I haven\u2019t used any other device. Please help me figure out what\u2019s going on.",
+  "The recovery phone number on my profile has been replaced with a number I don\u2019t recognize. I think someone has taken control of my account.",
+  "I can still get into the app, but my settings and recent activity look completely different. I didn\u2019t change them, and I\u2019m worried another user has access."
+ ]
+}

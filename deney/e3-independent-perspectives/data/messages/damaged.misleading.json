@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer believes their situation is: their order arrived with a different item than they ordered. They describe it that way, sincerely and plainly (they are mistaken, but the message must read as that situation).\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303427-tIIQoz5EUZ8JLQRUhCJd",
+  "object": "chat.completion",
+  "created": 1790303427,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I bought the blue insulated bottle, but the package had a set of glass tumblers in it instead. Could you help me get the bottle I paid for?\",\"My delivery showed up today, and I received a phone case rather than the charging cable on my receipt. I think the items may have been mixed up.\",\"Hi, I ordered a medium black hoodie, but there\u2019s a green one in the parcel. The packing slip has my name on it, so I\u2019m not sure what happened.\",\"I was expecting a bag of coffee beans, but the box contained tea. Can you check the order and let me know how to fix this?\",\"The package arrived, but it has a pack of AA batteries inside instead of the wireless mouse I ordered. I haven\u2019t opened the battery pack.\",\"I ordered the children\u2019s dinosaur book, and the parcel I received has a cookbook in it. Please advise on returning this and getting the right book.\",\"Something\u2019s off with my delivery: I paid for a white desk lamp, but a black wall clock was sent. I can share a photo if that helps.\",\"I got my order this morning, but the item in the box is a pair of socks, not the running cap listed in my confirmation. Could you look into it?\",\"I\u2019m a bit frustrated\u2014my skincare order was supposed to include the cleanser, but what arrived was a bottle of shampoo. Please tell me what the next step is.\",\"The parcel was addressed to me, but the contents don\u2019t match my purchase. I ordered a set of measuring spoons and received a silicone spatula instead.\",\"Just opened the box and found a dog leash where the cat carrier should be. I\u2019d appreciate help sorting out the mix-up.\",\"I ordered two ceramic mugs in yellow, but the shipment contains a single blue bowl. Could you arrange to send the mugs or let me know how to proceed?\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdzG42dj-SLINm40Oq6DOZfFUa1sBi_5nYBbjGVK56W2r0xjf40o3bWJKTX_KQUDSoKv4tl2qXDwJCSpGJjUmVPS0YYc2MxELUwCF2a6hiWgUzHz_ZtAlNyBHdUrLK1fqSkxMcK32VJ8CFdpqtvUKtBZNPetbBySlJt_P_yeWGGo--xEeEQlXKAg9nxixN1NcIG-DbRkQjd_slgz6EtdiVyi45TEGkUxabVNvllTnAvpi8pIdAJkaR0DcsS3BSSuok6iCyANWTlLcdIB3C7BKe0LVf0otPzW-mMgiiL3oet1D6eHUGJzP-_LSPeuUnSahHHxrtH-Rg999yWlCLFOvU2UFjpRi1UexmgR4_Jw89xgcwNIdBfM3tpnZJuYJljjlw8rUXtyvWqupnR5vBlQzn3EUHuUSfOgzWxpJk7VGMXZfYhR2NMSiMEol15lXPY-846ViYdT6K7cR45H4Ctj0hcnCcU3Du-6OPz7n5_pUQdRoRb5Ako9rJel6_5xQY1THFG7Lp_RXCv-7ydyGcaeGb9kQ3MSD6BxAguVmDYTiLxlQPlIYV8v2kLjIvB5wAt6LDPVcV8jcNpPxnef4z1xbj1pmHTrURABP28RmbMIImtDnLtYhX_Bk4IkIzeK_CLfJKw9Mc3IFRYFLItGrMtQX4VD66mQLLlAdadrRaM1GatiF8rjaiscHZn5Hs3O4sYzMezs1kiVvWBd96Zsy8MDhPSGnPqeWm3CuS2TsV3Fy8yEXxv4KuVsB23P_uS-gjQpAdSHNCmyGFhVNMFM5ZlK2_SCpc-VO8oVQWWD50ad2Heu2xW2xpUFyrmkcKgpLwJ2MaIWVvpAOT7UFVYpaDK7duKYR3kW3gw8r4UurpLULJTJZuhm0sz7GiT8Zwa7t7mkTRyqveiSxppmHx-7Mw1KSDqEtA2JdEzPdorJRWqaeYhYhaavyZCsf5O9eftPH4VqNBTOXy66ZmxBS_NdOWjx--zT4NthS3EqrIZPolInWFrBM4hoGBK5uFUuRLiqr0t1BezPNwss03_pRyMbDmt5hip7j7BeIlS9zYUOmkNKfyTybiondFN53riOnkKL4op9sRUApNZUUo-NNGRNWima-03D5-UbLRBuv2pNhIcZ119TZNC-0KdJGBp1qXs7FsqQiVt9mRL5s-643StdXPr1b9blQbUFSu-bDubjPiW6oh5hUWMcctkaXB_v5ixuVC_IEQOLK5uV9U6PWtd0lqIXqcslBPBy8Khv6GwKzAjtzp6nD87gWpQavVKn3xiC338-ic1mfgrnXBbSDofWR_om-e6fCjRtw28EBRLLq41zeBj1tv5QnFFEwKhR2v8eFBUXLBPgW7jve-uH-qHtD2eBIQFIiwS_wgyqNIUsA9rBZCvGnB_ufKbpQVSFi75K97PMPN92KuFqytfbTNpGj6KLlWr701_hL5I02criKtHfclQlUSfYy1Xg-lwLeKvzPKQSJhP6n5TZyO7APCKoAL09nu_9aBmSQyEm6HSqStYaXmEVGv8Kura9OQGbVQ3xCSynRd972k4AvDoFVOFneTFV4KDv6pM3qvyLoSmXXQ6_4l_ezuK70OTucF8_wGpF9uapW3cEmSfKZYekCTkl0nF8Xtl0YWkpajbT5KDtA0MB1vYiqHYRYtixRCHvjnbW8eItX9NSMYCfaPUJzCDbYRu02_U-LBNo_KA3sOwjilzfJb0mJPOvkJz7x0FlXvPz74Zhx6-ifKWXroHC44Zkcknl0XFFbjNxucPlOJU3f0TMwd7zzGyZ3xA9FPSdSLiBV8e-9BGTdZy1YkWD4k7JLwDgQPL_l3VKDNTsGQvcAaMon0tiLxyHh-wm_ARtXMkLBJiZUv-MwoM0UWEfY1GTj4QdZWP1WqfeoyZTD_eYTaVE1Woj7FvFqzwq7PbMvXzrXYW8UoVV34jmu3UYK3eiACP5V0GT-yabkYBbtIyc3COy-d6A3UbFnUycCt7RebNGDDHnpvirWTT_nLNreozh_nK2pU5s0ZC6cjhxWgwFwpvySE2udZNtEWq5asLkBEnZf7NmHHuHuZ1BaX1bZexXMqtJTO7lzCrH8eT-eLFi3Gd3U5SiGO_tVb7v1BpX4HQWoVj0a6Py0IUDABd5el-spySHyB3huuslTrgAZGY_C4cNb51o7blpTE7K3c9GkJlTHUfK93dwOcLAwmSiaSzgCv4N60oVXO1liXQqBKCLZhA_nL17Rc5MHgzG3sW50uEuizg88utl_rOwZ58i9Y2r0hlighFpM1uYh3xGm8ujsoHfnLKU9AUyM7KfslzfEtA_LNSkFPXGkz_wHjTRdgWvzKYUaxXgJJuV96r_df_iblrDpvRQujix2YgXpIoEhVDe2FbZ-HWZixbMxD2O_2O4Prkm21qnGCPS83p8FrDHMfZnwznY4uCZZ_rOYzKes5XRK_bI4CGMQiqrqQLfyGtl2iwnDmW_-Mds10tag-8iH7L6r95pnwNbFwjAKPBfJSzkbzVGUhogepWMFOI2uxmSn2RdLtMpE5IUIPYdwTW5nVmDjeECW6niD6hIy5gv-_rbSW7h2yI3d9Un1LSKkxO0aq1stX81-Q==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_04f48db431f29c1c016ab5dcc46e1c87d18d34232b40cd0d01",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 104,
+   "completion_tokens": 573,
+   "total_tokens": 677,
+   "cost": 0.0002969,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002969,
+    "upstream_inference_prompt_cost": 1.04e-05,
+    "upstream_inference_completions_cost": 0.0002865
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 179,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I bought the blue insulated bottle, but the package had a set of glass tumblers in it instead. Could you help me get the bottle I paid for?",
+  "My delivery showed up today, and I received a phone case rather than the charging cable on my receipt. I think the items may have been mixed up.",
+  "Hi, I ordered a medium black hoodie, but there\u2019s a green one in the parcel. The packing slip has my name on it, so I\u2019m not sure what happened.",
+  "I was expecting a bag of coffee beans, but the box contained tea. Can you check the order and let me know how to fix this?",
+  "The package arrived, but it has a pack of AA batteries inside instead of the wireless mouse I ordered. I haven\u2019t opened the battery pack.",
+  "I ordered the children\u2019s dinosaur book, and the parcel I received has a cookbook in it. Please advise on returning this and getting the right book.",
+  "Something\u2019s off with my delivery: I paid for a white desk lamp, but a black wall clock was sent. I can share a photo if that helps.",
+  "I got my order this morning, but the item in the box is a pair of socks, not the running cap listed in my confirmation. Could you look into it?",
+  "I\u2019m a bit frustrated\u2014my skincare order was supposed to include the cleanser, but what arrived was a bottle of shampoo. Please tell me what the next step is.",
+  "The parcel was addressed to me, but the contents don\u2019t match my purchase. I ordered a set of measuring spoons and received a silicone spatula instead.",
+  "Just opened the box and found a dog leash where the cat carrier should be. I\u2019d appreciate help sorting out the mix-up.",
+  "I ordered two ceramic mugs in yellow, but the shipment contains a single blue bowl. Could you arrange to send the mugs or let me know how to proceed?"
+ ]
+}

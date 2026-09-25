@@ -1,0 +1,28 @@
+{
+ "written": "2026-09-25, before any case was generated or judged",
+ "classes": [
+  {"id": "double_charge", "describe": "they were charged twice for the same thing"},
+  {"id": "refund_request", "describe": "they cancelled or returned something and want their money back (there was only one charge)"},
+  {"id": "payment_failed", "describe": "their payment was declined or failed"},
+  {"id": "not_delivered", "describe": "their order has not arrived; it is late or lost in transit"},
+  {"id": "damaged", "describe": "their order arrived broken or damaged"},
+  {"id": "wrong_item", "describe": "their order arrived with a different item than they ordered"},
+  {"id": "account_locked", "describe": "their account is locked or disabled by the service"},
+  {"id": "account_takeover", "describe": "someone else got into their account"}
+ ],
+ "neighbour": {
+  "double_charge": "refund_request", "refund_request": "double_charge", "payment_failed": "double_charge",
+  "not_delivered": "wrong_item", "wrong_item": "not_delivered", "damaged": "wrong_item",
+  "account_locked": "account_takeover", "account_takeover": "account_locked"
+ },
+ "conditions": [
+  {"id": "ind", "noise": "independent", "seed": 1, "per_class": 30,
+   "weights": [0.55, 0.10, 0.35], "weights_order": ["clear", "absent", "misleading"]},
+  {"id": "cor", "noise": "correlated", "seed": 2, "per_class": 10,
+   "joint_misleading": 0.35, "otherwise": [0.85, 0.15], "otherwise_order": ["clear", "absent"]},
+  {"id": "pilot", "noise": "independent", "seed": 3, "per_class": 2,
+   "weights": [0.55, 0.10, 0.35], "weights_order": ["clear", "absent", "misleading"]}
+ ],
+ "pool_size": 12,
+ "generator": {"endpoint": "https://openrouter.ai/api/v1/chat/completions", "model": "~openai/gpt-luna-latest"}
+}

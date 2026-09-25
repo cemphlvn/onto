@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer's situation: their payment was declined or failed. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303394-UNIcsBye8QNIA06pL6Kt",
+  "object": "chat.completion",
+  "created": 1790303394,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I tried to check out, but my card wouldn\u2019t go through. Can you tell me what happened?\",\"The charge didn\u2019t complete when I placed my order, even though I have enough money in the account.\",\"I keep getting an error when I try to pay for my subscription. Is there another way to finish signing up?\",\"My bank app shows the purchase was rejected, so I\u2019m not sure whether I should try again.\",\"I entered my card details, but the checkout page wouldn\u2019t accept them. Could you help me figure out why?\",\"I was charged nothing, and my order still says it hasn\u2019t been paid for. What should I do next?\",\"The transaction didn\u2019t go through at checkout. I\u2019ve used this card here before without any trouble.\",\"I tried twice, but both attempts were unsuccessful. I don\u2019t want to accidentally get charged more than once.\",\"My card was refused when I tried to renew my plan. Can I update the details and try again?\",\"I got a message saying my purchase couldn\u2019t be processed, but it didn\u2019t explain what was wrong.\",\"The checkout keeps bouncing me back after I submit my card information. Is your system having an issue?\",\"I\u2019m trying to buy this, but my card isn\u2019t being accepted. I checked the number and expiration date, and they look right.\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdykkmyoD9I948MfG-PUnmiC01rtFoB0mRM6XwLSN7phWLYTn_tTQMmIOAo6J1zxmlvrwurIoRviigZwYT3uiNBd6ET09TAg5IWa3fze0h3eV29_l3cQ8ujELiU4VQDTvZunre6R_Y35_m_e_Pr9pIcbItbdeYWVHVFr0S4D0jNOk5tvDT1vQY268VHYRb_4RdQ5UvQYSCdmqaPS3Ek6vwr_1-xL8MLBATpfixOuObGaGSxdHEugw0dJm2DEv9_cWphf4TQoDRq7ZhQNF19F_UxuEywEoAGr1OQ0A9oNENEdIYEZr5cOt52Uk4aqZnwTwKzrDX1Iy7v16QuCUVm7w19mDVh-MNIypucM9ejn8mH-PYjdO9R41BcST5JSFCHzutbU10kidF_k2SnQp4iHH-9WJhEm9zleMg25R4Q0twN7eFTyCjqa1F_SeEhRbbl-iMnLmQGZhK8bUdybr6iwb6vx0olc-nlxpfFgw4Q2efrfN_GQ_J0WnnPqBZHR-4vyebc-IB3bFZKzegEqSaNO02MJT_mHeYOwf-Tmn4on1LfYRxiLsnmVMElXBRjPuGF7JtUdjI1v6da8PN6kU-wH9mqDqyUuCo6lXDcUz2_FcLoNx69uNpdmxCFECWcG0dN-X_poXlM8rWhFnurP7ptf69LNSWGbj4DmRHew7vcVrTfX86BcaGEr3K5DVcyRdrtNH1X8apyZjpFSIVh-f3h3MNCMOrj-ErXHzDFROqykvWyQtOF8NosWhe1S_J_KYy4ETJEWFCEd6s46o8YK35poPiFgcydiBze3yNlDPchk67e5y7pnlhzmX_K9B0edVFGffDHEOU2VP6j8IrhTS6oVEc-mbWNzwGvb0fCfXVuC-ctWuqYzf_nbmNrT6EAkpVbRjNsDaXtJSO2VxzaLnEVsaPikngI-LX8SOce95O2-LA0x-3TNVMJ4BiflfkAIOgcrlFnPIz4_kXfbjKNxOsiHcKOGCDgzs_LzoKPFfllymUvpgOn_Kf5JGIjBggziAliloVK4PywajkQfIplllsDre_L_u23X4PXeQ4qexkXg8opu424E8qI0L2JakDS5hah6km0IbVF1gqqL50_kWOAuFnWf3YoE5KTYnAn3e5UsTUUkbpGRuj8bbew9CfG-MF49RVg0DewMYmgAXT8hrOpYqMrAfCMUuEB5SiIPMX2dgzAZj4kT_SnNpjmL1PxG_avWRWgwJ3TQhtVtgB0AjgRZTssGwB8JXexwNQ5wxC4szxM-bm5CH_fR_tuV77q2py4hgoGHzivLeRTdvKDhjnZFowZxeinlEnYFU6x63aPIX0Zpou7JZbLc_z1PheBjKs6uwA0k7QecOnH8HiO-PB6zlcRGkWMpG03ISi9MkrnYXYDc9HCDTQiSnzP0oF7CIFbsTWuKrZXWrxmtOS8-VRS13t2QPBdPj-jIaAhWkPkaHTginW5v1C_YzA78wNl4ez42WoVKSZsRENPicDY2MGPJnV7f4iFRDvxI6YQRSsmPudLVVU35a6z1nVaOQEvZ_xX4GdREyifRXvUk-rQLhUwyDfoNY4fDyX1TDU9Yn9ifjSqSkVD4pCjsnMcvmPaY_rOCDUOCl1D5om4hlNOR13TybWjGdSkKjBP1x56kRKnP8NNBP37uQm663FNa_Hn4a2pLBhE9odhRUykssmp5Jqm5mP5wkje7l__TPm6IUgEcCReHRfqhBT_YkoLnMbWobzm1hRxtcc-7XUiyi_Ax0IM4u6wD6Cfmxvg1HBTmDSrjiSIfbG45AN9Ql2FAvmixBQxYtlADo3APwY88tdKTzy8qQiUge9D_6VNoWruRIRgJeJygUGzSNUxyoIzZNzIMGsUwnNB_WzBvyPr0evHt-rU9_oPPhGLtAGVNCxTba4V-oSoaOLKF3v0HoAdRGvGeYVwkBbJ2gDhvw8pxKMQkYVKF9svqVY63YVCTP-E50y-6aGovfvDG2-50WON7gUPGTf9_7ImtZlKiybrOiHDjTCTZq_lvePSneygcDbYjaK4d_AVtPlY=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_09682dfdc9a7b2bd016ab5dca2fd0c87d19b13c48684c0e046",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 79,
+   "completion_tokens": 391,
+   "total_tokens": 470,
+   "cost": 0.0002034,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002034,
+    "upstream_inference_prompt_cost": 7.9e-06,
+    "upstream_inference_completions_cost": 0.0001955
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 108,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I tried to check out, but my card wouldn\u2019t go through. Can you tell me what happened?",
+  "The charge didn\u2019t complete when I placed my order, even though I have enough money in the account.",
+  "I keep getting an error when I try to pay for my subscription. Is there another way to finish signing up?",
+  "My bank app shows the purchase was rejected, so I\u2019m not sure whether I should try again.",
+  "I entered my card details, but the checkout page wouldn\u2019t accept them. Could you help me figure out why?",
+  "I was charged nothing, and my order still says it hasn\u2019t been paid for. What should I do next?",
+  "The transaction didn\u2019t go through at checkout. I\u2019ve used this card here before without any trouble.",
+  "I tried twice, but both attempts were unsuccessful. I don\u2019t want to accidentally get charged more than once.",
+  "My card was refused when I tried to renew my plan. Can I update the details and try again?",
+  "I got a message saying my purchase couldn\u2019t be processed, but it didn\u2019t explain what was wrong.",
+  "The checkout keeps bouncing me back after I submit my card information. Is your system having an issue?",
+  "I\u2019m trying to buy this, but my card isn\u2019t being accepted. I checked the number and expiration date, and they look right."
+ ]
+}

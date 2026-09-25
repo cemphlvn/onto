@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer's situation: their order arrived with a different item than they ordered. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303435-eGXXkSeqWXXttLZFGS3J",
+  "object": "chat.completion",
+  "created": 1790303435,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I opened the package today and found a phone case inside, but I was expecting the charging cable I bought. Could you help me get the right one?\",\"The box came this morning, but it has a blue sweater in it instead of the black one I selected.\",\"Hi, I received a set of coffee mugs, though my receipt says I purchased a desk lamp. Can you let me know how to fix this?\",\"I think my parcel got mixed up with someone else\u2019s. There\u2019s a pair of running shoes inside, and I was waiting for a backpack.\",\"Just unpacked my delivery and it\u2019s a different book from the one I chose. The packing slip has the title I wanted, though.\",\"The package showed up, but the contents don\u2019t match my checkout: I got a 10-pack of pens rather than the notebook.\",\"I received a small dog bed, but I don\u2019t have a dog\u2014I was supposed to get the kitchen scale. Please advise.\",\"My delivery had a red water bottle in it. I\u2019d bought the stainless steel travel mug, so I\u2019m not sure what happened.\",\"The box contains printer paper, not the ink cartridges I was expecting. Could someone check whether the correct product is still on its way?\",\"I got the wrong board game in my parcel. I was looking forward to the space-themed one, but this is a word game.\",\"There\u2019s a lamp in the package, but my confirmation email shows a set of headphones. I\u2019d appreciate help sorting this out.\",\"I opened the shipment and found a pack of tea instead of the ceramic planter I selected. What should I do next?\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdzOSvKkX0teyeSzu1rRSqSaKAVugE8VT1pPP2pqtbHcrsht0P9glYz6fTsPakvkTlBFN7NHgI3VFx-t5DWf87ValcVMquDWm40qePGRUUPQ03bEIpTkT212wJz2G1jvSRmoibVB-iRjkc-pDu9gFUHHkvlngKMb_GqbZvEyMW6nckf31Dr8GDd7ClBBVsaoPBMYe-bi6Wfng2BEm4eEzRa3PiGW3ZsfPlEOndyqUS3UYB7hG2quQA2a4hUYa3qAlXC2jSRdPChtL69OgcfIEbER-YhQSpVN-I-6AYJkBlEkx6XbbR3z8OYgz_jja2s7Mv_wOv52q21rCQEuzysdC0oVKtGN4AxTKZPJx0bvcsQdmhq3M_Hty5x8mAaWiIO7jmAi03Y__IcTOFBmw7Ab4T1Oguf0zbvs-U6Rg5oVsZ1iCB4j3oL4zpOjj0l_1u0by5mQoQiO29wyu0U_SJh5WFbX8P9zpwMOicm4B9hkCUz5wUiHfUVJYeyulZAaXsiU5r0O40OP9PCI1nyqgYDTmq5Apsq9lm2A5OoQucGXVGzjZdfoBduq_EgR9h-yPhnrbgh0UvXajjaJOkbKuuheWvrrJWUYI3SJaLjS8jiXPonD9saglQr-DUGvjty3rwac0_yiV0mrA4VtqWvsBzXl3q3tF6b4rRAioBKUxFB2-UaRhhblApKDYvfz1Nk35Tvbkofp95YHmCbUWUupVUgESQMa2IylKMuVpm0XrE4_L7U-PeMoDzo3hq9i8sU4cGczsKehI-45k4g5CvOWtI9apmlvhzsAHGBkmjDT3s-SV13WRlhzIPnEfE_gYo-nmGH6DdmqvdCWAVTqSHW_MKC54NcDbD8YdX2FMxE5iLK77oQA9fFByQDJYjQ5NDTHgv7MSbDSRvd349LALpluxp6tn0juG2edT96EWmqgoo_EyTfoAxUmz3C0LPEg_crN-RZFse9ydGKyUFjwbOc_-SzHgvE2mdipF9xA_FEpwunrCJ00_JQmqZENBtCkfyqkvkq0LDZxuaYq3dgnN29L59H3cNbkv9TN3XuNU6gGqMsn0eV7JU5hwr0_ontmmW4EzSV-qZal8YIodwk85t2TeGdUyvDVu8cONHa9bPEJB98u3xlhThE99J4w6lMnCfOO6IYZh3fl4jKXsIwSP8CasKCcJI_TgaB2-4rIoDsZudKuOC1wIlPPrchOVMeDvdHZUTMu21I4Ln7UDjx35hW4DHTG9N4rF-uKdc5jUGMBJ2BWE8AQMkYZGyIqx21C0HxDT33uBb_BKac34XmYFk4rjFLfGLbOAiwqT7NBT6cGkTsZgLk474fkq2ScgSEoWgBsimXquQXBZRKNVdwWsSgpRZSUswR526u7Nuy2XGtsnYwWpxaTIYwLm9-TsIzcCIfZPyLqS_3js3VFBDtEqW9mME6zz6bE6Kn2MEttZaw3FZYGwxHVnUz3rk20hxDg9a6E-832xhOjh0ch1LIUtKI0-SY7CXZ0N3n2XhLEfLcDGEfJ_M-ThDRoTnVomwDvOr0aV_q6tdYvAxrSgGU15_SPekknAgAj30Y_iTy14St46IKpyffaLsLDcx5y3DJnRkFXUak8OIMgFK4cYp_rFqNIxT10v3QhZVvhEp_uAZK_aObqRQJe0VipdKHa-_E3cvDdk9etoCHa0Rgl9SfjwP9U1JfX642h5xjKUyxMNrOCWdtB8igMi6-7KGBKPMABFWco-gy0wVR03cnr8RHhyWFpedX7XNfv401v4rl_UJuqQYkKtYC-kxGB3drM5Ilb_w0Gom-uGk_Q4DSByEvshqwN5LsX0RV-N3K8hP79ShBB_mp3Q4Txybd0HobHmQ-U8UvHupxcP1mXh1P7vxWKkD_gRykMgZX8WvBPRxxi9Kz7Cow5aOCccySh6ygjZajqbY8sKOLo6dBV78roOBLZCygolACS2R6DlxgKLrKrt2CVv5fJcuXIstC9d9TwTWSG0_mBaBkUcZGF6292trgxsjwTk8YKQRRaAiBe1PUpGYAQvQ6jwhmInyfHTcGGDHJwQ1e_aG9Q-7BRCSVmOjsyXwp-Uh7nU67ey7W1Mq8Y_ognSiMnuHn3uMCdqZvWItK-efjGc03iNaCdviLNy_AIv3To9GlhF8u_om7VLMLQBTtaC3t_x2gNRCPFnzaw6FCfzlodesV8T3KSB8tepqaPTM9FU-XKMJ4U9Bg5WTNzOd85S3bp1e1m3L-xjAp4AUoaAa4geh8nhZ6vdWvp1WcopO1Xx12CpKnb7r3S9Malca1A3ennyDpCU2mWM1_1HR716-i4h9K0dFseVOpHY49jKVl0ECIvFcc7X8xOVe-u-ObdcdEB11Vl4lZHdzH0PSAsGanUAV7bjlqI.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_097919b72ddeef11016ab5dccbe0dc87d1897957c74f189bb6",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 83,
+   "completion_tokens": 490,
+   "total_tokens": 573,
+   "cost": 0.0002533,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002533,
+    "upstream_inference_prompt_cost": 8.3e-06,
+    "upstream_inference_completions_cost": 0.000245
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 149,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I opened the package today and found a phone case inside, but I was expecting the charging cable I bought. Could you help me get the right one?",
+  "The box came this morning, but it has a blue sweater in it instead of the black one I selected.",
+  "Hi, I received a set of coffee mugs, though my receipt says I purchased a desk lamp. Can you let me know how to fix this?",
+  "I think my parcel got mixed up with someone else\u2019s. There\u2019s a pair of running shoes inside, and I was waiting for a backpack.",
+  "Just unpacked my delivery and it\u2019s a different book from the one I chose. The packing slip has the title I wanted, though.",
+  "The package showed up, but the contents don\u2019t match my checkout: I got a 10-pack of pens rather than the notebook.",
+  "I received a small dog bed, but I don\u2019t have a dog\u2014I was supposed to get the kitchen scale. Please advise.",
+  "My delivery had a red water bottle in it. I\u2019d bought the stainless steel travel mug, so I\u2019m not sure what happened.",
+  "The box contains printer paper, not the ink cartridges I was expecting. Could someone check whether the correct product is still on its way?",
+  "I got the wrong board game in my parcel. I was looking forward to the space-themed one, but this is a word game.",
+  "There\u2019s a lamp in the package, but my confirmation email shows a set of headphones. I\u2019d appreciate help sorting this out.",
+  "I opened the shipment and found a pack of tea instead of the ceramic planter I selected. What should I do next?"
+ ]
+}

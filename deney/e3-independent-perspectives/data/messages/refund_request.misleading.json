@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer believes their situation is: they were charged twice for the same thing. They describe it that way, sincerely and plainly (they are mistaken, but the message must read as that situation).\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303386-6IoNNu7urXdIJabE0lmR",
+  "object": "chat.completion",
+  "created": 1790303386,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I only placed one order, but my bank statement shows two identical payments for it. Could you check whether one can be reversed?\",\"Hi, I\u2019m seeing two $34.99 entries for my subscription this month, even though I only signed up once. Can you help me figure this out?\",\"Why are there two payments for one purchase on my account? I only checked out once, so I think one of them is an error.\",\"I noticed the same $18.50 payment listed twice on my card. I haven\u2019t made a second purchase, and I\u2019d appreciate it if you could look into it.\",\"I paid for my plan earlier this week, but now there are two matching withdrawals showing up. Please let me know how to get the extra one refunded.\",\"Could someone review my latest bill? It looks like I paid for the same appointment two times, but I only booked one.\",\"I\u2019m confused by my statement: there are two identical charges from your store, although I bought just one item. Would you check this for me?\",\"My account shows two payments of $12.00 for this month\u2019s membership. I expected just one, so I\u2019m wondering if I was billed in error.\",\"I placed a single order yesterday, but I see two pending card transactions for the same amount. Is one of these going to disappear, or should I contact support?\",\"Please help\u2014my receipt is for one purchase, but my bank app lists two payments to you. I don\u2019t want to end up paying twice for it.\",\"I think there\u2019s been a billing mistake. The same service fee appears two times on my statement, even though I only used the service once.\",\"I only renewed once, but there are two matching $49 entries on my card. Can you check and arrange a refund for the extra payment?\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdydV0iY15t9w7En4lqo-uzH0LtGPAv3GhTx7BnhNNNDaAC1FmOMijpaGLq-dnqsHxvqAols_TuRiHXzP4MEVNWP7Z5hAql09Jbx5HDAsH-Ukj8GqeDkkkTQ4daIkzmDz9f_onHS52Sv2NxljAEVoDNizoriyxns7e-tiJtmIgcp4stlAyw5TvcP5FEGhwe58EmBWJCTDzEqgecJ5Udhadn1KIjvRq4PVRWYspLaaa7A0QtqTvIpzy9wf-1eP7gX7T9j-fFgCYvnIMGcDpFEr7Hksl3dzJoY57exAweON1QnBUCS1L6xtQrPrNaTq5JJA3OOf6l9USPAY-MAwpzjSSWL_YlZnPr7CfF3d4NWKfACj34M4ddv3XFLCWFkyxmOYY58y5890c8Pyip4xJakCb4Dcx2B28qEoEVj6YkjMBo1TZ3YXE4Bf9Z8zTq6c2mlhaOEPhgDQ7qcWQjTO6K1VumbPNAHxGaIvMzE9kYBggXLBkPQ1C9z5WS9mB2SkyzdR7dlMO0corGFIrwu0KHgV1wakoG--CmkA7Dz7wq_YrqikRC8FrqePdWIhqK7xWysV0HYVRNvtKKFjSjPHVQTE3qTaz9DpEzXVp09jNv9St161rtkjQo_ta5esYS4DzynLw2v4mRweUNbUQ5h3I3tqKVz2cHgUMKFgNvUdVuV-oQK7GLMHpEUgDzpawbYB2L4Y6YdIktQixc-u5eCiW8qWAwkxOJ6FqEwhvTPDvxNkWkdU1LwSbWYI0a-KycTeOagW__Hyyy5HbcCtRRaWOXVQyAXpRR4XLV2w5EVzV2AwKRr7onH_E_l76aQkvG-0bG-IOGLM3m8b2KR0eDvn4kCyVql8ysNtDVMoRWKg3nU8l6-bGWCyHk8r1wWU1HnvY2RfXJaTw0kTnr7i6GdurILMM6N_1siMOEPcveO7cPDleXt5rYyE-wnlIEUiHdrlJS3jraoY6SrpDSc8a4d5147Pp4z5xOYvOXHq4q6OTsx-mhK8PC_0G18u1GTSWyGniz_faRhJiCriEnC7YlN3MA0q3lspAJMrjgobIqC3ZfOvjLqnvMlM6kF3qjGujO_MevS0__WryVhRzU2_2GxKEHT_hSviMkfJzPXpkW_ahJOEGUyJrsEc351Ot1a0HOUTteCf26E9RNpagiJUrxvnsBZ7fXfHvNZk7pf5JyfMTHynEFgOtqRMnDbUaPmmrp19eMHEn-WFM4ZBQry03K5e5RANUkGOhVUHTzA0WJ9uZkSgcOQzzlGyyupvhhIXnMUfiNRkou_yCrpO8O5VJKH1x4458jYrJcw_0myJcddHy-ItNBo4iucm4zTUudxg-jsQySKb3AClUqtEXqrc61RvFESQd1fxMhyU2dnp3e3CmlOVxzlH6ndiJpOHN9jPTCvn8zkjTU7IsYRh4A6r2AK5F5VmsuyzBrVohTBc1_rfL1pVt_BNzT1y8gZhlrAyKDDoDqU1wl3v9gJOrrhEsEjUgZI37eGbEDunA-an2mM9bXPtmiFzvJzKYDRG4tMtPHJ7ID9dOUqakEGVk3DS_9HD5nrClL5uKuxlHqMV2KGdN6BoGK6fe8cjYvUkdQkB_7YkFxDO2wjjmGS0mJjg9ddkaswHJzbFvhAiP6TC7yCNAGlWbraDxgTQw9JmhfGn_d71sC3i0ik4Vj2eJvpKSSp2KSI1VOqChSrBQIVd5sS12J5UpjLDHJc_QnuYHgGgAnf7Ktz8LtTJeNAABFD9X_CK6BeXKMMa9Lz7J8pREon4-SXeYHV1iyFUbaHUzYp4F_on0GtnhQEAWYvKTKQXlSPx3fkIorVIvGQqYtCChOw5e1GF5WzJnQ44pXdkjq5Z6Z7Pt8iNLgDCp9gdCjoF2SxFvCxDndPmvyjOgBtDvP4VDr82rK4bCIKKRaGMPAmzql25S7kjj8zZDacJ533g4PgaTnRBDmyTR-Z5LqONbdWNnqeJ1h8Gf8mEGKChibXCCAL8yCQFWdRvQWzbdGKcASm8K29XEbaHfcakOxnTTgZz3ZzsStLrFq28-fOzqEjoNVPjLK2Do0MvvXKIFXmhcZfE83KKWcrnYPafzZt0P8AWsqfHJS84d3DxLGmgkVBbRUSf8SJaQx2Jk7MlR8gfQmv34RCdlUqDgSVtq-oXbC-mN08gD_9jQI1-7WX-wgHb9aV3qShlIl6L0jtfmE0aI8p775nccHgA0p--mfWw2M5jfSSe5lH9tdz61tN4vx4iOpjuIvCz6owF38fbYlioZpTYGlHn6eiB76ddPT3mEwXWJS137pwngw=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0a1bb30443247d2c016ab5dc9b34e487d181794fb0ad356e0a",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 102,
+   "completion_tokens": 514,
+   "total_tokens": 616,
+   "cost": 0.0002672,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002672,
+    "upstream_inference_prompt_cost": 1.02e-05,
+    "upstream_inference_completions_cost": 0.000257
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 133,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I only placed one order, but my bank statement shows two identical payments for it. Could you check whether one can be reversed?",
+  "Hi, I\u2019m seeing two $34.99 entries for my subscription this month, even though I only signed up once. Can you help me figure this out?",
+  "Why are there two payments for one purchase on my account? I only checked out once, so I think one of them is an error.",
+  "I noticed the same $18.50 payment listed twice on my card. I haven\u2019t made a second purchase, and I\u2019d appreciate it if you could look into it.",
+  "I paid for my plan earlier this week, but now there are two matching withdrawals showing up. Please let me know how to get the extra one refunded.",
+  "Could someone review my latest bill? It looks like I paid for the same appointment two times, but I only booked one.",
+  "I\u2019m confused by my statement: there are two identical charges from your store, although I bought just one item. Would you check this for me?",
+  "My account shows two payments of $12.00 for this month\u2019s membership. I expected just one, so I\u2019m wondering if I was billed in error.",
+  "I placed a single order yesterday, but I see two pending card transactions for the same amount. Is one of these going to disappear, or should I contact support?",
+  "Please help\u2014my receipt is for one purchase, but my bank app lists two payments to you. I don\u2019t want to end up paying twice for it.",
+  "I think there\u2019s been a billing mistake. The same service fee appears two times on my statement, even though I only used the service once.",
+  "I only renewed once, but there are two matching $49 entries on my card. Can you check and arrange a refund for the extra payment?"
+ ]
+}

@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer's situation: someone else got into their account. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303462-0m5dko8RuyM7kNoolnG5",
+  "object": "chat.completion",
+  "created": 1790303462,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I got an email saying my password had been changed, but I didn\u2019t make that change. Now I can\u2019t sign in.\",\"There\u2019s a login from a city I\u2019ve never been to, and I was home at the time. Can you help me secure my profile?\",\"I\u2019m seeing purchases in my history that aren\u2019t mine. I changed my password, but I\u2019m still worried.\",\"My profile picture and email address were changed overnight. I managed to get back in, but I don\u2019t know what else they touched.\",\"I received a sign-in code I never requested, then got locked out a few minutes later. Please tell me how to regain access safely.\",\"The recovery phone number on my profile isn\u2019t mine anymore. I didn\u2019t change it.\",\"I noticed messages sent from my account that I didn\u2019t write. Is there a way to check when the unfamiliar activity started?\",\"I can still log in, but my security settings look different and one of my devices has been removed. I\u2019m pretty sure I didn\u2019t do that.\",\"Someone appears to have been using my profile while I was asleep. I\u2019ve reset my password, but I\u2019d like to make sure all other sessions are closed.\",\"I got an alert about a new device, and the device listed isn\u2019t one I own. What should I do next?\",\"My saved payment method was used for a transaction I don\u2019t recognize. I haven\u2019t shared my login details with anyone.\",\"I can\u2019t access my profile because the password and backup email seem to have been changed. Please help me get it back.\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdzpTakPs9NTZStEU9Rdhuj53tPia7kKfMt0DRmYPiIQpeBGpl_v-nT-p3wUBspTBdNgl33kJRUhQAp7xAYzW0sv0VgU8KABm3lz6i36qUIexXS0icC_Xh8QmjPBvhpVT4_x-A2dkrVbmzjr5WKJ4s0Vjfg5gieXr_2gXqD1iLJxS9aoskPE3DyU3NYMHLR1GQqpOuJ0Wfa0N5mGNQDKntz9_H6h3lFn4665e0XdUfr11K0wVtkwUAnZAQIJ1d826NltgzwQrySnb0O6GVGc4ihXQ4msB1Rn8tspeSmYbv9TkB8Qu2Kiz1hjVkf3GFM34Aa_hHL5A565oLnl2hb6OrgxUQa2JeP7LwvrBI5btj3gFHXBE-TRqdjVyJL_tGpeDOcoRipJCTU2K04n1lJ4zR4wHWstxUFkHReK3cFDIlinwaJ2N5JzfSNh2E6WIQXV7pWYmc9hjJfFttbMl0GPCFTGm54a0tSd3mPyRfkW0Xk_d7AjsN-Y5x-ZQ4K1rzBQbSXVQ2RJu_1YAM2gH3p4sGR9HvE8vaW8aKejIeyY0i3AeChvqnHDfdT4jnzQGRA9R9RwZnldPA0vpYTkeBXDOija-LRMfuJ4kVqqjHnRePlPv-XNdmuvCYz1PqKpRqu86s06l_noKF4JzOf2Vy-Akss7qDELCuhFEcck_1a6bodW6Fuw62JfxEa11rd9o32ZZJFM_55u8RCyGIYr2xnJqegqAZp92QsgLX8vTu-2qbgK8GQA_wJaYXlaeXWUNfSSAmt1t7aSzpKOCe46mmI8MBxbvUGH_0EPyuLCjK3YXYEooL93Dc60X41LsiX6JJrn7KYAdEcOFv-YBgbrX4mnxC4-QUt7jKrm1LiXYS1OgFjW3LZHVRUGF6hKXiHMsuoYW0KC0Pw4f-IBsGeEWpdDcv3PvroLS5JkQhbJ6Mp1TYKpFQhROyT-M8U5_9XfetLwPSb1eG9dH6cEwCNZ9dA_sQq0WlDR6x0IJjqDjjEiivWcgeyTf9cAak4lfsbg0zFa-kJv2zSRaezT_Io89d8TffpFVbZQqx1f5BNecLcWItfhkgrtXNH9q5apBg9uN2oaOpaYIpfJzqcMS00lZPkfaks0ekywCPUDAp6NslFcVrz81xdtQ-yJhBURbsmy3uyDU_qseiFEx87btUqPW71X_d2EckVDZ-i7Rhswe76IuiCDLwDuVZCVXWhqDlyH8Xj-OUj4hUoJ9tE6V1qAOPy4sUvr5M_4j0fqKxupXXVA2pbPNzq3sDhgVhrQ8cuKil2F9NDqHwapFpPYP9E4cbkZXZwztNvVTOBWzq12UVQIjVohGQUVadsxeAVFZJVyEdAVgJb6hCOL3foGdtij1V_BfJy9w9UIH3wciyzUF46CmLdgh2UJlc_IkLfMPsrAWPtz9HAq4zVJmrJ2mnjrSSjNpTJ11IUMOBA9QnfAszXtBRZhfVyI_RDjOOUGPoNsEIu3twAwBF5nCyP7gLH2CQ9TpbFhI7NVPNX-en5qNKBun0m4KsR4tolqP6wnMFW13-gD0D2iCoL7N8lZTQssKRWwBlYgGe-nJZ5HMHvg9SXRtahQKbKXJeBLMTF2kPe3JXs8qURrHL4ofrQP96-4dRFViprVMrST7UV9uZJAUeP18Lj19aVIVeYEoRi6dSuBkL4su1oyd4ztjUPgMORpLBqVfczIQrp-BHv0UcStloRz1NQM95f73OhLlkKjLIgeWP4sfzYPaBmFsqXs_kECVpQQqU6w-TPdf24rb2EixmSq9ksyLdT6LZQzP58eBNDimyX1RHRDwkqZlmi3h_DXFxh8AdGlzT9w9pP5xEhVqHqLjtVfU-OFOjzVVO5_65QVVhv0Lbg5F8Cb62Lr_7BMNMgzpPtMcDqB0RD_CzLnqDhyzSApbHlBTLwph_AbwGqIVvPlmc3Pau5lxpKSvzm3QgBAiaVuUZj3EjGwdpwmk5kNw3emTz1FX3TdmI5O98Rhxn945UIIRVwrquQDSfvNUBB8QcLSx542aG9YNt0ftVpd1cJl0sjjquqsHGQM_ZLR9esz4XLIhwvaTj4HUukaizMW-PcOBYYujkM2TByZVtXDGqgIzXwYEgb4NoT0g9Mt_Wrrneh1c_grMNyt5dMHihxcxm87bU_B9hyA5D97K4xyX91M-S-eQASD6dNxjVIBJZSM48mOUrXP0gN2ZCBnvwtYrfaSAVDoFgOymdjImI6cKMulI8Lx39HeaIDy4ZN0sMiA1NeoY0d18sS5iyzlAVE2NkbVeQJ3Y1CmpWP_lDCIqKx8CbSxUgIRUgo_EpUlrUsb9OK1fwJR15NH9jtiq5_KkUaMXRWe6CRo4qs6punuOqiysvLRHONKrwGHmR-a0zZgKkwao0r6hYQxc6VlL_EYHQ3VXQ==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0eb26aa88d5c26f9016ab5dce768dc87d18e937e235149c456",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 79,
+   "completion_tokens": 479,
+   "total_tokens": 558,
+   "cost": 0.0002474,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002474,
+    "upstream_inference_prompt_cost": 7.9e-06,
+    "upstream_inference_completions_cost": 0.0002395
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 149,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I got an email saying my password had been changed, but I didn\u2019t make that change. Now I can\u2019t sign in.",
+  "There\u2019s a login from a city I\u2019ve never been to, and I was home at the time. Can you help me secure my profile?",
+  "I\u2019m seeing purchases in my history that aren\u2019t mine. I changed my password, but I\u2019m still worried.",
+  "My profile picture and email address were changed overnight. I managed to get back in, but I don\u2019t know what else they touched.",
+  "I received a sign-in code I never requested, then got locked out a few minutes later. Please tell me how to regain access safely.",
+  "The recovery phone number on my profile isn\u2019t mine anymore. I didn\u2019t change it.",
+  "I noticed messages sent from my account that I didn\u2019t write. Is there a way to check when the unfamiliar activity started?",
+  "I can still log in, but my security settings look different and one of my devices has been removed. I\u2019m pretty sure I didn\u2019t do that.",
+  "Someone appears to have been using my profile while I was asleep. I\u2019ve reset my password, but I\u2019d like to make sure all other sessions are closed.",
+  "I got an alert about a new device, and the device listed isn\u2019t one I own. What should I do next?",
+  "My saved payment method was used for a transaction I don\u2019t recognize. I haven\u2019t shared my login details with anyone.",
+  "I can\u2019t access my profile because the password and backup email seem to have been changed. Please help me get it back."
+ ]
+}

@@ -1,0 +1,78 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer's situation: their order has not arrived; it is late or lost in transit. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303409-2ESnMRHlAanHSoiEzJ5X",
+  "object": "chat.completion",
+  "created": 1790303409,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"My package was due on Tuesday, but nothing has turned up yet. Could you check where it is?\",\"The tracking page hasn\u2019t changed in five days, and I still don\u2019t have my delivery.\",\"I was expecting this last week, but there\u2019s been no sign of it. Can you help me figure out what\u2019s going on?\",\"The carrier\u2019s update says it\u2019s on the way, but it hasn\u2019t moved since Friday. Is there any way to get a clearer update?\",\"Nothing was left at my door, even though the estimated delivery date has passed.\",\"Hi, I\u2019m still waiting on the box I purchased. The tracking hasn\u2019t been useful, and I\u2019m wondering if it\u2019s gone missing.\",\"This was supposed to arrive a few days ago. I\u2019ve checked around the building and asked my neighbors, but no one has seen it.\",\"Could someone look into my shipment? It seems to have stopped moving, and I haven\u2019t received anything.\",\"The delivery window ended yesterday, but the package never showed up. Please let me know what I should do next.\",\"I\u2019m getting concerned because the tracking has been stuck at the same facility for over a week, and there\u2019s still nothing here.\",\"My parcel hasn\u2019t come, and the delivery estimate keeps changing. Can you tell me when I might actually receive it?\",\"I paid for this a while ago and still don\u2019t have it. The carrier hasn\u2019t posted a new update in several days.\"]}",
+     "refusal": null,
+     "reasoning": "**Creating customer messages**\n\nI need to come up with 12 varied messages from a customer perspective, avoiding literal words like \"order,\" \"arrived,\" \"late,\" \"lost,\" or \"transit.\" I want to describe the customer's situation plainly without using those terms. For instance, I could say something like the package hasn\u2019t shown up, tracking is stalled, or the expected date has passed. I should keep it within 1-3 sentences each. I'm aiming for valid JSON format while keeping it natural and varied.",
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Creating customer messages**\n\nI need to come up with 12 varied messages from a customer perspective, avoiding literal words like \"order,\" \"arrived,\" \"late,\" \"lost,\" or \"transit.\" I want to describe the customer's situation plainly without using those terms. For instance, I could say something like the package hasn\u2019t shown up, tracking is stalled, or the expected date has passed. I should keep it within 1-3 sentences each. I'm aiming for valid JSON format while keeping it natural and varied.",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdy0ynFROBSHVMXgPa4WVdcXHORjTQKKj3hMGUqtrKznevda8wWF9IahCnl4NxbAtnCxV16Aww0KITQW09PURtwFKrQUSSRpUKwnE30i0cgTYpk-w1moUBVOGCfxSpJNVTxGKbY7AFTC7iM2IZ3m9wIaOkic9JG69LqeoCsf9xl-YI7df1IifJkm1gqNQyDTKpl-F83SINg4YIqWrW7ZGUIdhSd7WvyBZeMAA3p14HvMRQ7TZDh6-1Y95l4N-liSS2NudgJ8FBSM0u-HlJ1i_xI_ly0MgiXwqgx9hJScQ5WAts10ZvOMEPxBES4exhKTX8SSm62N8somkwbLxL1YGOfFpJSgRD1juXsLqWXNlN15onQ-60cKIRhIYx5Bfi02VRQjS0yuX6Mm2NweQUF6HVWNFPk9I6Ql1eJfLFAOG54DrHkMw_WL8mNOeIjaWUJLWHhIwQ-e77aSvO6ubMJ6rB-bk77rc4oPvjeYoOlie5IEJYeE8idAuPl4_ntgnN9uoZ443jIpv3K7epst3HCLlDWpieJYy-kK9EprwXayceH4orYA4x67jg3WwF7-aiYSjcrD8jGiZOHo3nl0MQj7Mhr6v1yFgmZ9MvDE3DfA4iizy6kTlPwFQT0qHmpMrsVJCBKhDzYhdpP7dZuPHT4IY4U9yim7EByIDUnieGFGm97P237YjuYTk3RGhUlckNFInLvwVcaAzUs3YKpISehMU8VkkIekdGrq8ewaqCL9CCrkRyNT-EWODF-wocki-xRhHIFsaU-WkZlokAECv2cntXY_RYgUSyZKdPzR3TceISExSTbIR6jsbMTFQoQzJA1KJoL3YdfnCsmBOUD7G-5OzCPYTxMDdBz2OLqNDeoXMOtNnXj6WN6zJihMNXG3zz-OqTv0l4L64jQwf91Ab0SaBgIsd5XlwGD20hL7zW9O8NGETxR5pwJr5ssli8n3tf-XAZHdPCBcs_nYZPyjc_RHcLi94YkWFgrlgy8dM4hsLtMuZxryc8lFMllxBKkKHi8lq3G3k2It51RtqFlhklRKYK_D33JR6ISUmiunOvrUbyUBJpSyytKtVqoY97SOArq-b86PLt1iFRy0vMKavTMEG1cE7q7HkWEWtUhpr4syNJsUnnsFLZ_NNb8fWa1_iEI_xOVCxtZrtJtddYSMtFk8VNAGU5-p9VZLHy7w1hl3ip1Qc4IKcDP_go0X7jZlg8OJOaRr6gNd-4rOLlDHxa1JBwxIqCo-9gm9062Emg4lGNCJzgkGs6XCKuaVZNgOHuZAwqg15mgyIj7YmUhi2qGaqQKF0S6HSvwgmZTb-NlqUZynr7TZ5PZctSZBX4-7dkdMMvoHGohMF4tCidQd3R73WxtdZXa2HaO1hRJ6fy2S_tE5oiRtgj5v_fR0bZX9FwH7wMTJZSWroL3lzhgbTE-NwNG1Iw-lJHim0D2DzgVJKmJ3cqu0z0DswnNxRzmWpND-MRy18vr1DqOxeoQGBjzcAWo2YJsQmNiwosUM5vQVVJ0rwsYhw0-ULe94uAgNTB_B5svElInpvCvJLHBOdyRG8zP42d9wm5aBIA1oySE39ttHLuTpcbSIXnQ-CXSeH8Z4Dr1NmKg32xnaI99XM1cYsAH-GxqGUmCdwaGpCrlv7WaVAve3_Xc07nYpzbWln3uXDf93kCEaGSHxPdLLaOEl1Apk3emlsGlAWdQmLmEJMUAgYIFZnPJW8vm-7icbDgkXrlugpO-arMM9WPgVS5ETzQEi43-VfBfVRCWmcDuSkv3Wch35kYApo_VqYPZZIjD485fRvgtYpCdpV8cJPRG9sCTKHiGPCtqHX_Nn6Rfqn8RMnKfQ_9lMOF0xipY6ZHFlnwIHCNEo_tm6Jv7OPeLJq2ODlkEjDoSbwPj8NzpcCM8WDK5UAwJaONJtfrfSGiStT0ncy3_ytcZFtdjw6LuC4ux8w3r88Pjo68chQkcxMmYngZdDnmq5V3ALzP4J0yuFD65nXGMyEJ3u7etMjgrj2HNzS9RDVEno49_Asi0S26fCcuDx5GSExwkPAiVk7ZJpFgCfAuHnC1e2dD7OKkDncbR_LEkuR3xkuLG2NiAi2uVV5qctZfR4-pgSwUIOgnFKSixP.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0ea0b16deb42b48c016ab5dcb1ffc487d1ad9fb1884ca89395",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 86,
+   "completion_tokens": 435,
+   "total_tokens": 521,
+   "cost": 0.0002261,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002261,
+    "upstream_inference_prompt_cost": 8.6e-06,
+    "upstream_inference_completions_cost": 0.0002175
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 128,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "My package was due on Tuesday, but nothing has turned up yet. Could you check where it is?",
+  "The tracking page hasn\u2019t changed in five days, and I still don\u2019t have my delivery.",
+  "I was expecting this last week, but there\u2019s been no sign of it. Can you help me figure out what\u2019s going on?",
+  "The carrier\u2019s update says it\u2019s on the way, but it hasn\u2019t moved since Friday. Is there any way to get a clearer update?",
+  "Nothing was left at my door, even though the estimated delivery date has passed.",
+  "Hi, I\u2019m still waiting on the box I purchased. The tracking hasn\u2019t been useful, and I\u2019m wondering if it\u2019s gone missing.",
+  "This was supposed to arrive a few days ago. I\u2019ve checked around the building and asked my neighbors, but no one has seen it.",
+  "Could someone look into my shipment? It seems to have stopped moving, and I haven\u2019t received anything.",
+  "The delivery window ended yesterday, but the package never showed up. Please let me know what I should do next.",
+  "I\u2019m getting concerned because the tracking has been stuck at the same facility for over a week, and there\u2019s still nothing here.",
+  "My parcel hasn\u2019t come, and the delivery estimate keeps changing. Can you tell me when I might actually receive it?",
+  "I paid for this a while ago and still don\u2019t have it. The carrier hasn\u2019t posted a new update in several days."
+ ]
+}

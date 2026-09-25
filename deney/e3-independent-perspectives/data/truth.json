@@ -1,0 +1,4706 @@
+{
+ "E3-ind-double_charge-1": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-2": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-3": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-4": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-5": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "none",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-6": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "none"
+  }
+ },
+ "E3-ind-double_charge-7": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "none",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-8": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-9": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "none",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-10": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-11": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-12": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-13": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-14": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-15": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-16": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-17": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-18": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "none"
+  }
+ },
+ "E3-ind-double_charge-19": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-20": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-21": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-22": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-23": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-24": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-25": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-26": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-27": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "none",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-28": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "none",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-double_charge-29": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-double_charge-30": {
+  "condition": "ind",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-1": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-2": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-3": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-4": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-refund_request-5": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-6": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-7": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-8": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-9": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-10": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "none",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-11": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-12": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-13": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-14": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-refund_request-15": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "none"
+  }
+ },
+ "E3-ind-refund_request-16": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-17": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-18": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-refund_request-19": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-20": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-21": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-22": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-refund_request-23": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "none",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-refund_request-24": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-refund_request-25": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-refund_request-26": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-refund_request-27": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-28": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-29": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-ind-refund_request-30": {
+  "condition": "ind",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "none",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-1": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-2": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-3": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-4": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-5": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-6": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-7": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-8": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-9": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "none"
+  }
+ },
+ "E3-ind-payment_failed-10": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "none",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-11": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-12": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-13": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "none",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-14": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "double_charge",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-15": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "payment_failed",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-16": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-17": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "payment_failed",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-18": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-19": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-20": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-21": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "none"
+  }
+ },
+ "E3-ind-payment_failed-22": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-23": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "double_charge",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-24": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-25": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-26": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "payment_failed",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-27": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "double_charge"
+  }
+ },
+ "E3-ind-payment_failed-28": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-29": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "double_charge",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-payment_failed-30": {
+  "condition": "ind",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "none",
+   "events": "payment_failed"
+  }
+ },
+ "E3-ind-not_delivered-1": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-2": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "none"
+  }
+ },
+ "E3-ind-not_delivered-3": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-4": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-5": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-6": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-7": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-8": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-9": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-10": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-11": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-12": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-13": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-14": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-15": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-16": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-17": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-18": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-19": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-20": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-21": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-22": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-23": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "none",
+   "events": "none"
+  }
+ },
+ "E3-ind-not_delivered-24": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-25": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-not_delivered-26": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "none"
+  }
+ },
+ "E3-ind-not_delivered-27": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-28": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-29": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-not_delivered-30": {
+  "condition": "ind",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-damaged-1": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "none"
+  }
+ },
+ "E3-ind-damaged-2": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-3": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-4": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "damaged",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-5": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-6": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "none"
+  }
+ },
+ "E3-ind-damaged-7": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-8": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-9": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-10": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-11": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-12": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "none"
+  }
+ },
+ "E3-ind-damaged-13": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-14": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "none",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-15": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "damaged",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-16": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-17": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-18": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-19": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-20": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-21": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "damaged",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-22": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "none",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-23": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-24": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-25": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-26": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-27": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-28": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-damaged-29": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "wrong_item",
+   "events": "damaged"
+  }
+ },
+ "E3-ind-damaged-30": {
+  "condition": "ind",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "damaged",
+   "events": "none"
+  }
+ },
+ "E3-ind-wrong_item-1": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-2": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-3": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-4": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-5": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-6": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "none",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-7": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-8": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-9": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "absent",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "none",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-10": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-11": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-12": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-13": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-14": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "none"
+  }
+ },
+ "E3-ind-wrong_item-15": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-16": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-17": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-18": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-19": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-20": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-21": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-22": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-23": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-24": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-25": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "none"
+  }
+ },
+ "E3-ind-wrong_item-26": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-27": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-28": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-ind-wrong_item-29": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-wrong_item-30": {
+  "condition": "ind",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "none",
+   "events": "wrong_item"
+  }
+ },
+ "E3-ind-account_locked-1": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "none",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-2": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-3": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-4": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-5": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-6": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-7": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-8": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-9": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-10": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-11": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "none"
+  }
+ },
+ "E3-ind-account_locked-12": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-13": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "none",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-14": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-15": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-16": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-17": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-18": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-19": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-20": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-21": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-22": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-23": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-24": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_locked-25": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "none",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-26": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-27": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-28": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "none"
+  }
+ },
+ "E3-ind-account_locked-29": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_locked-30": {
+  "condition": "ind",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-1": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-2": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-3": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-4": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "none",
+   "events": "none"
+  }
+ },
+ "E3-ind-account_takeover-5": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-6": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "none"
+  }
+ },
+ "E3-ind-account_takeover-7": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-8": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-9": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "none"
+  }
+ },
+ "E3-ind-account_takeover-10": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-11": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-12": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-13": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-14": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-15": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-16": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-17": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-18": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-19": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-20": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-21": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "none"
+  }
+ },
+ "E3-ind-account_takeover-22": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-23": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-24": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "account_locked",
+   "events": "none"
+  }
+ },
+ "E3-ind-account_takeover-25": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-26": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-27": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-28": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ },
+ "E3-ind-account_takeover-29": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_locked"
+  }
+ },
+ "E3-ind-account_takeover-30": {
+  "condition": "ind",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-double_charge-1": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-double_charge-2": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-double_charge-3": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-double_charge-4": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-cor-double_charge-5": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-cor-double_charge-6": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-double_charge-7": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-double_charge-8": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-cor-double_charge-9": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-cor-double_charge-10": {
+  "condition": "cor",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-cor-refund_request-1": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-refund_request-2": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-refund_request-3": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-cor-refund_request-4": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-refund_request-5": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "none"
+  }
+ },
+ "E3-cor-refund_request-6": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "none"
+  }
+ },
+ "E3-cor-refund_request-7": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-cor-refund_request-8": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "refund_request",
+   "events": "none"
+  }
+ },
+ "E3-cor-refund_request-9": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-refund_request-10": {
+  "condition": "cor",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "refund_request"
+  }
+ },
+ "E3-cor-payment_failed-1": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "none",
+   "events": "none"
+  }
+ },
+ "E3-cor-payment_failed-2": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-payment_failed-3": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-payment_failed-4": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-payment_failed-5": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-cor-payment_failed-6": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-cor-payment_failed-7": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-cor-payment_failed-8": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-cor-payment_failed-9": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "none"
+  }
+ },
+ "E3-cor-payment_failed-10": {
+  "condition": "cor",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-cor-not_delivered-1": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-not_delivered-2": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-not_delivered-3": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-not_delivered-4": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-not_delivered-5": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-not_delivered-6": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-not_delivered-7": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-not_delivered-8": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-not_delivered-9": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-not_delivered-10": {
+  "condition": "cor",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-damaged-1": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-cor-damaged-2": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-cor-damaged-3": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-cor-damaged-4": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-damaged-5": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "damaged",
+   "events": "damaged"
+  }
+ },
+ "E3-cor-damaged-6": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-damaged-7": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-damaged-8": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-damaged-9": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-damaged-10": {
+  "condition": "cor",
+  "truth": "damaged",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "damaged",
+   "ledger": "none",
+   "events": "damaged"
+  }
+ },
+ "E3-cor-wrong_item-1": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-wrong_item-2": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-wrong_item-3": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-wrong_item-4": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-wrong_item-5": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-wrong_item-6": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-wrong_item-7": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-wrong_item-8": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "not_delivered"
+  }
+ },
+ "E3-cor-wrong_item-9": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-wrong_item-10": {
+  "condition": "cor",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "none",
+   "events": "wrong_item"
+  }
+ },
+ "E3-cor-account_locked-1": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_locked-2": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-account_locked-3": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_locked-4": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "none",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-account_locked-5": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-account_locked-6": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_locked-7": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-account_locked-8": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-account_locked-9": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_locked-10": {
+  "condition": "cor",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_takeover-1": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_takeover-2": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-account_takeover-3": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_takeover-4": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "none",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_takeover-5": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-account_takeover-6": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_takeover-7": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_takeover-8": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-cor-account_takeover-9": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-cor-account_takeover-10": {
+  "condition": "cor",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-pilot-double_charge-1": {
+  "condition": "pilot",
+  "truth": "double_charge",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "double_charge"
+  }
+ },
+ "E3-pilot-double_charge-2": {
+  "condition": "pilot",
+  "truth": "double_charge",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-pilot-refund_request-1": {
+  "condition": "pilot",
+  "truth": "refund_request",
+  "modes": {
+   "message": "misleading",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "double_charge",
+   "ledger": "double_charge",
+   "events": "refund_request"
+  }
+ },
+ "E3-pilot-refund_request-2": {
+  "condition": "pilot",
+  "truth": "refund_request",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "refund_request",
+   "ledger": "refund_request",
+   "events": "double_charge"
+  }
+ },
+ "E3-pilot-payment_failed-1": {
+  "condition": "pilot",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "payment_failed",
+   "ledger": "payment_failed",
+   "events": "payment_failed"
+  }
+ },
+ "E3-pilot-payment_failed-2": {
+  "condition": "pilot",
+  "truth": "payment_failed",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "double_charge",
+   "events": "payment_failed"
+  }
+ },
+ "E3-pilot-not_delivered-1": {
+  "condition": "pilot",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "none",
+   "events": "not_delivered"
+  }
+ },
+ "E3-pilot-not_delivered-2": {
+  "condition": "pilot",
+  "truth": "not_delivered",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "not_delivered",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-pilot-damaged-1": {
+  "condition": "pilot",
+  "truth": "damaged",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "damaged",
+   "events": "none"
+  }
+ },
+ "E3-pilot-damaged-2": {
+  "condition": "pilot",
+  "truth": "damaged",
+  "modes": {
+   "message": "absent",
+   "ledger": "clear",
+   "events": "absent"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "damaged",
+   "events": "none"
+  }
+ },
+ "E3-pilot-wrong_item-1": {
+  "condition": "pilot",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "not_delivered",
+   "events": "wrong_item"
+  }
+ },
+ "E3-pilot-wrong_item-2": {
+  "condition": "pilot",
+  "truth": "wrong_item",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "misleading"
+  },
+  "shown": {
+   "message": "wrong_item",
+   "ledger": "wrong_item",
+   "events": "not_delivered"
+  }
+ },
+ "E3-pilot-account_locked-1": {
+  "condition": "pilot",
+  "truth": "account_locked",
+  "modes": {
+   "message": "clear",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_locked",
+   "events": "account_locked"
+  }
+ },
+ "E3-pilot-account_locked-2": {
+  "condition": "pilot",
+  "truth": "account_locked",
+  "modes": {
+   "message": "misleading",
+   "ledger": "absent",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_takeover",
+   "ledger": "none",
+   "events": "account_locked"
+  }
+ },
+ "E3-pilot-account_takeover-1": {
+  "condition": "pilot",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "misleading",
+   "ledger": "clear",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "account_locked",
+   "ledger": "account_takeover",
+   "events": "account_takeover"
+  }
+ },
+ "E3-pilot-account_takeover-2": {
+  "condition": "pilot",
+  "truth": "account_takeover",
+  "modes": {
+   "message": "absent",
+   "ledger": "misleading",
+   "events": "clear"
+  },
+  "shown": {
+   "message": "none",
+   "ledger": "account_locked",
+   "events": "account_takeover"
+  }
+ }
+}

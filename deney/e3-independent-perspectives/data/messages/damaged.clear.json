@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer's situation: their order arrived broken or damaged. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303420-AlgGgQq7mbIlEcpBw186",
+  "object": "chat.completion",
+  "created": 1790303420,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"The coffee maker showed up with a cracked water tank, and water leaks out when I fill it.\",\"My package was crushed on one side, and the lamp inside has a bent base. Can you help me get a replacement?\",\"I opened the box and found the mug in pieces. It was wrapped in just one thin layer of bubble wrap.\",\"The new desk has a deep gouge across the top. I haven\u2019t assembled it yet, but it\u2019s clearly not usable as is.\",\"The frame came with a corner chipped off. I\u2019d rather swap it than try to patch it myself.\",\"Hi, the blender\u2019s plastic pitcher is split near the handle. I noticed it as soon as I unpacked everything.\",\"The glass jar didn\u2019t make it through shipping in one piece. There were shards loose in the box, too.\",\"My headphones have a snapped piece on the headband, even though the outer carton looked fine.\",\"The chair I received has a cracked leg. I\u2019m not comfortable sitting on it, so please let me know what to do next.\",\"The screen on the monitor has a long crack across it. I took photos of the box and the display if that helps.\",\"The plate set arrived with three plates chipped around the edges. Could you send replacements for those?\",\"Not a great first impression\u2014the toaster has a dent in the side and the lever is stuck down.\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdy_d1KH1uK1mV8dy1C9K-TaTrFrMDWH10-MW5_q2i23GyH6Rqcui5EdY1b9_Ab-gkCJEzpDj6qaz5wguTgzWdPABYhbOjHh9hpMG2nWwlL4FAp11lIx3l6HWeLkXSRsYgIIKAbsgASn29qF7KP9tBlfnmhOsSsX5jOYcBd9KId8_Y20l8fX0wrfEWpNh78ltkS0Ek74dtZ5atTO3op7jnjJ9jz3aUflZJtDcPpqZmtjnZxlwtHByWQHn3gLTEYJNh87IwJ3GapwE-8oyXwQ246xT6BWs6Utad1TCUEOe2YCBkncaMIGcuOgZQ5Lgnc2rjFkyr_-VtmRavZ70ysdFW5Sg5LElzF71HPuQdW_LoF2Rp4x6AhswVjx9fQb_ch5F3RyysD6EpZPtCNSXImsnAX3f1aDFWnaZvEw5CXYWPxhhvd3vWwJxThVJ0TMgPPIR1opeARlKs5fTOJkLBPqAJvhWlfrAgIY0vuCseO2_ZqYXSOdhKX9Q2vtG7dy17St-lvvYNPVp9bwPrILYBLs_nHVN03rG5INFGyWy1tJBSj0KGbldz5XeXzbdASIbev3ZDhSdjY0gWHAEmAMFoA6BuBGaBA3G4qECbDjSD1tktA3ofp2WJM3e1h8lsY6UGW4BoSnZm65PaN5rTwSTMS8j4qkM68GWM2C9Aj8BIkTK6Lm3-Hl7jrks4DDmt4lHTPqfOL5UjE_bqX4aQ-3Y_SktLetsgCaksWN1LjNf5Wovc0coxJTVWEglw2mJ2jAzA3BekLQ4nYGtfLf2JHwfZvwASk4vIynxIbdt8gBVb8luM74b9igw-8I9TIPeeG_mOX-rrStszfXCrUS9y9ip3as1dp2ZcXiKbn2gyXn4EBlWuD4jSzvli3mTaZkOZcaSYzH0NFy05AA9V3T7VvL6nyT3Ky9nr-wefO6P_vtPiRePgjlINhxmMfJFTiS0ZFQLlflP4X6z07-tSG6YqMxPv0yinnzaCHG9Ynuk67uBTF9sQcWNm8mmJ3muxty1g_OkmI_05kAwQ6MURkFaMidA7pqC7qKn5uVGJ9OqsntSExoQEOQHs-FoXwoP0Dv1qJRL29j6lbZt6OslP8-KpgJbiMg-oo-j0x4ixsoQEnMs9maWbb8wfEw18IGzE0rDMet6_9yIGlNKFP0ngNRhB4Kk_RmA-ZQRmOjBYPNUNjKXauGQC5a4HRr3cuZRM_Su3DGvsWR6b_6EpyzW4zEnEO-cuF5XL8GgId68fbFqHKK5bgzbbUo83R-NS1Yxakv-6lnCfkbxdZnZjWzFjmf6wWOWJ4APvD55pwLWWtgwwBfJT2QAwK-xwheU6NH7rY1_OEDZLGFlOfHEWrJsYUGpxFiDlV3ntvXSCB0tgv8pw8ynvPgpjkOLzUXsWb0z9-Unc9sZ4RU427OgzZ9oC3QgW2ST7M8mgO-qJxUi-93JRHcqSqr1UJcHmCwvh7SxuCtEspaUZfS5gP5ekbh3Goh92zTqGrqSUT2ZKTuto0JuUMMH0psigEczMbZQkIT7SxHEzgVYCwlwl9quj_AgldwaR2U2VJUgsAhJEFe_s8s8feU5ePSUy41RhkpXBFjrEVHdPpf3EneNRWrEjyqnCxo_TSOzOaurZAl-cXDzIzle1-5ufV70OIgebsAtu124UL-cf5awFtlefn5QF0w6V87URppnHNit4j-XJElUFrTs4zG8G2lPgj3bVMMC3HqrDYtkUQ9MPGotjJ4hpNJW2PvqI3nAzpoiYg9AhcF6vDqPs_tZwj2bv1DeYC08RVGpJ-2Mgusn2erJMSQjWGh7rfbjSaWBwfaj6MjB9CG4KM25BNYWvTBatHioh0VN8ukfQV0lZyorlWtdmP2URyqZMLY2qqGRo-sizfOJSmrz0S-ryEI-GGLn72-b2FzBozLaMbARMynPguLDNqu-xUfkvPaqFEwuD4_n2KdC3afPpTqgP2ufphA5E9yfEvfYcg_KxmbEvyw7LUXgN-vawBaPxuRxvg-b8Z52bx6_M_jmgy2jP_NrcFjtm5xyE7OXKT_qzaGwNALArm1YfWY3bWGqTvs8_PCkOnPr3Cs01cVbTdRrOcuzy6Sqz_dQzX4xauCY_neCEzSlhyVnKFsYBhsZWFO4d0SI_vtdrq1ioIzX_x9tJZZRCPcCBc2J1KjTjx5YHleNLrR8PGoJNms_EL8sEAHOjNs3OtKFseA9yk912pLMQ83ck7PRejSpmUyGovnPCxoalFJmei_pPJbRNtMpKF4xwij2G9pXBTZS3o9sDngiHU7hgFg000BXczVsblm5i7BU_EBWshtSgJ296SYDIQE0liYapQy0VEnWZBZf2grBnO9lWbQRJ3A7qYMeykKGeSmVyWHENdqoLwhExSS3UP0huU5Eri6e6buBsyZJyCA8SjeqYx9P8ExCEJuvbnVY26pZQU3fXr1lHO-.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0cb9463982148c6c016ab5dcbdd5f087d186f01cf91cbf0eed",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 79,
+   "completion_tokens": 454,
+   "total_tokens": 533,
+   "cost": 0.0002349,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002349,
+    "upstream_inference_prompt_cost": 7.9e-06,
+    "upstream_inference_completions_cost": 0.000227
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 164,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "The coffee maker showed up with a cracked water tank, and water leaks out when I fill it.",
+  "My package was crushed on one side, and the lamp inside has a bent base. Can you help me get a replacement?",
+  "I opened the box and found the mug in pieces. It was wrapped in just one thin layer of bubble wrap.",
+  "The new desk has a deep gouge across the top. I haven\u2019t assembled it yet, but it\u2019s clearly not usable as is.",
+  "The frame came with a corner chipped off. I\u2019d rather swap it than try to patch it myself.",
+  "Hi, the blender\u2019s plastic pitcher is split near the handle. I noticed it as soon as I unpacked everything.",
+  "The glass jar didn\u2019t make it through shipping in one piece. There were shards loose in the box, too.",
+  "My headphones have a snapped piece on the headband, even though the outer carton looked fine.",
+  "The chair I received has a cracked leg. I\u2019m not comfortable sitting on it, so please let me know what to do next.",
+  "The screen on the monitor has a long crack across it. I took photos of the box and the display if that helps.",
+  "The plate set arrived with three plates chipped around the edges. Could you send replacements for those?",
+  "Not a great first impression\u2014the toaster has a dent in the side and the lever is stuck down."
+ ]
+}

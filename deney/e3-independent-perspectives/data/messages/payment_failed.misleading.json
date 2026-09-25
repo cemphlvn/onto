@@ -1,0 +1,72 @@
+{
+ "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 12 different messages, 1-3 sentences each, in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\n\nThe customer believes their situation is: they were charged twice for the same thing. They describe it that way, sincerely and plainly (they are mistaken, but the message must read as that situation).\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+ "response": {
+  "id": "gen-1790303400-g7a8V1MWRQQwmCFl1rAI",
+  "object": "chat.completion",
+  "created": 1790303400,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"messages\":[\"I just checked my card statement and there are two payments for my order. I only placed it once\u2014could you take a look?\",\"Why did I get billed two times for the monthly plan? There\u2019s one account here, so I\u2019m confused by the extra payment.\",\"My bank app shows two identical amounts from your store today. I only bought one item, so please help me sort out the second one.\",\"I think I\u2019ve paid for this booking more than once. Can you check the transactions and let me know how to get the extra payment back?\",\"There are two withdrawals on my account for the same subscription renewal. I didn\u2019t sign up for anything additional.\",\"I ordered a replacement filter last night, but my statement now has two charges for it. I only need the one I ordered.\",\"Could someone explain why my invoice seems to have been paid twice? I made one payment, but my account shows two.\",\"I\u2019m seeing two payments to you for my coffee order, and I only checked out once. Please could you look into it?\",\"My card has been debited two times for the annual membership. I haven\u2019t opened another membership, so one of those payments shouldn\u2019t be there.\",\"I paid for the concert tickets once, but there are two matching entries on my bank statement. Would you check whether one can be reversed?\",\"I was looking over my transactions and noticed two payments for the same delivery. I only received one order.\",\"I seem to have paid two times for the repair appointment, even though I booked just one slot. Can you confirm what happened?\"]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdysvTQXdSDuMC_jcMDNxym4uQN4aK7UTRWH90NRXtgvyVmSR9Cp5wepMp3p0I8YR275hX7hnPtII1ghkORB8Gzt0ADk_NGg0RvYGTcxfcx1k7G6LmrTPvN8MmIDvFWzbIVDY5wLE7rrBzLZ-vMY_9csqBWCuW-fD_8qvZrf2KPWH4i98Z2JQdpmM0N35fi8xQl30JhJgXoY5A-p2s9G2R3C6-RY_aC0lG170J1b3KFIb5gu1wDOoLaW9Q0nb7oKRuFtXktXqAYzBsd1hYzqN8yf6uR-hL3qhzXizJv8lgr28qzorrB5TnTJ7YI4XW4NLMGu4fxnm9fvMQLolnwnbNiQSDj08ak7Iep6wFwqUer6puedOKrlv_Jemk6Rq63UJgdv1DjOS4tEAMAxuqFRssp-ICTJZjZ3DQ5aBaC8hZAStxq0wcpUGc0fXPITr7rMqH2dRwadVsTmks_RPmDUMjHy2r3dP42yNdVWtKDV58buOOXRJyopf6tD8J53f5aRGKiMZR_DS09pulFW7FlhhAvVym7YqdBKM359vr9onF-v7x3ybCDwSYHPZE29djoYcVLCTKTJMTReH_n_pkZUR-LXqH7oH7wPAMDDPDa-HafnEkmAvK6VzgYXkeeyk7gHWFwLQ3gW6sAqx7fr48mYshaNWW0FQIELRaRfLKCKpHT3IIMmi4acq1YJ4i0_3WVvrXGP0IGPKRAEWTxXJfw6VZfC4_rcTvo7nm5cdYeBjT3UO4ZJbjdNSUO9XU-OP0UqFupx1dgjXq91Zl0iyBAfLJcndgHuSSkot3jjDd4LhvoXjtmII1W02N1_q7tnTpsST04o9A49SJecuJI5vs__p3chMg0W28Jb3JrZ-yjp72xxc2EMYu4_GHikJdImnES4TYXUC1e0uGR2NU7KIKQ9rC_6Kejof-1af-y7EIHh-ZXuupsARn6n7wfviSYKG1uoZQQzFefErjMJXNte-6ayTuoXPP9lFtes36BMS4DHgxoyt8cIkyqNr508clb6b55rVlWBPwBG58D7413pMAidzVybeK4dgcnsG4kZIKdd263rAPiLVjqLCp-mbOFKtIMzAl78GxupPYdRwIC2hu13fCjoor1urNvxo_K_6Y3q-KAMQs1Ixwa0NiGy3zsV5U1D4ArNy9H2qd6kcP-CrCqiEyaMOr8hHkfrearGCqIG1SxW5e_3KRIEsr8YzTRX8QdJZsD9fj-WdMryOQlsDQ80eWsG5M-KopebiGXYEA1c_lrPRz5UBy1hVAScSsUmu-319HybAqZirGLMFCzkYfStlgDN0ZZOJgi_BWjYXLe4k8q9yvBxjMEyAeItW8yNXpGwRK0pEbwX5TOm92NNHoObZXO2ZVeceYHDrJaLbQwijBDo27x3HOjZ46NwGEGvvSsimgazTbGs7KIac17qieDxAIWuzdOjJQAdVQYdF7mKzvQq-DSclE3IsqTSrOmxMiCHhPVtulqrd8HUFykKWqr7eard-LMdyljhHtlFhy43eTLqUSiTh2Eez9_xHnd8-UfmLccHCuKXP9-AK6hUdDPaZbtxpBMUU1EU2vOR40XXYsfAqM-f4Y_fEx5r7lF08wHPQLnYPJmvxmqS7_ggVDFhacCvHvMR-sS07NM7PNFb9pAtKiXIefVpu7cYbHICInro0gQ3ctXTq-AD_4eGlxTOj7liXwQQ4-XN8-f2ydhP3Jux8GMVntI5UtZ3cV0YQj9MO-DBqyuQcAZyuGxP5BT-Ao3yaBxEQRC88fdqNJiCTELtDF2U_RZxGOA6ePTrw8M7CJav6Ypg3zFWf4OvjOhR8mG8cK_Liy6etnFDNbxLs-dqJyHjnuL2qdw8Wesdb4b54eldcW4RLyfcfzqMba0va8fBe78pQz9Q94TI7kiGL26rlvUpI51f9BNnNEEj3ZNk_f_T4R25mvBUlEVY2fY4WCta-Ypl7AiFOkX-JtRoe80BvZJGGeuhqsojUsE1z2YewjZSLnM6cS26Y7a08TQnUMjFEib4r8Big6Liir9GEZtD08-_C4heNEZib8WpcO-iAIxaIL7SUts9hd-T1FgeAUDIlXeMX9c7bKzpCiecon55tG-RYAwOLPzn40WkJ_AzCMGvODCXr9Y5ClDV1YY_C2MZ6-NXxSd2lf8kH871KxlLVxc581afyLQzrBkA6iPf-NQA131CkhgfaIOd71fex3Yjfclwouo54s9JgGq33vhkZ-_kSpAkpqn49wAtC4TMjknLlJbZDcLBPS3Ni8l-icP6HmGKkaw_jNPOYjZijbqV660oOP_vuTrWzIkmPhCbIj3PiS0gOF0BYQ3b1gwc0NkvXdNm7QMuxJ30yo9znaIhjba0uDk5WFehXcJGFeN3fhScb27fdRPrEhlVeSL63-vI3ER8ODRf6SJuhfcGTMv8ulT30yHkr-Q85T6gBaSru3P5m7U6S32538ol7PZkLd3Fx6KDYdEuRnTmua1Mle3h5G9_woXLs7rhYt9jOXEBRXKw2TwOcjm3QKG8Is0k7uLdLKmQz2dYjPfaS9xxfzmAjUj1NOiW5IDfdU4Q_haCfNObzXY5mqh9f7LMeMC0CK1uRZn7tH2MGPHWeBRqVRmrkF8=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0d2732868ab6e6a7016ab5dca9b67087d19efdccd926fc9e12",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 102,
+   "completion_tokens": 506,
+   "total_tokens": 608,
+   "cost": 0.0002632,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002632,
+    "upstream_inference_prompt_cost": 1.02e-05,
+    "upstream_inference_completions_cost": 0.000253
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 174,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "messages": [
+  "I just checked my card statement and there are two payments for my order. I only placed it once\u2014could you take a look?",
+  "Why did I get billed two times for the monthly plan? There\u2019s one account here, so I\u2019m confused by the extra payment.",
+  "My bank app shows two identical amounts from your store today. I only bought one item, so please help me sort out the second one.",
+  "I think I\u2019ve paid for this booking more than once. Can you check the transactions and let me know how to get the extra payment back?",
+  "There are two withdrawals on my account for the same subscription renewal. I didn\u2019t sign up for anything additional.",
+  "I ordered a replacement filter last night, but my statement now has two charges for it. I only need the one I ordered.",
+  "Could someone explain why my invoice seems to have been paid twice? I made one payment, but my account shows two.",
+  "I\u2019m seeing two payments to you for my coffee order, and I only checked out once. Please could you look into it?",
+  "My card has been debited two times for the annual membership. I haven\u2019t opened another membership, so one of those payments shouldn\u2019t be there.",
+  "I paid for the concert tickets once, but there are two matching entries on my bank statement. Would you check whether one can be reversed?",
+  "I was looking over my transactions and noticed two payments for the same delivery. I only received one order.",
+  "I seem to have paid two times for the repair appointment, even though I booked just one slot. Can you confirm what happened?"
+ ]
+}
