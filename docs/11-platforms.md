@@ -116,6 +116,26 @@ walk did at the 0.6 threshold (the rest escalated).
 | MiniCPM5-2B Q4_K_M | 14/22 | 14/22 | 19, 74% | 28.4 s | 1.8 GB |
 | Qwen3.5-4B Q4_K_M | 21/22 | 19/22 | 19, 100% | 67.9 s | 2.8 GB |
 
+Readouts (`onto-local/src/llama.rs`):
+- frames of up to 52 options: one forward pass, the option letters'
+  logits (` A` with its leading space; a space token first in
+  vocabularies that split it);
+- wider frames (BANKING77's 77 intents, CLINC150's 150): likelihood.
+  Each option's own words plus the end token are scored as the whole
+  answer, as parallel sequences sharing the cached prompt (32 per decode),
+  minus the same under a content-free case (contextual calibration,
+  computed once per frame). Numbered options were tried first and
+  failed: small models put their mass on favourite numbers (`37`, `70`)
+  whatever the case; uncalibrated likelihood favoured options that are
+  likely a priori (surface-form competition).
+- prompts put the options and question first and the case last, so
+  every case at a frame reuses the cached prefix (support-commons: 22
+  tickets in 1.5 s instead of 8.8 s with Qwen3-0.6B).
+- rigid caches (hybrid models) are never cut: checkpoints of the
+  model state are restored instead, and the parallel option sequences
+  are cleared whole (Qwen3.5-4B: 4.6 s instead of 19 s per BANKING77
+  query).
+
 Found while measuring, and fixed:
 - the label is read with its leading space (` A`) after `Answer:`; a bare
   `A` after a lone space token made MiniCPM5-1B choose `E` for every

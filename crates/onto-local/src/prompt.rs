@@ -11,45 +11,113 @@ use onto_models::{Candidate, FrameRequest, ModelError, NoulQuestion};
 use serde_json::Value;
 
 /// Option labels: single letters, each one token in common vocabularies.
+/// Frames wider than this are read by likelihood: each option's own text
+/// is scored as the answer (`llama.rs`).
 pub const LABELS: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-pub const SYSTEM: &str = "You are a careful decision function. Read the case state (JSON) and the question, then answer with the letter of exactly one option. Judge only from the state; do not invent facts.";
+/// The widest frame a prompt can hold (Jev's Choice limit, 254 + none).
+pub const MAX_OPTIONS: usize = 255;
 
-/// One question to score: chat messages ending where the answer letter
-/// goes, and the labels whose probabilities are read.
+pub const SYSTEM: &str = "You are a careful decision function. Read the options, the question and the case state (JSON), then answer with exactly one option. Judge only from the state; do not invent facts.";
+
+/// One question to score: chat messages ending where the answer goes.
+/// `labels` are read as single tokens (letters); `answers`, when set,
+/// are the options' own texts, each scored as the whole answer.
 #[derive(Clone, Debug)]
 pub struct Prompt {
     pub system: String,
     pub user: String,
     pub labels: Vec<String>,
+    pub answers: Option<Vec<String>>,
+    /// For answers: the same prompt with a content-free case (`goal` =
+    /// "N/A"); scores are taken relative to it (contextual calibration,
+    /// Zhao et al. 2021), removing each option's prior pull.
+    pub baseline: Option<String>,
 }
 
+/// What stays the same across cases comes first (the options, the
+/// question), the case last: consecutive cases at one frame share every
+/// token up to their state, which the scorer keeps cached.
 fn lettered(state: &Value, question: &Value, options: &[Value]) -> Result<Prompt, ModelError> {
-    if options.len() > LABELS.len() {
+    let shorts: Vec<String> = options.iter().map(short).collect();
+    lettered_with(state, question, options, &shorts)
+}
+
+/// An option's plain words for likelihood answers: its text instruction
+/// without the `(leads to …)` suffix `describe` adds, or the arrow's words.
+fn short(v: &Value) -> String {
+    match v {
+        Value::String(s) => s
+            .rsplit_once(" (leads to ")
+            .map_or(s.as_str(), |(t, _)| t)
+            .to_owned(),
+        other => other.to_string(),
+    }
+}
+
+fn content_free(state: &Value) -> Value {
+    let mut s = state.clone();
+    if let Some(o) = s.as_object_mut() {
+        o.insert("goal".into(), Value::String("N/A".into()));
+        o.remove("case");
+    }
+    s
+}
+
+fn lettered_with(
+    state: &Value,
+    question: &Value,
+    options: &[Value],
+    shorts: &[String],
+) -> Result<Prompt, ModelError> {
+    if options.len() > MAX_OPTIONS {
         return Err(ModelError::FrameTooWide(options.len()));
     }
     let text = |v: &Value| match v {
         Value::String(s) => s.clone(),
         other => other.to_string(),
     };
-    let mut user = format!(
-        "State:\n{}\n\nQuestion: {}\n\nOptions:\n",
-        serde_json::to_string_pretty(state).unwrap_or_default(),
-        text(question)
-    );
-    let labels: Vec<String> = LABELS
-        .chars()
-        .take(options.len())
-        .map(String::from)
-        .collect();
-    for (l, o) in labels.iter().zip(options) {
-        user.push_str(&format!("{l}) {}\n", text(o)));
+    let wide = options.len() > LABELS.len();
+    let texts: Vec<String> = if wide {
+        shorts.to_vec()
+    } else {
+        options.iter().map(text).collect()
+    };
+    let labels: Vec<String> = if wide {
+        (1..=options.len()).map(|i| i.to_string()).collect()
+    } else {
+        LABELS
+            .chars()
+            .take(options.len())
+            .map(String::from)
+            .collect()
+    };
+    let mut head = String::from("Options:\n");
+    for (l, t) in labels.iter().zip(&texts) {
+        if wide {
+            head.push_str(&format!("- {t}\n"));
+        } else {
+            head.push_str(&format!("{l}) {t}\n"));
+        }
     }
-    user.push_str("\nAnswer with one letter.");
+    let how = if wide {
+        "Answer with the exact text of one option."
+    } else {
+        "Answer with the option's letter."
+    };
+    let user = |state: &Value| {
+        format!(
+            "{head}\nQuestion: {}\n\nState:\n{}\n\n{how}",
+            text(question),
+            serde_json::to_string_pretty(state).unwrap_or_default(),
+        )
+    };
     Ok(Prompt {
         system: SYSTEM.into(),
-        user,
+        user: user(state),
         labels,
+        baseline: wide.then(|| user(&content_free(state))),
+        answers: wide.then_some(texts),
     })
 }
 
@@ -218,14 +286,37 @@ mod tests {
         let ps = frame(&r).unwrap();
         assert_eq!(ps.len(), 3, "two conditions and the fork question");
         let a = read(&r, &[&[0.9, 0.1], &[0.2, 0.8], &[0.6, 0.4]]).unwrap();
-        let Answer::Noul { holds, fork } = a else { panic!() };
+        let Answer::Noul { holds, fork } = a else {
+            panic!()
+        };
         assert_eq!(holds, [0.9, 0.2]);
         assert_eq!(fork, Some(0.6));
     }
 
     #[test]
-    fn frames_wider_than_the_labels_are_refused() {
-        let wide = req(Primitive::Choice, LABELS.len());
-        assert!(matches!(frame(&wide), Err(ModelError::FrameTooWide(_))));
+    fn wide_frames_are_read_by_likelihood() {
+        let ps = frame(&req(Primitive::Choice, 150)).unwrap();
+        let answers = ps[0].answers.as_ref().unwrap();
+        assert_eq!(answers.len(), 151);
+        assert_eq!(answers[0], "option 0");
+        assert!(ps[0].baseline.as_ref().unwrap().contains("\"N/A\""));
+        assert!(ps[0].user.contains("- none of the listed options"));
+        assert!(
+            frame(&req(Primitive::Choice, 3)).unwrap()[0]
+                .answers
+                .is_none()
+        );
+        let too_wide = req(Primitive::Choice, MAX_OPTIONS);
+        assert!(matches!(frame(&too_wide), Err(ModelError::FrameTooWide(_))));
+    }
+
+    #[test]
+    fn options_come_before_the_state() {
+        let ps = frame(&req(Primitive::Choice, 3)).unwrap();
+        let (o, s) = (
+            ps[0].user.find("Options:").unwrap(),
+            ps[0].user.find("State:").unwrap(),
+        );
+        assert!(o < s, "the static part is the cached prefix");
     }
 }
