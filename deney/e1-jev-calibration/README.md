@@ -4,9 +4,10 @@
 switch: does a probability of p come true about p of the time?
 (`docs/12-calibrated-switches.md` §6.)
 
-**Lineage.** Branch `deney/e0-switch-ceiling` (E1 continues E0's lineage),
-from `research/calibrated-switches` at `d2fda95`. The labels were
-committed **before** the runs (`5121ed1`).
+**Lineage.** Branch `deney/e1-jev-calibration`, from
+`deney/e0-switch-ceiling` at `bd74aa0` (E1 follows E0), itself from
+`research/calibrated-switches`. The labels were committed **before** the
+runs (the first commit on this branch).
 
 ## Labels
 
