@@ -22,6 +22,10 @@ engine's or with each other's.
 - **Reproducible:** the README gives the exact commands; data copied from
   elsewhere is copied unchanged, with its origin in the manifest.
 
+## Results
+
+`RESULTS.md` (and `results.json`): the headline numbers of every experiment and what holds across them.
+
 ## Index
 
 | id | question | defined in | branch | status |
