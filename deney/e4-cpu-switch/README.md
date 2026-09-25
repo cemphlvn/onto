@@ -59,7 +59,7 @@ on event logs the learner beat Jev. **P2** (free text) held for accuracy
 (below Jev) and coverage (75.6% ≥ 50%), and missed on calibration
 (0.074 > 0.05, see below). **P3** (distillation within 5 points of
 truth) held: 95.0% against 95.6%, with no truth label (the teacher
-agreed with truth on 99.4% of training messages). **P4** (open
+agreed with truth on 100% of training messages). **P4** (open
 vocabulary fails) held, harder than predicted: below chance.
 
 ## What it says
