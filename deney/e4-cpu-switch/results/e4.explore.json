@@ -1,0 +1,52 @@
+{
+ "calibration_transfer": {
+  "validation_same_style": {
+   "accuracy": 0.9,
+   "ece_top": 0.046,
+   "mean_top_p": 0.919
+  },
+  "test_other_style": {
+   "accuracy": 0.956,
+   "ece_top": 0.074,
+   "mean_top_p": 0.883
+  }
+ },
+ "combined": [
+  {
+   "gate": 0.5,
+   "cpu_share": 0.961,
+   "cpu_accuracy_on_its_share": 0.971,
+   "combined_accuracy": 0.972,
+   "jev_calls_saved": 0.961
+  },
+  {
+   "gate": 0.7,
+   "cpu_share": 0.833,
+   "cpu_accuracy_on_its_share": 0.98,
+   "combined_accuracy": 0.983,
+   "jev_calls_saved": 0.833
+  },
+  {
+   "gate": 0.8,
+   "cpu_share": 0.767,
+   "cpu_accuracy_on_its_share": 0.993,
+   "combined_accuracy": 0.994,
+   "jev_calls_saved": 0.767
+  },
+  {
+   "gate": 0.9,
+   "cpu_share": 0.7,
+   "cpu_accuracy_on_its_share": 1.0,
+   "combined_accuracy": 0.994,
+   "jev_calls_saved": 0.7
+  },
+  {
+   "gate": 0.95,
+   "cpu_share": 0.611,
+   "cpu_accuracy_on_its_share": 1.0,
+   "combined_accuracy": 0.994,
+   "jev_calls_saved": 0.611
+  }
+ ],
+ "jev_alone_accuracy": 0.994
+}

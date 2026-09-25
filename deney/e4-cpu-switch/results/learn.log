@@ -1,0 +1,15 @@
+== ledger: train 400, test 200
+  jev             acc 1.0 [1.0, 1.0] · ECE(top) 0.014 [0.012, 0.017] · log loss 0.014 · mean top p 0.986 · escalated 0 · 319.7 ms/call
+  closed_truth    acc 1.0 [1.0, 1.0] · ECE(top) 0.0 [0.0, 0.0] · log loss 0.0 · mean top p 1.0 · coverage at Jev's accuracy 1.0 · 0.0213 ms/case · T 0.076 · λ 0.0001
+== events: train 400, test 200
+  jev             acc 0.9 [0.855, 0.94] · ECE(top) 0.087 [0.051, 0.129] · log loss 0.864 · mean top p 0.957 · escalated 2 · 320.0 ms/call
+  closed_truth    acc 1.0 [1.0, 1.0] · ECE(top) 0.0 [0.0, 0.0] · log loss 0.0 · mean top p 1.0 · coverage at Jev's accuracy 1.0 · 0.022 ms/case · T 0.3 · λ 0.0001
+== message: train 360, test 180
+  jev             acc 0.994 [0.983, 1.0] · ECE(top) 0.01 [0.003, 0.02] · log loss 0.012 · mean top p 0.992 · escalated 1 · 320.5 ms/call
+  closed_truth    acc 0.956 [0.922, 0.983] · ECE(top) 0.074 [0.06, 0.109] · log loss 0.217 · mean top p 0.883 · coverage at Jev's accuracy 0.756 · 0.0168 ms/case · T 0.425 · λ 0.0001
+  closed_distill  acc 0.95 [0.917, 0.978] · ECE(top) 0.082 [0.057, 0.114] · log loss 0.223 · mean top p 0.873 · coverage at Jev's accuracy 0.75 · T 0.449 · λ 0.0001
+  open vocabulary (described): held-out 0.019 · seen 0.968 · chance 0.111
+     {'held_out': ['double_charge', 'not_delivered'], 'accuracy_on_held_out': 0.05, 'accuracy_on_seen': 0.95, 'jev_on_held_out': 1.0}
+     {'held_out': ['refund_request', 'damaged'], 'accuracy_on_held_out': 0.025, 'accuracy_on_seen': 0.971, 'jev_on_held_out': 1.0}
+     {'held_out': ['payment_failed', 'account_locked'], 'accuracy_on_held_out': 0.0, 'accuracy_on_seen': 0.971, 'jev_on_held_out': 0.975}
+     {'held_out': ['wrong_item', 'account_takeover'], 'accuracy_on_held_out': 0.0, 'accuracy_on_seen': 0.979, 'jev_on_held_out': 1.0}

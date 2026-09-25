@@ -31,3 +31,4 @@ engine's or with each other's.
 | E2 | do boundary cases fill the uncertain range, and does a structural loop label them? | `docs/12-calibrated-switches.md` §6 | `deney/e2-boundary-resonance` (from E1's branch) | done, 2026-09-25 |
 | E0b | E0 recomputed: only loops over different information are label sources | E2's finding | `deney/e0b-strict-resonance` (from E2's branch) | done, 2026-09-25 |
 | E3 | do loops over different information catch errors, and does undetected error fall exponentially with the number of perspectives? | E0b's lever | `deney/e3-independent-perspectives` (from E0b's branch) | done, 2026-09-25 |
+| E4 | can a CPU switch learner take switches from Jev, and which kinds? | `docs/12-calibrated-switches.md` §4, §6 | `deney/e4-cpu-switch` (from E3's branch) | done, 2026-09-25 |

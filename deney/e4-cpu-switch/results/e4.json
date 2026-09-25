@@ -1,0 +1,188 @@
+{
+ "labels": [
+  "double_charge",
+  "refund_request",
+  "payment_failed",
+  "not_delivered",
+  "damaged",
+  "wrong_item",
+  "account_locked",
+  "account_takeover",
+  "none"
+ ],
+ "ledger": {
+  "train": 400,
+  "test": 200,
+  "jev": {
+   "accuracy": 1.0,
+   "accuracy_95": [
+    1.0,
+    1.0
+   ],
+   "ece_top": 0.014,
+   "ece_top_95": [
+    0.012,
+    0.017
+   ],
+   "log_loss": 0.014,
+   "mean_top_p": 0.986,
+   "escalated": 0,
+   "latency_ms_mean": 319.7
+  },
+  "closed_truth": {
+   "accuracy": 1.0,
+   "accuracy_95": [
+    1.0,
+    1.0
+   ],
+   "ece_top": 0.0,
+   "ece_top_95": [
+    0.0,
+    0.0
+   ],
+   "log_loss": 0.0,
+   "mean_top_p": 1.0,
+   "lambda": 0.0001,
+   "temperature": 0.076,
+   "latency_ms_per_case": 0.0213,
+   "coverage_at_jev_accuracy": 1.0
+  }
+ },
+ "events": {
+  "train": 400,
+  "test": 200,
+  "jev": {
+   "accuracy": 0.9,
+   "accuracy_95": [
+    0.855,
+    0.94
+   ],
+   "ece_top": 0.087,
+   "ece_top_95": [
+    0.051,
+    0.129
+   ],
+   "log_loss": 0.864,
+   "mean_top_p": 0.957,
+   "escalated": 2,
+   "latency_ms_mean": 320.0
+  },
+  "closed_truth": {
+   "accuracy": 1.0,
+   "accuracy_95": [
+    1.0,
+    1.0
+   ],
+   "ece_top": 0.0,
+   "ece_top_95": [
+    0.0,
+    0.0
+   ],
+   "log_loss": 0.0,
+   "mean_top_p": 1.0,
+   "lambda": 0.0001,
+   "temperature": 0.3,
+   "latency_ms_per_case": 0.022,
+   "coverage_at_jev_accuracy": 1.0
+  }
+ },
+ "message": {
+  "train": 360,
+  "test": 180,
+  "jev": {
+   "accuracy": 0.994,
+   "accuracy_95": [
+    0.983,
+    1.0
+   ],
+   "ece_top": 0.01,
+   "ece_top_95": [
+    0.003,
+    0.02
+   ],
+   "log_loss": 0.012,
+   "mean_top_p": 0.992,
+   "escalated": 1,
+   "latency_ms_mean": 320.5
+  },
+  "closed_truth": {
+   "accuracy": 0.956,
+   "accuracy_95": [
+    0.922,
+    0.983
+   ],
+   "ece_top": 0.074,
+   "ece_top_95": [
+    0.06,
+    0.109
+   ],
+   "log_loss": 0.217,
+   "mean_top_p": 0.883,
+   "lambda": 0.0001,
+   "temperature": 0.425,
+   "latency_ms_per_case": 0.0168,
+   "coverage_at_jev_accuracy": 0.756
+  },
+  "closed_distill": {
+   "accuracy": 0.95,
+   "accuracy_95": [
+    0.917,
+    0.978
+   ],
+   "ece_top": 0.082,
+   "ece_top_95": [
+    0.057,
+    0.114
+   ],
+   "log_loss": 0.223,
+   "mean_top_p": 0.873,
+   "lambda": 0.0001,
+   "temperature": 0.449,
+   "coverage_at_jev_accuracy": 0.75,
+   "teacher_agreement_with_truth_on_train": 1.0
+  },
+  "described_open_vocabulary": {
+   "folds": [
+    {
+     "held_out": [
+      "double_charge",
+      "not_delivered"
+     ],
+     "accuracy_on_held_out": 0.05,
+     "accuracy_on_seen": 0.95,
+     "jev_on_held_out": 1.0
+    },
+    {
+     "held_out": [
+      "refund_request",
+      "damaged"
+     ],
+     "accuracy_on_held_out": 0.025,
+     "accuracy_on_seen": 0.971,
+     "jev_on_held_out": 1.0
+    },
+    {
+     "held_out": [
+      "payment_failed",
+      "account_locked"
+     ],
+     "accuracy_on_held_out": 0.0,
+     "accuracy_on_seen": 0.971,
+     "jev_on_held_out": 0.975
+    },
+    {
+     "held_out": [
+      "wrong_item",
+      "account_takeover"
+     ],
+     "accuracy_on_held_out": 0.0,
+     "accuracy_on_seen": 0.979,
+     "jev_on_held_out": 1.0
+    }
+   ],
+   "held_out_accuracy_mean": 0.019,
+   "seen_accuracy_mean": 0.968,
+   "chance": 0.111
+  }
+ }
+}
