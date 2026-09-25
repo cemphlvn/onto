@@ -28,3 +28,4 @@ engine's or with each other's.
 |---|---|---|---|---|
 | E0 | what share of recorded switches could a CPU switch learner take, before building it? | `docs/12-calibrated-switches.md` §6 | `deney/e0-switch-ceiling` | done, 2026-09-25 |
 | E1 | how well calibrated is Jev per switch, where labels exist? | `docs/12-calibrated-switches.md` §6 | `deney/e1-jev-calibration` (from E0's branch) | done, 2026-09-25 |
+| E2 | do boundary cases fill the uncertain range, and does a structural loop label them? | `docs/12-calibrated-switches.md` §6 | `deney/e2-boundary-resonance` (from E1's branch) | done, 2026-09-25 |

@@ -1,0 +1,608 @@
+ensemble TeamLoop: 2 columns → Teams · consensus all · 120 case(s)
+world: closed (declared graph only)
+world: closed (declared graph only)
+
+  E2-w1-clear_a-1: I was billed $36 for the annual plan, but I meant to cancel before it 
+    SupportLarge   at Refund                 → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1522 ms)
+
+  E2-w1-clear_a-2: The headphones arrived, but they don’t work at all. I paid once for th
+    SupportLarge   at Refund                 → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1632 ms)
+
+  E2-w1-lean_a-1: I’m unhappy with the meal-kit box and don’t want to continue, so I’d l
+    SupportLarge   at Refund                 → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1768 ms)
+
+  E2-w1-lean_a-2: I paid for the hotel night and then had to cancel because my flight wa
+    SupportLarge   at Refund                 → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1830 ms)
+
+  E2-w1-even-1: My account shows two $48 entries for the same order, but one is marked
+    SupportLarge   at DoubleCharge           → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1983 ms)
+
+  E2-w1-even-2: There are two $29 lines next to the same app subscription in my statem
+    SupportLarge   at DoubleCharge           → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 2080 ms)
+
+  E2-w1-lean_b-1: I see two completed $74 payments for the same concert tickets. Please 
+    SupportLarge   at DoubleCharge           → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 2165 ms)
+
+  E2-w1-lean_b-2: My grocery order appears twice on my card, both for $63, and I only pl
+    SupportLarge   at DoubleCharge           → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 2224 ms)
+
+  E2-w1-clear_b-1: I bought one desk lamp for $31, but my statement has two completed $31
+    SupportLarge   at DoubleCharge           → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1492 ms)
+
+  E2-w1-clear_b-2: The same $12 monthly membership payment posted twice today, and both e
+    SupportLarge   at DoubleCharge           → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1742 ms)
+
+  E2-w2-clear_a-1: My subscription renewal was declined this morning, and my account now 
+    SupportLarge   at PaymentFailed          → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1096 ms)
+
+  E2-w2-clear_a-2: I got a notice that last night’s invoice wasn’t paid because the trans
+    SupportLarge   at PaymentFailed          → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1219 ms)
+
+  E2-w2-lean_a-1: My renewal didn’t go through on the card I have saved, even though I t
+    SupportLarge   at PaymentFailed          → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1343 ms)
+
+  E2-w2-lean_a-2: The monthly charge bounced, and now I can’t access my plan. I may need
+    SupportLarge   at PaymentFailed          → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1590 ms)
+
+  E2-w2-even-1: I received a billing alert about the card on my account, but I can’t t
+    SupportLarge   at Ticket                 → Inbox
+    Teams          at Billing                → Billing
+    … incomplete: SupportLarge concluded nothing
+
+  E2-w2-even-2: There’s a warning beside my card details, and I’m not sure whether the
+    SupportLarge   at PaymentFailed          → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1589 ms)
+
+  E2-w2-lean_b-1: I’d like to replace the card saved on my account with a new one. A rec
+    SupportLarge   at UpdatePaymentMethod    → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1715 ms)
+
+  E2-w2-lean_b-2: Can you help me switch the card used for my subscription? The last bil
+    SupportLarge   at UpdatePaymentMethod    → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1825 ms)
+
+  E2-w2-clear_b-1: Please replace the card saved to my account with my new Visa. I want a
+    SupportLarge   at UpdatePaymentMethod    → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1821 ms)
+
+  E2-w2-clear_b-2: I’m moving my bills to PayPal and would like to use it for this accoun
+    SupportLarge   at UpdatePaymentMethod    → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1917 ms)
+
+  E2-w3-clear_a-1: Every time I click Save, a red banner says “Unable to save changes.” T
+    SupportLarge   at ErrorMessage           → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1037 ms)
+
+  E2-w3-clear_a-2: Checkout won't go through—the screen says “Payment method declined” ev
+    SupportLarge   at PaymentFailed          → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 1299 ms)
+
+  E2-w3-lean_a-1: When I start uploading a photo, the window freezes for a few seconds a
+    SupportLarge   at ErrorMessage           → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1433 ms)
+
+  E2-w3-lean_a-2: I hit Submit and the screen flickers black for a moment, then shows “R
+    SupportLarge   at ErrorMessage           → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1622 ms)
+
+  E2-w3-even-1: I tap Sync, see a brief “Couldn't complete sync” notice, and then I'm 
+    SupportLarge   at DataSync               → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1760 ms)
+
+  E2-w3-even-2: I choose Export, a small “Export unsuccessful” notice flashes, and sud
+    SupportLarge   at ErrorMessage           → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1200 ms)
+
+  E2-w3-lean_b-1: The app disappears whenever I open my account page, and just before it
+    SupportLarge   at AppCrash               → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1250 ms)
+
+  E2-w3-lean_b-2: I was halfway through sending a message when the whole app closed; a “
+    SupportLarge   at AppCrash               → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1413 ms)
+
+  E2-w3-clear_b-1: The game shuts itself down a few seconds after I open it. There's no w
+    SupportLarge   at AppCrash               → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1456 ms)
+
+  E2-w3-clear_b-2: My notes app keeps vanishing while I'm typing, and then I'm back on my
+    SupportLarge   at AppCrash               → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1546 ms)
+
+  E2-w4-clear_a-1: I’m entering the password I use every day, but the app keeps sending m
+    SupportLarge   at LoginProblem           → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1665 ms)
+
+  E2-w4-clear_a-2: I’ve double-checked my username and password, and both are right, but 
+    SupportLarge   at LoginProblem           → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1189 ms)
+
+  E2-w4-lean_a-1: My usual password is being rejected, even though I’m sure it’s correct
+    SupportLarge   at LoginProblem           → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1364 ms)
+
+  E2-w4-lean_a-2: I can’t get past the login page with the password I’ve been using for 
+    SupportLarge   at LoginProblem           → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1560 ms)
+
+  E2-w4-even-1: I’m locked out and the password I have saved isn’t getting me anywhere
+    SupportLarge   at AccountLocked          → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1692 ms)
+
+  E2-w4-even-2: I’ve tried a few times to access my account, but no luck. Should I upd
+    SupportLarge   at LoginProblem           → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1851 ms)
+
+  E2-w4-lean_b-1: I can still get into my account on my phone, but I’d like to replace m
+    SupportLarge   at PasswordReset          → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1163 ms)
+
+  E2-w4-lean_b-2: I want to update my password, but I’m stuck at the account page becaus
+    SupportLarge   at PasswordReset          → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1209 ms)
+
+  E2-w4-clear_b-1: I’m already logged in and everything is working, but I’d like to choos
+    SupportLarge   at PasswordReset          → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1444 ms)
+
+  E2-w4-clear_b-2: Could you tell me how to change my account password? I’m not having tr
+    SupportLarge   at PasswordReset          → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1595 ms)
+
+  E2-w5-clear_a-1: My tracking says the package left the sorting center two days ago, but
+    SupportLarge   at WhereIsOrder           → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 1756 ms)
+
+  E2-w5-clear_a-2: I placed this order last week and it still shows as being prepared. Do
+    SupportLarge   at WhereIsOrder           → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 963 ms)
+
+  E2-w5-lean_a-1: The tracking page says it’s still on the way, though I got a notificat
+    SupportLarge   at WhereIsOrder           → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 971 ms)
+
+  E2-w5-lean_a-2: It was supposed to come yesterday, but the tracking hasn’t changed fro
+    SupportLarge   at WhereIsOrder           → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 1299 ms)
+
+  E2-w5-even-1: The tracking shows a delivery scan from this afternoon, but the page a
+    SupportLarge   at Ticket                 → Inbox
+    Teams          at Shipping               → Shipping
+    … incomplete: SupportLarge concluded nothing
+
+  E2-w5-even-2: I got a notice that my package may have been left at the address, but 
+    SupportLarge   at WhereIsOrder           → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 1590 ms)
+
+  E2-w5-lean_b-1: The tracking says it was dropped off this morning, but I’ve checked th
+    SupportLarge   at DeliveredNotReceived   → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 1709 ms)
+
+  E2-w5-lean_b-2: I received a delivery confirmation, but the package isn’t in the usual
+    SupportLarge   at DeliveredNotReceived   → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 1528 ms)
+
+  E2-w5-clear_b-1: The carrier marked my order as delivered yesterday, but I never got it
+    SupportLarge   at DeliveredNotReceived   → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 1600 ms)
+
+  E2-w5-clear_b-2: I got a delivery notification an hour ago, but there’s no package at m
+    SupportLarge   at DeliveredNotReceived   → Shipping
+    Teams          at Shipping               → Shipping
+    ✓ agreed: Shipping (first at 1811 ms)
+
+  E2-w6-clear_a-1: Could you send me a downloadable file of the information associated wi
+    SupportLarge   at DataExportRequest      → Legal
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-w6-clear_a-2: I’d like to receive a copy of the information you keep on my account, 
+    SupportLarge   at DataExportRequest      → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 1979 ms)
+
+  E2-w6-lean_a-1: After seeing my searches influence the recommendations I get, I’m unea
+    SupportLarge   at DataExportRequest      → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 2043 ms)
+
+  E2-w6-lean_a-2: I don’t love that my location seems to affect the offers I see, but fi
+    SupportLarge   at DataExportRequest      → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 2123 ms)
+
+  E2-w6-even-1: I noticed the recommendations seem connected to things I’ve looked at.
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 2234 ms)
+
+  E2-w6-even-2: An old address of mine appeared in a recent interaction, which caught 
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 2335 ms)
+
+  E2-w6-lean_b-1: It’s unsettling that an ad seemed to reflect something I only discusse
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Security               → Security
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 2387 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-w6-lean_b-2: I never expected my browsing to affect the offers I receive, and I’m u
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 2382 ms)
+
+  E2-w6-clear_b-1: Why are you using my purchase history to target me with ads? It feels 
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 2504 ms)
+
+  E2-w6-clear_b-2: I turned off personalized recommendations, but the app still seems to 
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x1-clear_a-1: My profile now has a different email and phone number, and there are p
+    SupportLarge   at AccountTakeover        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2640 ms)
+
+  E2-x1-clear_a-2: I got an alert that my password was changed, but I didn’t change it. N
+    SupportLarge   at AccountTakeover        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2638 ms)
+
+  E2-x1-lean_a-1: I can’t get into my profile, and the password reset goes to an email I
+    SupportLarge   at Ticket                 → Inbox
+    Teams          at Inbox                  → Inbox
+    … undecided: SupportLarge, Teams concluded nothing
+
+  E2-x1-lean_a-2: My account suddenly stopped letting me sign in, and I received a notif
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2789 ms)
+
+  E2-x1-even-1: I can’t sign in, and the app says access is unavailable after a securi
+    SupportLarge   at LoginProblem           → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 2872 ms)
+
+  E2-x1-even-2: This morning I was asked to verify my identity and then couldn’t get p
+    SupportLarge   at LoginProblem           → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 2889 ms)
+
+  E2-x1-lean_b-1: I got a notice that my account has been suspended, and I can’t use it 
+    SupportLarge   at AccountLocked          → Account
+    Teams          at Security               → Security
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 2876 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-x1-lean_b-2: My access was disabled after what the app called unusual activity. I d
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 1613 ms)
+
+  E2-x1-clear_b-1: I received a message saying my account has been suspended for violatin
+    SupportLarge   at AccountLocked          → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 1837 ms)
+
+  E2-x1-clear_b-2: The app says my account is temporarily disabled while a billing issue 
+    SupportLarge   at AccountLocked          → Account
+    Teams          at Billing                → Billing
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 1893 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-x2-clear_a-1: I got an email saying my account was opened from a phone in Prague las
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2038 ms)
+
+  E2-x2-clear_a-2: There’s a session listed from a Windows computer I don’t own. I didn’t
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2053 ms)
+
+  E2-x2-lean_a-1: I saw a notice that someone signed in from a new browser while I was a
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2154 ms)
+
+  E2-x2-lean_a-2: My account history shows a successful visit from another country, whic
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2215 ms)
+
+  E2-x2-even-1: I received an alert about an access attempt just as a code prompt appe
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x2-even-2: The account page is asking me to verify something, and I also got a no
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x2-lean_b-1: I can’t get into my account because the codes from my authenticator ke
+    SupportLarge   at TwoFactor              → Account
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x2-lean_b-2: My phone was replaced yesterday, and now the account keeps asking for 
+    SupportLarge   at Ticket                 → Inbox
+    Teams          at Inbox                  → Inbox
+    … undecided: SupportLarge, Teams concluded nothing
+
+  E2-x2-clear_b-1: The six-digit numbers in my authenticator app aren’t accepted, even th
+    SupportLarge   at TwoFactor              → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 2520 ms)
+
+  E2-x2-clear_b-2: I switched to a new phone and can’t get the authenticator set up for m
+    SupportLarge   at TwoFactor              → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 2590 ms)
+
+  E2-x3-clear_a-1: The settings page looks really cramped now—the labels overlap the togg
+    SupportLarge   at BugReportUi            → Product
+    Teams          at Technical              → Technical
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 2638 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-x3-clear_a-2: Since the update, the text in my inbox is tiny and the columns are all
+    SupportLarge   at BugReportUi            → Product
+    Teams          at Technical              → Technical
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 2727 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-x3-lean_a-1: On my phone, the checkout button is partly offscreen and a little “Ple
+    SupportLarge   at BugReportUi            → Product
+    Teams          at Technical              → Technical
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 2763 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-x3-lean_a-2: The dashboard cards are stacked on top of each other, and a red “Try a
+    SupportLarge   at BugReportUi            → Product
+    Teams          at Technical              → Technical
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 2904 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-x3-even-1: When I submit the form, the fields shift down and a “Request couldn’t 
+    SupportLarge   at ErrorMessage           → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 2898 ms)
+
+  E2-x3-even-2: After I pick a date, the calendar disappears and the page shows a blan
+    SupportLarge   at BugReportUi            → Product
+    Teams          at Technical              → Technical
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 1830 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-x3-lean_b-1: Saving my profile fails with “Unable to update” every time, and the di
+    SupportLarge   at ErrorMessage           → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1974 ms)
+
+  E2-x3-lean_b-2: I can’t export the report because it says “Download failed”; the notic
+    SupportLarge   at ErrorMessage           → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 1989 ms)
+
+  E2-x3-clear_b-1: Every time I try to reset my password, it says “Link expired” and won’
+    SupportLarge   at PasswordReset          → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 2096 ms)
+
+  E2-x3-clear_b-2: Uploading my invoice stops at 80% and then says “File processing faile
+    SupportLarge   at ErrorMessage           → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 2215 ms)
+
+  E2-x4-clear_a-1: Could you add a connection to Monday.com? We’re moving our project tra
+    SupportLarge   at IntegrationRequest     → Product
+    Teams          at Product                → Product
+    ✓ agreed: Product (first at 2255 ms)
+
+  E2-x4-clear_a-2: It would save us a lot of copying if your service could send updates t
+    SupportLarge   at Ticket                 → Inbox
+    Teams          at Product                → Product
+    … incomplete: SupportLarge concluded nothing
+
+  E2-x4-lean_a-1: We’re using Airtable for inventory, and right now I have to export a C
+    SupportLarge   at IntegrationRequest     → Product
+    Teams          at Technical              → Technical
+    ⚠ surprise: SupportLarge ⟂ Teams (first at 2296 ms) → a curation signal (the model of the world may be wrong here)
+
+  E2-x4-lean_a-2: Could your app connect with Linear? Our team has been passing issue li
+    SupportLarge   at IntegrationRequest     → Product
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x4-even-1: I’m trying to get our Salesforce records showing up in your workspace,
+    SupportLarge   at IntegrationBroken      → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 2453 ms)
+
+  E2-x4-even-2: Can you help me get the connection to Teams sorted out? Messages aren’
+    SupportLarge   at IntegrationBroken      → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 2491 ms)
+
+  E2-x4-lean_b-1: Our HubSpot sync is still running, but it stopped bringing over compan
+    SupportLarge   at IntegrationBroken      → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 2604 ms)
+
+  E2-x4-lean_b-2: The connection to QuickBooks has been dropping invoices since yesterda
+    SupportLarge   at IntegrationBroken      → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 2638 ms)
+
+  E2-x4-clear_b-1: The Slack connection that’s been working for us for months stopped pos
+    SupportLarge   at IntegrationBroken      → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 2645 ms)
+
+  E2-x4-clear_b-2: Our Google Drive files used to appear in the document picker, but the 
+    SupportLarge   at IntegrationBroken      → Technical
+    Teams          at Technical              → Technical
+    ✓ agreed: Technical (first at 2756 ms)
+
+  E2-x5-clear_a-1: Please switch off my Plus plan before it renews next week. I still wan
+    SupportLarge   at CancelSubscription     → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 2860 ms)
+
+  E2-x5-clear_a-2: I’m no longer using the paid tier, so please stop the monthly charge. 
+    SupportLarge   at CancelSubscription     → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 2551 ms)
+
+  E2-x5-lean_a-1: I’m trying to cut expenses, so please end my Pro access and stop billi
+    SupportLarge   at CancelSubscription     → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 2583 ms)
+
+  E2-x5-lean_a-2: Could you make sure I won’t be charged for this service again? I’m tak
+    SupportLarge   at CancelSubscription     → Billing
+    Teams          at Billing                → Billing
+    ✓ agreed: Billing (first at 2715 ms)
+
+  E2-x5-even-1: I’m ready to be done with this service. Please shut down whatever need
+    SupportLarge   at DeleteAccount          → Account
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x5-even-2: Can you close things out for me? I don’t want to keep using this, and 
+    SupportLarge   at Ticket                 → Inbox
+    Teams          at Inbox                  → Inbox
+    … undecided: SupportLarge, Teams concluded nothing
+
+  E2-x5-lean_b-1: I want my profile and its stored information removed for good. I’m als
+    SupportLarge   at DeleteAccount          → Account
+    Teams          at Account                → Account
+    ✓ agreed: Account (first at 2497 ms)
+
+  E2-x5-lean_b-2: Please close my presence on the site and wipe my personal details. I n
+    SupportLarge   at DeleteAccount          → Account
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x5-clear_b-1: Please remove my profile and all the personal information attached to 
+    SupportLarge   at DeleteAccount          → Account
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x5-clear_b-2: I want my account and its data permanently erased, including my messag
+    SupportLarge   at DeleteAccount          → Account
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x6-clear_a-1: I got a password-reset email for an account I didn’t try to access, an
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2483 ms)
+
+  E2-x6-clear_a-2: A caller knew the address and phone number I used only on your site, a
+    SupportLarge   at Ticket                 → Inbox
+    Teams          at Security               → Security
+    … incomplete: SupportLarge concluded nothing
+
+  E2-x6-lean_a-1: I signed up for your service last week, and now I’m getting convincing
+    SupportLarge   at DataBreachConcern      → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2649 ms)
+
+  E2-x6-lean_a-2: My account page showed a device I don’t recognize, and afterward I sta
+    SupportLarge   at SuspiciousLogin        → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2703 ms)
+
+  E2-x6-even-1: I keep getting calls that seem connected to things I’ve entered in you
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x6-even-2: A few details I shared with your service have started showing up in pl
+    SupportLarge   at DataBreachConcern      → Security
+    Teams          at Security               → Security
+    ✓ agreed: Security (first at 2824 ms)
+
+  E2-x6-lean_b-1: Why am I seeing ads based on private notes I saved in your app? It fee
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Inbox                  → Inbox
+    … incomplete: Teams concluded nothing
+
+  E2-x6-lean_b-2: I gave your service my location so it could provide directions, not so
+    SupportLarge   at Ticket                 → Inbox
+    Teams          at Security               → Security
+    … incomplete: SupportLarge concluded nothing
+
+  E2-x6-clear_b-1: I’m uncomfortable that your app uses my purchase history to personaliz
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 2397 ms)
+
+  E2-x6-clear_b-2: I provided my email address to receive receipts, but now your company 
+    SupportLarge   at PrivacyComplaint       → Legal
+    Teams          at Legal                  → Legal
+    ✓ agreed: Legal (first at 2478 ms)
+
+wall 2920 ms
+gaps: 8 signal(s) for curation appended to runs/gaps.SupportLarge.jsonl (onto curate)
+gaps: 120 signal(s) for curation appended to runs/gaps.Teams.jsonl (onto curate)
+gaps: 9 signal(s) for curation appended to runs/gaps.Teams.jsonl (onto curate)

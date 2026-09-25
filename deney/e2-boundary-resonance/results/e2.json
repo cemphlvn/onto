@@ -1,0 +1,381 @@
+{
+ "H1": {
+  "intent_switches": 4800,
+  "intent_mid": 60,
+  "team_switches": 840,
+  "team_mid": 58,
+  "calls": 240,
+  "calls_top_below_0.9": 57,
+  "mean_top_p": 0.913,
+  "E1_reference": {
+   "mid": "21 of 2889 switches",
+   "calls_top_below_0.9": "12 of 147",
+   "mean_top_p": 0.973
+  }
+ },
+ "dose_response": {
+  "clear_a": {
+   "n": 23,
+   "mean_share_a": 1.0
+  },
+  "lean_a": {
+   "n": 24,
+   "mean_share_a": 0.941
+  },
+  "even": {
+   "n": 23,
+   "mean_share_a": 0.464
+  },
+  "lean_b": {
+   "n": 24,
+   "mean_share_a": 0.086
+  },
+  "clear_b": {
+   "n": 23,
+   "mean_share_a": 0.0
+  }
+ },
+ "decisions": {
+  "labelled": 96,
+  "intent_right": 85,
+  "intent_other_side": 0,
+  "intent_outside_pair": 6,
+  "intent_escalated": 5,
+  "outside_examples": [
+   {
+    "case": "E2-w3-clear_a-2",
+    "label": "error_message",
+    "taken": "payment_failed"
+   },
+   {
+    "case": "E2-x1-lean_a-2",
+    "label": "account_takeover",
+    "taken": "suspicious_login"
+   },
+   {
+    "case": "E2-x1-lean_b-2",
+    "label": "account_locked",
+    "taken": "suspicious_login"
+   },
+   {
+    "case": "E2-x3-clear_b-1",
+    "label": "error_message",
+    "taken": "password_reset"
+   },
+   {
+    "case": "E2-x6-clear_a-1",
+    "label": "data_breach_concern",
+    "taken": "suspicious_login"
+   },
+   {
+    "case": "E2-x6-lean_a-2",
+    "label": "data_breach_concern",
+    "taken": "suspicious_login"
+   }
+  ],
+  "by_level": {
+   "clear_a": {
+    "right": 20,
+    "outside": 2,
+    "escalated": 2
+   },
+   "lean_a": {
+    "right": 21,
+    "escalated": 1,
+    "outside": 2
+   },
+   "lean_b": {
+    "right": 21,
+    "outside": 1,
+    "escalated": 2
+   },
+   "clear_b": {
+    "right": 23,
+    "outside": 1
+   }
+  }
+ },
+ "H3": {
+  "switches": 3840,
+  "ece": 0.0033,
+  "ece_95": [
+   0.002,
+   0.006
+  ],
+  "brier": 0.0036,
+  "reliability": [
+   {
+    "bin": "0.0-0.1",
+    "n": 3726,
+    "mean_p": 0.0,
+    "frequency": 0.001
+   },
+   {
+    "bin": "0.1-0.2",
+    "n": 6,
+    "mean_p": 0.135,
+    "frequency": 0.333
+   },
+   {
+    "bin": "0.2-0.3",
+    "n": 5,
+    "mean_p": 0.252,
+    "frequency": 0
+   },
+   {
+    "bin": "0.3-0.4",
+    "n": 5,
+    "mean_p": 0.332,
+    "frequency": 0.2
+   },
+   {
+    "bin": "0.4-0.5",
+    "n": 3,
+    "mean_p": 0.47,
+    "frequency": 0.333
+   },
+   {
+    "bin": "0.5-0.6",
+    "n": 4,
+    "mean_p": 0.54,
+    "frequency": 0.75
+   },
+   {
+    "bin": "0.6-0.7",
+    "n": 4,
+    "mean_p": 0.657,
+    "frequency": 1
+   },
+   {
+    "bin": "0.7-0.8",
+    "n": 3,
+    "mean_p": 0.737,
+    "frequency": 0.667
+   },
+   {
+    "bin": "0.8-0.9",
+    "n": 3,
+    "mean_p": 0.817,
+    "frequency": 0.667
+   },
+   {
+    "bin": "0.9-1.0",
+    "n": 81,
+    "mean_p": 0.991,
+    "frequency": 0.951
+   }
+  ],
+  "decision_confidence_vs_right": {
+   "0.6-0.7": {
+    "n": 4,
+    "right": 4
+   },
+   "0.7-0.8": {
+    "n": 4,
+    "right": 3
+   },
+   "0.8-0.9": {
+    "n": 2,
+    "right": 1
+   },
+   "0.9-1.0": {
+    "n": 28,
+    "right": 25
+   }
+  }
+ },
+ "H2": {
+  "within": {
+   "cases_both_followed": 46,
+   "table": {
+    "agreed / intent_right": 44,
+    "agreed / intent_wrong": 1,
+    "surprise / intent_right": 1
+   },
+   "surprise_when_intent_wrong": "0/1",
+   "surprise_when_intent_right": "1/45",
+   "wrong_intent_same_team": 0,
+   "team_right": 44
+  },
+  "cross": {
+   "cases_both_followed": 37,
+   "table": {
+    "agreed / intent_right": 25,
+    "agreed / intent_wrong": 5,
+    "surprise / intent_right": 7
+   },
+   "surprise_when_intent_wrong": "0/5",
+   "surprise_when_intent_right": "7/32",
+   "wrong_intent_same_team": 3,
+   "team_right": 28
+  },
+  "even_cases": {
+   "agreed": 16,
+   "incomplete": 6,
+   "surprise": 1,
+   "undecided": 1
+  },
+  "all_status": {
+   "agreed": 91,
+   "incomplete": 17,
+   "surprise": 9,
+   "undecided": 3
+  },
+  "incomplete_by_column": {
+   "intent escalated": 5,
+   " team escalated": 12
+  }
+ },
+ "even_split": {
+  "n": 23,
+  "decisive (share < 0.1 or > 0.9)": 11,
+  "split (0.3 to 0.7)": 4
+ },
+ "top_label": {
+  "decisions": 91,
+  "mean_p": 0.962,
+  "accuracy": 0.934,
+  "ece": 0.0581,
+  "bins": [
+   {
+    "bin": "0.6-0.7",
+    "n": 4,
+    "mean_p": 0.657,
+    "accuracy": 1
+   },
+   {
+    "bin": "0.7-0.8",
+    "n": 3,
+    "mean_p": 0.737,
+    "accuracy": 0.667
+   },
+   {
+    "bin": "0.8-0.9",
+    "n": 3,
+    "mean_p": 0.817,
+    "accuracy": 0.667
+   },
+   {
+    "bin": "0.9-1.0",
+    "n": 81,
+    "mean_p": 0.991,
+    "accuracy": 0.951
+   }
+  ]
+ },
+ "confident_errors": [
+  {
+   "case": "E2-w3-clear_a-2",
+   "label": "error_message",
+   "taken": "payment_failed",
+   "p": 0.99,
+   "team_taken": "billing",
+   "status": "agreed"
+  },
+  {
+   "case": "E2-x1-lean_a-2",
+   "label": "account_takeover",
+   "taken": "suspicious_login",
+   "p": 0.93,
+   "team_taken": "security",
+   "status": "agreed"
+  },
+  {
+   "case": "E2-x1-lean_b-2",
+   "label": "account_locked",
+   "taken": "suspicious_login",
+   "p": 0.81,
+   "team_taken": "security",
+   "status": "agreed"
+  },
+  {
+   "case": "E2-x3-clear_b-1",
+   "label": "error_message",
+   "taken": "password_reset",
+   "p": 1.0,
+   "team_taken": "account",
+   "status": "agreed"
+  },
+  {
+   "case": "E2-x6-clear_a-1",
+   "label": "data_breach_concern",
+   "taken": "suspicious_login",
+   "p": 0.96,
+   "team_taken": "security",
+   "status": "agreed"
+  },
+  {
+   "case": "E2-x6-lean_a-2",
+   "label": "data_breach_concern",
+   "taken": "suspicious_login",
+   "p": 0.76,
+   "team_taken": "security",
+   "status": "agreed"
+  }
+ ],
+ "loop_surprises": [
+  {
+   "case": "E2-w6-lean_b-1",
+   "label": "privacy_complaint",
+   "intent_taken": "privacy_complaint",
+   "team_taken": "security",
+   "team_expected": "Legal"
+  },
+  {
+   "case": "E2-x1-lean_b-1",
+   "label": "account_locked",
+   "intent_taken": "account_locked",
+   "team_taken": "security",
+   "team_expected": "Account"
+  },
+  {
+   "case": "E2-x1-clear_b-2",
+   "label": "account_locked",
+   "intent_taken": "account_locked",
+   "team_taken": "billing",
+   "team_expected": "Account"
+  },
+  {
+   "case": "E2-x3-clear_a-1",
+   "label": "bug_report_ui",
+   "intent_taken": "bug_report_ui",
+   "team_taken": "technical",
+   "team_expected": "Product"
+  },
+  {
+   "case": "E2-x3-clear_a-2",
+   "label": "bug_report_ui",
+   "intent_taken": "bug_report_ui",
+   "team_taken": "technical",
+   "team_expected": "Product"
+  },
+  {
+   "case": "E2-x3-lean_a-1",
+   "label": "bug_report_ui",
+   "intent_taken": "bug_report_ui",
+   "team_taken": "technical",
+   "team_expected": "Product"
+  },
+  {
+   "case": "E2-x3-lean_a-2",
+   "label": "bug_report_ui",
+   "intent_taken": "bug_report_ui",
+   "team_taken": "technical",
+   "team_expected": "Product"
+  },
+  {
+   "case": "E2-x3-even-2",
+   "label": null,
+   "intent_taken": "bug_report_ui",
+   "team_taken": "technical",
+   "team_expected": null
+  },
+  {
+   "case": "E2-x4-lean_a-1",
+   "label": "integration_request",
+   "intent_taken": "integration_request",
+   "team_taken": "technical",
+   "team_expected": "Product"
+  }
+ ]
+}
