@@ -102,6 +102,29 @@ Reference (SemIf's README, RTX 3090, Qwen3.5-4B): 2.33 decisions/s
 scored fresh, 10.75 with serial prefix reuse, 20.03 with parallel
 suffixes. No mobile measurement exists; step F3 produces one per device.
 
+### 4.1 Measured (2026-09-25, M4 Mac 16 GB, Metal, flat 41-option frame)
+
+The 22 labelled support tickets, `expected` removed from the case (see
+`docs/00` §11: the demo declares no `state`, so the label otherwise
+reaches the model). Top-1: the model's own first choice; engine: what the
+walk did at the 0.6 threshold (the rest escalated).
+
+| model (GGUF) | top-1 | engine correct | answered, precision | wall (22) | peak RSS |
+|---|---|---|---|---|---|
+| Qwen3-0.6B Q8_0 | 8/22 | 8/22 | 10, 80% | 8.8 s | 1.6 GB |
+| MiniCPM5-1B Q8_0 | 3/22 | 0/22 | 0 | 9.7 s | 1.4 GB |
+| MiniCPM5-2B Q4_K_M | 14/22 | 14/22 | 19, 74% | 28.4 s | 1.8 GB |
+| Qwen3.5-4B Q4_K_M | 21/22 | 19/22 | 19, 100% | 67.9 s | 2.8 GB |
+
+Found while measuring, and fixed:
+- the label is read with its leading space (` A`) after `Answer:`; a bare
+  `A` after a lone space token made MiniCPM5-1B choose `E` for every
+  ticket and cost every model accuracy;
+- hybrid models (Qwen3.5's linear-attention layers) cannot drop a suffix
+  of their cache: the scorer clears it and recomputes (no prefix reuse
+  for them);
+- the worker thread is joined on drop, or Metal asserts at exit.
+
 Model classes (from openjev.com): Qwen3 0.6B (639 MB) for phones and the
 browser, MiniCPM5 2B (1.56 GB), Qwen3.5 4B (3.01 GB) native only on
 devices with enough memory. Browsers cap a tab's memory well below the
@@ -113,7 +136,7 @@ device's, so the PWA defaults to the small models.
 |---|---|---|
 | F1 ✓ | `onto-models` (the contract) and `onto-remote` (providers) out of `onto-runtime`; the runtime has no reqwest | the whole workspace test suite and the CLI unchanged |
 | F2 ✓ | the `rt` module; `onto-runtime` builds and runs on `wasm32-unknown-unknown` | `tests/portable.rs`: triage and the 22 support-commons tickets give the same paths on tokio and on a JavaScript event loop (Node, `wasm-bindgen-test`); a browser run follows with F4 |
-| F3 | `onto-local`: the OpenJev judge over llama.cpp, the batcher; `onto run --judge local:<gguf>` | support-commons (22 labelled tickets) on an M4 Mac: accuracy and p50/p95 beside Jev's 1.4 s |
+| F3 ◐ | `onto-local`: the OpenJev judge over llama.cpp (llama-cpp-2; Metal, CUDA, Vulkan, CPU), token cache across prompts; `onto run --judge-model local:<gguf>` (feature `local-*`); the batcher of parallel suffixes still to build | support-commons on an M4 Mac, flat frame, no network (§4.1) |
 | F4 | `onto-wasm` + wllama; the first PWA (support-commons) with a benchmark screen | the same 22 tickets on iPhone 15 Pro – 18 Pro in Safari: accuracy, p50/p95, cases/s, memory |
 | F5 | `onto-ffi` (UniFFI), iOS and Android shells; incident-response, consent, hospital-discharge / benefits apps | each app's demo test, on device, with no network |
 

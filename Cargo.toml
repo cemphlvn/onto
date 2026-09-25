@@ -4,6 +4,7 @@ members = [
     "crates/onto-core",
     "crates/onto-models",
     "crates/onto-remote",
+    "crates/onto-local",
     "crates/onto-runtime",
     "crates/onto-cli",
 ]
@@ -18,6 +19,7 @@ repository = "https://github.com/cemphlvn/onto"
 onto-core = { path = "crates/onto-core" }
 onto-models = { path = "crates/onto-models" }
 onto-remote = { path = "crates/onto-remote" }
+onto-local = { path = "crates/onto-local", default-features = false }
 onto-runtime = { path = "crates/onto-runtime" }
 egg = { version = "0.11.0", features = ["deterministic"] }
 thiserror = "2"

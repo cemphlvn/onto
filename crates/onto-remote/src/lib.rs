@@ -146,17 +146,6 @@ impl Critic for Jev {
     }
 }
 
-/// How an arrow reads as an option, condition or level: its instructions
-/// when declared (text gets the target appended; JSON is wrapped with it),
-/// else a sentence built from its name.
-fn describe(c: &Candidate) -> Value {
-    match &c.instructions {
-        Some(Value::String(t)) => json!(format!("{t} (leads to {})", c.to)),
-        Some(structured) => json!({"leads_to": c.to, "description": structured}),
-        None => json!(format!("follow `{}` to {}", c.arrow, c.to)),
-    }
-}
-
 /// The frame as TypeSafe questions, one request per frame.
 fn render(req: &FrameRequest) -> Result<Value, ModelError> {
     // After a fork, each branch handles one aspect of the case.
@@ -184,7 +173,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
             let mut criteria: serde_json::Map<String, Value> = req
                 .candidates
                 .iter()
-                .map(|c| (c.arrow.clone(), describe(c)))
+                .map(|c| (c.arrow.clone(), c.describe()))
                 .collect();
             criteria.insert(
                 NONE_OF_THESE.into(),
@@ -200,7 +189,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
             let mut qs = serde_json::Map::new();
             for (i, c) in req.candidates.iter().enumerate() {
                 let mut instructions = json!({
-                    "condition": describe(c),
+                    "condition": c.describe(),
                     "question": format!("Given `goal`, the case, and the walk so far (`hops`), does `condition` hold for this case?{scope}"),
                 });
                 if let Some(frame_question) = &req.instructions {
@@ -212,7 +201,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
                 );
             }
             if req.can_fork && !req.parallel && req.candidates.len() > 1 {
-                let options: Vec<Value> = req.candidates.iter().map(describe).collect();
+                let options: Vec<Value> = req.candidates.iter().map(Candidate::describe).collect();
                 qs.insert("fork".into(), json!({
                     "type": "noul",
                     "instructions": {
@@ -228,7 +217,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
             Value::Object(qs)
         }
         Primitive::Score => {
-            let levels: Vec<Value> = req.candidates.iter().map(describe).collect();
+            let levels: Vec<Value> = req.candidates.iter().map(Candidate::describe).collect();
             json!({"level": {
                 "type": "score",
                 "instructions": question("Where does this case fall on the scale, given `goal`?"),

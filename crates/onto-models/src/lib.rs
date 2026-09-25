@@ -36,6 +36,18 @@ pub struct Candidate {
 }
 
 impl Candidate {
+    /// How the arrow reads as an option, condition or level: its
+    /// instructions when declared (text gets the target appended; JSON is
+    /// wrapped with it), else a sentence built from its name. Every
+    /// provider renders arrows this way.
+    pub fn describe(&self) -> Value {
+        match &self.instructions {
+            Some(Value::String(t)) => Value::String(format!("{t} (leads to {})", self.to)),
+            Some(structured) => serde_json::json!({"leads_to": self.to, "description": structured}),
+            None => Value::String(format!("follow `{}` to {}", self.arrow, self.to)),
+        }
+    }
+
     pub fn of(cat: &onto_core::Category, arrow: onto_core::ArrowId) -> Self {
         let a = cat.arrow(arrow);
         Self {

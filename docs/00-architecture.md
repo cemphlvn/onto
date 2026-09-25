@@ -784,6 +784,13 @@ streaming them is open (§11).
 
 ## 11. Open questions
 
+- **Labelled demo cases reach the model.** `support-commons/large.onto`
+  declares no `state`, so a case's whole JSON, its `expected` label
+  included, is shown to the judge; accuracy measured on `large.jobs` is
+  optimistic unless the label is removed (the appstudio bench does) or
+  the demo declares `state { goal; }` / `invariant unseen: case.expected`.
+  The reported Jev run (22 tickets, 1.4 s) was made the same way.
+
 - **Resume (M4).** How an answer from outside (a person, another system)
   re-enters a stopped walk: the same record or a new one with an `after`
   link; the answer as an asserted or attested fact; what the record says

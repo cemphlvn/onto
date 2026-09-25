@@ -76,6 +76,10 @@ enum PolicyArg {
 pub enum AnyJudge {
     Jev(Jev),
     Mock(MockJudge),
+    /// `--judge-model local:<file.gguf>` (feature `local`): the OpenJev
+    /// method on this machine, no network.
+    #[cfg(feature = "local")]
+    Local(onto_local::LocalJudge),
 }
 
 impl Judge for AnyJudge {
@@ -83,12 +87,16 @@ impl Judge for AnyJudge {
         match self {
             Self::Jev(j) => Judge::name(j),
             Self::Mock(j) => Judge::name(j),
+            #[cfg(feature = "local")]
+            Self::Local(j) => Judge::name(j),
         }
     }
     async fn judge(&self, req: FrameRequest) -> Result<(Answer, Usage), ModelError> {
         match self {
             Self::Jev(j) => j.judge(req).await,
             Self::Mock(j) => j.judge(req).await,
+            #[cfg(feature = "local")]
+            Self::Local(j) => j.judge(req).await,
         }
     }
 }
@@ -99,6 +107,8 @@ impl Critic for AnyJudge {
         match self {
             Self::Jev(j) => Critic::name(j),
             Self::Mock(j) => Critic::name(j),
+            #[cfg(feature = "local")]
+            Self::Local(j) => Critic::name(j),
         }
     }
     async fn nouls(
@@ -109,6 +119,8 @@ impl Critic for AnyJudge {
         match self {
             Self::Jev(j) => j.nouls(state, questions).await,
             Self::Mock(j) => j.nouls(state, questions).await,
+            #[cfg(feature = "local")]
+            Self::Local(j) => j.nouls(state, questions).await,
         }
     }
 }
@@ -205,10 +217,15 @@ pub fn models(
     let http = reqwest::Client::builder()
         .timeout(Duration::from_secs(60))
         .build()?;
+    let local = judge_model
+        .as_deref()
+        .and_then(|m| m.strip_prefix("local:"));
     let judge = if mock {
         AnyJudge::Mock(MockJudge {
             latency: Duration::from_millis(150),
         })
+    } else if let Some(gguf) = local {
+        local_judge(gguf)?
     } else {
         AnyJudge::Jev(
             Jev::from_env(http.clone(), judge_model)
@@ -226,6 +243,17 @@ pub fn models(
         )
     };
     Ok((judge, proposer))
+}
+
+#[cfg(feature = "local")]
+fn local_judge(gguf: &str) -> Result<AnyJudge, BoxError> {
+    let opts = onto_local::llama::LlamaOptions::new(gguf);
+    Ok(AnyJudge::Local(onto_local::llama::judge(opts)?))
+}
+
+#[cfg(not(feature = "local"))]
+fn local_judge(_: &str) -> Result<AnyJudge, BoxError> {
+    Err("this onto was built without local models: cargo build -p onto-cli --features local-metal (or local, local-cuda, local-vulkan)".into())
 }
 
 /// Every frame record of the run, walks in id order, as JSON lines.
