@@ -96,7 +96,7 @@ Every loop is written up the same way:
 
 | # | question | data | needs |
 |---|---|---|---|
-| E0 | **ceiling**: what share of recorded switches the CPU capability admits, before building anything (OSIL's capability-ceiling method) | frame records of every demo run | a switch classifier over records |
+| E0 ✓ | **ceiling**: what share of recorded switches the CPU capability admits, before building anything (OSIL's capability-ceiling method) | frame records of every demo run | a switch classifier over records. **Result** (`deney/e0-switch-ceiling`): 55.2% of 737 switches; context length does not bind; open vocabulary and missing labels bind together (99.6% if both are handled, 73.0% and 69.9% alone); adopting a functor made 60% of Support's switches labelable by resonance |
 | E1 | how calibrated is Jev per switch today? | switches whose truth is known: attested evidence (incident-response, benefits-assembly, consent-enforcement), people's answers | labelled record export, calibration metrics |
 | E2 | does resonance label synthetic cases correctly? | synthetic cases through path equations, functor squares, ensembles | synthetic generator, resonance checker |
 | E3 | does a CPU switch match Jev's calibration on admitted switches, and at what latency and cost? | E1's labels plus E2's | the learner |

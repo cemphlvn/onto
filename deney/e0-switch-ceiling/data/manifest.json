@@ -1,0 +1,16 @@
+{
+  "note": "Frame records (dispositions) of live runs, 2026-09-24, Jev (jev-latest) for judgments, OpenRouter (~openai/gpt-luna-latest) for proposals. Copied unchanged from the session scratchpad; each entry names the category it ran against, as it is in this repository. One run per scenario: exclusive-policy duplicates of the same cases are left out.",
+  "runs": [
+    {"file": "01-incident-response.jsonl", "spec": "demos/incident-response/incident.onto", "source": "docs/08 scenario 1, after step 2 (shared, max-branches 6)"},
+    {"file": "02-support-large.jsonl", "spec": "demos/support-commons/large.onto", "source": "docs/08 scenario 2 (shared, closed world, stagger 100)"},
+    {"file": "03-infrastructure-change.jsonl", "spec": "demos/secure-infrastructure-change/change.onto", "source": "docs/08 scenario 3 (shared, max-branches 6)"},
+    {"file": "04-hospital-discharge.jsonl", "spec": "demos/hospital-discharge/discharge.onto", "source": "docs/08 scenario 4 (shared, max-branches 6)"},
+    {"file": "05-consent.jsonl", "spec": "demos/consent-enforcement/consent.onto", "source": "docs/08 scenario 5 (shared, max-branches 6)"},
+    {"file": "06-support-repeated-gaps.jsonl", "spec": "demos/support-commons/support.onto", "source": "docs/08 scenario 6 (shared, closed world, stagger 1500)"},
+    {"file": "07-benefits-catalogue.jsonl", "spec": "demos/benefits-assembly/catalogue.onto#BenefitsAssembly", "source": "docs/08 scenario 7 (shared, stagger 5000)"},
+    {"file": "08-incident-perspectives.jsonl", "columns": ["demos/incident-response/perspectives.onto#Metrics", "demos/incident-response/perspectives.onto#Logs", "demos/incident-response/perspectives.onto#Complaints"], "source": "docs/05 §6 ensemble Outage, live"},
+    {"file": "09-discharge-with-the-patient.jsonl", "columns": ["demos/hospital-discharge/perspectives.onto#Clinical", "demos/hospital-discharge/perspectives.onto#Social", "demos/hospital-discharge/perspectives.onto#Patient"], "source": "docs/05 §6 ensemble WithThePatient (quorum 2), live"},
+    {"file": "10-support-open-world.jsonl", "spec": "demos/support-commons/support.onto", "source": "docs/09 §3 parcel stream, run 1 (open world, learning)"},
+    {"file": "11-merger-transport.jsonl", "spec": "demos/support-commons/merger.onto#Support", "source": "docs/05 §7 merger, Support with Merger adopted and transport (mock proposer)"}
+  ]
+}
