@@ -1,0 +1,90 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: they cancelled or returned something and want their money back (there was only one charge). They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309069-quAmWGj0Yfb57wgYgXsr",
+    "object": "chat.completion",
+    "created": 1790309069,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, I sent the router back last week. Could you return the payment to my card?\",\"I changed my mind and stopped the order before it shipped, but the payment still went through. Please refund that one payment.\",\"Package was returned and marked delivered yesterday. When should I expect my money back?\",\"I only see one payment for this order, not two. I returned the device and am asking for that payment to be refunded.\",\"Hello, I no longer need the router, so I shipped it back using your label. Please let me know when the refund is processed.\",\"Order was called off, but I can still see the payment on my account. Can you send it back, please?\",\"I dropped off the router return a few days ago and haven\u2019t received my money yet. There was just the original payment, and I\u2019d like that refunded.\",\"Can someone check on my refund? I asked to stop the order before it went out, but the charge is still there.\",\"The router has been returned in its original packaging. Please refund the amount I paid; I\u2019m not disputing any other charges.\",\"Sorry, quick question\u2014I sent it back already. How long does it take for the money to come back?\",\"I requested that the order be withdrawn, and I was told it would be taken care of. The single payment is still showing, so please refund it.\",\"The device didn\u2019t work for my setup, so I mailed it back. I\u2019m hoping you can return the payment to the same card I used.\",\"I gave the router back at the store this morning. Could you confirm that my money will be returned?\",\"My order never shipped because I asked for it to be stopped. I can see one payment on my statement and would like it refunded.\",\"Hi support, I sent the router back two weeks ago and still haven\u2019t seen the money returned. Please check the status of the refund for my one payment.\",\"I\u2019m in a bit of a hurry here\u2014the order was stopped, but the payment hasn\u2019t come back. Can you please sort out the refund?\",\"I returned the unit with tracking number ending in 4821, and delivery shows it reached your warehouse on Monday. I paid once for it and would like that amount returned to my account.\",\"I don\u2019t need this router anymore. I\u2019ve shipped it back, and I\u2019d appreciate a refund for the payment that was made.\",\"The order was withdrawn before delivery, but I was still billed once. Please return that payment and let me know when it\u2019s done.\",\"Hello, I sent the router back because it wasn\u2019t suitable. There was only one payment, and I\u2019m asking for that amount to be refunded.\"]}",
+       "refusal": null,
+       "reasoning": "**Creating customer support texts**\n\nI need to write 20 customer support texts but avoid using specific phrases literally, like \"cancelled\" or \"returned,\" especially regarding refunds for a single charge. It seems I should use natural terms, such as \"sent back\" or \"called off,\" instead. I want to ensure each text sounds unique and not repetitive. Each text should be 1-3 sentences long and be formatted in valid JSON. This way, I can maintain variety in the voice and content.",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Creating customer support texts**\n\nI need to write 20 customer support texts but avoid using specific phrases literally, like \"cancelled\" or \"returned,\" especially regarding refunds for a single charge. It seems I should use natural terms, such as \"sent back\" or \"called off,\" instead. I want to ensure each text sounds unique and not repetitive. Each text should be 1-3 sentences long and be formatted in valid JSON. This way, I can maintain variety in the voice and content.",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfLQnS4qLCzBRavZQL8Oq7nXxiqk8gOSz6db9LnSO1HL9K5oQLRNDm1WxPPf81RcBIWMfX-vuBZld6AqKS873dDmLIj50P9ETbAsUchD1aY7u5EVssrMNWerK9s-xfvfsMwoRpVS_h73qkVqmZuonOwoVff8Qijpx_ZEmpT4R5ihoarE7vbPwXdLTIDZEzFqatd6SQRzJqECJVLGFH_i7RMchVUYRphZyMvKGdWMAJboSmJS-p4_1jbR-eV_OchFjzkV2F9okDjJaPQbdRhC6iBPbqBKul1Vl_ijviNHEXCgj2KXRbP_ZHoXTyX3jEf3TIiRZ2DAH3vJKh8gj0iZ9WN1pABsKlRuw_lZDzQPCFW_qBHbjUYoaA6yIgGjhVvLnRFSSbBhCF2xvar-QddysyRFWfoApR7_IcOKA7F_gtrMKtZij3GUV7MArNDLs510FJLSObZM2oLWysGp1H9CLDv-JBNrtzgKKJEU4waugT4cc2fTkMuoHG24AtR0MPlfq9PAGEogjcJdslcWCg_JBx4H2xYB4ULGPEVvvT5mumFV1zgGHHdgbTMZvE2kyp625aaOxdpJ4DTASpphJFb409YsVvUvEf74iOtHCgKk0JH1PegsGpcQ_BpdC3IczYhSe3PUzhD-nB41g0C-ps5zRAfdizQRQr-_-k8Y_pW6jeHaUKuF-9TcNp5wTb-FGsYSnbvE3pax4t3VydjpJDdjdHQ7YzL-Qvkd9jl9Le1UOMLVdTWZfgNhFMGroTvEcDVX54iE9w4ua46ubTeZyO4ymrdorAR6ttq5LqTA2RiPYbwGhJ4ab0Pgs0y9Z8fC9MAG01neYvHl3tb-Iy8JTN4FFeLCRmthvp4JnQXb6PIZrOICO8s0HCu6hM1_hWWwc4YmLqCpw9UEOwLhu91b2pPdd0t4PKZdUKyhCiGbYd9msZe52VGGgKzFwkK9_-J2u7k4oinCfg20QMPrukL6C7sDJ2L8XiMJnDi9UjdzWvDdnUkWfm5N9NZA5ho4RXw0F6d5WLDQAVGVmepdeOwocYoJNpn054cUmJjVymMl3epQaHAjweVZ6_MtKhEzzWKU-0mXe0-4gpuPJ--ugzATIXQnw7lRBjGi5mpV7rpWeeyRz4B6C3UBQxkfEIrvb610VhhIsu3NoMkDWRHv1kExCxsWUKhRwfaYmYnc15OH1FeWYySsuVRVMucPjVgDSElyfBMtBySvu2mlPwSRmGyGV-jJBpczMKT-OOOeP3uQatGc_NgvEKRH3X5u0tCzzZFNrfDaLGutBfM1jKtKa_xUTInLfCD3yrUcsP6Qkg_yqFv254OmYyl3Scb7IZoFgqxuQQ-Qo3sDsTWNtDrB7p0_rnpcrbchwnlzxW0OgqPynjxNVJNvp0MwcU2GbmHc02jduptoPy6h72n-slsuMfpv-K9dOFqcMLMRsHXYVedpdebigIR27EIGJeEfaMRJnGTNgNHdmVthXYUUecQWdg-D88GHa64cJMM-rh6EuSb4OwmX2_5IRyHEGR2BrdJcovu3oCo26qCHMkqg-xO6wBzDOWo-S_lLlamUH6HNTyPg2Cgo25RjxSvCKNXhxAg3KhX_TbLMdd4ikzpEFM4hkYEglKR9cOnxpNfTyTO32ehv8XN3WkN4TAcsAIZt4F58VsSJalccX2FFud_QV0QY3sjOikAewXogKRiV7Hm2SfhTwvsKW5Wng2gleEwY24NUMC3c3fZZwsrekR5PATRmULd8FY802DDRcmT6dsq46thEkbX7xG5eitTyp9XAfSXINzVbUJel3Uo6uCxRdHm2m3ax0pbSxZiE8aR36p0iHLE3q5Fomg98H7bMwMLSEGyPt1gPC1ZHKkJ43kCDjN9it2FRJk5yDMXIO0Mr2VAFFlymoUBsxXZsNnntv2h4uaVFKOpmePyOuVzjmP3tYusCMKYuis9pxpxTVNTgNucZqTIo5z3HjE_UQViCTTfB0yACQanZnoY0E34JcCCjqmzSDmTSdW4fOYq4MvHx0jlm8FzTAlO1XX4pLbz5INL2OkXoFqdwcRrpSjo9hm4w6ACNQYfO31_6LnKd2I_zFu9PKumeTNSfqJN9DXc43EkwuzyTffBH8h5FhNJzwMhHjNauRGuA-840RZkCrwwKZ3igSocVPiHyQCfr_TBVwK3GrYFXXKdmqYZrZmYJ.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_06c8c6892e8b61c6016ab5f2ce8f4c87d1b3d0cf4b87bddd69",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 120,
+     "completion_tokens": 682,
+     "total_tokens": 802,
+     "cost": 0.000353,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.000353,
+      "upstream_inference_prompt_cost": 1.2e-05,
+      "upstream_inference_completions_cost": 0.000341
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 126,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, I sent the router back last week. Could you return the payment to my card?",
+  "I changed my mind and stopped the order before it shipped, but the payment still went through. Please refund that one payment.",
+  "Package was returned and marked delivered yesterday. When should I expect my money back?",
+  "I only see one payment for this order, not two. I returned the device and am asking for that payment to be refunded.",
+  "Hello, I no longer need the router, so I shipped it back using your label. Please let me know when the refund is processed.",
+  "Order was called off, but I can still see the payment on my account. Can you send it back, please?",
+  "I dropped off the router return a few days ago and haven\u2019t received my money yet. There was just the original payment, and I\u2019d like that refunded.",
+  "Can someone check on my refund? I asked to stop the order before it went out, but the charge is still there.",
+  "The router has been returned in its original packaging. Please refund the amount I paid; I\u2019m not disputing any other charges.",
+  "Sorry, quick question\u2014I sent it back already. How long does it take for the money to come back?",
+  "I requested that the order be withdrawn, and I was told it would be taken care of. The single payment is still showing, so please refund it.",
+  "The device didn\u2019t work for my setup, so I mailed it back. I\u2019m hoping you can return the payment to the same card I used.",
+  "I gave the router back at the store this morning. Could you confirm that my money will be returned?",
+  "My order never shipped because I asked for it to be stopped. I can see one payment on my statement and would like it refunded.",
+  "Hi support, I sent the router back two weeks ago and still haven\u2019t seen the money returned. Please check the status of the refund for my one payment.",
+  "I\u2019m in a bit of a hurry here\u2014the order was stopped, but the payment hasn\u2019t come back. Can you please sort out the refund?",
+  "I returned the unit with tracking number ending in 4821, and delivery shows it reached your warehouse on Monday. I paid once for it and would like that amount returned to my account.",
+  "I don\u2019t need this router anymore. I\u2019ve shipped it back, and I\u2019d appreciate a refund for the payment that was made.",
+  "The order was withdrawn before delivery, but I was still billed once. Please return that payment and let me know when it\u2019s done.",
+  "Hello, I sent the router back because it wasn\u2019t suitable. There was only one payment, and I\u2019m asking for that amount to be refunded."
+ ]
+}

@@ -1,0 +1,84 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: their order arrived broken or damaged. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309095-hy5FrXr351N0rK5Ni3XM",
+    "object": "chat.completion",
+    "created": 1790309095,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, the mug came with a big crack down the side. Could you help me get a replacement?\",\"Just opened the package and the lamp shade is dented in on one side. The box looked squashed too.\",\"The blender jar arrived with a piece chipped off the rim, so I can't use it safely.\",\"My picture frame showed up with the glass shattered inside the packaging. Please let me know what I should do next.\",\"Hey, my parcel came today but the chair leg is split near the bottom. I haven't assembled anything yet.\",\"The item was packed poorly and the corner is crushed. It\u2019s a storage box, so now the lid won\u2019t close properly.\",\"Hello, I received the kettle this morning. There\u2019s a crack near the handle and water leaks out when I fill it.\",\"Opened it now. screen is cracked \ud83d\ude15 box was fine from outside, not sure what happened\",\"The plates arrived today and two of them are broken into pieces. The rest seem okay.\",\"I\u2019m disappointed because the vase has a large chip on its neck. It was meant to be a gift this weekend.\",\"My delivery was left at the door, and when I opened it the wooden shelf had a broken panel. Can you arrange a replacement part?\",\"Hi support, the headphones came with the headband snapped in half. I only took them out of the box, never used them.\",\"One of the wheels on the suitcase is bent and barely turns. I noticed it as soon as I unpacked it.\",\"The package arrived late and the soap dispenser is cracked at the base. It leaks all over the counter when I try to use it.\",\"I got the order today, but the bookcase has a deep gouge across one of the shelves and a corner is chipped. The outer carton has a hole in it, which may explain how it happened.\",\"Sorry, quick one: my phone case has a split through the back already. Just opened the parcel.\",\"The frame is damaged. Glass has fallen out and the wood is cracked in two places; I\u2019ve attached photos.\",\"My new desk arrived with one of the boards snapped at the edge. I can\u2019t put it together like this, and I\u2019d appreciate a replacement as soon as possible.\",\"The bowl was wrapped in bubble wrap but still came with a piece missing from the rim. Please tell me if you need pictures.\",\"Hello, I unpacked the coffee machine and found a dent on the side panel. It also looks like the drip tray is cracked, so I haven\u2019t plugged it in.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfLqDG0HpnDA2cf3ZA3c5Wz-naK2ZL42GD-k7-hrWwlx5COAZ1cDT64UCesAZK9CWJsnytFG57qrJsyWK8iNf4El6e_P0pEWM-oB87PdBcoHSLj8IeSuZwIGGlCroUK0hVpSoStOS-BRhUzkD6sL8bdPX3p_mXOGSE124r1ZfevR8vghRqLDdrKm3WPYqn1StdrF3KqXjLvtyjagTFXs19hbD8i8WuQokuo48rN4G9xRwAF2QX8EhSdtQtxIY6EKgQ2_3vmTE8FAwaQ1_EuDcJdwJpyKE-4WFXDkA_jTrOmzY6AaxBHvmM3V_gdrslFXuXROjTcdjMm6W5C1p9OJ4BcEZ_BgMFFDKf_pmJm_QFgYjYQRUIAhKmwOi8d5yVCJMmUfnRGxtVkAg187YAz7kGNkXmZITLNEcnwltvz4IkR167tWKrppN1zpR0Z2MqJpNUWejzUwV3TAarVylp_1YmwL2ACcxs0s_0fJdDzfgUxeWNI5tosGoU0OHTNX9a0XfMzpVf_SEp6nuyaKVq3J8qW6ef7Kz6aDCi_h_ZAKpUYzwXNurFKJC6Fxa9HuTU_AuA9Cc1PkRXDi6E0wWuCbKw7Uvj2Y2fV28dg6YZQKKISbJ4rMmoKIwR2XsmFTBxrTepNpG9volPswH2BS5gMoRZfc0sgVzlnxDy1Hui8457oepunQC6UrvKEnlG4lN4Bd-QqxhxP3JKzWS-H-sL7eojfF4romnjCbVV1hgN4IIE8TxsCQWjqJ6LPfzIJW39AGzxI93RuwHT6hkhK5Krb63Z9bQpfbNwN4KVQ2onR3pSp8Fjw7SJb7pJupbPVaK3dj9z8XbkjSaZYH0eRdI9inTTv5NiN17iyq_zzLBTnfYiIP_rWRVY5y07bzkfCR_mZ21Q8Bq32zAanW-ReIaX0N31-b6vk3rMudmZF3z_OjVCyPTu6fbIDY0sGeR-brow42nKfO7FiF2hVLVmp2CJsj3KehpxRAxEmg4XgnwLCd3jhu0DqP15KZqAAFE1ag5mWxzNKufRTvZNkiNsN2EWIjnMVygHFjN34kaRUociAwRtoyLU4glvaD1PPnuurg23gYk9FGOiVxvG-xCTACQyTIt5jnx_juCixFTnSNw8MlIAl6tOsco4AZZ6mxSZaNpnA6EZwtTM26WcWli2xpuglwJVyCA_En1lncjOCs4HiAYGEhEEoRA8NsZmRfcq3pgPpU6iv7dkI4mdItYjAbokem-YRuFriVwD5WOC5W-VgyqSue2UK28snBMryvOswLnheRwcXuEf0waq_k_x2AQi2ABJs090vCu0q4qTre0ro-sX4r8TAT0eVi7ZfhZrtEykaTx9_HHzKepghgU_SWBSJ14x4QMuSZ4CJnmBQHTBmFL3NmqeOdaMvSWmIIzlv0z0WLmvQDKaRcOvbnQ2_sTTqyIbVnBRkSwxaMGm3-3EjkqOptwjJ6-WptBzwaPgrCh8Vizi6h42Pz2YrbaOrdZqdqofMJmupeV_d-VkhHOSRmL4PXB_eLy7xCU-J-CuaLvvuXsHtfaZoC2X2jnH6v1CBlMIxJcUiHKQysSJCvyoig5EIQq-Y2sOVGvjjNBEVoW4VaE0s-Pn4QHMa3q195_CohqONPwX-5RoauXRQvK2d0tXUj-ALtTNyyhxWGeaoS9AsdSQOm99KKUR0uBOPSnTQ89Axa4OgllyMtvFXf2bWStFhHQow2IFh8gyoUHwqcV93QM4jq10IrwLvQZgK2tiyDFk5SSehktXGt6h8n4fzpBevUXxJ9HC6x9NfVKqaNiSn5XCXodJIHcpA321JZWon-cYSthHRHL7n076T6YByUMEWeH_z5EkkSGZ0bR8V1k5u6cPPEp_76GEeAGr-3BlPzaD5VZLa-pv9kObkuRjnWQv5nYO5Vl3zdVTM4mwRMyToaQEuOmIDAHjUQrUYppEVI_XF-2gkGLXRjzU1Ryy5vQfM5shkn3-cZtGx8FttxqAL1H0L8Nt_6Y08zHhwFMX0N_ENIBw==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_02ac64a540e87928016ab5f2e8a05887d1810b10c655972a4e",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 110,
+     "completion_tokens": 627,
+     "total_tokens": 737,
+     "cost": 0.0003245,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003245,
+      "upstream_inference_prompt_cost": 1.1e-05,
+      "upstream_inference_completions_cost": 0.0003135
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 103,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, the mug came with a big crack down the side. Could you help me get a replacement?",
+  "Just opened the package and the lamp shade is dented in on one side. The box looked squashed too.",
+  "The blender jar arrived with a piece chipped off the rim, so I can't use it safely.",
+  "My picture frame showed up with the glass shattered inside the packaging. Please let me know what I should do next.",
+  "Hey, my parcel came today but the chair leg is split near the bottom. I haven't assembled anything yet.",
+  "The item was packed poorly and the corner is crushed. It\u2019s a storage box, so now the lid won\u2019t close properly.",
+  "Hello, I received the kettle this morning. There\u2019s a crack near the handle and water leaks out when I fill it.",
+  "Opened it now. screen is cracked \ud83d\ude15 box was fine from outside, not sure what happened",
+  "The plates arrived today and two of them are broken into pieces. The rest seem okay.",
+  "I\u2019m disappointed because the vase has a large chip on its neck. It was meant to be a gift this weekend.",
+  "My delivery was left at the door, and when I opened it the wooden shelf had a broken panel. Can you arrange a replacement part?",
+  "Hi support, the headphones came with the headband snapped in half. I only took them out of the box, never used them.",
+  "One of the wheels on the suitcase is bent and barely turns. I noticed it as soon as I unpacked it.",
+  "The package arrived late and the soap dispenser is cracked at the base. It leaks all over the counter when I try to use it.",
+  "I got the order today, but the bookcase has a deep gouge across one of the shelves and a corner is chipped. The outer carton has a hole in it, which may explain how it happened.",
+  "Sorry, quick one: my phone case has a split through the back already. Just opened the parcel.",
+  "The frame is damaged. Glass has fallen out and the wood is cracked in two places; I\u2019ve attached photos.",
+  "My new desk arrived with one of the boards snapped at the edge. I can\u2019t put it together like this, and I\u2019d appreciate a replacement as soon as possible.",
+  "The bowl was wrapped in bubble wrap but still came with a piece missing from the rim. Please tell me if you need pictures.",
+  "Hello, I unpacked the coffee machine and found a dent on the side panel. It also looks like the drip tray is cracked, so I haven\u2019t plugged it in."
+ ]
+}

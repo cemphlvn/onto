@@ -1,0 +1,90 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: their order arrived with a different item than they ordered. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309103-gBLEY3HftK6GA9hP7gbN",
+    "object": "chat.completion",
+    "created": 1790309103,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, the package came today, but it has a phone case inside instead of the headphones I bought.\",\"I opened the box and found a blue sweater. I was expecting a pair of black shoes.\",\"You sent me the wrong thing. I ordered a coffee maker, but there\u2019s a kettle in the box.\",\"Just got my delivery\u2014there\u2019s a kids\u2019 backpack here, not the laptop bag I paid for.\",\"The parcel arrived this morning with a set of plates inside. I had purchased a desk lamp.\",\"Hello, my box contains a small dog bed, but I was waiting for a cat carrier. Could you help?\",\"Not what I chose. The package has a charger in it, while I bought wireless earbuds.\",\"I got the right parcel, I think, but the item inside is a red shirt rather than the green one I selected.\",\"My delivery just showed up and it\u2019s a book about gardening. I had ordered a cookbook.\",\"There\u2019s a blender in the box, but I bought a toaster. Please let me know how we can fix this.\",\"Hey, quick question: why did I receive a pair of curtains? I was expecting towels.\",\"I opened the shipment and found a size-small jacket. My receipt says I bought a size-medium one.\",\"The box arrived with a children\u2019s toy inside, not the board game I purchased. The shipping label has my name on it.\",\"I\u2019m pretty frustrated. I paid for a large suitcase, but what arrived is a little carry-on pouch.\",\"Package here, wrong item. Got a phone stand instead of the screen protector.\",\"My parcel arrived today, but it contains a white mug. I selected the black travel mug when I checked out.\",\"I received a pack of printer paper, although I bought ink cartridges. Could you arrange to send the correct product?\",\"I\u2019ve checked the label and my receipt, and they both show the same purchase, but the box has a different model of headphones inside.\",\"This is the second time I\u2019ve had an issue with a delivery from your store. I ordered a set of glass food containers, but the parcel contains plastic ones in a completely different shape.\",\"Hi, sorry for the rushed message. My delivery is here, but they sent a floor mat instead of the kitchen rug I chose\u2014what should I do now?\"]}",
+       "refusal": null,
+       "reasoning": "**Generating varied messages**\n\nI need to create 20 messages that are varied in style. I shouldn't use literal descriptions like \"different item than they ordered.\" Instead, I should plainly describe the situation, perhaps by saying the wrong item arrived. I have to ensure these messages are in JSON format, with 1-3 sentences each, while avoiding using the word \"order\" directly. It\u2019s about being creative with the wording but still clear and natural. I'll generate those 20 variants now!",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Generating varied messages**\n\nI need to create 20 messages that are varied in style. I shouldn't use literal descriptions like \"different item than they ordered.\" Instead, I should plainly describe the situation, perhaps by saying the wrong item arrived. I have to ensure these messages are in JSON format, with 1-3 sentences each, while avoiding using the word \"order\" directly. It\u2019s about being creative with the wording but still clear and natural. I'll generate those 20 variants now!",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfLyptq6KRI7ClhgFD8nIcr1oJ577trq2DzyYqRVw-qjUWHiwOoi0ljNO1_Qgr_PLQVmW19mGZkeuBn6FuFw39kWGFlqys6FfNowO5B10KQonD82alJ71n381ag93n1Xlae0Xcn-x19g6qdELwfDSltsb8MqXgxBQEvZG4-Wx2HO8nOv1meVAKPQn_HWMergTNeKDuwmlr6KjAwP7a_NIvFnwFDBJYN7ZfQ06UIqkWCtDu_smXFPlbbMGlptEEl9r-M4_0I6WbEogTijrz7XCXQrQrF7xjnnF9XHHeDb2cx8Fo1oxHyzgCX39oe6Pd0tk-MUcwQTQL7UniHA0AJi1nBsHzpuckz-Uei2IIEJaf0qxl8cckI0fV4c65f4U51lSVnCJ8io8tvPZrtuXiKQIGo9umKw9xCqcXuKYEAEngjt3_fRXbcX0oZ0nAZzpRe9at1DEOCu5YJq2V_nj6sEPrI5CnSK1WfXPcoiN1b2lBcyqvgYWikZWw_NTxi6cIFwx9U7E7MV8X1pQHVBPrf1MdW139t63IFpsWdF3jbFZ-4JzBb72dz-ZPke4a6dEYYIa1zoe936SW3wrvJvoc25cIYNiUSwxrXDhWz18hISs4gHcDnanBCkdxykeWCoeuLlD-GhrXaJ46_Y06h2ZRD8-w-RH417x5BtolJfcBq0EJeNFuZtktZ-PVNf5lO3RkaOz6_qwOljRbgQU20eIOCSLDwy6E-PC36X1fJjv47q3EGzfy3HeH-NcgXpN87uyrIBXZ_AVQeGFawhA9q7ikl--KPnaOmVV-Lw2B2mVkt3F1mkw9dFvR7M7wNzHIe4jM_DTMUrMpuL8in-G13UscQvU0B3v3IsmIGQ_uXmUi3ucziy8HHCUiENapa1DH9K57O3Il_MA91PNz5nabZ1PKVgDzX340_4BnNmZ5GuAm4ZL-oIy4iZxw6gdyKuk8iEWjhkmCGQTKqGaDPNkIf1S7fVlI0h1CLx7OYU-ahvbpHHRqllI4VACGGqlF0s60VZu24b3hQIpoCeuTHva86eyxvW-Cntao3cZ9AFKWmSmGJu8HWb2s0dwpvDaRYfUnFvsQqRvi0AO2A3sqv5vK0-RtAEFBv6fRxotiEIW_OluG0vQYyc3MIdHUwcsOlCQy5vksI97q_ouhT9vgZS_GiuvixdHnPfHBMXZhBDOfFK_qc_TNVG86NK3fpYbOyyIp1OwOUwmKUObG-BgiMwLAPKQB3Saz-VVJgTtsmzplHgzhUbFIn35A_zjfpWODzwoBXQJpHVt7CbD1K9k3YeTNa2H1_krJX_Ed4fElP-FAtHpR6fkAj50pR3bLfaZ5yeGiheoSF9gGjnuvFF_FVUN3OZSfGxOJZc-4nFSaieAO_KbY0pYq5ZFUpLkkTltyExLdTuoZ4cWF1IgcQOOkdscj9b4Gbl8p1MtyW8iRISg0mEaQwTdZ40r1-fS1Q46pzMG3BLBLm7ZQtfq4B1oyRPO2JBwwb5gxG4xuAse5AWh-UuEfgHa2lwLdJl9z-4_1ouennhsn1XiwGWIt1hXwlp2mE970m4jpn48w8LUBWIwTajK7yS2UJhrSQ2kwDvvidGm77NiRyImEj5kaBgfL17Vm3KzfBxnAH4ma1qSmWiJRsnT2gh0AvkSw8RwrUyJ7aT-T4641U7YqrMvkCTe2ZEEQrCOGBhYLNUKyLbQTbFD5JhUzP9x-WrOydVN4iPfNY3tIKg8qUZ9TVFd67dkgO9rwgyi1YWqTqzVtagJVhTWlSXXnxay2ayecLUjygqSH5CznYz8hUbe9E_ECLL-XN8RbcB626X4mrBsk96DP5yl9r-Jujk3EXujpl6Fh47pUwkVhStBqjiXR-yBft2w24lluGJFhwzXOzUkIcvboYlhgSUB8UCPSsJRJAL2v8ZXgXE12ePD7Vwlm5ssJ0z5W4vSI3nejmC412iYG7AjiKvDM0Ln9F6aUon5Z5O-4wJSj6hFp4pLrdDs_4Tea4clu3je8334_b8yx2GxEl-BbkhL8CH2y_hTDjJ7j32iWmvcghG4W5Xeig69bDoJ35YO3-yZap3KbYzHL6xzCoXzQ5maQ-3VjyAoNxquD-GsJ4wMmkAobxG3JVFKnHzTPrLhsqRHeN0K7wT1WGABo1tsfc1UZVXRVpkJ8_mZejA7RkfEJKFXi4FUQXKoEHFO9gcJKwIQMbON2kL2Oi29AWmiNNfgC5Jft3i-bz-_VTgLsrnrgTHCzbl-KuGo2RNDl3l_Gjv0IYgSHaG9Q7UnpyBdtru3iE_P11n7jA37G0_fU22WSHwOUAWyoU8TLqVMCCCiBf9xpnxFHTg8qfzZVggxB_dhvAOupksdU4uW83nFbcXoaQd3YkQ7f2uIUzMHHEq1lTFLO88qf5cyL5-PqKhVD5MxnXhCE412H4HbXI3HOhxmD74co4xiG54P1P3sT47XTU7A5zrJ2pjIronHg==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_027318838f37c171016ab5f2f01e7087d1be95f4ae602b7de7",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 114,
+     "completion_tokens": 641,
+     "total_tokens": 755,
+     "cost": 0.0003319,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003319,
+      "upstream_inference_prompt_cost": 1.14e-05,
+      "upstream_inference_completions_cost": 0.0003205
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 164,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, the package came today, but it has a phone case inside instead of the headphones I bought.",
+  "I opened the box and found a blue sweater. I was expecting a pair of black shoes.",
+  "You sent me the wrong thing. I ordered a coffee maker, but there\u2019s a kettle in the box.",
+  "Just got my delivery\u2014there\u2019s a kids\u2019 backpack here, not the laptop bag I paid for.",
+  "The parcel arrived this morning with a set of plates inside. I had purchased a desk lamp.",
+  "Hello, my box contains a small dog bed, but I was waiting for a cat carrier. Could you help?",
+  "Not what I chose. The package has a charger in it, while I bought wireless earbuds.",
+  "I got the right parcel, I think, but the item inside is a red shirt rather than the green one I selected.",
+  "My delivery just showed up and it\u2019s a book about gardening. I had ordered a cookbook.",
+  "There\u2019s a blender in the box, but I bought a toaster. Please let me know how we can fix this.",
+  "Hey, quick question: why did I receive a pair of curtains? I was expecting towels.",
+  "I opened the shipment and found a size-small jacket. My receipt says I bought a size-medium one.",
+  "The box arrived with a children\u2019s toy inside, not the board game I purchased. The shipping label has my name on it.",
+  "I\u2019m pretty frustrated. I paid for a large suitcase, but what arrived is a little carry-on pouch.",
+  "Package here, wrong item. Got a phone stand instead of the screen protector.",
+  "My parcel arrived today, but it contains a white mug. I selected the black travel mug when I checked out.",
+  "I received a pack of printer paper, although I bought ink cartridges. Could you arrange to send the correct product?",
+  "I\u2019ve checked the label and my receipt, and they both show the same purchase, but the box has a different model of headphones inside.",
+  "This is the second time I\u2019ve had an issue with a delivery from your store. I ordered a set of glass food containers, but the parcel contains plastic ones in a completely different shape.",
+  "Hi, sorry for the rushed message. My delivery is here, but they sent a floor mat instead of the kitchen rug I chose\u2014what should I do now?"
+ ]
+}

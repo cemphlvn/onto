@@ -1,0 +1,118 @@
+# E3's categories: one support situation, three perspectives that see
+# different information (the customer's message, the records, the event log),
+# compared in a shared Situation category (an ensemble).
+
+category Situation {
+    objects: Observed, Payment, Delivery, Access, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover;
+    payment: Observed -> Payment; delivery: Observed -> Delivery; access: Observed -> Access;
+    double_charge: Payment -> DoubleCharge;
+    refund_request: Payment -> RefundRequest;
+    payment_failed: Payment -> PaymentFailed;
+    not_delivered: Delivery -> NotDelivered;
+    damaged: Delivery -> Damaged;
+    wrong_item: Delivery -> WrongItem;
+    account_locked: Access -> AccountLocked;
+    account_takeover: Access -> AccountTakeover;
+    admission: open_world;
+}
+
+category Message {
+    objects: Read, NoSignal, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover;
+    start: Read;
+    state { case: message; }
+    frame Read: choice "From the customer's message alone: which situation is this?";
+    double_charge: Read -> DoubleCharge "the customer was charged twice for the same thing";
+    refund_request: Read -> RefundRequest "the customer cancelled or returned something and wants the money back; there was one charge";
+    payment_failed: Read -> PaymentFailed "a payment was declined or failed";
+    not_delivered: Read -> NotDelivered "an order has not arrived: it is late or lost in transit";
+    damaged: Read -> Damaged "an order arrived broken or damaged";
+    wrong_item: Read -> WrongItem "an order arrived with a different item than the one ordered";
+    account_locked: Read -> AccountLocked "the customer's account is locked or disabled by the service";
+    account_takeover: Read -> AccountTakeover "someone else got into the customer's account";
+    no_signal: Read -> NoSignal "nothing here shows a problem of these kinds";
+    closed: Read, NoSignal, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover;
+    admission: sealed;
+}
+
+functor MessageView: Message -> Situation {
+    objects: Read -> Observed, NoSignal -> Observed, DoubleCharge -> DoubleCharge, RefundRequest -> RefundRequest, PaymentFailed -> PaymentFailed, NotDelivered -> NotDelivered, Damaged -> Damaged, WrongItem -> WrongItem, AccountLocked -> AccountLocked, AccountTakeover -> AccountTakeover;
+    no_signal: id;
+    double_charge: double_charge.payment;
+    refund_request: refund_request.payment;
+    payment_failed: payment_failed.payment;
+    not_delivered: not_delivered.delivery;
+    damaged: damaged.delivery;
+    wrong_item: wrong_item.delivery;
+    account_locked: account_locked.access;
+    account_takeover: account_takeover.access;
+}
+
+category Ledger {
+    objects: Read, NoSignal, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover;
+    start: Read;
+    state { case: ledger; }
+    frame Read: choice "From the order, payment and account records alone: which situation do they show?";
+    double_charge: Read -> DoubleCharge "the customer was charged twice for the same thing";
+    refund_request: Read -> RefundRequest "the customer cancelled or returned something and wants the money back; there was one charge";
+    payment_failed: Read -> PaymentFailed "a payment was declined or failed";
+    not_delivered: Read -> NotDelivered "an order has not arrived: it is late or lost in transit";
+    damaged: Read -> Damaged "an order arrived broken or damaged";
+    wrong_item: Read -> WrongItem "an order arrived with a different item than the one ordered";
+    account_locked: Read -> AccountLocked "the customer's account is locked or disabled by the service";
+    account_takeover: Read -> AccountTakeover "someone else got into the customer's account";
+    no_signal: Read -> NoSignal "nothing here shows a problem of these kinds";
+    closed: Read, NoSignal, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover;
+    admission: sealed;
+}
+
+functor LedgerView: Ledger -> Situation {
+    objects: Read -> Observed, NoSignal -> Observed, DoubleCharge -> DoubleCharge, RefundRequest -> RefundRequest, PaymentFailed -> PaymentFailed, NotDelivered -> NotDelivered, Damaged -> Damaged, WrongItem -> WrongItem, AccountLocked -> AccountLocked, AccountTakeover -> AccountTakeover;
+    no_signal: id;
+    double_charge: double_charge.payment;
+    refund_request: refund_request.payment;
+    payment_failed: payment_failed.payment;
+    not_delivered: not_delivered.delivery;
+    damaged: damaged.delivery;
+    wrong_item: wrong_item.delivery;
+    account_locked: account_locked.access;
+    account_takeover: account_takeover.access;
+}
+
+category Events {
+    objects: Read, NoSignal, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover;
+    start: Read;
+    state { case: events; }
+    frame Read: choice "From the system event log alone: which situation does it show?";
+    double_charge: Read -> DoubleCharge "the customer was charged twice for the same thing";
+    refund_request: Read -> RefundRequest "the customer cancelled or returned something and wants the money back; there was one charge";
+    payment_failed: Read -> PaymentFailed "a payment was declined or failed";
+    not_delivered: Read -> NotDelivered "an order has not arrived: it is late or lost in transit";
+    damaged: Read -> Damaged "an order arrived broken or damaged";
+    wrong_item: Read -> WrongItem "an order arrived with a different item than the one ordered";
+    account_locked: Read -> AccountLocked "the customer's account is locked or disabled by the service";
+    account_takeover: Read -> AccountTakeover "someone else got into the customer's account";
+    no_signal: Read -> NoSignal "nothing here shows a problem of these kinds";
+    closed: Read, NoSignal, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover;
+    admission: sealed;
+}
+
+functor EventsView: Events -> Situation {
+    objects: Read -> Observed, NoSignal -> Observed, DoubleCharge -> DoubleCharge, RefundRequest -> RefundRequest, PaymentFailed -> PaymentFailed, NotDelivered -> NotDelivered, Damaged -> Damaged, WrongItem -> WrongItem, AccountLocked -> AccountLocked, AccountTakeover -> AccountTakeover;
+    no_signal: id;
+    double_charge: double_charge.payment;
+    refund_request: refund_request.payment;
+    payment_failed: payment_failed.payment;
+    not_delivered: not_delivered.delivery;
+    damaged: damaged.delivery;
+    wrong_item: wrong_item.delivery;
+    account_locked: account_locked.access;
+    account_takeover: account_takeover.access;
+}
+
+ensemble Perspectives {
+    shared: Situation;
+    column Message: MessageView from Read;
+    column Ledger: LedgerView from Read;
+    column Events: EventsView from Read;
+    consensus: all;
+}

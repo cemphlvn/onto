@@ -1,0 +1,14 @@
+{
+ "written": "2026-09-25, before any case was generated or judged",
+ "situations": "the 8 of E3 (data/perspectives.onto, copied from deney/e3-independent-perspectives)",
+ "messages": {
+  "train": {"per_situation": 40, "vague": 40, "style": "plain, as a typical customer writes on a website form"},
+  "test":  {"per_situation": 20, "vague": 20, "style": "different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed"}
+ },
+ "structured": {"train_per_situation": 50, "test_per_situation": 25, "absent_share": 0.1,
+                "train_seed": 11, "test_seed": 12},
+ "split": {"validation_share_of_train": 0.25, "seed": 7},
+ "features": {"hash_dim": 32768, "tokens": "lowercased words and word bigrams; for structured channels, the JSON / log text tokenized the same way"},
+ "open_vocabulary_folds": [["double_charge", "not_delivered"], ["refund_request", "damaged"], ["payment_failed", "account_locked"], ["wrong_item", "account_takeover"]],
+ "generator": {"endpoint": "https://openrouter.ai/api/v1/chat/completions", "model": "~openai/gpt-luna-latest"}
+}

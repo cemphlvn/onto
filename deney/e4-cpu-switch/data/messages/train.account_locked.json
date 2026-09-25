@@ -1,0 +1,162 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: their account is locked or disabled by the service. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309022-h0Fgg9DK0JwuXqmkee0F",
+    "object": "chat.completion",
+    "created": 1790309022,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I can\u2019t get into my profile anymore. It says access is unavailable when I try to sign in.\",\"I\u2019ve been signed out, and now the site won\u2019t let me back in. Could you check what happened?\",\"When I enter my password, I get a notice saying I can\u2019t use my profile right now.\",\"I\u2019m unable to sign in this morning. The page says my access has been restricted, but I haven\u2019t received an explanation.\",\"My profile seems to have been blocked. Please let me know how I can use it again.\",\"I can\u2019t get past the sign-in screen because it says my profile isn\u2019t available. Can someone help?\",\"I tried logging in from my phone and computer, but both say I\u2019m not allowed to access my profile.\",\"I got an email saying I can no longer use my profile, and I\u2019m not sure why. Could you explain what I need to do?\",\"The sign-in page tells me to contact support because I can\u2019t access my profile. I\u2019d appreciate some help sorting this out.\",\"I haven\u2019t been able to sign in since yesterday. It says my access has been suspended, but I don\u2019t know what caused it.\",\"I think something has happened to my profile because the site won\u2019t let me log in anymore. Please take a look.\",\"I\u2019m getting a message that my profile is unavailable whenever I try to sign in. Is there a way to restore access?\",\"I was using the site earlier today, but now I can\u2019t get in. The message says I\u2019m not permitted to sign in.\",\"My login suddenly stopped working, and the page says access to my profile has been blocked. Can you tell me why?\",\"I can\u2019t use my profile at the moment. I\u2019ve tried resetting my password, but I still get the same access message.\",\"Please help me regain access. The sign-in page says I\u2019m unable to use my profile, and I haven\u2019t been told what happened.\",\"I\u2019m seeing a notice that my profile has been suspended. I\u2019d like to know what steps I can take to get back in.\",\"I tried signing in a few times today, but I keep getting a message that my access is restricted. Could someone check this for me?\",\"My profile disappeared from the app, and now the website won\u2019t let me sign in either. I\u2019m not sure what\u2019s going on.\",\"I can no longer access my profile, even though my password is correct. Please let me know why I\u2019m being turned away.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfKgoA-ynZBx-7pSs0BfGq-ddXUYAgz_-ZrwOGgAq8qLRgoCcsjcVqmm0M3PBesd_c19kPKWf4SibmoBw4HJtED5G54m4S85ZQPjhKTuah5NZWAOQpX2XrZkGIL1tFPe3QfVf9kMfk41gr_x2Lb4YmJVLyrI5PiTITX71WUvamXdKELdo3MDSgBh-tnIV_c2QWa2A88NJWIgpqtZEw7PoxJ5u5BHf8jL-oGlFHReGEdw8eeEYzlrX1SCdJ_CFhiglNhW1hQG_df3CERG2NFXO_OE0Ss53ua2kZKXwju0U339GjEMwaCb1AI5kNYQZkU9oskfVH4jQn89RcwJ8ExcH6dhgqb_-JAGPRxv9nVnx7ADcAFuxkiXHjImViCVi4Dkc-XdzSw_lq6uxt5F2v6UVfmVERG8w-88ibbPvPSzptm2Pig__CXT3lGiAatEaoh-qrpGmCbCUplrB6Q8kiDWd92JL0XzizNMnynia6RxCVRT0IDJAP48s1I3QCxKCx7m0r3wSDPNlL3GG5RK32Rq8whgICE4hwFIJxlXHEKk66GEHMQAbObS79OUwp1KHOyWmmdmyMsjuPf3_jdVZEYs83G9awVD5LEeTch5Mjwp7K4fFlnYEWSYcWLSTPTW9ks9FDBdWzyKY45xoZe0y6vahVwQ5Dx86gW6Ldww6-2I9X4ssjjMZD98VgEwxER2IafsR72KvvvXGkQJafX8gAArVwckVHwwOHq-EsReXiL7iecsCoixFkw3WCTf_WNOrgEiVODO1VtbEUHRgcEYBjD4KQtr2dbsy3vmKxrOsWRAwDFSj9UpbFm4LSA9pEVdIiD71XMB6ikriPjg4Hpmb7ALh6gry4Er2tkqyJrU2Sf4yjrUCVMekh7cgCJ6N9JZYlgsn6xDhoLI6LqPU4yAVdwyG5CPwm4PC6HDIOgLs4wF2rlZ-UMzihqIkbOoBuKWZGhfq51f6iqOTLqAcWWkEvrJ8fyiYNOihOT2nXZWVxoouTZtGawpIjEiYhrAnd16V9ex5XI890NjypXxerdpb2cacFRhS38YpV8rSufUKVCYy1Aw2UAA3sm7fANdNJHaZVOFd5b04-NYHklTrF6a4V8kOVTvhkTleiKdRWnHO10ljJfD7PAMkFSxydOmSEe4U0QpkkgW5UT5cuhV4xSsTvVDgmct2oM46uh2LW0PcWm_azhporz8icjsnJPvr31wNNnPTn5ZbuPeTqz3KpVIN5cTHhk31LFX2cVFeLoz326W2NuEhDwHR0EYpd1wNym5jV_VNeZ11ZLMnWbIQOX9Pw9QkmL7i-rSbU0aDUcfOAS0ciX84g8lNL25JJjRZmWhPYIuy5YqbcYJalSGYwd_c7IjuvuCt4ZPjZHP_UbTCtdPKf-Ar0Crne5cX7Mt9JGSIOWJCLQcJv4WjeuaEZTYv2H53dQkFbeLIjJ0rWEZxPOqpXbJnb6wCD3ZGtCaWcngR7EScmtCIgrbQkZMbuSB_UGKnkgq7UgJtSVE0RYvsUhSqgEk4NPOSbpxbDRQnjqpDLWqybh-sPr7qZVqlvbF-qf92YnCQqug_H0r_z8v_7NiFCF5vEQ7Nk36dG_OwtgJA4J0doKmPOsARhGbF-Jmb8qqf3sxTKyP-xPwRsTvx9TB0StblftOfQcH5okFaLDDM9xaMHX4ZnyVpbikD2Xy-VvcQhVjp-WJuBqjndsS8z_MqotvR7eJyaIviLA1s1Pj9dRKT7frDdsxhOjtmKp7scLQji47e0MkBBL0k_9qgRd3AcjIrxv_f6oGCuz6SLKDqhUNWbSgL0jHSfoVdTsWJXX_Dvd35tzehLbCfEIaud9-7W0dJIyE6GJSNTHdWR-MUbTlGBa9FkGEgPfwS44AxQ2GXbaPr4WIOC6fJyi4LYjCdKLYEsbyaq_Szq5zM9HB3LCQQKR0W5WHQI4r5tB8s63K_FFuEloVFRLKwRK29652W_rlk7NtnRNcPuKzQpCBiLVHicF-FkYg1Q3sOmgBpcgIU9ceklLl-aWbERCYNQiMGChXm7pMy6nhiNOSQcZhS4RQiVVhl1is9jTFotIvkD9fIk5yFB6VI8vMaw9fa_Za1EhSRke0NnIBW6bdMqx84BnBif6iwQ1zamhppx2tarb6A4LWoGYwjxHLiPiOwp-A1n5koCf7qzQ8qsUGxNxq6ZSXYGPoxaqRP_AuB9dSiAg8yst2BKFEkW2o_rTtVc7JEIl47_6FW2cDowAsyvXggYIa6QDqCULA-IvUcxwoXBb1a4xzD9IbBQDQISX9zIdMkFFoDdvEZU4N0o2I_y6Rpe5ms4Oe706yqLRDRhH8Iwl0c3LIit-42vyWwjv_R4FhhmsWCvb4VT4aW0W2i9UMtWlrj9ODeZ45S5HdIoWlZBHKtWOkJkO5AkUlfKZGSxEw4LsGNQw_My36FUYpE0Uf1-rJAFi6J_fUW-0fMDhBh4S19AD9yPzzte-mNhzQsR2JI6tpcRjjMmJXGtHqgYlz2ZYfPJkqt60zFiqOiakYx1UOXvMH0g==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0657409da526f442016ab5f29f138487d18d7b1f777bd3e4ae",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 105,
+     "completion_tokens": 687,
+     "total_tokens": 792,
+     "cost": 0.000354,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.000354,
+      "upstream_inference_prompt_cost": 1.05e-05,
+      "upstream_inference_completions_cost": 0.0003435
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 168,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: their account is locked or disabled by the service. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309029-d1zXRd3c91rUN80dg7K9",
+    "object": "chat.completion",
+    "created": 1790309029,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I can\u2019t get into my profile anymore. It says access has been restricted, but I don\u2019t know why.\",\"When I try to sign in, I get a notice saying my profile is unavailable. Can you tell me what happened?\",\"I was using the site yesterday, and today it won\u2019t let me in. I haven\u2019t changed anything on my end.\",\"My sign-in keeps getting rejected, and the page says my access has been suspended. Please help me sort this out.\",\"I can\u2019t reach my account page, even though I\u2019m using the right password. The message says I\u2019m not allowed to sign in.\",\"I got an email saying my profile was deactivated, but I didn\u2019t ask for that. Could you check what\u2019s going on?\",\"I\u2019m unable to use my profile now. There\u2019s a message saying it has been restricted, and I\u2019d like to know how to restore access.\",\"The app says my profile can\u2019t be used at the moment. I was able to log in earlier this week.\",\"I tried signing in from my phone and laptop, but both show the same notice that my access was suspended. What do I need to do?\",\"My profile seems to have been shut off without warning. I\u2019d appreciate an explanation and help getting back in.\",\"I can\u2019t sign in because the site says my profile is inactive. I haven\u2019t received any details about why.\",\"I\u2019m getting a message that I can no longer access my profile. Please let me know if there\u2019s anything I can do to fix this.\",\"I was asked to sign in again, and now the site says my access has been blocked. My password is correct.\",\"It looks like my profile has been turned off. I didn\u2019t request this, so could someone review it?\",\"I can\u2019t open my usual page after signing in. It says access is restricted, but doesn\u2019t explain what caused it.\",\"I received a notice that my profile was suspended. I\u2019m not sure what I did, and I\u2019d like to appeal or get more information.\",\"The sign-in page won\u2019t let me through and says my profile is no longer active. Can you help me regain access?\",\"I\u2019ve been trying to log in since this morning, but I keep seeing a message that my access has been limited. Nothing has changed with my login details.\",\"My profile suddenly became unavailable, and I don\u2019t know why. Please check whether this can be corrected.\",\"I can\u2019t use the site because it says my profile has been deactivated. I\u2019d like to understand why and what happens next.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfKooq4Zryl-iO8fBj2XhihlQg-e0RZwQHptZD1RgZs_GhIp1BEDxoSJCaqdm_XUcbjnKpR1AX5xXhC97Iw8vRxD2J1xnNUmoEfCVD_LGFp1tBk-5Q5G7ZTCzTCbohV_ha-b5wmzA53qDeu2TTRTOf3SB6NEF4VS2fb7mfsw7NA49Y31ANZrSygqrc7uGooqy-HA_wmBl5zjEoIzrlPkpFLW2wJYtaiphQLMdBFWwhnqYR42bK2X1M3FpWGsJkHs55mMHOzbSmYMEqi_TfXpQ6wniGvA9dU3LnaKy_cYrkZcXdNNjv69mMNVX2eybwI5QTnsobWlr9cM8_olsPTY4Oi6qD_xcXxchm9YuUraj21RhrC8pFgy80EtrKAmvvSTPxQicsBh37dkDa5EgRuZLEU_Fm-4PYN81jwGsNgzhUt8UqClla7zx4Bf45lt8BO8cOUHmIsRBHi0Kki1ZBh2OJHI9Cuo-EUYz6x4k7NMRXh9eUSKBLEWHNTK1jlYk1Pr3QhlkFuZpCdICxCArqdKZkNJYUtNgcrtKMcjDp2olDSJ-HbiX-BjCvCIuDR_MTxp0_gf_b7U5Q8DkN0HtleDmYhDMaLbstBH8IVMYSQdLWv2oeF-ysdnw5b91vg9Tx24ndINOryBydP1sRSHkBEataHWOB_-rGZVouJ8PiS671L_7Dn-Yf5XZRpbL7limTmr2w42zc6FxSPfTskmTkps7kf6m2FJ0UeABb0bvFfcgmpi43Uokfg1PMSwO9kJkvb7Z3XhkHtTNQClEf_FpUyQSc6u_Pqa3Ox4OfvvaVP3CYfsQGJ2TLTl4li6RgTYIhl6KxMIPJNj5JF8BosiFGZzF9YiSa61wEcRa-bcuz_p0abSTYQpv8BdMuxANjRpxcoIyCHyUQYbWbmYfXX6PK8o1DlDxJJa3k1_vCC7Jl2VYA7BZgmAp0ltC4z1LzJdR0KGVCAJOtgpVpj96IIxaJRpy5owBugHy11X4_WgSZTY_B6KRcG2nuZWrGRlJO0BIcUucwwgybGw7dpKJNpUXNycM3n6-6DOGq_GDBOHsUcLPwGyts3D3_nLT3m_4NHd_zpg1DmEsHg7YtdWqsKhKPd-guK0jJGNXSDFNAdeesN10hj5zu2TiCi_BJhL2sJJwqsLpprQu_9C8DyEn2rjMcLELA3bG9Y_lEJ4Nl1YuaWAPLtvlenzBFtWnhEnLuCZ7eGF_s68DXlNee5YvCmtRuPrI_hK4LMJAchFcCPN2uiybzjViNyA1gYEjvH5jKfW-NNBaEWZ6aEUeZnS-Yzc1btc61Zgv_MH-tcA1pilxnqy48k-v72rd_5tgc3ZXqDspFE47apD4NIl48bmVG4y-FTZSq5iSZvYQCeWyq8pMAbo7SFGCDTzC6_bft7XvFDwAFu1OaoU0XGSRz70BCUq6zz5dhmVNOVPtRI0-qL6b0xjSrZoyy7gawjtDsksHKnIyu74VwOQ7aI9761qh4boDrh0YUn4kl5onTMCYPXZaOlig0QfMUrmiXG4Em37WLs3k_UtoUoXdgj8bL2QRJ2eIyfP0K02Q_6hATn1xHVTCTWm3FBQ_ZJrJxBI7q-09OLeRmMuwC00Q5Potqv2h0n0_aLGoAgKnUb5XpbXvWuIXW6wcX-2cGsy_DkfcS5LAO_vTN5gUtwWaJyCJA6wu9W3Audlk78YFZ8npTUi6YBH5ZvwKC7bvSDo4q7R7vTuhXifd6MsU4JxSuaNihR9dWBl6E2Lq1FlbExc_esEQJ_PEoss5sSRaUqgobfyrzEbsbyKnqSKySXHJSJpKmnTE-GOqo9nVMoSDHesU_s0NVKAOtpYRHO6l1b6z3QB51MzMVFkCasvstrEkm0QLhfPnbN0vmizurjgFai7klJRAMqwNbdVdJWmEQd2Fd14tVdK83Z0KStYrMmWqAcp4ovbh-Oqa8vMXn7R1paHIp3t8uus8dlW6XidRGA6WI2GKsZFSipKKtB_cNjD7kLpviCoTwk3C7hm7p0i71SQ_BNkb2K5K-oBJeEaFPC_9y8KLDYso4vCjqNa9yvsB9mU8T7MyJDyKDYcI6fo6Whe2S5Jlni5eQKpGhC8zlll8YelubXCuS0n5m2eJspoPVsp91cR4fDRfQKGXQKY5inXJGLnvJ_EhT0APeBumipCaDUCztsn6ofvkUf-7INKoQMb72MB0HXlzd_NhIs-_h540kSSbOtsWrWr6PtCC8tq8UgUtJNgVG6IB_T4Zz2rbIX305CVMkXRTrqiv6l9UdxcQixOt-7PCW1todbFrcTVfMeJaOEcHU7Tfk93Mg98_27q7qefKRPqPCAWV-s7PyY6jDCatv5nNBO3J6mnpDNwZVcxQuK0LrR5LkkdqMtVPBMUlDM5qXPU3SplsYCA0_y2AWgJn4NxGw7ykdG9a4LHjouFts_-EemLJOIwNx8Fb9srz1f2JBuRAp_SI-Hd5RcxLVFgTXhX-hoVld1wiR7yMJTe124724m5ENnWhiZ9qRx0lKSlEkYyE6zqT5-xaBzo6BdiJCFYNcicqm5RnR4=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_09e03b5d2b5cee41016ab5f2a6590887d189922d7e8f2dbef6",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 105,
+     "completion_tokens": 712,
+     "total_tokens": 817,
+     "cost": 0.0003665,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003665,
+      "upstream_inference_prompt_cost": 1.05e-05,
+      "upstream_inference_completions_cost": 0.000356
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 181,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "I can\u2019t get into my profile anymore. It says access is unavailable when I try to sign in.",
+  "I\u2019ve been signed out, and now the site won\u2019t let me back in. Could you check what happened?",
+  "When I enter my password, I get a notice saying I can\u2019t use my profile right now.",
+  "I\u2019m unable to sign in this morning. The page says my access has been restricted, but I haven\u2019t received an explanation.",
+  "My profile seems to have been blocked. Please let me know how I can use it again.",
+  "I can\u2019t get past the sign-in screen because it says my profile isn\u2019t available. Can someone help?",
+  "I tried logging in from my phone and computer, but both say I\u2019m not allowed to access my profile.",
+  "I got an email saying I can no longer use my profile, and I\u2019m not sure why. Could you explain what I need to do?",
+  "The sign-in page tells me to contact support because I can\u2019t access my profile. I\u2019d appreciate some help sorting this out.",
+  "I haven\u2019t been able to sign in since yesterday. It says my access has been suspended, but I don\u2019t know what caused it.",
+  "I think something has happened to my profile because the site won\u2019t let me log in anymore. Please take a look.",
+  "I\u2019m getting a message that my profile is unavailable whenever I try to sign in. Is there a way to restore access?",
+  "I was using the site earlier today, but now I can\u2019t get in. The message says I\u2019m not permitted to sign in.",
+  "My login suddenly stopped working, and the page says access to my profile has been blocked. Can you tell me why?",
+  "I can\u2019t use my profile at the moment. I\u2019ve tried resetting my password, but I still get the same access message.",
+  "Please help me regain access. The sign-in page says I\u2019m unable to use my profile, and I haven\u2019t been told what happened.",
+  "I\u2019m seeing a notice that my profile has been suspended. I\u2019d like to know what steps I can take to get back in.",
+  "I tried signing in a few times today, but I keep getting a message that my access is restricted. Could someone check this for me?",
+  "My profile disappeared from the app, and now the website won\u2019t let me sign in either. I\u2019m not sure what\u2019s going on.",
+  "I can no longer access my profile, even though my password is correct. Please let me know why I\u2019m being turned away.",
+  "I can\u2019t get into my profile anymore. It says access has been restricted, but I don\u2019t know why.",
+  "When I try to sign in, I get a notice saying my profile is unavailable. Can you tell me what happened?",
+  "I was using the site yesterday, and today it won\u2019t let me in. I haven\u2019t changed anything on my end.",
+  "My sign-in keeps getting rejected, and the page says my access has been suspended. Please help me sort this out.",
+  "I can\u2019t reach my account page, even though I\u2019m using the right password. The message says I\u2019m not allowed to sign in.",
+  "I got an email saying my profile was deactivated, but I didn\u2019t ask for that. Could you check what\u2019s going on?",
+  "I\u2019m unable to use my profile now. There\u2019s a message saying it has been restricted, and I\u2019d like to know how to restore access.",
+  "The app says my profile can\u2019t be used at the moment. I was able to log in earlier this week.",
+  "I tried signing in from my phone and laptop, but both show the same notice that my access was suspended. What do I need to do?",
+  "My profile seems to have been shut off without warning. I\u2019d appreciate an explanation and help getting back in.",
+  "I can\u2019t sign in because the site says my profile is inactive. I haven\u2019t received any details about why.",
+  "I\u2019m getting a message that I can no longer access my profile. Please let me know if there\u2019s anything I can do to fix this.",
+  "I was asked to sign in again, and now the site says my access has been blocked. My password is correct.",
+  "It looks like my profile has been turned off. I didn\u2019t request this, so could someone review it?",
+  "I can\u2019t open my usual page after signing in. It says access is restricted, but doesn\u2019t explain what caused it.",
+  "I received a notice that my profile was suspended. I\u2019m not sure what I did, and I\u2019d like to appeal or get more information.",
+  "The sign-in page won\u2019t let me through and says my profile is no longer active. Can you help me regain access?",
+  "I\u2019ve been trying to log in since this morning, but I keep seeing a message that my access has been limited. Nothing has changed with my login details.",
+  "My profile suddenly became unavailable, and I don\u2019t know why. Please check whether this can be corrected.",
+  "I can\u2019t use the site because it says my profile has been deactivated. I\u2019d like to understand why and what happens next."
+ ]
+}

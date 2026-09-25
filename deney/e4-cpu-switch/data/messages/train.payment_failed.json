@@ -1,0 +1,174 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: their payment was declined or failed. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790308968-7bf7b2OXZgsg8fwMsPIB",
+    "object": "chat.completion",
+    "created": 1790308968,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I tried to pay for my order, but it didn\u2019t go through. Can you help me figure out why?\",\"My card keeps getting rejected when I try to check out, even though I have enough money in the account.\",\"I submitted the payment twice and neither attempt worked. I\u2019m not sure what to do next.\",\"The checkout page said there was a problem processing my payment. Could you tell me how to complete my order?\",\"I tried using my debit card, but the charge wouldn\u2019t process.\",\"My payment didn\u2019t seem to go through, but I\u2019m seeing a pending charge on my bank account. Can you check whether the order went through?\",\"I keep getting an error when I enter my card details. I\u2019ve checked them and they look right.\",\"I was ready to place my order, but the payment screen wouldn\u2019t accept my card.\",\"The transaction didn\u2019t complete when I tried to pay. Is there another way I can place the order?\",\"My bank says everything is fine, but your site won\u2019t let me finish paying.\",\"I tried a couple of times, and each time the payment was unsuccessful. Please let me know what I should try.\",\"I got a message saying my payment couldn\u2019t be processed. I\u2019d like to try again, but I don\u2019t want to be charged twice.\",\"My card was not accepted at checkout. Can you help me sort this out?\",\"I\u2019m unable to pay for my order because the transaction keeps stopping before it finishes.\",\"The payment page returned an error after I clicked the button. I haven\u2019t received an order confirmation.\",\"I tried paying with my usual card, but the purchase wouldn\u2019t complete. Is there an issue with checkout?\",\"My payment attempt didn\u2019t work, and now I\u2019m not sure if the order was placed.\",\"I entered my card information and confirmed the purchase, but the charge never went through.\",\"Checkout won\u2019t take my payment. I\u2019ve tried refreshing the page, but I still get the same message.\",\"I tried to buy this earlier today, but my card payment was unsuccessful. Could you advise me on what to do?\"]}",
+       "refusal": null,
+       "reasoning": "**Generating customer messages**\n\nI need to create 20 varied customer messages, aiming for 1-3 sentences each. I shouldn't literally use the words \"declined\" or \"failed\" in the descriptions. Instead, I should phrase it plainly, mentioning that there's an issue with the payment or that the charge didn\u2019t go through. It\u2019s important not to copy those exact terms but still convey the meaning. I'll ensure the output is in valid JSON format and unique.",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Generating customer messages**\n\nI need to create 20 varied customer messages, aiming for 1-3 sentences each. I shouldn't literally use the words \"declined\" or \"failed\" in the descriptions. Instead, I should phrase it plainly, mentioning that there's an issue with the payment or that the charge didn\u2019t go through. It\u2019s important not to copy those exact terms but still convey the meaning. I'll ensure the output is in valid JSON format and unique.",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfJq--o6v1VC_3pEQqDwrCT1a5rbMil2EBgXl9Gh3J7VQCzbk0MKDI4m0OgiR_YkaDx8ORseXN57KRio-I2zjPn-L_jQP9CyiytpWR2l_VdVC1I3OqZIhLDQMb3YdQb_gn7O8DsMp_Khg8lvjMJtYGj9RgFLefEwHHyHSWvgr_Vhmmtx3CM8ppD9kVuYuit-Gj6iP9NLKBzGPrV1GOHWbGynape44eTC_VCntFSqMV3JE5j-oBOjSmyBIgyb8nliDjL_UaVlrVCxgy5WXJsSf2cgC-Dj2hoikjqOvZzfKg_AEwh8JP9LRJVKr_3tPZE7blXxerbgYRRql1iEM2dp1rA2j8Gd6vd_Mobz_WvqA462_tDqTIxjMF-LbLJ4dfEMFnXBL60C7_pxlT6EJguBHcax5a5wBbGaZGVazdeHbF-UP9HZTSXqHvAXGfXL8-JQ6uQ_ZiAYQImf-n-0Jx-1-DhXyNtuK5EjptOPiTaTqLyl6cBM6TzD4lcJ7KCgoTLmFSmadOvXj5c4gjGynym2eTD399UGvIAvEfRd_4fsLkRTtqEki50WcOIYz0SeA41MhAeouEWFZBkjRXEWullFasgOJSy4ZLdT7QPr-ov9AUyonpZ3i_9nWfQUB6fQkQEf4lopaRdzv6kyXb5evre-3b-23KO92_3mLKq4OekhYrI6QpqONd-KmhT_qaEMj3JwfS69_my5T9AzXCz7zz5V_s0YbD79c7G-CnhJv3_cU24Ky-wdOxUvo8NBpl9CpypBnpXqfhv8Sg-2dcWyyH1QODe4Bv2PGU2GaeqYqYHIRYvz3OPRcw8H3MW153JIciuMnZWpAv_iV_l70J0CgYeM3HSmBSYgi-kEDStqADfw8MIQyVzNTW_wLX4C5__F5A8DJLEmZ0EPEhX3YOTXisPzNe1l_gQSgTG3uATYVwjEwAseAn8PGCf9ibfQZSIYrOdyxOB6xIZWMWcv1JKI-oLvzpkMPUqnEk6pGPr9F8XLOI5N0siwYm7q8u_EsrIK8akXthHs9hCJeppi65dP_bNM3GZqnffpseoNsBKjtZdf-cVC36lMpcaxbeV1HSfjmJpF3FFe6lzYz8QzlWY1lqzQFUxBmGQLx0b1y5ZMoSqIt8rxrBARohRoCJU3VJsNp_l7QRQa_5OZsSCVPQjcS2ptPOWLiVVCiiqzeSZA5x08_b3FGfRMZv0pZOTaYwVvSehOZ2NJcT5h2eQPl3jE85jGCOk_OZOel0BORw9Osn_R17NSikpIqtzAdt6bQrTJZFrpVIPR0DqJyVBfn4LNsWvz-W0t-DSGbG81IHMzYcV1ospcx2iHVMhFIZl2jg662ozjwjn5kvLRdws52CKHJ_9PKwcTni2lJwSeaEF1Gv2_mQV8GukQ4jsn8jvImRAf9Buz5b9lfoTvzWR8VrT9hypbjdg1_aRVJr9vbDRnNMRD0vYsbQG6wviNa8xUXHZTCO_86GLDlEUQp0GzXR4T70m23h-FMD_89Z4wSoVL1aldDeLdVJF4cUd68WwmsuWbNwdFnEAeL7eGwgvuhRmd6yNLBltC6sdyajEtqzr7P6b8wZLwkXZYDZlMK5I5ee6J_ijzDhT01SORUmKqnYSJoz4-zra31GyuXkeT-cdVqB2Iy6tpEGsDjKFCdb5twiL0LiwxtQdsNV0ZMp-QW74XlW32YBrLY3gEFcnrR6EJVyD6zkZqO1MkURQkLYaNl1b6J1jq9YxqdGd66qW5ilqkrQc1SBnizxS7EI60rcyZKaAlDK96djuVEux11dQebYi-z_cRrbHhMyzqKjRJiE30x8ph1U7ZCb-pvryPyKHoTNVWEWfa6HBYfyjPcIF_8rbJ1o2EsokNj8taXf3sCtv5ZA1410uME7kY8CH0iOx4zP72UInLDs9Ga0yiAahmabCTC4NVeZU59tuQfdFLAhbBaUE8d1AFssDsFuouEmQkd9X4lBBTRaUnzAlZ8VRJGei0Q2mLy3QWKdH-JbceHsEoUV8wyJ5ySzwFGe7GpY5_Er5c9KVzmUhaoCxuJYx8L4L9gbv8YNbZE7df8gLS2kepJEMzaHUuHQ==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_046a5339835f679f016ab5f268d1ac87d1bfdc054e1b23f0c0",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 102,
+     "completion_tokens": 547,
+     "total_tokens": 649,
+     "cost": 0.0002837,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002837,
+      "upstream_inference_prompt_cost": 1.02e-05,
+      "upstream_inference_completions_cost": 0.0002735
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 110,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: their payment was declined or failed. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790308973-rpnAcafgqwL4vUyB4y6A",
+    "object": "chat.completion",
+    "created": 1790308973,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I tried to place my order, but the checkout wouldn\u2019t accept my card. Could you tell me what I should do?\",\"The charge didn\u2019t go through when I submitted my order. I\u2019m not sure why, since the card is working elsewhere.\",\"I keep getting an error when I try to pay. Can you help me figure out what\u2019s going on?\",\"My order didn\u2019t complete because the payment screen said it couldn\u2019t process my card.\",\"I tried paying twice, but neither attempt went through. I don\u2019t want to accidentally place the order more than once.\",\"I\u2019m having trouble checking out. It says there\u2019s a problem with my payment method, but I just used it today.\",\"The payment page gave me an error and sent me back to my cart. Is there another way I can pay?\",\"I entered my card details, but the order still hasn\u2019t gone through. Please let me know if you need anything from me.\",\"My bank app shows no charge, but your site wouldn\u2019t finish the purchase. What should I try next?\",\"I can\u2019t get past the payment step. It keeps telling me to use a different card, even though the details are correct.\",\"I tried to buy this a few minutes ago, but checkout stopped when it came time to pay. Could you check if the order was created?\",\"The transaction was rejected at checkout. I\u2019ve checked the billing address and it looks right.\",\"I got a message saying my card couldn\u2019t be used for this purchase. Is there a way to complete the order?\",\"My payment keeps getting interrupted before the order is confirmed. I\u2019d appreciate some help getting it sorted.\",\"I\u2019m trying to pay with my usual card, but the site won\u2019t accept it today. Nothing seems wrong with the account on my end.\",\"The order page says payment wasn\u2019t completed, so I\u2019m unsure whether I should try again or wait.\",\"I attempted to pay, but the checkout returned an error and cleared my payment details. Can you help?\",\"I\u2019ve tried two different cards and still can\u2019t finish the purchase. Please let me know if there\u2019s an issue with the checkout.\",\"My purchase didn\u2019t go through, and I haven\u2019t received an order confirmation. Could you check whether anything was charged?\",\"I get a notice that the payment can\u2019t be authorized whenever I submit the order. What can I do to complete it?\" ]}",
+       "refusal": null,
+       "reasoning": "**Generating customer messages**\n\nI need to create 20 plain customer voices and avoid using descriptive terms literally. For example, instead of saying \"payment was declined or failed,\" I can say something like \"the payment didn't go through\" or \"the card wasn't accepted.\" It\u2019s important not to use exact phrases like \"declined\" or \"failed\" and to ensure JSON validity. I\u2019ll aim for a variety of messages with 1-3 sentences each to represent customer messages clearly.",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Generating customer messages**\n\nI need to create 20 plain customer voices and avoid using descriptive terms literally. For example, instead of saying \"payment was declined or failed,\" I can say something like \"the payment didn't go through\" or \"the card wasn't accepted.\" It\u2019s important not to use exact phrases like \"declined\" or \"failed\" and to ensure JSON validity. I\u2019ll aim for a variety of messages with 1-3 sentences each to represent customer messages clearly.",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfJw20mzFr0FLihBXdxZLCVRbEdUmB5OOmmYkgzcIdyWbfpH7erLCBDY3mZuEOPYgLAFfyNBIEQ9fd1k4kF2Bjq2AE3wsyytPejLAU_ld62aaXfE07xHyEkIkolt1WBidX-HNLGEJ2diN7M-lO7Mk1Wge4T1XDPm9Gk5IUjtTkUoLtQkhllurHTOqudWHJ9qITS8IpXdAL_dbQZsO4kLJjkwBD5WmMiSTOG-aIZsby0HceKKCO28g-z_HAvwke0q-78gKjnITvbh2doTRtFrUVIc0CUPYRsZwFWlu6s1tR95yAak6KJNsUdj5dwfJRxvUczTpLnka4L3Zge7q3M-dvvxkgjCqc8htVsyJXJKrBfUyyyE3K03CZ8W8ZTtYOd3gOJnTLsuaOQJ7xeDNwO86vqC6IwawfZTVhfDc4AWWV_8Mgfq_bAAmNdq66ZMa8Xnqt-YXXIjLr_Tnpa7jGPM5g0_tF6wCIjs8EiWx-b228DuOE9qBrtw-maXoYQeNKXI2n6u7r-8Df9L4gK1bn_SIMM3KOCXGyknfBBAX_2JpHyKeV6d6bNr9IaUhB0CcQEfU4vP-GLmpOKL1bRWn4sSAqMoI9os2Yffq7RZg5H_lIZ92vk8Ey46aKhdrYLynVoZo8cqIjtCFrmmoveFbxjsCELfDOi9TV9jYWSwQv0lmJTRZrZRfAERZulaJuz7nT0xQ-S3eCFKmRerqPNyOOz8HMxup-gZgqdeOIdbNNI1BfTbpN_CE7j2UMlRyB7gXfLHzWfYOD5-umh2XNQUcyyCZiedHVrBBoKEAKl6uWOpO3uEG4CsXvts6cpjNn9DOE5K9nw_JNXjHE_s8pEdo5wuqX-Li-ahmUFLX7Ob9ELevaHQUb9Dh8d-CFIqjeBGAvypqe4PcHV_mbNlv2x0YVbwXq_DgJTO9GqvD9N1ihn_W688gBZAkXDJAbeuKgrxBXkmbAtlNtVnYWeNkqlyStqkTKk11rrTWH3M3zlkplZWEiJNpJThOt4uBASA7xo6xJy1eDzD7vZVQlIN7CdWCjWlXBIAYkNArGEGWj4AuYLOfO5taF2zlDGXTSmLwjKcA9EP1oExl6vGs7Z15fSKUZNGGgJsYUzXWBuPH0IPvsE6rQS0kyWnN7KfBm1KKmv4ChOI72zinXyBbWvColiCVvHjPMfaPPTBsPDyCW7_mgTqGxeVS8ebr9Wjq3oa9F-V0waAspmSuILbqTT46ksWd0-T4dGzAFw-VUCqF3bDHyeNAJKUGHjLAg1htRfdSnScxpu7vKpSadl6BuDMgXIjYuWuAVaYCRzUFZJwqN9Z2FFRHZChrY7tV9ZQwJ4HFymo5EHrkklUqkUq5KFK-b08itIJlU1gTW6OqZG6Nf9Cqr8XE_g43ACpF0tbFtL37zjxEZhp5T8Lr2TirEPGvnlEQbgU_2Fy7bmkDdYgE3q7Fq18db13kXl6SwhQSWudWtLw9HU8B4Q2LCoYCGl0bHT5yMKorm0cYYx9vQ7X9jrUPyMgQMThXyHtxVo2fzfbia0rpru0J0CrNEkoCQzb1oArlkGY4OSkfMcB4CZNOMWQpFTgj09XvpfeDoYKm2wf9vD8UgJfWEqFvFFppi2QcdA2qcejMeIchBI4KrOMEc6fSW-Qa6AEzU-700NSplVK7tKLyXToHBPhq_aYu9HxIJ893VT4GHBAY7jGiwOMHv3tgYqcBxDNMtqq24770hLGdNy5HDokRgN2hBZStEklf6YLZQvQ4dfzUg60P_CIdbfziAyGwUKG-JapLQr0MMnZtPcERR0Y6BsuFgBi9jwx8ZkjWRkk_T_w72uKzqf2nP_3cp74U4ByI93S56LbYoVkAr2v7CUiuBrzFLR-VeTcLrLDTJIqCcivms5wPLAiBhcmevpDZaWoR09EUuM1XszWPy1N_c-s4xrKtUWkI561Ys29QwoyKfniAefAQX5HZZOlYSRbsp3aQADGLuT9LRcsdcgvE8oNrlb6.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0af02a7a3e650cab016ab5f26ed36c87d1a70cb1963ddcabe7",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 102,
+     "completion_tokens": 594,
+     "total_tokens": 696,
+     "cost": 0.0003072,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003072,
+      "upstream_inference_prompt_cost": 1.02e-05,
+      "upstream_inference_completions_cost": 0.000297
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 99,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "I tried to pay for my order, but it didn\u2019t go through. Can you help me figure out why?",
+  "My card keeps getting rejected when I try to check out, even though I have enough money in the account.",
+  "I submitted the payment twice and neither attempt worked. I\u2019m not sure what to do next.",
+  "The checkout page said there was a problem processing my payment. Could you tell me how to complete my order?",
+  "I tried using my debit card, but the charge wouldn\u2019t process.",
+  "My payment didn\u2019t seem to go through, but I\u2019m seeing a pending charge on my bank account. Can you check whether the order went through?",
+  "I keep getting an error when I enter my card details. I\u2019ve checked them and they look right.",
+  "I was ready to place my order, but the payment screen wouldn\u2019t accept my card.",
+  "The transaction didn\u2019t complete when I tried to pay. Is there another way I can place the order?",
+  "My bank says everything is fine, but your site won\u2019t let me finish paying.",
+  "I tried a couple of times, and each time the payment was unsuccessful. Please let me know what I should try.",
+  "I got a message saying my payment couldn\u2019t be processed. I\u2019d like to try again, but I don\u2019t want to be charged twice.",
+  "My card was not accepted at checkout. Can you help me sort this out?",
+  "I\u2019m unable to pay for my order because the transaction keeps stopping before it finishes.",
+  "The payment page returned an error after I clicked the button. I haven\u2019t received an order confirmation.",
+  "I tried paying with my usual card, but the purchase wouldn\u2019t complete. Is there an issue with checkout?",
+  "My payment attempt didn\u2019t work, and now I\u2019m not sure if the order was placed.",
+  "I entered my card information and confirmed the purchase, but the charge never went through.",
+  "Checkout won\u2019t take my payment. I\u2019ve tried refreshing the page, but I still get the same message.",
+  "I tried to buy this earlier today, but my card payment was unsuccessful. Could you advise me on what to do?",
+  "I tried to place my order, but the checkout wouldn\u2019t accept my card. Could you tell me what I should do?",
+  "The charge didn\u2019t go through when I submitted my order. I\u2019m not sure why, since the card is working elsewhere.",
+  "I keep getting an error when I try to pay. Can you help me figure out what\u2019s going on?",
+  "My order didn\u2019t complete because the payment screen said it couldn\u2019t process my card.",
+  "I tried paying twice, but neither attempt went through. I don\u2019t want to accidentally place the order more than once.",
+  "I\u2019m having trouble checking out. It says there\u2019s a problem with my payment method, but I just used it today.",
+  "The payment page gave me an error and sent me back to my cart. Is there another way I can pay?",
+  "I entered my card details, but the order still hasn\u2019t gone through. Please let me know if you need anything from me.",
+  "My bank app shows no charge, but your site wouldn\u2019t finish the purchase. What should I try next?",
+  "I can\u2019t get past the payment step. It keeps telling me to use a different card, even though the details are correct.",
+  "I tried to buy this a few minutes ago, but checkout stopped when it came time to pay. Could you check if the order was created?",
+  "The transaction was rejected at checkout. I\u2019ve checked the billing address and it looks right.",
+  "I got a message saying my card couldn\u2019t be used for this purchase. Is there a way to complete the order?",
+  "My payment keeps getting interrupted before the order is confirmed. I\u2019d appreciate some help getting it sorted.",
+  "I\u2019m trying to pay with my usual card, but the site won\u2019t accept it today. Nothing seems wrong with the account on my end.",
+  "The order page says payment wasn\u2019t completed, so I\u2019m unsure whether I should try again or wait.",
+  "I attempted to pay, but the checkout returned an error and cleared my payment details. Can you help?",
+  "I\u2019ve tried two different cards and still can\u2019t finish the purchase. Please let me know if there\u2019s an issue with the checkout.",
+  "My purchase didn\u2019t go through, and I haven\u2019t received an order confirmation. Could you check whether anything was charged?",
+  "I get a notice that the payment can\u2019t be authorized whenever I submit the order. What can I do to complete it?"
+ ]
+}

@@ -1,0 +1,84 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer writes that something is wrong and asks for help, but gives no specifics at all.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309125-4bD8Vmaa9qSE4J0GrqE2",
+    "object": "chat.completion",
+    "created": 1790309125,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, can someone help me with this?\",\"I\u2019m having an issue and don\u2019t know what to do. Please get back to me.\",\"Need help asap, this isn\u2019t working for me.\",\"Hello, I have a problem. Can you please assist?\",\"I\u2019ve tried to sort this out, but I\u2019m still stuck. Could you help me?\",\"Sorry, my English is not so good. I have a problem and need help, please.\",\"This has been causing me trouble, and I\u2019d appreciate some assistance when you can.\",\"Can u help? I can\u2019t get this sorted.\",\"I\u2019m not sure what\u2019s going on, but I need some help with it.\",\"Hello support, please advise me what to do. I am having a difficult time with this.\",\"I\u2019ve been trying to deal with this for a while now, and I\u2019m getting frustrated. Could somebody please help me figure it out?\",\"Help please, I\u2019m stuck and don\u2019t know where to go from here.\",\"I may be missing something, but I can\u2019t get past this. Please let me know how you can help.\",\"Hey, something\u2019s up on my end. Can you take a look and help me out?\",\"I need assistance with an issue. Please contact me when possible.\",\"Not working right for me rn. Any help would be great.\",\"I am contacting you because I have a concern and would be grateful for your support.\",\"I\u2019ve had enough of going around in circles with this. Please help me get it resolved.\",\"Good day, I need your help with a problem. Kindly tell me what I should do next.\",\"Could someone please assist? I\u2019m having trouble and can\u2019t work out how to fix it.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfMIYNBmMytzmhmzzix2HS9eV_JxdTu920RoECJPwkZFpG3OxL7dWQDBs8k0j32YV8lUWAfJPb3fX8NreBE2BLX3yn0StFWjFQSkQWhHxV2A8FaxAdgpkskSFoeuKtVt33ZmEYUQNyBfxNgavRToK630vGwKiH58OCWpsryve-QBK2BD0wrmlotEyn1YdmIlXi2CVlIpoACP3ZTg3b-adF2o6XK_GVMwN6oapvijhOsVaHm49sTLzeRT3XVG6NTqrthTl3qc3ZvxxI285u9PcUXUxqSZGvypjeKG8hfP6fzJYR5VD6n_-14esHCMIhLXcHijjdHN8-gGeSVGDhZ5qWnuH8WiBg-xLijIW1waZEAFp5lnxyDKArzkTtjirPEcLtMTpRN4jDlkvOQE2Db41IGL4MbnulNdEAIRXTszgma5vl-oa2BkKmvffBiqN7Pr_g8zEV-Q073TwkUx6NsGbuiM6ymfXFIa4-5_ykaV6HurZ-aGp3vvxS4XbXEiXgvQFsuTpbEep73W_VgYq0DDlJO4TRelVeAvMaOQIZ04QxNqe17VQtJCEAsc7TD1dxC0qjmWiRqjg4AehRhMQIuhISHvpco_SqXDqUiIymb9AYR35muyN8hVyCHP3fKHZEzFqQdXNHZkHUIxnDRPraNS4C0TjdWUYq2NQKN1eAJ2evmnRuqpUAodRthNsqebPwucx8bLrNF8y9yInoreG3sITzvPfIA4LNCpGtuswCr9t7mbX1VlIkRsbSGAORQkssIP1rEKSyEdiguP5GSRn_0bdbcSjU2GV9wvFZVHGE7Nzh0aqx9cZok5yMwj3SYZAJKGaWClJim8kge9SbzcRCCAUPHqxGwTEwlsv-yDZucRbVpuYqqvhDblZd6Ut7hlj2_nDa_WfLDlzeYL8iPpILxiDwg4feXF7JLQBQBdfMKg2OfuxT-E410MTqW9o4ojdYRYn-wytjmw5AfEPWr9PkJOt1bPxDtaLNzoPKm2L33uUYoX7ZSKVvVwYxeNaJsq52R9VYnDm0ugSnHQm0vFxK8haUAATksEjAeH5lCmNVopXnwsh7CzhsMm7-UWWKPvktVXzq7tJwpYSBzYZ1bGOHMQvkHxk9KwTy59nPMFqzuqqjo0gkciy0v9nX2OhoXSjo2h1DrNh6XyIanieI8Mwz9GNK4K7hiotTVVGEaPypWySHQ_ffZADWBNlKUSyLa6aDSBbEzF79LLf687rKXZVfGRfKf3FCn1APRPNcRl1LzkDKoHjcGdip9v0bTN7CmyZ202z2RkEQeV_BlTOSo7sFN5UAQ1SkaIMlmc2tc9SDIONJdm8YvO5yA4ubNsXxdM8R7YjoxZHvJzcSove4L6sH3ZOvOj2bW16UY4N2uPgsfHTnuMXir9zHPXhM6QDdsyef43Rx9AxK5_wza70rO9WQhmU7dbft6j_h8d7kHxReq0ryerd8Kk-cWJfaCQmHb30fbvVqvnBJoG3m_b06OIdrd5GaXOFuZfcz_9Wc312QfpTc05_tYgkryUIUYyScnu41i3oUmy_hDN1t06m1kXOI5UtlZACg7CgCQF_OOZf2f7RC5oWl2vA_5LG-wK_5u9FSiZGOns2sJu1ZjwM0TAaeaFH6EFPuzZSrSkNUZ4gXSvt2lPPVGBrkDkkEIk9CVaTcp-FA898RdYz3Vu6gkGPcuTBbf3TqhigImTXaVZNItjXFyHpQbK4JiHPsg6tbKRg7a9tRp97Cz-iyoKhZUKmjPOft2EWmShs_6LeQ6vm0Wi3Yv12yy4U6hCfHU5xtSuJiULNUJgOapA_VuMSniivPMpS1NmGD4Yp6Xs6hYp7uwMgKlxOyUvGJE5ealelqXEqDi1_1YuKrcArcSBXAZpZK8rfAd5-HPRMIAbN3eHFpsXQLlxaEhD1dWwDjxFgMRf1PBgDxFXYWfglnFUnGCcBhcHIB8q67arweH_OejYUwlYZ6U7TGuDGRbBg9yxJ2WWfnp7O5S_mPg6q5qAgxYvb4gKkfOU77aMFXb5lw-MTCt1j23MdduEtzw_fvzPt0sjL1t4Kvc46cFU8RK7oYhq2I2W1J6knhgYs5_gWZ2j3hmhtiU_pJODR1x3hL_VvZA3ThETXCIRyPGiGPMs9bX1MJO5389IEQAofLq2UO4r4xyK9W51jznZaHr2N_dciofnNRwkvB6a3DBUPhuKuac3XOBmgmR2ug==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0aa3e5e90ad9739a016ab5f306731c87d1873dc05aa6d5bbfb",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 113,
+     "completion_tokens": 486,
+     "total_tokens": 599,
+     "cost": 0.0002543,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002543,
+      "upstream_inference_prompt_cost": 1.13e-05,
+      "upstream_inference_completions_cost": 0.000243
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 127,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, can someone help me with this?",
+  "I\u2019m having an issue and don\u2019t know what to do. Please get back to me.",
+  "Need help asap, this isn\u2019t working for me.",
+  "Hello, I have a problem. Can you please assist?",
+  "I\u2019ve tried to sort this out, but I\u2019m still stuck. Could you help me?",
+  "Sorry, my English is not so good. I have a problem and need help, please.",
+  "This has been causing me trouble, and I\u2019d appreciate some assistance when you can.",
+  "Can u help? I can\u2019t get this sorted.",
+  "I\u2019m not sure what\u2019s going on, but I need some help with it.",
+  "Hello support, please advise me what to do. I am having a difficult time with this.",
+  "I\u2019ve been trying to deal with this for a while now, and I\u2019m getting frustrated. Could somebody please help me figure it out?",
+  "Help please, I\u2019m stuck and don\u2019t know where to go from here.",
+  "I may be missing something, but I can\u2019t get past this. Please let me know how you can help.",
+  "Hey, something\u2019s up on my end. Can you take a look and help me out?",
+  "I need assistance with an issue. Please contact me when possible.",
+  "Not working right for me rn. Any help would be great.",
+  "I am contacting you because I have a concern and would be grateful for your support.",
+  "I\u2019ve had enough of going around in circles with this. Please help me get it resolved.",
+  "Good day, I need your help with a problem. Kindly tell me what I should do next.",
+  "Could someone please assist? I\u2019m having trouble and can\u2019t work out how to fix it."
+ ]
+}

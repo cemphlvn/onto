@@ -1,0 +1,162 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: they cancelled or returned something and want their money back (there was only one charge). They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790308955-7eJDEMvz9MyOHfNgoO2v",
+    "object": "chat.completion",
+    "created": 1790308955,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I cancelled my order last week, but I still haven\u2019t received the refund. Could you check on it?\",\"I sent the item back and would like to know when the refund will be processed.\",\"My order was cancelled before it shipped, but the payment hasn\u2019t been returned yet.\",\"I returned the shoes a few days ago. Please let me know when I can expect my refund.\",\"I\u2019m checking on the refund for my cancelled purchase. I haven\u2019t seen it come through yet.\",\"The package has been sent back, and I\u2019m waiting for the money to be refunded to my card.\",\"I cancelled the subscription before the renewal date, but I was charged. Can you refund that payment?\",\"I returned my purchase using the label you provided. Could you confirm the refund is on its way?\",\"I don\u2019t need the item anymore and cancelled the order. Please refund the payment when you can.\",\"My return was delivered to your warehouse, but I haven\u2019t received my refund yet.\",\"I cancelled my order shortly after placing it. The payment is still showing on my account, so I\u2019d like it refunded.\",\"I mailed the item back last week and wanted to check the status of my refund.\",\"The order was cancelled, but the payment hasn\u2019t been credited back to me. Please look into this.\",\"I returned the jacket because it didn\u2019t fit. When should I expect the refund?\",\"I asked to cancel this purchase before it was sent out. Please return the payment to my original payment method.\",\"The return has been completed, but I\u2019m still waiting for the money to come back. Can you help?\",\"I cancelled the booking and was told I\u2019d get a refund. I haven\u2019t received it yet.\",\"I dropped off my return and would appreciate an update on when the refund will be issued.\",\"I no longer wanted the order, so I cancelled it. Please let me know what\u2019s happening with the refund.\",\"I sent the product back in its original packaging and am checking whether my refund has been processed.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfJe7zKnl-bPSioc2tV-2f7P-jcG32VvpnuyWhzVfg5eT8ELoh5bjvU4Y-N3f__dInvKCeIQS6uuY4ZqQN6aoIxS-mhsmqr8YTWiR6EppJQlo1e88F36GY8IJItz85SIefdEpyXLMlyu7l_KOOo8c0-cR-cwEwKGu-__yyp2920NoljjloHH9gBBnB2TXw0i_9MDjNkw9vafgAQKfirucIJqaWn3Duoj1ILqDMhEbgIUL2IL9ZZffeHc9sByFlkCzIHDC5enYIZUDh_8Qge_5UcYSZlikM5Ed1xzYa0JM7jFvsxspTg1ePWEU6kafD2x4IMSlP33k9t5K-dqLb6RLmK6LdRsZcazgHTK4D8zbueUvvEfPvgumdZxxLoxJ4mPpWYASMXanIZ1jIhQsGkVm5SPyq8ERsLZJeD9wsa7DYQfKpgdIyTUnBTaN6A4RyDjJssqvQ-hLwVF6VJlR8NdmStKRLPVYoyExBnPm520Uc5yEf4aZPT-F88hpasRLueowCewXuv5PEG3hhMtSuX87WkV6w-QgnWlPeaDwefxLbD-NrPGmD3xmnOdN8GLSD8iSvTICckO7LK4Hc-WZis4HzmOIdMKCRAJ80IMrZ9zeDut4eGN35GT-sDoK_DGv7kBGmVD8BB46DJS7y-6Cl64GHsuxLMTLfWhxktmEnPwieHLAv0St_04yhm-1Nw7C8Kfir-4fbn-t9R45VldrJApvbnzzfam_3XXVI_UIk5KY9l8dbIcgnGseaEplDfyiQccdRE9VJCFkirgW-J8StkVYj5dIHiPsSvX-8fpEBUehrfWi8D6i9R_YsRp5XXiik9uIHpf6nw6sVk5SJEU7LIg9KVHVatdwhVMkpxMR-7NfOVoNgAsgoC-qL57OZTuXzP_s75VGas4ikxC1nbTF0zZaBBNrBm7EpL4FEONydBvCiGuiL1K98q3l1F4M-371Vm1q-On3yJ3AnRIJ325BJrU4LG6YB-zOF_AqEFJkSHL-6GYHdFFUuR8-FWn6tNMIf2oB18cVtsw5fQ4d7ZkLbyi8sXK7a09-F3OkSR_if-ztijheOmw71Yzavh3DrJunUcamyTGKWbBBdNOfaC-aTdfkpUh55ZPTTZfLR6DihHTW4ztm7v04HRdHu6TJ9rO_wxdAT7T4xGV_pdjzajWHjSwo5wBux_XCMHvTxydSFNROaaE-54lOpQmP8_60EjPtXW9E68JsJPF8ZvOTr7STmtI7LKr6zGC0t9deZgi-17OuhfCN-UbyBZ0AZlYruNzSg3s2PFWWTFJ5jMijxyxj4m8JzRechaLtkqiW00851NTabJDUuKXZaD6UDaR8T1vUoBiUFBf8tLA7VhjbX76KA-hhYKFYHoQ0LtWwDgyxVYpf6r3Lyu-88EoBZy_Jd5yasmVL75Ikc-kHU8J5xWRCk4iKWVCq4R_750wEJZW7y6hOntYj03eGU4BOMx6etNdl-f5H2XtF19n8-s3O-C19YQA0sD6Zylg-izaZjsLELsepZpLUYvRF822LdAyafEhcK3uZ5C18QCrvFCdisWDt3Pn-0ct6rK7QxbrjC_Z1Xkz283tL0KKADHDhXJMdWzwkWgfrM35TWXAOlW2JQYnrS7y7YbYZNxTfJMS6DQzncYe1IVmCpHA-vYl8yfoQc3yP8_5FiSepk04P5UjqL4GHTXioos1WPzmIJBwz5VduqC5g9lcFRcT9-zh20Q5a_cfXHkvD0aHE0u3jZG_hv3ROTr-g6H2GPQvgtER_jHmqsfIUwI1LK4_XcXOsO7qiM0wOWx-o_m77xbmRfWbVy0_yCKi__-BKfyHceryxmz8aSOuTIjHYXtV2CmdrFI6uLzsGKzYHinBhdI-ojN3tj_UPUvwMIzsmN9jB9H649tJ5Z90S9Gh0ZHQE0xlX-cJ900njj7QKDHSNCG-opJMKdfR8mVh0nRH7a_CG_MmLoVlZu0iFWYoIhYujHAjAeX0u-GEGTy0p2w6xDIeg-Iu7UePSc-88Q2PWtlTV5G1Nr9GzW8qYhNH3ilUHQwA66OKwQPHEaQmnc0ZbnmwtArkKyYblFV19ump1znVW5wUhbHqy0EdjnrFsuU2YsxOUzJNr78lqP_L_FVsZRlT8EOeKbjSFmERXbXSP2AQVSY8abbK4DcCUCj6glVmVLPRciUVJukxCKLzpL_zf52LtvzpzFVwJdul_y6QOp6S-aIH5h8dw53OBUm1QT_IXb7wjuxgzf9Tw3TESQhycCpZNkCz0dF0w4SD7-sGyCu3rLwIEEmgYk1sqmX80Uyb-zKBVhWMhkWzC028Bcv8kbvGaRjloULnQZgTzF2plDszkjo3E3OT--JbdobR1m67SKBjwZIa9zVRzc0LMw-X.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0fbb6c28a714828f016ab5f25c6e9c87d1a9432b23b34119e9",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 112,
+     "completion_tokens": 570,
+     "total_tokens": 682,
+     "cost": 0.0002962,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002962,
+      "upstream_inference_prompt_cost": 1.12e-05,
+      "upstream_inference_completions_cost": 0.000285
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 153,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: they cancelled or returned something and want their money back (there was only one charge). They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790308962-eKWp9aXwM3ZD0Yw6AgZ0",
+    "object": "chat.completion",
+    "created": 1790308962,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, I sent the item back last week and would like a refund for the amount I paid.\",\"I ended my plan before the next billing date. Could you refund the payment that went through?\",\"I no longer need the order, so I asked for it to be stopped. Please let me know when the refund will arrive.\",\"The package has been sent back to you. I\u2019m checking on the refund for my purchase.\",\"I changed my mind about the order and don\u2019t want to keep it. Can you return the payment to my card?\",\"I stopped the service, but I still see the original payment on my account. Please refund it.\",\"My order was sent back a few days ago. Could you check when I\u2019ll receive the refund?\",\"I asked to end my membership shortly after signing up. I\u2019d appreciate a refund for the payment.\",\"I sent the product back using the label you provided. Please refund the amount I paid for it.\",\"I don\u2019t need this order anymore and asked for it to be stopped before it shipped. Can you refund my payment?\",\"The item has been handed back to the carrier. I\u2019m just following up to see when the refund will be processed.\",\"I ended my subscription and would like the charge refunded, please.\",\"I returned the shoes because they didn\u2019t fit. Could you send the refund back to my original payment method?\",\"I requested that my booking be withdrawn and am hoping to get a refund for the payment I made.\",\"I sent the device back in its original packaging. Please let me know once the refund has been issued.\",\"I signed up by mistake and stopped the service right away. Can I get the payment refunded?\",\"The order is on its way back to you now. I\u2019d like a refund once it arrives.\",\"I decided not to go ahead with the purchase and asked for the order to be stopped. Please refund what I paid.\",\"I\u2019ve ended the membership and want to check on the refund for the payment already taken.\",\"The item was dropped off for return yesterday. Please let me know how long the refund usually takes.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfJkvDuNLB4Jmd5J2wtYag3ssRc1cDhyhCKUO5zfhfa4mzgGstuNyc9Dq5nyCe-dxTquJImn1Bg8mQtYd3DSb06-eVpgR2RybyE7-n-pBv3tdBOn27f66ebkYMivnMMiVhsU9APUdJOQmVxz3In5zV8WLtj7DBcMbGGvHd9wXTlEYvMjmB25eDX8sTRNTRoivX7bDzr9trMcTd-eCM_bpfFUber02AZTeoDe_FkFa1ovBlbWEeYhtmb4OOd9Tt6aDB7XOADYOlFpw1wwmOWMBPrJ5DMPyu96ctnHiM5IudLkDWr_AH6rwmx8RZ34OKzqe704DREIxe2wBvX8mjNknF2pETdy9fi8KuKEkRvEBRDcCTBbVEA3vj8Ilh-OablImQpKb20cbL3AsZX0vk8Api6OxEysPSMbaWt8zOSA2wcXjiGD4sHKq1f_okiSvn-IhuDtAFQVLzh3Af_tVwjvNB36K1C1JLf9U3h1AKM_c8inDJdoAGLg8Uxc-uAiQd0d0prUazu9tu3erCQ9OTGtH4bS1FUC7FmCnryswbRjBBAi7RdZNyg-7P4945LPwjqvhZw2d4UllbcKU6vVXVmtVjeLG1Bd62sR9hPeHoEAJpEiol8Y1LBYFRQx7M_ldA3LvC8OOCf7L4HHLNYwFHQ1T5wmkmc6BDp12ydbBzURd0tJEIfSYQ3rmBedvx736_tVYMSOTjC6u5t9-poUFj7XBdxY0nr-5I73hMW-is5BynuwFP9APsN3aeaKArr06pgGmOPJtiaCWMVRuFbVY_6zommPTBVHYeX0ueStJP7bZWmtpLCCc543r1VflIsiUK8GFQ6xcSETHlozX_PmeehFhlFqOGp9TjUvJhLJNrFTcmGvb2SkhpBHRk1GU-htPgf-dW6egvP0q277F2axM_bwLXI90dv44c-R31wUBWS78M0RdeKBKe-fgt-dcP7evO7umxXJ4y8XqZ0-g9jEHDINS41XtJ8T-ubU68oiZ72CYrqb7kuxO7Qf44y5LditxBjxJMcu9PzIoC0pQWHCz8_qss9nI_lqMgUtij3GrsD5FIuthNtJptaKNSdIKj7Wt3n2MW302G-d4N28UQmJymXWu423me7coT0HPP-zH4CWBnOBo-3ZEiJVWKQSWDriZHKEDJvZNF1cH7HQPqYcRLtpmvI1JuXiKU8Pujirh9YXY2RsC6imPyP9EMtwIWf5baXVCBKVmgRwpD_qRiRtI3VXDsseAP21oxZANkVkhHZ_6dQ68_3fw83abP_XXg3LaNdDSiSbqc6QWfvi-VMywpn97t1XrP5l11My1emapNne1ha3HEs3OmI1YajnN3OnJ69F0dZTKKYitqkTsC-5h1Z2zCTvKWwW6M4jqgC_caiQ6RWRRzO4UvncX47qZxiPzKPbfTUnh57qhVQH-jHiZ41h9WIbXiBFvAIQ5KiHvdKKMQj2r5jpMDV_mO56XyvUzORfbQqqKUwbUNqD3LpP2mtlqb92fTcP8mtgcELHfJ3_EuMglRMKbSTYxOuSwHPhB2BhGwX3V8VnFS0CMF18a6CWBfeN0bLnWTMA_7_nQ4mqMJEiElaG95ZP-MCoLdSCPD0GOZVxO3ptzC5tGBPFTRRn_GJqqROL8SJSdF95VfmXWudiwaUYx6M3RkeIOr0DqOStoYsugbWT94dRyam_vaDSDAurLlb9582xyrU8KO4JASLQZ10zWr_uIBeKalV3OLTXW9DIEKq0L88UcJuV5ars4WTcfjyH2IAeGORSGQWPqEQ-7FYmXlJKqyT3P8LPbMk_W2_9YkboBEHsy-aGyERDm6jSWrznR0CqAWpxieRkLz5nfPi2QEpd_Gbngb8h-kKx0JisnNYdChJSAwzmZTqyCZX7nHhCLBG3oGZJ_P3x7urk1a-qZpbLwLsFzRJvyTzWSgKoCecvHXQsWrmICjtai-3bbQ7WXC2Gm-W_F_b2j5v2rO5xU408MglGCB7A1bk9X7PzFIhjMqoIOcPRp7-FHPv8nftrPMUA_79dL7I6Uu3eh9tdy47Ux2I0bu6bwkUGt9-INjjmB3M2KmvpHqtgUxNtDiz7InrXMeqTd_qgPXyAKvjsTG78cmSBkApXGt223GQTpMBD0hwNFbevstO2-yrXEzC7i0cZ-La_FRLtlLS5lcNRehG_HQ3CnH9j3zFeTFslHakWV20RrbJBhgMS9wEqIVbbXkF-92umAViS4kU5iP2PwG0i_6oGfl2eUUlrog-Z3vV2ZbA1CjwQSFjmxjU_Tg==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0d939144b4ec4e20016ab5f262d51487d198fb1c77934b8266",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 112,
+     "completion_tokens": 579,
+     "total_tokens": 691,
+     "cost": 0.0003007,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003007,
+      "upstream_inference_prompt_cost": 1.12e-05,
+      "upstream_inference_completions_cost": 0.0002895
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 146,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "I cancelled my order last week, but I still haven\u2019t received the refund. Could you check on it?",
+  "I sent the item back and would like to know when the refund will be processed.",
+  "My order was cancelled before it shipped, but the payment hasn\u2019t been returned yet.",
+  "I returned the shoes a few days ago. Please let me know when I can expect my refund.",
+  "I\u2019m checking on the refund for my cancelled purchase. I haven\u2019t seen it come through yet.",
+  "The package has been sent back, and I\u2019m waiting for the money to be refunded to my card.",
+  "I cancelled the subscription before the renewal date, but I was charged. Can you refund that payment?",
+  "I returned my purchase using the label you provided. Could you confirm the refund is on its way?",
+  "I don\u2019t need the item anymore and cancelled the order. Please refund the payment when you can.",
+  "My return was delivered to your warehouse, but I haven\u2019t received my refund yet.",
+  "I cancelled my order shortly after placing it. The payment is still showing on my account, so I\u2019d like it refunded.",
+  "I mailed the item back last week and wanted to check the status of my refund.",
+  "The order was cancelled, but the payment hasn\u2019t been credited back to me. Please look into this.",
+  "I returned the jacket because it didn\u2019t fit. When should I expect the refund?",
+  "I asked to cancel this purchase before it was sent out. Please return the payment to my original payment method.",
+  "The return has been completed, but I\u2019m still waiting for the money to come back. Can you help?",
+  "I cancelled the booking and was told I\u2019d get a refund. I haven\u2019t received it yet.",
+  "I dropped off my return and would appreciate an update on when the refund will be issued.",
+  "I no longer wanted the order, so I cancelled it. Please let me know what\u2019s happening with the refund.",
+  "I sent the product back in its original packaging and am checking whether my refund has been processed.",
+  "Hi, I sent the item back last week and would like a refund for the amount I paid.",
+  "I ended my plan before the next billing date. Could you refund the payment that went through?",
+  "I no longer need the order, so I asked for it to be stopped. Please let me know when the refund will arrive.",
+  "The package has been sent back to you. I\u2019m checking on the refund for my purchase.",
+  "I changed my mind about the order and don\u2019t want to keep it. Can you return the payment to my card?",
+  "I stopped the service, but I still see the original payment on my account. Please refund it.",
+  "My order was sent back a few days ago. Could you check when I\u2019ll receive the refund?",
+  "I asked to end my membership shortly after signing up. I\u2019d appreciate a refund for the payment.",
+  "I sent the product back using the label you provided. Please refund the amount I paid for it.",
+  "I don\u2019t need this order anymore and asked for it to be stopped before it shipped. Can you refund my payment?",
+  "The item has been handed back to the carrier. I\u2019m just following up to see when the refund will be processed.",
+  "I ended my subscription and would like the charge refunded, please.",
+  "I returned the shoes because they didn\u2019t fit. Could you send the refund back to my original payment method?",
+  "I requested that my booking be withdrawn and am hoping to get a refund for the payment I made.",
+  "I sent the device back in its original packaging. Please let me know once the refund has been issued.",
+  "I signed up by mistake and stopped the service right away. Can I get the payment refunded?",
+  "The order is on its way back to you now. I\u2019d like a refund once it arrives.",
+  "I decided not to go ahead with the purchase and asked for the order to be stopped. Please refund what I paid.",
+  "I\u2019ve ended the membership and want to check on the refund for the payment already taken.",
+  "The item was dropped off for return yesterday. Please let me know how long the refund usually takes."
+ ]
+}

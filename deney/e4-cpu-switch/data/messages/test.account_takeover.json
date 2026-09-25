@@ -1,0 +1,84 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: someone else got into their account. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309118-jKndgfQexsRfMiu29eW2",
+    "object": "chat.completion",
+    "created": 1790309118,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Someone signed into my account and changed the email address. I can't get back in now.\",\"Not me who log in last night. Please help me secure account, I see a new device there.\",\"There\u2019s a login from a city I\u2019ve never been to, and now my password doesn\u2019t work. Can you help?\",\"I got an alert that my account was accessed, but I was asleep at the time. What should I do?\",\"Hi, I think another person has been using my profile. Some settings changed and there are messages I didn\u2019t send.\",\"Quick help please \u2014 my account shows a new phone logged in and I don\u2019t know whose it is.\",\"I noticed a sign-in I don\u2019t recognize this morning. I changed my password, but I\u2019m worried they still have access.\",\"My account was opened from an unfamiliar device, and the recovery number has been replaced. I need help getting control back.\",\"Sorry my English not very good. Another person entered my account and changed my details. How can I fix this?\",\"I keep getting login codes I didn\u2019t request, and there\u2019s a session listed on a computer I\u2019ve never used.\",\"Someone has been in my account while I was away. They changed my profile photo and sent a strange message to my contacts.\",\"I received a notification about access from another country. I\u2019m home and haven\u2019t traveled, so that wasn\u2019t me.\",\"Can you check recent activity? There\u2019s a device connected that I don\u2019t recognize, and I want it removed right away.\",\"I\u2019m on my phone and can\u2019t type much: my account got accessed by somebody else. Password reset isn\u2019t going through.\",\"A few days ago, I saw an unfamiliar login and thought it was a mistake. Today I found that the account email and password have both been changed, and I can no longer sign in. Please tell me what information you need to verify that the account belongs to me.\",\"I was using my account normally, then it logged me out. Now I see a sign-in from a new browser and some of my settings are different.\",\"Someone logged into my account without asking me. I already signed out of all devices, but I\u2019d like to know if there\u2019s anything else I should do.\",\"Not sure what happened, but there are purchases in my history that I didn\u2019t make and an unfamiliar device on the account.\",\"Please help, I think somebody access my account. I cannot find where to remove that device.\",\"I got an email saying my password was updated, but I never changed it. I\u2019m locked out and need help restoring access.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfMAkmAk5BXvR_Xw3z2o3ndevEjaS8FuJwoxvsUWVnzgHIC0CHqqFoHyxAugtvZUeVd20yF89OUjEehQIVxsB5y151eW2stahMgoHFN54-nyuOa98CvhRE7YK_4VmuYwpcIrnIsvP-GXGqlOzhs-8v6zsl5WfL0jP6DjLiyerdbYDWoES5-LYClV2DtE1svqblZAx60ka6-cGx1fPGS6nRVw79Lztcw-Cu9aMcke2XxcXzQJyab46J3ZxMl8HYWsCCe_hOiQIHh6m9J59_JPBVeCf_nH_R7KtkUJ4_pJWNJNwfgLroAWa19s9xEFV4bSbc6iUZ1BTybWnLomE08Gf35b1vBjU86EZ0Q2m6ZjNmljMFveGD499266G6eVUceVbp58wvcH34E2GL8eorKr2dxy2QTjN9d3V6SzxcbCCwSP2mWe3rIqngKuI-RHAiqZ8c_oUrzw7urpKqN06rAzCQLWpkyr1YlL_ZGUHyKDIvjy0vQnNTBFJh9nbxn5_hmbejDkM_2oOFEKIpG00Vt4cure03QNQFar_bDEJYaI8RTm2M_K_E8t3N77r57SYisLEUMMW6V7iv66tIb_u6FzUprWr6MHRkzasv5FzWn3_9UaHDEvitRiaXMprZu8_taqfoBInEld7kZPlozTzlApQy8-ObFk2QRNAj7a-TAshehnNAiqYE1Nsupe276kPwRsj8y9y2VSAapAM9UqubfcXnWdakhPn2yPqmP50RtjlL2SEXtNbjJ2ep0FiE46cx83DGxyhG-pjKPE2Ew2FRaeqMBo6kxW8z38qcN8FTYZRZafJON6b8ch2WdTMc38FmqEaqPIBzK-Uj9SpeVWWKNjd9HlceKUO6_0ca1KlPBf5W5HrojhI2-BfOqk8ZrJfKF-or2yPBAZtl7zPEa_L1UFaeusbgGUQsB4d_Jdk-a-UDfBtDavM4UsyK1yE37COlSZiR9jrG7p2alPJZSpkYzTwElWi1XPr2hBPn7kiWfbUWeKgjiQcrdwCiV-DGYGwUCHoNaFVH--CeOWnk_Jqt2eY22pumNqOdwW2zVqbG0XGJeKXb5lk-1smLIRoCYpXEtfQRdp0h-cweF4davtwhRzmThjdySANMqH5UfS20LbxPgcQKnUlTvp-MRUQ8iUirYSTZy3od_vsiz-0Y0V2_xugJssSsJgtgBkaoYfWnLMD1TtzEpashi3bQzZv4k1tXJ32Z4q-O3iJONxJSl4tdXbN7FZFBcvSzHumm3i8kwbM9aQKf1Vvy6LI6TDt6qFJz0eLJxINgsqxyFfcyhC-LdxwjLhvMTFIxYkJqZUX3sgeSW5FP8dCUuavyi1bju7Z5f5RIuKdE-0R2uPakmKtDuL-ejRCV5wIASMrgTaqTaHDIXuX6CFPfg5zanFmrWhj0bgwsBS-I3NbwgpVY-lvSV22iiWiBmkorYu472An4cq0oYscSBqllkUJZUL1vbS9sP4ZnuYKMmfc44U0XHg5V1SeBSefvLKAlb5EMxMoEFb5-t_3Bkb4dG8waV-3vC0zr9GP9pHna52gVTB1aa25vUgwbS4Bq2ROFk1FsZwXCul6jA4LUzu7Wl-TqSkj3pexW57MmND0NVEENTHcRo_b-9Uqtk68N9tW939yabYP2IFipM0pt6T1LV00pShUNCFkupJvUZkRTkZ-At0AOMhrS-SSFOZm7bqW-PTxQWLEFD2PaqSoh3HluzCuxFFPQsErJWc5nN73_Qt9ImLJccjmTLqXYbVRl8xlTh09aI5XDUSlNkrGT3NUtEkchAImuKC1FY0vTUT5mXisjaJZwM9UGFD3K_SIw==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_01568d2d3e8a8382016ab5f2ffa18c87d1b2904dbddd0cf6b4",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 110,
+     "completion_tokens": 610,
+     "total_tokens": 720,
+     "cost": 0.000316,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.000316,
+      "upstream_inference_prompt_cost": 1.1e-05,
+      "upstream_inference_completions_cost": 0.000305
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 76,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Someone signed into my account and changed the email address. I can't get back in now.",
+  "Not me who log in last night. Please help me secure account, I see a new device there.",
+  "There\u2019s a login from a city I\u2019ve never been to, and now my password doesn\u2019t work. Can you help?",
+  "I got an alert that my account was accessed, but I was asleep at the time. What should I do?",
+  "Hi, I think another person has been using my profile. Some settings changed and there are messages I didn\u2019t send.",
+  "Quick help please \u2014 my account shows a new phone logged in and I don\u2019t know whose it is.",
+  "I noticed a sign-in I don\u2019t recognize this morning. I changed my password, but I\u2019m worried they still have access.",
+  "My account was opened from an unfamiliar device, and the recovery number has been replaced. I need help getting control back.",
+  "Sorry my English not very good. Another person entered my account and changed my details. How can I fix this?",
+  "I keep getting login codes I didn\u2019t request, and there\u2019s a session listed on a computer I\u2019ve never used.",
+  "Someone has been in my account while I was away. They changed my profile photo and sent a strange message to my contacts.",
+  "I received a notification about access from another country. I\u2019m home and haven\u2019t traveled, so that wasn\u2019t me.",
+  "Can you check recent activity? There\u2019s a device connected that I don\u2019t recognize, and I want it removed right away.",
+  "I\u2019m on my phone and can\u2019t type much: my account got accessed by somebody else. Password reset isn\u2019t going through.",
+  "A few days ago, I saw an unfamiliar login and thought it was a mistake. Today I found that the account email and password have both been changed, and I can no longer sign in. Please tell me what information you need to verify that the account belongs to me.",
+  "I was using my account normally, then it logged me out. Now I see a sign-in from a new browser and some of my settings are different.",
+  "Someone logged into my account without asking me. I already signed out of all devices, but I\u2019d like to know if there\u2019s anything else I should do.",
+  "Not sure what happened, but there are purchases in my history that I didn\u2019t make and an unfamiliar device on the account.",
+  "Please help, I think somebody access my account. I cannot find where to remove that device.",
+  "I got an email saying my password was updated, but I never changed it. I\u2019m locked out and need help restoring access."
+ ]
+}

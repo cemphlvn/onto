@@ -1,0 +1,168 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: they were charged twice for the same thing. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790308942-Ko1RWOqnBSurGBQpV32B",
+    "object": "chat.completion",
+    "created": 1790308942,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I see two payments for my order on my card, but I only placed it once. Could you check which one is extra?\",\"My bank account shows two identical payments from you today. I was expecting just one.\",\"I think I\u2019ve paid for this order twice. Can you help me get one of the payments refunded?\",\"There are two matching transactions on my statement for the same purchase. I only checked out once.\",\"I was going through my card activity and noticed your payment appears two times. Please let me know what I should do.\",\"Looks like I got billed two times for my subscription this month. Can someone take a look?\",\"I placed one order, but my card has two payments for it. I haven\u2019t received anything extra, so I\u2019m confused.\",\"There are two payments for $42.99 from your company, both dated yesterday. I only made one purchase.\",\"I just noticed a duplicate payment in my account. Could you remove the extra one?\",\"My card was billed two times when I bought this. I only meant to make one payment.\",\"I\u2019m seeing two identical amounts taken from my account for a single order. Can you check this for me?\",\"I only ordered one item, but there are two charges showing up on my card. Please help me sort it out.\",\"The payment seems to have gone through twice at checkout, even though I only submitted the order once.\",\"I was charged two times for my monthly plan. Please check whether one of those payments can be returned.\",\"There are two entries for the same purchase on my statement. I\u2019m hoping one is just a mistake.\",\"I only made one purchase, but I can see two payments pending on my card. Is one of them going to disappear?\",\"My receipt is for one order, but my bank shows two payments. Can you confirm what happened?\",\"I think the checkout may have processed my payment twice. I\u2019d appreciate it if you could look into it.\",\"Two payments came out of my account for one order. I didn\u2019t submit the order again, so I\u2019m not sure why.\",\"I noticed the same amount was taken from my card twice today for this purchase. Could you refund the second payment?\"]}",
+       "refusal": null,
+       "reasoning": "**Generating customer voice messages**\n\nI need to produce 20 distinct customer voice messages. The instructions say not to use exact phrases like \"charged twice for the same thing,\" so I can rephrase it as \"duplicate payment\" or \"two transactions\" instead. I'll keep it to 1-3 sentences, ensuring a natural variety of responses. It\u2019s important to make sure the format is valid JSON, so I\u2019ll focus on that while avoiding the literal descriptor.",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Generating customer voice messages**\n\nI need to produce 20 distinct customer voice messages. The instructions say not to use exact phrases like \"charged twice for the same thing,\" so I can rephrase it as \"duplicate payment\" or \"two transactions\" instead. I'll keep it to 1-3 sentences, ensuring a natural variety of responses. It\u2019s important to make sure the format is valid JSON, so I\u2019ll focus on that while avoiding the literal descriptor.",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfJR3csUbg2B3qzgP5opLbkBT8JcHNuGniE60V538WoymZJD0TuGSqKUUFOGxBFTpkSs75jv_t1-5H1sR19Aw2a21iD64V_bAvdHkYMKD9wv10_cQwqCDmcNekVGEQrzl5Qg1Dly-HVfBWmgus7Mb5P4CG8iW4RUOQIGEJyzhf-n2CDz2VWYwK-BktOQ-HETN26v9uyQLjQ797shxHFXmP4hzX6scVix7ybSSFElqxLs1hxhgrdwydkmU6bdQAy0Ady2hD-erh3PLzk9NowyfzrwEBveeekTF05IMeLaLsLKpegtdOG7eYX2tGSqqXj9Pk9IZ8NQtOqpTLQCjwgPTXujQHXK45tIdOmANMofV1kpxScCFXdjP_j4kCVXXKW2kqiwzOmMyCFkR4IEPFcr6sEsyZZT8CVtuurVgMQVTnGm1vPSRm65ccYPYuh4BjQ51gkf7DTiuArZXxXRduR3D69zS08vsmjJI3lShQuJW1Ft8rZxttZPSo-M9uZcHyWeh8wS4gOPEMygpCbQu1xQwIYRB98_IssFKpcj4Szf-hyDxkKCWOq-6VFo1b1lE1ASFA8cb9NbIX2g6SCXWVkV8X88LUsZy96VPhqpbaJczxoJqTwXU3zYHiUD5KrWklsfjYV9DVsdJMFfgi9vhfIEDV7WU0Bu-Tc5Q0J5etMH5PHKAFADftKVcRgSTmUXgPlJ6J8A-KmLOw0mdUduLbDkg2Cg_7crLYRa3KKv9Rb53PwYuIUlZITIeBj2vfELiKQk87J84FJ7-8VY2JqA5u24iHxGUxWfD_n_aPiHbIm_4DfN4G7H8Y8WNNFEnr7WFz3e32o7xzyFm71PA62dZzXJ_jbMZ3vxzEndxuMnngmK9z4sNESuwrZzq4dHmwfJ465XnLNkywTfBtvwBMLQREsAmbgWCKUA-RCuNdu8y_rTV4LVqOSr4A1zJ6G6HYIg5EPQNAcjl5KZIUhHSnAiXn357_qkFfqKfJH1D-ZLL2VtPIbRDBhyn4sWlDkrhtg56GRnYg5BSz8m5Jgnv1eky0g7XD72NkzL4q1_iAxQ71s5TbUUTHLmw4gAyPZGwXC6Up2eXVA6H8ZhpOLFRFuUWfj1vpEXK4GF1WqXf6yyQbiqHgk7nSREeja8-nCI7QTW3WOrpOwVld_Nas6XbggPRBHTtkAW3pKGKR-UXB3hSOM9GOplQLvJw16Icx6lXP-MNPNOsdZWne5z9BzZ4q1MLTzhe7cwFw06SHLVX6rX3mJjI48sJX312m3tLCt_5JUw5DFIqeHPPcMLDgbzpmqZ_UiyQKlWs6vOb3vYjulGMO1v5DBV2DLcz3jucPpqTcpcVn8iRPdrloxxNw4HkJXbQZYT4vy2uVcOs3CJxWgoMtkERG3xm4LYSI4dFIu898l-jRfYpHx87-2m2FrX2rstxi8ec1asQJvgVFdZ_pfs332Lq8vkiaaGr-7iMqhaEBRc2VKfWLzjJ0lf5LavpRZ4ZTeOLTL8Q-nl0qf6JdY8lA-vKIVE4P302fg3NoeVM1pMC2jsxRXa13K9KZwg9MR40mB1I9ECA76B1YFfDEM_eCIu4qOWhFG1bFJlcHQQS_sm_Fn-UbHdKcATYEUpIRI7fUBxuND8fWn3Led1zETF63-7woqokFRoaNhH-gphX3GAp2lhZ9uu5xYCuV2Wo0y5WByhR_l5Zxx2NoaGFlDOx__okLGT_jgwyEsvewDu8VeEfIcvZgKYQxnCUNnqWW05cacts9ybC1iWVq4nT3pwaAjT_VPYFvyx70cVAy0Fp7q1-QSHEyV2yUEd-Qc7OvnrM6Xpf9ZStqGfyOwfUA6TXG8bxIbGqT1l2E3cCJMlR_p5BZtjG5ch.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_00fbf998fb95fc06016ab5f24f120487d18245ad47b87c89ce",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 104,
+     "completion_tokens": 534,
+     "total_tokens": 638,
+     "cost": 0.0002774,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002774,
+      "upstream_inference_prompt_cost": 1.04e-05,
+      "upstream_inference_completions_cost": 0.000267
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 78,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: they were charged twice for the same thing. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790308948-HqDx27Rg97vLgiDd9L9E",
+    "object": "chat.completion",
+    "created": 1790308948,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I see two payments for the same order on my bank statement. Can you check whether one of them can be refunded?\",\"My card was billed two times for one purchase. I only placed the order once.\",\"There are two identical transactions from you on my account, but I only bought one item. Please look into this.\",\"I noticed a duplicate payment for my subscription this month. Could you let me know how to get the extra one reversed?\",\"I was going through my statements and saw two payments for the same booking. I only meant to pay once.\",\"My receipt shows one purchase, but my card activity has two matching charges. Can you help sort it out?\",\"It looks like I paid twice for the same order. Please refund the extra payment.\",\"I only checked out once, but there are two transactions showing up for that purchase. Is one of them going to drop off?\",\"You took payment two times for my monthly plan. I\u2019d appreciate it if you could check and return one.\",\"I see the same amount listed twice for my recent order. I haven\u2019t placed a second order.\",\"There are two payments on my card for the same delivery. I only received one order, so I\u2019m not sure why both went through.\",\"I think my payment went through two times when I placed the order. Could someone confirm and fix it?\",\"My account shows two identical payments from yesterday, even though I made just one purchase. Please advise.\",\"I was billed once when I ordered and then the same amount appeared again later. Can you check if that second payment is a mistake?\",\"I paid for one ticket, but I can see two matching payments on my statement. Please help me get this sorted.\",\"The same invoice seems to have been paid two times from my card. I only intended to make one payment.\",\"I\u2019m seeing two transactions for my recent purchase, but there was only one checkout. Can you tell me what happened?\",\"A second payment for the same order has appeared on my bank account. Please refund it if it was collected in error.\",\"I made one payment for my renewal, but my statement shows another one for the same amount. Could you look into it?\",\"There are duplicate payments for my order on my card. I only received one confirmation, so I believe one payment needs to be returned.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfJXOfXM5AWHWuGQ9UANtdsofgeWJ9RXeMeGgG-juvkBIGdvz9UBrAentpTiP5NWP1ETmKGcK0SsYeau9g90waWM_tWhbFTM-zfB06PRy_vBb0a9MFdvxx7WUN07rbNLtrKVS4s-Sh_3lNAx_or2AYOcI2xy0i47LTuFytysBp4YUUPw6msPr6R2kMBwaCbv-2kzF68wUK6GwuiwnNhOxuIR3IEsE5SwcaQvgK6RggzWA85akk3jufn95W1qEZhy98KSYnsKRgkB5MtmCjN1ZAVnoW7qHuRViNtPc7y7C6y4sJ9ZqjHbu55KhziRWpkFgMPmjXeevxieJN2S7KfqeCisxFKrgh1Mu4kHL8uT9zNdya8SWyBrYLY8lGTD92IRpPGDt-G8WLbwWGhkN6yGgXhdKEd8-w7yyXOZO1q6BVwxvFGuUcdRiPKxv46MS4RGn2_gheE8sHWDAdNCk1o3Y0e67OjYbTb8xEve48mlEuTogmus70kZKf1tieA22hN8GBjyp5SzEg0knkEB_6fZTNOH9cgz1tPrVVSqV4siB0fwkjDVqVPtmoLe93K4-9RMRm09nGERwLK9DfrA6Tt05j81GDIDQWP52KIxmqmFOTfx4D-XINFBS0SrKz8_4GkrNmUNDJ1JMCbpW6F_dutBs3K8aWHrpAQgeHCF1ZNiK1Ch4axUj04o-2-zkN7W9p_JvkpYiu-p4Cvjd5E6IE0_oz04dvGkGXt_6Rmzcg2sspca3hig6JLAdcVp1kpj3BCBM-f-TeGoeY5IQtHUqhzbFi7qzfp9n5KOE2xWi8g1cMFV15sMLoIsrd7yCBrm-JQ0aO5QnRWglOttkDkhv9QrWqsn2YFFP21BWUmiEkg49842bfMw7giI1VmZo0Xgh403uYzaufRRw_UugiI4OzOh55M4nu7rdGJngpdyMRAd0fveCeJEXaV0pfaeiqtYDtA8_JIvjlg_F2oH5v11L0gynlQpfjb8JBBMNKXQbjKuRJ8bjYyD15K9K9SYzaZlNqMbq1Nj8UBcQF6T43P2uKW9OtKmNJpBwIIF1Qk2zVh9iUcfJsxkIsFkbcta0d73Xn0ODUgHL6esDpeQhlhHRlWwPmycCblCldEZflLuzKxXVqMA8HG27sanie81VwUC3U1ihsIEDrq6WrxUfkLiVe7H_iMsQWzXVrwAaU_PttSD4ZqihW2KxXpoOi02-d4hzZnYU7jsNnEa_ooOa2Wqq4EjqGgz28j5fr8aqFM-3yib5jGXAdJGIncRkpaQHXlEFhmrEdzhx1XhXUswygcI-m0HUE-y80T9yckQ9ChwTbvAMbjDeCjcrjW4RtK4X-bBjg1_O9MpTqnLuGmCqsFd5v1DjL8JXtwI7Cbih_89SkmJM-MR9eUuDTvXWDwARLaS-luZPrdLijIf6snvlWCclTUibNUCWsEfgMgU4VBGpQNvIL9soZJUgT_t7Zwd7wqXWkptuEdKhDRBlxArs58ladkSQPtmLNQh9y2JqVIh9nXmrniP4VNBR6cZoW_JmWpFe0xKuk11XWr23dyJqYC-LeYzNoywAI7CIK4JQJNRLIUMzAOs8Zzoq--3xZhWQMSreVV7jpmr-OwKfyUUQtxy2a7tsc_3gAaFHxBUWsbcgyteEqou5nl4jYZOtdUJCVsdZogG_0KA2ewvQsMRpAGRxusehoxp6B64mfIeTapeE75OCOME2yLURPo9WrlvF5OEDPTfjvnsP59P2H-aRNmJAnWJVT1Lf3Cp3dJig0dvG1Xe1XDFeGPsB_qfECKA2-pEOJPY0n2aTpaqytOCzjFvvhp_qFE6ymVji6RO-DfOIcZBPQ_vN44=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_090ffdd393f41019016ab5f2555c2487d1aa561d3103c3a412",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 104,
+     "completion_tokens": 559,
+     "total_tokens": 663,
+     "cost": 0.0002899,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002899,
+      "upstream_inference_prompt_cost": 1.04e-05,
+      "upstream_inference_completions_cost": 0.0002795
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 78,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "I see two payments for my order on my card, but I only placed it once. Could you check which one is extra?",
+  "My bank account shows two identical payments from you today. I was expecting just one.",
+  "I think I\u2019ve paid for this order twice. Can you help me get one of the payments refunded?",
+  "There are two matching transactions on my statement for the same purchase. I only checked out once.",
+  "I was going through my card activity and noticed your payment appears two times. Please let me know what I should do.",
+  "Looks like I got billed two times for my subscription this month. Can someone take a look?",
+  "I placed one order, but my card has two payments for it. I haven\u2019t received anything extra, so I\u2019m confused.",
+  "There are two payments for $42.99 from your company, both dated yesterday. I only made one purchase.",
+  "I just noticed a duplicate payment in my account. Could you remove the extra one?",
+  "My card was billed two times when I bought this. I only meant to make one payment.",
+  "I\u2019m seeing two identical amounts taken from my account for a single order. Can you check this for me?",
+  "I only ordered one item, but there are two charges showing up on my card. Please help me sort it out.",
+  "The payment seems to have gone through twice at checkout, even though I only submitted the order once.",
+  "I was charged two times for my monthly plan. Please check whether one of those payments can be returned.",
+  "There are two entries for the same purchase on my statement. I\u2019m hoping one is just a mistake.",
+  "I only made one purchase, but I can see two payments pending on my card. Is one of them going to disappear?",
+  "My receipt is for one order, but my bank shows two payments. Can you confirm what happened?",
+  "I think the checkout may have processed my payment twice. I\u2019d appreciate it if you could look into it.",
+  "Two payments came out of my account for one order. I didn\u2019t submit the order again, so I\u2019m not sure why.",
+  "I noticed the same amount was taken from my card twice today for this purchase. Could you refund the second payment?",
+  "I see two payments for the same order on my bank statement. Can you check whether one of them can be refunded?",
+  "My card was billed two times for one purchase. I only placed the order once.",
+  "There are two identical transactions from you on my account, but I only bought one item. Please look into this.",
+  "I noticed a duplicate payment for my subscription this month. Could you let me know how to get the extra one reversed?",
+  "I was going through my statements and saw two payments for the same booking. I only meant to pay once.",
+  "My receipt shows one purchase, but my card activity has two matching charges. Can you help sort it out?",
+  "It looks like I paid twice for the same order. Please refund the extra payment.",
+  "I only checked out once, but there are two transactions showing up for that purchase. Is one of them going to drop off?",
+  "You took payment two times for my monthly plan. I\u2019d appreciate it if you could check and return one.",
+  "I see the same amount listed twice for my recent order. I haven\u2019t placed a second order.",
+  "There are two payments on my card for the same delivery. I only received one order, so I\u2019m not sure why both went through.",
+  "I think my payment went through two times when I placed the order. Could someone confirm and fix it?",
+  "My account shows two identical payments from yesterday, even though I made just one purchase. Please advise.",
+  "I was billed once when I ordered and then the same amount appeared again later. Can you check if that second payment is a mistake?",
+  "I paid for one ticket, but I can see two matching payments on my statement. Please help me get this sorted.",
+  "The same invoice seems to have been paid two times from my card. I only intended to make one payment.",
+  "I\u2019m seeing two transactions for my recent purchase, but there was only one checkout. Can you tell me what happened?",
+  "A second payment for the same order has appeared on my bank account. Please refund it if it was collected in error.",
+  "I made one payment for my renewal, but my statement shows another one for the same amount. Could you look into it?",
+  "There are duplicate payments for my order on my card. I only received one confirmation, so I believe one payment needs to be returned."
+ ]
+}

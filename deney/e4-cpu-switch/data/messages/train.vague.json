@@ -1,0 +1,168 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer writes that something is wrong and asks for help, but gives no specifics at all.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309052-XS3EL90PEXaLU7FWG3mE",
+    "object": "chat.completion",
+    "created": 1790309052,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, I\u2019m having an issue and could use some help. Can someone get back to me?\",\"Something isn\u2019t working the way I expected. Please let me know what I should do.\",\"Hello, I need a bit of help with my account. I\u2019m not sure what\u2019s causing the problem.\",\"I\u2019ve run into a problem and can\u2019t figure it out on my own. Could you assist me?\",\"Could someone please help me sort out an issue? I\u2019m happy to provide more information if needed.\",\"I\u2019m having trouble and would appreciate some guidance. Thanks.\",\"Hi there, I seem to have a problem. Can you tell me how to get it resolved?\",\"I\u2019m not sure what\u2019s going on, but I need some assistance. Please contact me when you can.\",\"There\u2019s an issue I\u2019d like help with. I haven\u2019t been able to work it out myself.\",\"I could use some support with a problem I\u2019m experiencing. Please advise.\",\"Hello, something has come up and I\u2019m looking for help. Let me know what details you need from me.\",\"I\u2019m stuck and would appreciate it if someone could help me out.\",\"I\u2019ve noticed a problem and don\u2019t know what to do next. Could you point me in the right direction?\",\"Can you help me with an issue I\u2019m dealing with? I\u2019d appreciate a reply when possible.\",\"I\u2019m having a hard time getting things sorted out. Please let me know how you can help.\",\"Hi, I need assistance with a problem. I\u2019m not sure how to explain it here, but I can answer any questions.\",\"I\u2019ve tried to figure this out, but I still need help. Could someone get in touch?\",\"Please help me resolve an issue. I\u2019m available if you need more information.\",\"I\u2019m not sure what\u2019s causing this, but I\u2019d appreciate some support. Thank you.\",\"Could you take a look and help me? I\u2019m having a problem and don\u2019t know how to proceed.\"]}",
+       "refusal": null,
+       "reasoning": "**Generating generic issues**\n\nI need to create 20 generic issues without any specific details, avoiding specific wording. The focus is on plain customer forms with varied phrasing. I want to ensure that I provide only JSON format and avoid using phrases like \"something is wrong.\" Each issue should ask for help in a vague manner but still remain distinct. I\u2019m working to craft these carefully so they don\u2019t tie back to specific problems.",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Generating generic issues**\n\nI need to create 20 generic issues without any specific details, avoiding specific wording. The focus is on plain customer forms with varied phrasing. I want to ensure that I provide only JSON format and avoid using phrases like \"something is wrong.\" Each issue should ask for help in a vague manner but still remain distinct. I\u2019m working to craft these carefully so they don\u2019t tie back to specific problems.",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfK-2Rq_ylwNEutDaApgMyJ3FDfzs4dp56qoXQzSEnGKavfBnM5kvvmNopuWYh3ET81hCIt1lVZWDZy_b0qSZxLajy9dVHBY_9Q6whABgkP7Rrt0CEwA1VacMGArjS_7lpsYrxPjoERDdikNTyxMVk_XrueVQOG0YsDkToqDED4Z7PbP9fwBJlqLizb75airEO7d2xg5NZqMCJBZg14nVGiiXZ9cDyYfGCbQ7-tM-8ehAtjTwxW4XGfnf_p1ezFgr2rkV2pGtZuohs4461u5lsNpEHsrivgyf97_N2Zo8btYiFLnWYCiBSR-XIJ7dhFnyfQ6jay6NULqj-_yJxq_noxPgjubdrLnwjbWes6yT0kk1T6vxgW-ZzN8nvgBFTz8mO2GYGcIgG5iGqq6NwCEH6vPNHT4bY_CiMMxRBOymUgm364Va57Fg3eN4X7Yo-XdxIvAleY7oj_17fBcTKIc2-MzeAyNqscO3EdPmQMnLITJa61G1ZShlsnwmE3PNbeUYBCFUu7gl0UyEDztrzqdaA0BpUAZHPaE0ljHqKpegD94ThXQqb4jhad-fhgjrI8tL0FPTYkIaKYg_jnYmZVcpqbrdQbxAVHaL_ya109v9SgzILfqo9Kk9lamcdp_0cP30lCUDtzvcwvBECVwOH0SqAQzhXu6QKWmyao2W9jAd68-GC44RF5MtdngmHuptM16EahLs4rBcjNmti2BXn4-bnlQN2Lp6WUmrR1hjB9Le-qfxytsyGdqL44Fc3ehf566EGD3UryfJC-1QCnzDZXVvsGNxBppPPaVvIbFjBgvJ-AdHzPpaNiFQWRfWwvcWbdsNHeaFDEBVFm4MvTNitgBiEOgeBd6z1ZwU5A8gyWECrEbupC42i5CtWluFlYuMfKlrqZUCExqfno_eyxQF-Vy_lCbb7QmG2AosD6fQ7cSXzMaIUqJmv3pNihczmrUmbIEa1Lp0B0Vtz2pfiqjDbU-Afiyc3zp0RVbP51YwirLvi1qdSaMrI-Ryvl3m_v0cULAckhodihWRqXWDs-Up-5DTygbo_f44_wbZi6lERrQVeGchXx0qCqulpRoOr_UgW9D1YbmRVcdIl6t_MmUhYMWvEEqIRocnzfBNJ5aSQ8kKxzeyLfCZVI_kEJsoxcEJt_5ZPedxWJWwyA8fKkdeMHqfaMSbxCWxwXjmyDensSFFGW0-OsIC3WzU1OF_Yf_93CCcOL7HW0BHsi6v5Z7I3o7uYsuRkHPDR7jZ2L31thDyiXtNYWluCC1b0tTBBFPem5RolQYUrmC2sN8NZgMH-hbRqc4M6kQNmeVNWWFqwCj43pDni0F4kMyVf18ppLXRY2G61w-0YBu3NX66COyMieOn0FyFvk-6hmSerdbcZ0aH31C3ryDqVnuha1GzjQQXRPftlXIeRrUWmOo664znxtan_MxHJtSsVTs3lbIosTI_2qo7Y0huLF0__JQxMkCxenDdDzKYyJtPlHkn1OMkWKk0K_v8sH-mhuSY1jJuJHQ8yALYEhuvVfTo2cGz1D8SmqD79tRWACUD00JE_v70wtuxYW2jCb61lZRWRvYNeZnMlul-nF4WynFQpB4s6mXgXEQJOhwi8UTsNKrx_htyxRrWImupDK_G1gM1eXPA0t4k3O2NzNd2IhNDOhLmfsZ_kN_78b5MO5ZJCBXQp7OJbvEtQ17Z1hai-cf9lzeLU7hB0Nx6gAYzO6rD8TuPJ6jHBYJfuP6.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0d6d91431627a551016ab5f2bcb99c87d1b91c228f9cb9f62c",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 105,
+     "completion_tokens": 477,
+     "total_tokens": 582,
+     "cost": 0.000249,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.000249,
+      "upstream_inference_prompt_cost": 1.05e-05,
+      "upstream_inference_completions_cost": 0.0002385
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 64,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer writes that something is wrong and asks for help, but gives no specifics at all.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309057-TEgIKJgICu6PVCsGBwZN",
+    "object": "chat.completion",
+    "created": 1790309057,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, I\u2019m having an issue and could use some help. Can someone get back to me?\",\"I\u2019m not sure what\u2019s going on, but things aren\u2019t working as they should. Please advise.\",\"Could you help me figure out a problem I\u2019m having? I don\u2019t know what caused it.\",\"Hello, I need a little assistance with an issue. Please let me know what I should do.\",\"I\u2019m running into a problem and would appreciate some help sorting it out.\",\"Something seems off, and I\u2019m not sure how to fix it. Could you take a look?\",\"Hi there, I could use support with an issue. Please get in touch when you can.\",\"I\u2019ve tried to make sense of this, but I\u2019m stuck. Can someone help me out?\",\"I\u2019m having trouble and don\u2019t know what the next step should be. Please advise.\",\"Could you please help me? I\u2019m experiencing an issue and can\u2019t figure it out.\",\"Hello, I\u2019m not sure what to do about a problem I\u2019m having. Any help would be appreciated.\",\"I could use some guidance. There\u2019s an issue I haven\u2019t been able to resolve on my own.\",\"I\u2019m reaching out because I need help with a problem. Please let me know how to proceed.\",\"Hi, I seem to be having an issue. Would someone be able to assist me?\",\"I\u2019m stuck and could use a hand figuring out what\u2019s happening. Thanks.\",\"There\u2019s a problem I need help with, but I\u2019m not sure where to start. Please get back to me.\",\"Could someone help me work through an issue? I haven\u2019t been able to sort it out.\",\"I\u2019m having a bit of trouble and would appreciate some guidance on what to do next.\",\"Please help me with an issue I\u2019m experiencing. I\u2019m not sure how to resolve it.\",\"I can\u2019t figure out what\u2019s going on and need some assistance. Please let me know what I should do.\" ]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfLDM4C8tX3ne_-V6Y7ZeOGwV4n49Irb7NDhohYXBv7L57r7svWqNet7oa0jxdmPIJlS_JBRAZU6OitW3P6grH07lxj9kV5aYPLckDWj4ByVSDQt_oi1X3Jcx71AujHUfyfRSYRbHaLpCB0OQfQgRbgiZIw5W58g7hb3tX-3j6HsrM6iSX-dMbrMWEyv62nYkS6tw-XHEV2cMUWGkb_03HJlJvvLxmrjEoafbeIZ8JFtiLP-lH0KbJXS_HpQGAEooIy7IEf488xGe-Qd0ZxWf8CNXB_xhVG5qpdbtLM4aAjlH_8qJGSLtV07M0SXzrvisrnEJYX1mmy4j4gHv9cL24w734Vgww-o1S3xkPt29ZHVIkr0AjZeh5y0H_Zj7StF5_ZA3w9mX9drb-bPEwL1Q0B2FnMPWg453urA4W6y0mgoK0DOkygViUD_Dqlvl4yRMnlUuoIR_ZIOY-BAkAqfUS9L68OO7ifVR_23HNZIo9KJu8uhM3a1NQmQlwebpiKwVMU__DU0N86ZIZpNS99irQaaZefRyYPsiViPUXcpEimCjfCFfX3-E8o5QiFY5QWUEetBVwiXu_Tfebfuqrl-A92cdZ9mJ8nr_jJ70t3ifXlrjU8Ms0zt16iMSdxpOo5Ei_lLeJYCLJEJQlyk9ySqmXt8aphOEtVWuzWSX97aei2Ef0j9VG1OrnpCspr7uog7b6Q_HLxOn7jkalJJ9L0EeBY5S2u9XmFP9gvmsaAjdQPKFNqxTPIFkvpOX-NzQs1DanWKVguhfSJn9s3fsfTR3TG9nUhIwqhoSfeyOs8qCXExg5ZOsNDOyMTo3cSTeLm-0eZJav3v2wLhPQwNzpEB2Pp2a42NTBAIGLfzz6I2xld67WTGkMmc5Upm7Xhokj412WuDmnqBglxYZQSpeAy01OjZT8yigs054F-9xQZOVyC7OrABBO9AZj1rCA38Ltg1kEtFnWZzdo64ZdLxdx7fJ9xX-_nB46owqOGVIpAypX7eMYCTboZwf7J4s7WXTLVYyYkXaxoeebWk6BPLAaBCAPE8neLXKQ5pIKwnaWNMt8QcrjecURmsLi-yjYwn3-EX6m2T9mL92JCyzQec78qPH_LkNUKtOpY7BFa9vCY3aQSuJUZQBH8cIlMwe8LWFr0HBMExGZ4sr2KQy-pDm7_-UR5K9FGjw9mK87srsa7mLKSqxbGTvyq7dyqdLNV1lXgCLIIghvcYoCtU_U662gpF3gghJKWirwZwRLRa7wtCZ64OlXDUwvp6fhZPxsNCatRVP72528xakDs2-VE5jxKfI8elsxdhqmMaFs8bFoUfsoFLp1gf17YAw_FFORJdYGDKGBDlVFOBwFPTkF1RSblBn1T3yZkbHqLcNmfWY6k7im2A5EMd8h4QicHmekFUTbFmGExYVMoozFXIX5PjFHvA9TnOQ2R7VlwmxXf26QQQ-RDJf69Pvn6e4KCa1ZbItBx_ywzScoBRumKLcKn66TActG6PUWtFI3CaBvaC6inYDK_bvKvu_JPNKpcH54uJ4_CCqWa6w3wgBg9sz0fMO0xq8EFp-5RdcT_jKy38uPtSKs_L0jb7msOBDHFnOsEp8hOTytcYxHmkHnheemnJ0Z5aMYeqSTyBkzQZwnnQFCIiJT8CnAwgiLlfBvTlpe9FcqbFz6WWQM5Yfr9KpWKwIz1Tbfke35-L7B1QCO8p0BoM3zKYQlnz7kxchZANSt4c6-pmnXtGcADFNH80Xsploeg1AsfDNVdMPkGJqYHEMDaJlrO2QR2KO2V04nTJ5Ei6u2qkb8xIu5-0DcR8K2f0GceLd7CjT1vT-TqYw3QtM1HVru-EzQt0N3ClzFKQtb-zY-JoQNYAcg4JFiEBp8YkEAM6DSh-9A==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_030ef3d3b6525d7c016ab5f2c2417887d19c0e1772142df82c",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 105,
+     "completion_tokens": 492,
+     "total_tokens": 597,
+     "cost": 0.0002565,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002565,
+      "upstream_inference_prompt_cost": 1.05e-05,
+      "upstream_inference_completions_cost": 0.000246
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 83,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, I\u2019m having an issue and could use some help. Can someone get back to me?",
+  "Something isn\u2019t working the way I expected. Please let me know what I should do.",
+  "Hello, I need a bit of help with my account. I\u2019m not sure what\u2019s causing the problem.",
+  "I\u2019ve run into a problem and can\u2019t figure it out on my own. Could you assist me?",
+  "Could someone please help me sort out an issue? I\u2019m happy to provide more information if needed.",
+  "I\u2019m having trouble and would appreciate some guidance. Thanks.",
+  "Hi there, I seem to have a problem. Can you tell me how to get it resolved?",
+  "I\u2019m not sure what\u2019s going on, but I need some assistance. Please contact me when you can.",
+  "There\u2019s an issue I\u2019d like help with. I haven\u2019t been able to work it out myself.",
+  "I could use some support with a problem I\u2019m experiencing. Please advise.",
+  "Hello, something has come up and I\u2019m looking for help. Let me know what details you need from me.",
+  "I\u2019m stuck and would appreciate it if someone could help me out.",
+  "I\u2019ve noticed a problem and don\u2019t know what to do next. Could you point me in the right direction?",
+  "Can you help me with an issue I\u2019m dealing with? I\u2019d appreciate a reply when possible.",
+  "I\u2019m having a hard time getting things sorted out. Please let me know how you can help.",
+  "Hi, I need assistance with a problem. I\u2019m not sure how to explain it here, but I can answer any questions.",
+  "I\u2019ve tried to figure this out, but I still need help. Could someone get in touch?",
+  "Please help me resolve an issue. I\u2019m available if you need more information.",
+  "I\u2019m not sure what\u2019s causing this, but I\u2019d appreciate some support. Thank you.",
+  "Could you take a look and help me? I\u2019m having a problem and don\u2019t know how to proceed.",
+  "Hi, I\u2019m having an issue and could use some help. Can someone get back to me?",
+  "I\u2019m not sure what\u2019s going on, but things aren\u2019t working as they should. Please advise.",
+  "Could you help me figure out a problem I\u2019m having? I don\u2019t know what caused it.",
+  "Hello, I need a little assistance with an issue. Please let me know what I should do.",
+  "I\u2019m running into a problem and would appreciate some help sorting it out.",
+  "Something seems off, and I\u2019m not sure how to fix it. Could you take a look?",
+  "Hi there, I could use support with an issue. Please get in touch when you can.",
+  "I\u2019ve tried to make sense of this, but I\u2019m stuck. Can someone help me out?",
+  "I\u2019m having trouble and don\u2019t know what the next step should be. Please advise.",
+  "Could you please help me? I\u2019m experiencing an issue and can\u2019t figure it out.",
+  "Hello, I\u2019m not sure what to do about a problem I\u2019m having. Any help would be appreciated.",
+  "I could use some guidance. There\u2019s an issue I haven\u2019t been able to resolve on my own.",
+  "I\u2019m reaching out because I need help with a problem. Please let me know how to proceed.",
+  "Hi, I seem to be having an issue. Would someone be able to assist me?",
+  "I\u2019m stuck and could use a hand figuring out what\u2019s happening. Thanks.",
+  "There\u2019s a problem I need help with, but I\u2019m not sure where to start. Please get back to me.",
+  "Could someone help me work through an issue? I haven\u2019t been able to sort it out.",
+  "I\u2019m having a bit of trouble and would appreciate some guidance on what to do next.",
+  "Please help me with an issue I\u2019m experiencing. I\u2019m not sure how to resolve it.",
+  "I can\u2019t figure out what\u2019s going on and need some assistance. Please let me know what I should do."
+ ]
+}

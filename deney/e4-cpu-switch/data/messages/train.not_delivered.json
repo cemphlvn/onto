@@ -1,0 +1,168 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: their order has not arrived; it is late or lost in transit. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790308980-uZw6RoAYy2wdipQZxDim",
+    "object": "chat.completion",
+    "created": 1790308980,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"My package was supposed to be here last week, but it still hasn\u2019t shown up. Could you check what\u2019s going on?\",\"The tracking page hasn\u2019t changed in several days, and there\u2019s nothing at my door. Please let me know where the parcel is.\",\"I\u2019m still waiting for my delivery. The estimated date has passed, and I haven\u2019t received any updates.\",\"Hi, my shipment seems to have stalled. It was last scanned at a sorting center a few days ago.\",\"The delivery date keeps moving, and now the tracking page doesn\u2019t give a new date. Can someone look into this?\",\"Nothing has arrived yet, even though the tracking says it should have been delivered yesterday. I checked around the building too.\",\"My package hasn\u2019t turned up, and I\u2019m not sure if it\u2019s still on the way. The tracking hasn\u2019t updated since Monday.\",\"I\u2019ve been waiting over a week past the original delivery estimate. Could you help me find out what happened?\",\"The tracking status has been stuck on \u201cin transit\u201d for days. I\u2019d appreciate an update on when I can expect it.\",\"My delivery is overdue and there\u2019s been no notice about a delay. Can you check with the carrier?\",\"I haven\u2019t received the parcel, and the last tracking update was from a town several hours away. Is it still moving?\",\"It was meant to arrive a few days ago, but I\u2019m still waiting. The tracking page hasn\u2019t been helpful.\",\"Could you check on my shipment? It hasn\u2019t arrived, and there haven\u2019t been any tracking updates since it left the warehouse.\",\"The package hasn\u2019t come, and I\u2019m starting to wonder whether it\u2019s gone missing. Please let me know what my options are.\",\"My tracking says the parcel is on its way, but that message has been there for almost a week. Any idea when it might arrive?\",\"I was expecting this by Friday, but it\u2019s now Tuesday and there\u2019s still no sign of it. Please look into the delivery.\",\"The delivery window has passed, and I haven\u2019t heard anything from the carrier. Can you tell me where the parcel is?\",\"I still don\u2019t have my package. It seems to have stopped moving after the last scan, which was several days ago.\",\"This shipment is taking much longer than expected. Could you check whether the carrier has an updated estimate?\",\"My parcel hasn\u2019t been delivered, and tracking hasn\u2019t shown any progress recently. I\u2019d like to know if it\u2019s still on its way.\"]}",
+       "refusal": null,
+       "reasoning": "**Generating varied messages**\n\nI need to create 20 distinct, straightforward messages without using descriptive words literally. I should avoid phrases like \"order has not arrived\" or \"late or lost in transit\" and instead, describe the situation using different styles. It's important to interpret the prompt without repeating exact wording, especially phrases like \"customer's situation.\" I can mention that a package hasn't shown up or that tracking information is stale. I\u2019ll make sure the messages are in JSON format and maintain my own voice.",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Generating varied messages**\n\nI need to create 20 distinct, straightforward messages without using descriptive words literally. I should avoid phrases like \"order has not arrived\" or \"late or lost in transit\" and instead, describe the situation using different styles. It's important to interpret the prompt without repeating exact wording, especially phrases like \"customer's situation.\" I can mention that a package hasn't shown up or that tracking information is stale. I\u2019ll make sure the messages are in JSON format and maintain my own voice.",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfJ4BbZ12RC6llAymgQUmtyB9KRtg0-FH8eZQ559B7RWQjut4yPC1VynaUPBWMN23fCG_dieATUInz9ZbB9FWBcSpfEQqTzFgwfBaCQjGZUeHq4bi5PPm8EWTA1vM3B47ljj5e7Df42akoYQ_A80a2XLEgjT_5Ch8ntJrRe7IZoU_ceVvVVA-rSiJKs1fisVMbyDP1YN31H1Z9ZJwv-EM6J6OFPcHI3jjL5Sz2or1hQX8mtMQfO1tTtOZcE01tXtxYPp2RawzvGnDDs4_FXkspU_J_pkkgnLdQSY72JvStRTB1BAtrMugDVtEE5uMszUzLwJf6pQJW6w251BKLxlvtFpcV522Frr3MuwsNJvngTVKDsSaHlFKzweWZFIodYrbDG_qzRuY6NhBCH81z7xpdD6VgTvwoUXdDAF6rNet4ND-2_CJVjeG8IZZknVZZcPK56wsvkqBz1ZmAxrfP0N_rUkRfBxGF6-mIcfrd81grOMhhWSx-R8dJjhUT_JOiNMBMdcKUFtjTdMQt7-1Df72YXBfJNty9cEi8gEf6Xrow-ZmVXPZY5l1kulJ7k2Cel7Qc6xBCDxFk0a7bktxAZoKPaxBzoBVo7L75hXBbjI3vuERp9M4WloeraqA-pjpEsyRfJsPcTdPE19Uf9RDWM6nFch37Jv6Jf2Lw57VdtVlzoXeX97P8vsmQ-_pG205TwjsBjdghGt_pmGaWm3izNeG0kMcHkF0x2WkaqE2nU9-JehC3tHKBLZKDBrT1iRvh-_TqgAqNpXIsA62LEhC7Eyb5GATbUGg7pQehZs7GBxXoU1di_ryCCrIYWwtI8vYJUTR_5aiUxaaRhja3wGgwTgqLbnU0XFgFuFtHPSzzGHl-Uz6Ppj9dNBGffyMuOQdFhFFFrpEP76PFhqgJOEzwjfg2MMDhLHOguTFuUOFM533HGj05Sd8J2QG8JCjKXpek8WTugJ3lFg-U8rkRbAmT22sbCkVa2Ezn7rkXb0uvzkrMoRiyd4d5d0bllmnTf76RgBwJQxYdby08te6GwDHB_Vw228VGx2uO4jO-LPViy3enjkgC3ROJTJyUSl6wh6YoJ-U28TUNTKsrAVv3SZ5TiEasW-ud76WpZSB-9F6aMyq5PavWZjf0YSFoy9NdzdrK00K1Zw7HTn5RT2UC9SESj4LBpnoz6eB0uia0RNIk0aa81M6lq_zMPLf_pFBoh3RzWa9pn17S0UEFNrq_Ctocw0n5ZS859egecPvClshOXiN6kOCELcMJND6s6cZVIVYY3H5OMwKka3UZ3TT6dB2m0S2TTACDuszHXi5iAzCFEHc9psaQ8vK9wXXp90mzAJzoSAVuO0wP1HI-0-KemGgIwgIZGSNcK90rbDbOMGZ4JlIgnzX3SReuKo3Vl2lWkEhIQtslloH5DtUslzqoYW3AyHWJ8LkR4O1KjXNQb3ZAGEBUiIlgOAGXph34pQGncsBRRIqAhrumnpdcTp1ahjZAuRTMo_7ObATVl-aUIrpu8WTw3T4YDDjFfHJGUqUzfCW8lHfcHhjCFco--aLlP9NF8s6vi9uzVIg3hY9uKMyj0QgXh12sTIOYdnRcON5_gNrGAkIHBEjqXw5DEtnSBJLtr6IFWRpK_lBeAYza_KrE1bwOowR6xEOTzWMX5OgIZJBkgyqQYoOebbg1huOAlpmbkicn5pFtTXGQYytngIQcBeHhm9DfZFx1yNB4znxyMMPbUta3qa0PVPcNLbNW-TbG-w9XGLSDu2Y0JJlclpuz5P3GgXEKJKlVq-gyVL_MKh-Zsx6nuzQE0knzIEfAGzq0PxQr0AxrCt6zptdmNOMjboORkw7ZeW8EAhqYo9uoZa0_efWs8YGDxxrySTSlJU5KP3UmbVOWWbVrwYKMT11vMdWKWfOpUNNuUVULfm6ePoW-N6LCJeqdn91NghBoyONVN3gIN_koIv5POCO6QkW5s3GDxaqy4yYYnfyH0CaUte10II8FsshM_zPoHERW2jEijBnX43_PP1MIac2lxUq5H06-1ME1ZpwujmGLY95O6iUwt22Iw5NLGHB-k1xm02HK8-1qojCACty8foFXyNQsu_Yu4dcQepn37c10gLObjVv_auywJjFEhLl-cSXSfyEO6Yz2KgPg==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_01522f073bfd7f61016ab5f2757f1c87d18ebc83ab662316ea",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 109,
+     "completion_tokens": 642,
+     "total_tokens": 751,
+     "cost": 0.0003319,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003319,
+      "upstream_inference_prompt_cost": 1.09e-05,
+      "upstream_inference_completions_cost": 0.000321
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 122,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: their order has not arrived; it is late or lost in transit. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790308988-04XvemSgNH4Hw2qCPebb",
+    "object": "chat.completion",
+    "created": 1790308988,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"My package was due yesterday, but it hasn\u2019t shown up. Can you check where it is?\",\"The tracking page hasn\u2019t changed in four days, and there\u2019s nothing at my door. Please let me know what\u2019s going on.\",\"I was expecting this by Friday and still don\u2019t have it. Could you look into it for me?\",\"The delivery estimate has passed, but I haven\u2019t received anything. Is there an update?\",\"I checked with my neighbors and looked around the building, but no one has seen the parcel.\",\"It\u2019s been over a week since the last tracking update. I\u2019m starting to wonder if the package is missing.\",\"My parcel hasn\u2019t come, even though the tracking said it would be here two days ago. Please help.\",\"There\u2019s been no sign of the delivery, and the tracking hasn\u2019t moved since Monday. What should I do?\",\"I\u2019m still waiting for my purchase. The expected date came and went, but nothing was delivered.\",\"The courier page says it\u2019s on the way, but that was several days ago. Can you find out where it is now?\",\"Nothing has turned up at my address, and I haven\u2019t received any delivery notice. Please check on this.\",\"My package seems to be stuck somewhere. The tracking status has stayed the same all week.\",\"It was meant to arrive earlier this week, but I\u2019m still empty-handed. Could you see what happened?\",\"I haven\u2019t received the parcel yet, and the delivery estimate is now two days past.\",\"The tracking shows no new information, and there\u2019s no package here. I\u2019d appreciate an update.\",\"I\u2019ve waited several extra days, but my package still hasn\u2019t come. Can someone check with the carrier?\",\"The delivery date passed last weekend, and I still don\u2019t have my things. Please let me know what\u2019s happening.\",\"I checked the lobby and asked the front desk, but they don\u2019t have my package. The tracking hasn\u2019t updated either.\",\"My purchase was supposed to be here by now. Nothing has arrived, and I can\u2019t tell where it is from the tracking page.\",\"It\u2019s been a while since the parcel was shipped, and I still haven\u2019t received it. Could you help track it down?\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfJ-TfqZQq80V-neBtsr-u1oZobNoHO4vax68i602-1XYhlTxeQlnOaBBCuDyslr1zsDHBGYnNzJX1IWbmSDMEzqJlptKRHKyc-WwiBNGpSsQv-pXEQ_iwauiOmfigHqNARoJsj7XdOys133pwZ5Sd3MhaULZHcnp_7tPv9ITNhG41H2Fmrk6o7o_tJehviq_-vp_0B_dZmV9j8x8ZRPiU-ZCuJhFPzK1nxMWBQGiB0N5YYHE083R0v6K4mJJlNfJ7MdE9RMNgcr0KxH3S_Sei5UA2kH5YVyJR7gNgIrNu7lWqgELJ4IWGy84naiCbbA2gP7sCp1jrJfXOZAhrX_97DyHcXpi7DpI_K2a9mfiQshclOQFL6lDzyd5gLto4bn7XRap3spgxfjpZrQzq9sJ8AQO9Fw4sIGgQDrO_Jqi-y5WYQ8RVzhg5DHayCr47BqhLKPljs6fZ8OexBsMK0rLbGXcH08nNlC23m8kjgiaIZ951fdxd6z2C-R_oPwJ-5Y7XObFI5qETWfcR-c3kXSu_2uwd2EhXECrdkU6RgR9IhFhr2UBn30mHV1K6D_Bh5gT8qCwuGc4hX7dEd5C5lx2WdEaAun2qIpSty3bp1OlDe4SwpRZVLhF8Bm-27sr62yv42u18Dtdvl3RvShiFxj5I0asuHK2dKfjHuLd2tPm0wX9LX2ZsI_4PH6TAO63qKhkEo_vKdqT4jOoF0GovK5X05G6yd5_h6Tjv2aqYxnjURUzlmlu627NC3lWF_RR9-y7mDXFIKKG4RPE2C4zI6dXgzfntcDHamp6uqytbCDf5zHMTt2VTp1t-TJriHzlTt05hdZL0FgIIMzRflqYqARcPkpiXmWMr9vZ7KQTMX94U---IDTWN0hNusgtv52whFYKGFw8JItLLV__37OWb5ZCs_j70HE2LUqKEEv6c-sQfQsKhxzMOW3Z_uWdqndol2YMzlU9oW7-oiAkTw-j9pXPpcY0KVTjqmOh7TJFpNPET659JLWry8bLwIeErBEUBtEh1CB6leRqJaj1jPQsqcfEiCEU2TAE3hAjxmx5WxYogOYjoNmbLNdTXFJpysB7qgcr4FpF8S-JRrwDASaR2RDqy6hJZ0z6pf23MKoYW6vZZjDxqL4CZKmg-GAnNtMvF_-x_gQVXuT6DnpPYe-FkFM_xgh6zs4f8ZnfwW5m4OQ_tIKGZpmWr8RZVYfr3fLvFrelTFP2ajELKYKs1cVYalNhhWtIVN4hjCIhohfMhs9I8LgtYdeSII2Zdv3-PVyRW05mwcwn7AcdPGczQfBa2rigQiskutk8Lo_yjUlKGQh46jUHdkzsLoOoEJckH2_slPPdT2D4yaoiBX0_HTIJUrD1UPgUNj_eAfqL3A1FRKPJGviKwrAHfqYacl39rwkFfMGlEOQVYCek-jfYon61e0ijivnrn1J6PhRslhJjxySWIiwGeW28Os3gnknEAgs-P_AV5R-TDT0OJLahqMXSenDg-5WphICPXvO9UAQoEE814k_znW1an_myPUEqt6g49yF54sIKRZGp92UjZOM1o0MNvU_teYxTRAV2wZZ7qOkB-_yLcrpUQdbz9wwHgxLiCW4z4TOeC6pTB3yIabA4Hs_LnP_lQyaYkfSUGss9QmbwVIZyNHeexvUrgObjkFXoxwztXp-OD1QGHYu9pdM2_p6bqVGneQnPR2O0PJoxlDid10vbkqlHrCo5V_uTg3a4acud-gLMQLvTZRBVNx2gFRpHRHu4piSCZAw78BQpYNUE6O657m228CBtP_vbd9SjRRak0RnhGrP53XRwAinOfucSrhAnQqVe_ESwT1q8CSpen7heqzkHcp64_B8KD8aNq7P7O4CgliL2dxoJePdaLH-r1es6HDhaOpftqDJdcsF4NlkWn1wHMBMp5wS14Q-KsKsN9CLXtRaMtPXsKEPmZLJdDJz58HJPqwZJfbigu9HF8uAC2ggeyDH5RoZVCWdxcRGzGgSWUi3gufxsHlA64hz2z08gwFxWNDgnBBNgBip3bmmZY97VRh9fQWaKjTrO1P2weY3.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_041b30e3718198ec016ab5f27d541887d189f4868d7e476bb5",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 109,
+     "completion_tokens": 580,
+     "total_tokens": 689,
+     "cost": 0.0003009,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003009,
+      "upstream_inference_prompt_cost": 1.09e-05,
+      "upstream_inference_completions_cost": 0.00029
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 116,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "My package was supposed to be here last week, but it still hasn\u2019t shown up. Could you check what\u2019s going on?",
+  "The tracking page hasn\u2019t changed in several days, and there\u2019s nothing at my door. Please let me know where the parcel is.",
+  "I\u2019m still waiting for my delivery. The estimated date has passed, and I haven\u2019t received any updates.",
+  "Hi, my shipment seems to have stalled. It was last scanned at a sorting center a few days ago.",
+  "The delivery date keeps moving, and now the tracking page doesn\u2019t give a new date. Can someone look into this?",
+  "Nothing has arrived yet, even though the tracking says it should have been delivered yesterday. I checked around the building too.",
+  "My package hasn\u2019t turned up, and I\u2019m not sure if it\u2019s still on the way. The tracking hasn\u2019t updated since Monday.",
+  "I\u2019ve been waiting over a week past the original delivery estimate. Could you help me find out what happened?",
+  "The tracking status has been stuck on \u201cin transit\u201d for days. I\u2019d appreciate an update on when I can expect it.",
+  "My delivery is overdue and there\u2019s been no notice about a delay. Can you check with the carrier?",
+  "I haven\u2019t received the parcel, and the last tracking update was from a town several hours away. Is it still moving?",
+  "It was meant to arrive a few days ago, but I\u2019m still waiting. The tracking page hasn\u2019t been helpful.",
+  "Could you check on my shipment? It hasn\u2019t arrived, and there haven\u2019t been any tracking updates since it left the warehouse.",
+  "The package hasn\u2019t come, and I\u2019m starting to wonder whether it\u2019s gone missing. Please let me know what my options are.",
+  "My tracking says the parcel is on its way, but that message has been there for almost a week. Any idea when it might arrive?",
+  "I was expecting this by Friday, but it\u2019s now Tuesday and there\u2019s still no sign of it. Please look into the delivery.",
+  "The delivery window has passed, and I haven\u2019t heard anything from the carrier. Can you tell me where the parcel is?",
+  "I still don\u2019t have my package. It seems to have stopped moving after the last scan, which was several days ago.",
+  "This shipment is taking much longer than expected. Could you check whether the carrier has an updated estimate?",
+  "My parcel hasn\u2019t been delivered, and tracking hasn\u2019t shown any progress recently. I\u2019d like to know if it\u2019s still on its way.",
+  "My package was due yesterday, but it hasn\u2019t shown up. Can you check where it is?",
+  "The tracking page hasn\u2019t changed in four days, and there\u2019s nothing at my door. Please let me know what\u2019s going on.",
+  "I was expecting this by Friday and still don\u2019t have it. Could you look into it for me?",
+  "The delivery estimate has passed, but I haven\u2019t received anything. Is there an update?",
+  "I checked with my neighbors and looked around the building, but no one has seen the parcel.",
+  "It\u2019s been over a week since the last tracking update. I\u2019m starting to wonder if the package is missing.",
+  "My parcel hasn\u2019t come, even though the tracking said it would be here two days ago. Please help.",
+  "There\u2019s been no sign of the delivery, and the tracking hasn\u2019t moved since Monday. What should I do?",
+  "I\u2019m still waiting for my purchase. The expected date came and went, but nothing was delivered.",
+  "The courier page says it\u2019s on the way, but that was several days ago. Can you find out where it is now?",
+  "Nothing has turned up at my address, and I haven\u2019t received any delivery notice. Please check on this.",
+  "My package seems to be stuck somewhere. The tracking status has stayed the same all week.",
+  "It was meant to arrive earlier this week, but I\u2019m still empty-handed. Could you see what happened?",
+  "I haven\u2019t received the parcel yet, and the delivery estimate is now two days past.",
+  "The tracking shows no new information, and there\u2019s no package here. I\u2019d appreciate an update.",
+  "I\u2019ve waited several extra days, but my package still hasn\u2019t come. Can someone check with the carrier?",
+  "The delivery date passed last weekend, and I still don\u2019t have my things. Please let me know what\u2019s happening.",
+  "I checked the lobby and asked the front desk, but they don\u2019t have my package. The tracking hasn\u2019t updated either.",
+  "My purchase was supposed to be here by now. Nothing has arrived, and I can\u2019t tell where it is from the tracking page.",
+  "It\u2019s been a while since the parcel was shipped, and I still haven\u2019t received it. Could you help track it down?"
+ ]
+}

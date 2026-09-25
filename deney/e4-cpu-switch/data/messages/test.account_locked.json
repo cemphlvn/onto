@@ -1,0 +1,84 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: their account is locked or disabled by the service. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309111-O10Aqnl0UniGdkyPL9uo",
+    "object": "chat.completion",
+    "created": 1790309111,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, I can't get into my profile anymore. It says access isn't available right now\u2014can someone check what happened?\",\"Tried signing in three times and now it keeps telling me my access has been turned off. I need to use this today, please help.\",\"I was using the app this morning, then it signed me out. Now it says my profile has been suspended, but I haven't been told why.\",\"Hello, I believe my access was removed by mistake. Could you please review my profile and let me know what I need to do?\",\"hey, can't log in after the update. says my profile is unavailable?? i've got an order to track\",\"I received a notice saying I can no longer use my profile. I don't understand the reason and would appreciate an explanation.\",\"My sign-in worked yesterday, but today the service says my profile has been deactivated. Please tell me how to restore access.\",\"Why was I suddenly blocked from my own profile? I haven't changed anything, and the message in the app gives no useful details.\",\"Good afternoon. When I attempt to sign in, I am informed that my access has been restricted. Kindly advise why this has happened and how it may be resolved.\",\"pls help!! app kicked me out and says i am not allowed to access my profile anymore. need this fixed asap\",\"I can't get past the sign-in screen. It says my profile has been closed, but I didn't ask for it to be closed.\",\"My account access seems to have been cut off without warning. I have an appointment booked through the service and need to see the details.\",\"I don't know if this is a technical issue or something on your end, but my profile suddenly stopped working. Can you check it?\",\"I logged in from a new phone and got a message that my profile is no longer active. Is there a way to verify it's me and get back in?\",\"This is pretty frustrating. I pay for the service, and now it won't let me sign in or explain why my access was removed.\",\"Hello support, I am unable to open my profile since this afternoon. The screen says it has been deactivated; please review and advise what steps are needed.\",\"I may have missed an email, but I just found out I can't use my profile anymore. Could you resend any notice explaining the issue?\",\"Can't access anything now, not even the help page from inside the app. It says my profile has been restricted\u2014please get back to me.\",\"I was asked to sign in again, and then a notice appeared saying my access had been withdrawn. I haven't knowingly broken any rules, so please explain what prompted this.\",\"My profile suddenly disappeared from the sign-in flow. Please check whether it was closed in error, because I still need to use the service.\" ]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfL5sR_gEw46gxqFVkq1p-dq9jxN3hqKlK2ihIdMu9J92ik7WKnxwT9jTv-BJkICkinHMJxK5CizPDZhEoat19XuTTCvT7tuaPGZUwxT99E25ynOF-uJ1un44QzrQeHr7y-cw44glPqx7abUONelNGxVGWMZ0Dc5mDSwS2LyWMmzxci2RmZxwMlH5bQiYD31zWHN__cQv-dofDtG0f8vWLRK_v8xsElUWxqz11-48oNoOZsZoM3VWZsCzB-Z69jABS2zl6nLfOldkc85iKeXpt-faJkO8_fNBbqNF_EqTqSW19SbDss-ZXU2iA8YBXYyrux5lsWtxRnSegLpoeEIQMSmEKGdt74xvUYXLmF06wJrefTQdQtTWwiLktIxknriMRm6qffUDnvePWWJJVBkF6SV5GG19M-vTrJj0VzrSmVzjFSaVGZtXGWB5kDXtoRlkVsrgUKcdizy78_Niu6szk477PrMePPkT195q8y5pBd9nzhCeCXHzI4yHNfef1wCeRisubhWkpKS5ey0kPhwQJ0gseuUyfjIcX1qtx1JGL4vndVoiu9aroCUyMDAfoVJylbfiRMdykzgDZunt2HCG8q-sTBVkOwpGYUHP1I1CGrTlGgSGl4ADDnx5Vn2H6kYghmeh2mwirBHbAPrKbdGwzUN76sNbHNRaBo4wTenMaH39-k6ottTO7yh5MM2ZsTP_XT1YVjBuvX3L0It3tTKAxUy26O0zjAU6G_QjN9W4SsXsGE7PSuVMafCub-a7i_9d4wG0L3txFC8O0NqM-u30sPbtvFD-MCSfGOfDsus4hapUVPRRAwcypiIqM6Tb7IluMvX66xjaAqkOxfCsRIs5loTgR3pFb_e5q4rFZP7uEhT3TsAqg5HM5KU91KPJvSM8PKXDSMC2u9X--4du4yHS89F6RTjUopHBpJjV15rLPRrnPzOWNugk1o61nb--h9ycgMGtKZQTU3zrTUlOcB5SnI-TapR2yQQeON_BVGAdi30uxhpRDIqHD_bTRqJ8l1byIjE5aIBgAR1bsJRk3JayyFpnf8x_2krt5W6m3ZZeWhdV4ewN8EIoMox3oMnNJMCVbHTRnYrHTQx3ye0f2uTjv0UXPtgVC7YffLzX5LkrMMkSCVefO5j0fWH7uNQGIzZMyeTQ_nkxI-QVAmLL0dSc3NBg3pfUJVL7CI3HmNjpOnBvRuHP41iBv42BLtvm3Q7Z92v-raQNcz81PIhp8in93xcetJ11mxS74WJcLse0jZkQ6TerQ1BSJL2uJjZm1mXQfddQ8gMQj4HnmuD6uZXGers3rJxenf5XXzCQ1fYAj1aMvaOdkxFlMT_LYDGuC0pnJ0wDkLZ8C7DYeG1UO1rJkciSoIWoBkXa4CQDUFRLfbK07E8UiEBE09AUC8GcBnv3rU7YfSXGzJAS4iHtBgqliTxGpSoskflCKBwa_24oHOc2ofxsoP-jfo8T9c0cn6QHbLd4wJRvFJ2mpml8WmqhlIDeth_Jb1I-_c4QKat9KaXvJs35M6mm_fKl0HQXBYOyJzGXWgPNyVyjPX_LynTmAzfp1r_ELMiHMR3QSWe4YVtMcH5uqiHp_zljpje32eAIPJ4AWQVQXc_J8EbOVUQXoRFh_jFtjZqjUYsRZzheohCb6hNagJS8CSaeMJutGDbhF4Tg9OWeqFotj-ptVfCFPekwz2xkyf3p7NM1wYZay2lfZC_ptHpG8BWBvztd4zJP38z3R04rz9nuvLtfpaiBgORUUIJTunHekTKm7SW3DIQ2P4B3lLgmluZ5V-n6cmk_96OojWQNOHEbpmMtUAVPggB8VaFdcTHLyfHLOzWZ3cHCnE=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0821e0f0e76506ba016ab5f2f8753087d1b83ae4a170d7ab89",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 113,
+     "completion_tokens": 653,
+     "total_tokens": 766,
+     "cost": 0.0003378,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003378,
+      "upstream_inference_prompt_cost": 1.13e-05,
+      "upstream_inference_completions_cost": 0.0003265
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 78,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, I can't get into my profile anymore. It says access isn't available right now\u2014can someone check what happened?",
+  "Tried signing in three times and now it keeps telling me my access has been turned off. I need to use this today, please help.",
+  "I was using the app this morning, then it signed me out. Now it says my profile has been suspended, but I haven't been told why.",
+  "Hello, I believe my access was removed by mistake. Could you please review my profile and let me know what I need to do?",
+  "hey, can't log in after the update. says my profile is unavailable?? i've got an order to track",
+  "I received a notice saying I can no longer use my profile. I don't understand the reason and would appreciate an explanation.",
+  "My sign-in worked yesterday, but today the service says my profile has been deactivated. Please tell me how to restore access.",
+  "Why was I suddenly blocked from my own profile? I haven't changed anything, and the message in the app gives no useful details.",
+  "Good afternoon. When I attempt to sign in, I am informed that my access has been restricted. Kindly advise why this has happened and how it may be resolved.",
+  "pls help!! app kicked me out and says i am not allowed to access my profile anymore. need this fixed asap",
+  "I can't get past the sign-in screen. It says my profile has been closed, but I didn't ask for it to be closed.",
+  "My account access seems to have been cut off without warning. I have an appointment booked through the service and need to see the details.",
+  "I don't know if this is a technical issue or something on your end, but my profile suddenly stopped working. Can you check it?",
+  "I logged in from a new phone and got a message that my profile is no longer active. Is there a way to verify it's me and get back in?",
+  "This is pretty frustrating. I pay for the service, and now it won't let me sign in or explain why my access was removed.",
+  "Hello support, I am unable to open my profile since this afternoon. The screen says it has been deactivated; please review and advise what steps are needed.",
+  "I may have missed an email, but I just found out I can't use my profile anymore. Could you resend any notice explaining the issue?",
+  "Can't access anything now, not even the help page from inside the app. It says my profile has been restricted\u2014please get back to me.",
+  "I was asked to sign in again, and then a notice appeared saying my access had been withdrawn. I haven't knowingly broken any rules, so please explain what prompted this.",
+  "My profile suddenly disappeared from the sign-in flow. Please check whether it was closed in error, because I still need to use the service."
+ ]
+}

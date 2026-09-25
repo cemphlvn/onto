@@ -1,0 +1,168 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: someone else got into their account. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309037-3LEU0r8ho6RcwApnbyJo",
+    "object": "chat.completion",
+    "created": 1790309037,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I noticed a login I don't recognize this morning. Can you help me secure my profile?\",\"There are changes on my page that I didn\u2019t make, and I think another person has been using it.\",\"I got an alert about a sign-in from a city I\u2019ve never visited. I wasn\u2019t the one logging in.\",\"My password stopped working, and the email linked to my profile has been changed without my permission.\",\"I saw messages sent from my profile that I didn\u2019t write. Please help me get control of it back.\",\"A device I don\u2019t own is showing up in my recent activity. I\u2019m worried my information may be exposed.\",\"I can\u2019t sign in anymore, and the recovery details look different. I didn\u2019t make those changes.\",\"Someone has been accessing my profile without my approval. What should I do next?\",\"I received a password reset notice that I didn\u2019t request, followed by a sign-in alert.\",\"My settings were changed overnight. I\u2019m the only person who should be using this profile.\",\"I think my login details may have been stolen. There\u2019s activity here that isn\u2019t mine.\",\"A stranger appears to have taken over my profile and changed the contact email. I need help recovering it.\",\"I noticed purchases I didn\u2019t make after seeing an unfamiliar login. Can you look into this?\",\"I keep getting security alerts for devices I don\u2019t recognize. Please help me stop these sign-ins.\",\"My profile picture and username were changed, and I can no longer access the page.\",\"There\u2019s a new phone number listed on my profile that I never added. I suspect another person has been using it.\",\"I was logged out unexpectedly, and now my password won\u2019t work. I didn\u2019t authorize any changes.\",\"I found activity from another country on my recent sign-in list. That wasn\u2019t me.\",\"My contacts say they received strange messages from me. I haven\u2019t sent them, and I can\u2019t access my profile now.\",\"I\u2019m seeing unfamiliar activity and can\u2019t reset my password because the recovery email has been replaced. Please help.\" ]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfKvIrPdlhL7XD99r9NFFkuF5dN7-c3kQbxKWoal32bMNZW1O6kj1ApS_tyDOdzGg5kQWWMDiftrrYParKbQejYK2I-fNa5KtmjsI6D2RkmRJZw8rch7hlVlsdzbE4TYGQNvlFD4roN0fBMYWMNC8Uxxt2rm5POnuh1zi-UnrNwX-nCOytMZwMxxBvHMwu4UVZ7eSAyT9jEoMcbC7v4LGNxTzN82ZciIRN082SYxAfmQzm46eB-1jqzEMSKhiYE2cyYrOhtwYQpoI7qe4lSeHWX05qKjB87kKeKRCd-0-snDGkilWcGApYeW6egEurrQ8mTb1EKXnrTUlVbIkGBuKMnI5pY_KETCKr2K7zddDepEIY6GRj-6AW31RWhRY96fxZGj6IKG4m16PvyoxDcB69BITlWjdD7greURHjDWk6keqMB8Fzee7d3E24-57rKGQ8IF5aWSUZKn-p8zXImbhBeFg0UgPY1UW2rAAqDJin21rTh-KzyU371pMKlXG7YbJxFsBjfrPfN9vvY55Iigqx7bez8FbDQgxd5jROQM2UcwtZwX6mxoloPorepUfWo-1Bi7omB8hefTBFi8lDQwpiRuWbHsSe7NwcQ95iCdTO86GTHCpQESBI1hmj70gBy16sExx4f1MYEQhGam9tUpVpyKLM4uHC-fg4YApxSPVnzMdwraluKkIASIoSV_XIDWgnzxBsSnBFN8tu6qCzh5gsn3Yc8CIamByl-lFbqNDlSQ-mvwhuwrZCWHldz9CyWBovXmWFUw5R56a8CTOOqGI015acdZWPqu6Zu59lIfbbxQzcMauqTTGN1kNAzydKU5rCUQOJXZc_Yq1bBzEQadocR8ulmXxl5zPp2JiDykMtRgNNm0LCaP-1bxgEnD8uasIc57qhS_qbesRV47T976ppcam4u-IPeLwdN6P_6rZMMzEx0neMcMnsmShll_AXGQ2BvKm2CwVY4dgbe4F0axFo2FwiT8kPJ6dDHTq-V0RtP2lZvppCK1jLlP-JV21Xch39rvKJt42GYQwHhFdOzn8kDsWLUnTGZnRKkzcKbzJe9WghQRbOzIsO0P4pUNQGvONGkFJV7Vz9oIc7ScLfYMkEWFNSKPVP3gbZUkmo7gn-JYT_aCrx840960FsvaBrIYtShKzqYh2LuZPeSQwLMhfdPt63hHGA7nraBtCbPIIchjA5Cd942wSRnKDDu-S_zdShRFPaAbFJXouz0G4j9ckqaDn7zcqm9R8S74kVGgBOL7ODsDqTbh-GxguGPjb1CvIBEHJshqiv3hURlh3PrnUVFvKUrfx0A1t5ijoVAa6qUrQ_bZbGmDnC4q8Bq9gKsqn00VkXjoQnoIvwWRjMBUYXq5U2k8UZVkVj72Zcw25wFCNEmRymx3YARU-WMBJkEDexGDU2NH0ssRwS6Bm6sG1qIikH8wmkfxGUOYXY8jBlQzhny6yuCjrMGWmsfMVF_FRKqeQWzabaPyBnv2HRtJzdhZwUwa6nWnfzVpJgOEe4D-Y8FoH8jsUAEStMAIsBbp7HRISPVWQ49lVeqF0xFqvgpzBAtlTz2ZIawyrNJBCI28Raz77zC722H0jI4PaAAnGdIC_eD7oHhE1KKXKJoVz6ANl8F8jABWrfk5ydKMhzie_EWDLwBapv2YBElbm3tkYMrkwnSdmViIxKPnrbUfWHlf9dx1r5_xLWUZ96T1erranRQo2kqzJoJKuWldIxbP3u-vt_GuZwesw2WuVv05yg0SPNzgMyG4g-Ihcb0Ib2fsdvQsJ_qncASAUbXPx_UqkEIKdOU9sy61QUgxxAQY1k5pLoNllT3uC8b_kpi8FGkakX2v8XnTtGzs_kkVWLzaqtmoLYbAHh2J-0c1M4xlKWCfVx2MYmcZnVHlTAYWpW7wsza37BUam4LnMzmpgR9HrBJRIMQkgcmLcmwTBgvsyjL4FkPTWhXT40Oaum6_EwmxdPcwhJ3h9wsWFA4XtRMLx9zHUea5i-W22pjyF7B6jT6xSQ==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_00c4d15161a13433016ab5f2ae16f487d1bcddb4da550e2bff",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 102,
+     "completion_tokens": 522,
+     "total_tokens": 624,
+     "cost": 0.0002712,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002712,
+      "upstream_inference_prompt_cost": 1.02e-05,
+      "upstream_inference_completions_cost": 0.000261
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 97,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: someone else got into their account. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309044-FMTHzUuIb0Vnzto78AZH",
+    "object": "chat.completion",
+    "created": 1790309044,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I noticed a login from a place I\u2019ve never been, and now some of my settings are different. Can you help me secure my profile?\",\"There are purchases in my order history that I didn\u2019t make. I think another person has been using my account.\",\"I can\u2019t sign in because the password seems to have been changed, and I didn\u2019t change it.\",\"I got an email saying my contact details were updated, but I never made that change. Please help me get back in.\",\"My profile picture and name were changed overnight. I didn\u2019t do that, and I\u2019m worried someone has access.\",\"I keep getting sign-in alerts from unfamiliar devices. I\u2019ve changed my password, but I\u2019d like to check that nobody else can still get in.\",\"Messages were sent from my profile that I didn\u2019t write. Could you help me stop whoever is using it?\",\"I\u2019m seeing activity I don\u2019t recognize, including a new phone number on my profile. I need help removing it.\",\"Someone appears to have taken over my login. The recovery email is no longer mine, so I can\u2019t reset the password.\",\"I was signed out on all my devices, and the password I\u2019ve always used no longer works. I didn\u2019t request a reset.\",\"There\u2019s a new device listed in my security settings that I don\u2019t own. Can you tell me how to remove it and lock things down?\",\"I received a code to approve a sign-in that wasn\u2019t me. Now I\u2019m unable to access my profile.\",\"My saved address was changed to somewhere I don\u2019t know. I haven\u2019t shared my login details with anyone.\",\"I found a recent login while I was asleep, and the location doesn\u2019t match where I live. Please check what happened.\",\"I can still get in, but I noticed a stranger\u2019s email was added to my profile. I\u2019ve removed it and changed my password.\",\"A few of my settings have been changed without my permission, and there\u2019s activity I can\u2019t explain. I\u2019d like help securing my account.\",\"I think my login details were used by another person. Could you sign out any other devices connected to my profile?\",\"I\u2019m getting password reset emails I didn\u2019t ask for, and now I can\u2019t log in. Please help me regain access.\",\"There are comments on my page that I didn\u2019t post. I\u2019m the only person who should be using this profile.\",\"My usual password stopped working, and the recovery details have been replaced. I need help proving this profile belongs to me.\"]}",
+       "refusal": null,
+       "reasoning": "**Generating clear messages**\n\nI need to create 20 varied and plain messages to indicate account compromise without using specific descriptive phrases. I should avoid wording like \u201csomeone else got into their account\u201d and create support messages that clearly communicate unauthorized access without mentioning \u201caccount.\u201d Instead, I can refer to \u201clogin\u201d or \u201cprofile.\u201d These should be brief, between 1-3 sentences, and formatted in a valid JSON style. I'll also make sure not to use excessive jargon.",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Generating clear messages**\n\nI need to create 20 varied and plain messages to indicate account compromise without using specific descriptive phrases. I should avoid wording like \u201csomeone else got into their account\u201d and create support messages that clearly communicate unauthorized access without mentioning \u201caccount.\u201d Instead, I can refer to \u201clogin\u201d or \u201cprofile.\u201d These should be brief, between 1-3 sentences, and formatted in a valid JSON style. I'll also make sure not to use excessive jargon.",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfK39PHQ8b7C6Mhg0fRlobrj8wDM-MyoxYkNC6AIOEuB_ENGKvqxgvLINdvoC5cZxkaTKNYzxdOiibN_IWELMi2Y-CgjWQi-kFJ2Xg-cJUM3sIcCBIX2zA3HPIK-eTLIXPJ8qaTFh40uHM2A3HWBWiZVfdP4uVdtVKtItlkR92dq4DZyka_NfK5e2iZaNsqbpb4j8wsyLLpHYmg9nRncYs6WLqKaq2Z_wdVQSD8Y31W1pIhtYAE8BGoVEOwaeLttVkPZMp24oGkrzhgb4eHguvuFaGOrAL03UU-L8T6fZcJly88sSggU288wMBhQ1xVb5UJcXNEEFMmRMtLpUraeVKJ2vjkgwnIhyYuJEhRBe-_-s6oh1QozIW03cN0YIoqhurIt2kUz0RYVk-ze2wQYmMJnlYAP5G1ktVbtixfgmwHKqLOb8Lfheql25bmz7QG0MzZnU3_-fDiPaMPvtzOTrW7XuR5fENZ65QDGeULsjcefw2wrKbP1uda-r8vby0xsraK1AiDRmqTqCK3WnQvtehq1S7leJmKzYvM59Uz4UkdIjQ_gchB1McDxtiku1i4cN7BpbGzj1fAkF5zQyZaeAJ1tHMH76LgJFvsdGsBNLxjfGXKLbg5kfSjAqdODr9qbbOewrA3eZezn7AlaLF9EV3cbzjDMsaVNASMoXnTgQOR39kMNVBaQXhiSIkNKcrHX14vXYadXA7XL08U53SuaXCMLZsO_W-uNx2FMoVybbZRuSopTUQO3qJ7cmYccMQET0cJlkh01Vwob73o9CgqalQZMuEjidUoYrgTrgm4dx9IQuN3gIu2NPzxL1_5SjFUC5p9dZrJkTAxfChHE3ycd8SixVTJ4v_JXJGtriBH1t3Z5f6jw1P6PtetKol2RPunroCdggZv2V-hyuc8eo_fTtEkQh_xlv70FGMX3O6W7NMymwL6DcqNQolao8skvjt0n9Ti_dDx_h0_1z0-Z8hMczjKMibPxjc9Zu_Ut8FsPxVAkLQRoI9_2A9L9zb13_mZtB7HqvDiIO-Cb4Oz4L1elZmL2RCLjaRobQfR1tqmnwuRVeSuWWm7d8DjlMoX6Y2-4-B7cLsXD0m3oqPyYyO4mRE7nX4H_KIC0aUGIOO_OHAVC-A67AzOnT25ziq9zGUeKahLXOlo7h2tme_K2Xfv-kWvTPyvzWsE0PgxqskpHqW8tH0ZH6zULJAnMLvXzOelhp0XxWGFE0uvfP7W4nwP8TinzbVh6tts7E389yleRl3Lnxsh9CFbTTmUpNWVOuZWiWMexZqAD9_cZgQV6CNpF3ed8ON-e-6ykGHEDscsOxmhRciIKVjI5VPBR2fRcH5LvOw66U_5X2vilCNDO8gG6fKU5oNKgvmwnYKTOTiAaMQ993S2AkFGUNqHHW6t3a9_EVOk6PawnLbXraDkfoVqRli8OWzCvin8QEgF-yifQfZKPmZIea31IG8LLP-ab2sy_MRAqpEfySvxsT-9H1BlnbNwz2gQt8JlkdERkEK9ycd6uvGJwLcmJ9L0wLKrpe3fPARvRB_qtJrAZeW5jRQAm-tLv954MxEnoGVj6Y0BwQ8HFZtL8QZN5jIpJEe-jGckhizbBpwcRMrEyPAv4qc4ylBZdjuyUx7tc5uz-3F7488Cw4Ani6AYev3l-Nrss8Q1BN3iLdo4hlt9tsGygOUBtBvHZLIXTPr6sc-3WE93S394QXc8gYvPM9gnHEBKQ-VLTsCNjaCGUUAm1PZDf3Qx9s6Zo1VEiPv2T_tcVc0QPifYQgmS_P5qzLEA19-sApTRsvyQLhIM_p_aTAeU-B62WkRilD_MkzQ2B9JUh_IFLpcAAJyCKFWT6PrqwdDHg5407XWTUn8K6W4WyDd55NjtjYkOdiEyR8ZRdMs8omz1GUzN5TbWmYRJfC8rT2LfPlVmk7nM6UMM-yYcE3FIklIffcTBidRuL5cRkoSxrp3Kp6aeW-LefZVmP8pHCrKHLTIjcDoxzWiu46-Bdu0UXQxNSX8ZmxDq6BuBnXgmIAHUOOe7qEPa66PtHr5y5o76QxS5Hz1QoUbgQ0qNAISYg7hSRsLhDjmCGElu8WMdzw8Z2Yf47yW-PQcfeaGSYO4gyshzGonE46d82tMUU5q64Xh8lzT-oXTMLA71T3DzF4I-JxoeRKinLmiqVGF8QXeVGtGe1m6SpJv_aJbbXO2saot7a1bfrqmacL27ZoWHE7T-kJoNsALf2mYWg54Kn-1mSyNHKsYIy0oM0TxZNewYaLXmttyoL10LSJhjbqgmPCIVfjDoqJ7dJ58llUn1lOZlN09y-HMbSw20hgjWd_0DcQEaRkeGIizg8T0jIys-2umCKXJjDqZYd9NEK13iLngG5ONEjUwjoYKG-NeWukoC9SS-xaq8qBXwOwa_cb_Zqr21yL3S7dgrlpV0wzecj0GYCIt4VXeyaHIMIQP4erdOUr6QUa4M44lNAomD1bUQjR762IeRAZsTIBW86Oivdp4ry0VtZJK7l5hEx9xXNgXP0xIe4A-56rda3-EG521o2dXoHT1fKQKw=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_065c0a5bf06f6696016ab5f2b4f0e887d1aa4ed667154fb8e1",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 102,
+     "completion_tokens": 684,
+     "total_tokens": 786,
+     "cost": 0.0003522,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003522,
+      "upstream_inference_prompt_cost": 1.02e-05,
+      "upstream_inference_completions_cost": 0.000342
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 164,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "I noticed a login I don't recognize this morning. Can you help me secure my profile?",
+  "There are changes on my page that I didn\u2019t make, and I think another person has been using it.",
+  "I got an alert about a sign-in from a city I\u2019ve never visited. I wasn\u2019t the one logging in.",
+  "My password stopped working, and the email linked to my profile has been changed without my permission.",
+  "I saw messages sent from my profile that I didn\u2019t write. Please help me get control of it back.",
+  "A device I don\u2019t own is showing up in my recent activity. I\u2019m worried my information may be exposed.",
+  "I can\u2019t sign in anymore, and the recovery details look different. I didn\u2019t make those changes.",
+  "Someone has been accessing my profile without my approval. What should I do next?",
+  "I received a password reset notice that I didn\u2019t request, followed by a sign-in alert.",
+  "My settings were changed overnight. I\u2019m the only person who should be using this profile.",
+  "I think my login details may have been stolen. There\u2019s activity here that isn\u2019t mine.",
+  "A stranger appears to have taken over my profile and changed the contact email. I need help recovering it.",
+  "I noticed purchases I didn\u2019t make after seeing an unfamiliar login. Can you look into this?",
+  "I keep getting security alerts for devices I don\u2019t recognize. Please help me stop these sign-ins.",
+  "My profile picture and username were changed, and I can no longer access the page.",
+  "There\u2019s a new phone number listed on my profile that I never added. I suspect another person has been using it.",
+  "I was logged out unexpectedly, and now my password won\u2019t work. I didn\u2019t authorize any changes.",
+  "I found activity from another country on my recent sign-in list. That wasn\u2019t me.",
+  "My contacts say they received strange messages from me. I haven\u2019t sent them, and I can\u2019t access my profile now.",
+  "I\u2019m seeing unfamiliar activity and can\u2019t reset my password because the recovery email has been replaced. Please help.",
+  "I noticed a login from a place I\u2019ve never been, and now some of my settings are different. Can you help me secure my profile?",
+  "There are purchases in my order history that I didn\u2019t make. I think another person has been using my account.",
+  "I can\u2019t sign in because the password seems to have been changed, and I didn\u2019t change it.",
+  "I got an email saying my contact details were updated, but I never made that change. Please help me get back in.",
+  "My profile picture and name were changed overnight. I didn\u2019t do that, and I\u2019m worried someone has access.",
+  "I keep getting sign-in alerts from unfamiliar devices. I\u2019ve changed my password, but I\u2019d like to check that nobody else can still get in.",
+  "Messages were sent from my profile that I didn\u2019t write. Could you help me stop whoever is using it?",
+  "I\u2019m seeing activity I don\u2019t recognize, including a new phone number on my profile. I need help removing it.",
+  "Someone appears to have taken over my login. The recovery email is no longer mine, so I can\u2019t reset the password.",
+  "I was signed out on all my devices, and the password I\u2019ve always used no longer works. I didn\u2019t request a reset.",
+  "There\u2019s a new device listed in my security settings that I don\u2019t own. Can you tell me how to remove it and lock things down?",
+  "I received a code to approve a sign-in that wasn\u2019t me. Now I\u2019m unable to access my profile.",
+  "My saved address was changed to somewhere I don\u2019t know. I haven\u2019t shared my login details with anyone.",
+  "I found a recent login while I was asleep, and the location doesn\u2019t match where I live. Please check what happened.",
+  "I can still get in, but I noticed a stranger\u2019s email was added to my profile. I\u2019ve removed it and changed my password.",
+  "A few of my settings have been changed without my permission, and there\u2019s activity I can\u2019t explain. I\u2019d like help securing my account.",
+  "I think my login details were used by another person. Could you sign out any other devices connected to my profile?",
+  "I\u2019m getting password reset emails I didn\u2019t ask for, and now I can\u2019t log in. Please help me regain access.",
+  "There are comments on my page that I didn\u2019t post. I\u2019m the only person who should be using this profile.",
+  "My usual password stopped working, and the recovery details have been replaced. I need help proving this profile belongs to me."
+ ]
+}

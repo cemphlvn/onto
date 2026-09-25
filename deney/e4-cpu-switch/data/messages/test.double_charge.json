@@ -1,0 +1,90 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: they were charged twice for the same thing. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309062-bSjC8ar9OiLKVNQES6fK",
+    "object": "chat.completion",
+    "created": 1790309062,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, I see two payments on my card for one order. Could you check which one shouldn't be there?\",\"You took the money two times for my subscription this month. Please refund the extra payment.\",\"I only placed one order, but my bank app shows two identical payments from you. Can someone look into this?\",\"Hello, my account has been debited twice for the same booking. I need the second debit reversed, please.\",\"Sorry, quick one \u2014 why are there two payments showing for my purchase? I only checked out once.\",\"I paid for the plan already, but there's another charge for it on my statement. Please sort out the duplicate.\",\"There are two identical transactions on my card from your store, even though I bought just one item. What should I do?\",\"I think I was billed again for an order I had already paid for. Both amounts are the same, and I only made one purchase.\",\"Can you check my recent payment? It appears once in the app and then again a few minutes later on my card.\",\"I'm seeing the cost of my delivery listed twice. I did not submit the order twice, so please remove one of those payments.\",\"Not sure what's happened here: one checkout, but my bank shows two withdrawals to your company. Please investigate.\",\"I was charged for my monthly membership two times today. This is frustrating because I only have one account.\",\"Please help, there are two payments for my ticket purchase. I only bought one ticket and don't want to pay for it twice.\",\"My receipt says one payment, but my card statement has two matching entries. Could you confirm whether one will be returned?\",\"I paid once at checkout, yet the amount has come out of my account twice. Can you refund the extra one as soon as possible?\",\"Hey, I see the same amount taken out two times for that order. I only pressed the pay button once.\",\"I placed a single order yesterday. Today I noticed two matching card transactions, and I\u2019d like to know when the duplicate will be refunded.\",\"This is a long-standing problem now: I paid one invoice, but the payment appears twice on my bank statement. Please review the transaction history and tell me how you\u2019ll correct it.\",\"There\u2019s an extra payment on my account for the service I already paid for. I haven\u2019t signed up for anything else, so please check what happened.\",\"Hi, my card has two entries for one purchase. One payment is correct; please return the other.\"]}",
+       "refusal": null,
+       "reasoning": "**Creating customer messages**\n\nI need to produce 20 JSON messages while avoiding using descriptive phrases literally, like \"charged twice for the same thing.\" I'll aim for a straightforward description without echoing exact wording. Instead, I can say something like \"payment appears two times\" or \"duplicate debit.\" My goal is to capture varied customer voices in 1-3 sentences while ensuring the messages are in a valid JSON format. I'll focus on crafting these messages clearly and creatively!",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Creating customer messages**\n\nI need to produce 20 JSON messages while avoiding using descriptive phrases literally, like \"charged twice for the same thing.\" I'll aim for a straightforward description without echoing exact wording. Instead, I can say something like \"payment appears two times\" or \"duplicate debit.\" My goal is to capture varied customer voices in 1-3 sentences while ensuring the messages are in a valid JSON format. I'll focus on crafting these messages clearly and creatively!",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfLJQ8AF_LM2EeHY-sw1FnfyCUZgVLtwPVZZ_WjgLOIXRh29bHjEVsHke85Sz1A2gpfrzlP2m2eRsO_PTmo_ztOU3ILsJ9TpnEYtkxAX8f9XOx6vGK1ptSbop1w7-FldkZ-XCQEw7Q5buQPhWkQmKNAE_cJwLB80s5eKVfy1CfdZvx8zPfKxQQw5EY00n1jBKnYg8D8IvzFRE6nIZDEYKgU1d92xd4b5JrcUuaELIpR7yrd1eqgUXZMbeVs1jP8AmG9Fxg4lN_8SOOYR3zaOCyjKW2So0Ydausfz8ibwZ12YT8OOv0K56g8pBEMYb4zKteWjrEXbyRdy_rDMeztLO6tqYtuAjWTO57cngwXVL-rmJPbJFy1MN9msTlKMYaq4_iuaotqsLiD9Dzn2_MPzZvejNmFpzeETzPhG9ohWNnPkF_cGuaAkJJMzdv280zlVTt3tlcmlytZT-y3x8xscKQUyIXb6hdeSKuUN6vbAHOqs8vYwL6rME0WHWisRaitDpggJCdjPrvZH6wPU3DDJ0bn_UmzyjzTN0j9f0UP9aA2LhDYDJNnB8sMnFjyzegF6SFOghxBQE6VK-Sjk6WdNS1QRXLWkwaazHnu2QohQ05TdasUg-5LQMNp9mpNERTmFAGOUdFsfF3Hhas3oaZcWGJCnTwA-5h9JOFkydZ01Pf_QTBSvyREKHADcVZ4U-LGoFeojNOkoS_Bg9mA-Outd7yPGJFTzIXQvK5URepl4-VZaOrFwGUILlyboe7kuSqINuDDLsuD4D3KspeWqD6uqwuHUNBR507ez8o_Ct02w6Gxxx9A0hEYNb5wztJ0sdh8num-VRvqjb2SpZdhAd9bZFveMUY8Zy6KnZu12QCAKfhw6pSL1JORgMvXCTcpRxzPKwghBFfjlag5UZPVDgm56rNLrBhqczE27gy1C0chjwiZq6iFr9IJEoQ3rQZgwfQvoUEzVrriu0l0S51BQSnzbP3Da4jgpdMeiY1Ig-2bgQgh2KIkS991db5GF3wtMvGV0ZJTrn3Js4pO7Ohr4RkeQ5ezM5GdALX5KIteY-mXG6RPnS0FBLMdIJz9BjWUOAYsZb3LD3zF8PwkLWX0xK0t0sv1UZUNjKJOnbOuosAsRp8P9gqGy1CeECfoDBSZ1vszo15oB8auMnsGTusHpQnY8h-rcNL88NpfEj7jLn_koSfURqlKPjuftTTDfqKMF_1AUgVVQv0yAKmpSDFvir2C4A9ghbID95QlQ3AgjTwlb8Vl-Ysu475fs5FPJ7NcjxSXSiQEEleJu5z8KTwf9I2a14nM9SHbSq0dibnOfqK2VjsTcITFmb--DG8qOVA4ZPA6dEbe0vQzygS8ynpvmdkw_Qni0neW2HOaHwqckFen-VGCLrPq2J5QNf84cEUM4XFncOad5MMjDTyadyeGCnJLiJLgyyMjCyQsXBTgLy_7lGyBjGuDdByf_2eLoDMSqmqKuVSz__3C9wxnGT5eGhBRyp515ez5eMycdhr56iQk0vCZsImQPXEIHist_GEHlTtf6SaWNVCuyCM6vn7pzkUXxMqljKX2ad2RreW5KRKFVvJwruJsvr3nwGdYdiYYpMuwhDF3uOw355nAjrtmAcDKxxqgjvWM28lZLxm9U2r0sM11GyUk4dGWygylnN52pc0UiOposdrZbqrg7NxWn095aPgKEUTEwIbQeWsxaFTXGbKO8FTzEARPMWwZHr7yW4OAanIg2TYAoAArgBr0lpvXGnF0DBtbBo0RpJHqqQr_JMpSzl6ucQvbZFSPt3N_UW_DXlXyfndbuFMUitn_94GJhoKNBiW-oZm0J-pSJOZSy-Invo3w-TiRS1ylF8hqzipOYgM7UKhrKEvtOr8G-gplzZPZEFIVNHg6Jq8kxahS0pzMAlefsgIPLVFRsk9oYDLqk0RgE6rG1Xh3XF6v-aIIkh6nNc9ssEsgeBh3igRIjZjqVBxgXauYWXnUFCD261oE3-nv84Yr4F1TEg9phZd8c-cuRupOAQDAtWyue0RykYR31sGKXpGwlMT1QIL3h-OGmCtmBOCq0DNV_zD9gGHV-dUvL0RTbCQlCBIzcqIXvqjupbEfP89I65EZ-JI9vs-tGUdy-7tGfe0kXjBWJ5oNeWMKFodu0i0ShNh-4UlAHanFxA94=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_03193b85c94b6aec016ab5f2c73e9087d1b13e51c58502b95c",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 112,
+     "completion_tokens": 637,
+     "total_tokens": 749,
+     "cost": 0.0003297,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003297,
+      "upstream_inference_prompt_cost": 1.12e-05,
+      "upstream_inference_completions_cost": 0.0003185
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 124,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, I see two payments on my card for one order. Could you check which one shouldn't be there?",
+  "You took the money two times for my subscription this month. Please refund the extra payment.",
+  "I only placed one order, but my bank app shows two identical payments from you. Can someone look into this?",
+  "Hello, my account has been debited twice for the same booking. I need the second debit reversed, please.",
+  "Sorry, quick one \u2014 why are there two payments showing for my purchase? I only checked out once.",
+  "I paid for the plan already, but there's another charge for it on my statement. Please sort out the duplicate.",
+  "There are two identical transactions on my card from your store, even though I bought just one item. What should I do?",
+  "I think I was billed again for an order I had already paid for. Both amounts are the same, and I only made one purchase.",
+  "Can you check my recent payment? It appears once in the app and then again a few minutes later on my card.",
+  "I'm seeing the cost of my delivery listed twice. I did not submit the order twice, so please remove one of those payments.",
+  "Not sure what's happened here: one checkout, but my bank shows two withdrawals to your company. Please investigate.",
+  "I was charged for my monthly membership two times today. This is frustrating because I only have one account.",
+  "Please help, there are two payments for my ticket purchase. I only bought one ticket and don't want to pay for it twice.",
+  "My receipt says one payment, but my card statement has two matching entries. Could you confirm whether one will be returned?",
+  "I paid once at checkout, yet the amount has come out of my account twice. Can you refund the extra one as soon as possible?",
+  "Hey, I see the same amount taken out two times for that order. I only pressed the pay button once.",
+  "I placed a single order yesterday. Today I noticed two matching card transactions, and I\u2019d like to know when the duplicate will be refunded.",
+  "This is a long-standing problem now: I paid one invoice, but the payment appears twice on my bank statement. Please review the transaction history and tell me how you\u2019ll correct it.",
+  "There\u2019s an extra payment on my account for the service I already paid for. I haven\u2019t signed up for anything else, so please check what happened.",
+  "Hi, my card has two entries for one purchase. One payment is correct; please return the other."
+ ]
+}

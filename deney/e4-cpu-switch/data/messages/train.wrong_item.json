@@ -1,0 +1,168 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: their order arrived with a different item than they ordered. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309008-4fjVjaJMKj82PCF5iJzG",
+    "object": "chat.completion",
+    "created": 1790309008,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I received a phone case, but I bought a charger. Can you help me get the right one?\",\"The package came today, and the shirt inside isn\u2019t the one I selected.\",\"I opened my parcel and found a set of mugs instead of the headphones I purchased.\",\"You sent me the wrong size of the jacket. I chose a medium, but the tag says extra large.\",\"There\u2019s a blue notebook in my box, but I paid for the red one.\",\"My delivery included a different book from the title I checked out with.\",\"I got a pack of batteries instead of the desk lamp I was expecting.\",\"The item in the parcel doesn\u2019t match my receipt. I was supposed to get the black backpack, not a gray one.\",\"I received someone else\u2019s product, I think. This is a blender, and I ordered a coffee grinder.\",\"The box had a pair of sandals in it, but I had purchased running shoes.\",\"The wrong cable was included. I need the USB-C version, but this one has a Lightning connector.\",\"My package arrived with a small instead of a large. Could you send the correct size?\",\"I was expecting a ceramic bowl, but the box contained a glass vase.\",\"The headphones I received are wired, while the ones I selected were wireless.\",\"I bought a pack of six towels, but what came was a single bath mat.\",\"The parcel contains a different color from the one I chose. I wanted green, not yellow.\",\"I got a children\u2019s puzzle instead of the cooking pan listed on my confirmation.\",\"This isn\u2019t the item shown on my order details. The box has a phone stand, but I bought a tablet cover.\",\"I received the wrong flavor of coffee. I chose vanilla, and the bag is hazelnut.\",\"There\u2019s a pair of socks in the package instead of the scarf I paid for. Please let me know how to sort this out.\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfKSDd52EMmNemo42lEzOB2nVtmLao8fA6eAEc5AbCvDO7AISynba1kB6BrXHsDDXV64hHqg5aOz9M08RT83lxWFGQ4sc_zQBi9z-xvgLsgwzzm5L3QmvskEPWZZ2yp9yvxWQLEZX1KLpz5BmAFcE_g0viPqPIXForZJb4F8QUl74zjRFh-SltdkEzgWqkj9JhiUG6ftKxf08c0K2f5KS2gtBf9crr_MADwcoKj2e09bep0Uszfht0oBD8j3JFpMp1PNqemGSNlYPv2PqJqtx83rnkrl6ew49Smk8tj7bMnVfac-6OrkJ2vsqoh44KFdzmFpt4k4ImIMz-m-jAroq6aHyi2VZyfgj_6Gn9LMmniCNgCDC_03coS6MZK_ifclzmkPtDtEKIk49SfuTX92Oyx5BdA1o8YqsELo0ReXCjso3c2xs3Rd4R0BYHYH-iiNlsHmsRtUmvFDNiu7YxK3VMsOoJZm6f4AF6VtEBAVmHgIJAuvVOT0TlwOyqHTwtiUqNmHyCGl8_aKqave3_sHIS4xIMR1ww1IOG9bk_KiaGEu9eglX3i-xogRkFcwU3L5vavigfp-TD8-WbsfEWFexoiCB5o1DIXK4aDUpGxysOL-_mvHzljfIlTQGhC5kqgJPiZQYhX-cFNSCmkuYda-XQifXeRAQrEB1ai3txYqBHXP7mNGFDCFRrB23ib-t4FPwImxKOUA4kAAy9_CDOTaSPJv_swypNxLxZoyEK2YyweOeRNhA_NqB2Zg6d3YT92fQ-Jwu8Bl9TdKNeXRABu-HTcKFe2VR5gBhoTMaPS8viHYEBST4XfMKc_YqnuiJTzQxWfCCvxXQ9zfskujLSeXtY8zmCOLLWby6bgpsBqfNuTFPMgaxxMSUko00VvWVMmMlzT3q4ba5_6dSGYF9AvHI4wC2pIb0pvYMWn3ZApXYDgUXVwCWkqcCJZYQ5qApBvjlW0VcueTik7-WwLFQfym2v43eZuDecCtvIFyaBpiCBq4NeeeizG-rLCqVv1cmc_d3Zk0XiP9kuAp1bj43niIgUb1Hn1IMaNxls8vfuzNL8nMeDDargb0ncf2aW0hHTq8XlR7GsA-XR4e1d7JAPk6IDKsUiXoRhIf9gW5uO4L8lRvq8twVuVsS91YNcuq50vzIxxSAMriAnO8MpGc1hRhchxPt7K2pO2WyRksZu0RIoZg0ow6N7b87u_Biyqu5jW3lx02P2BowfkH2vwZdV0OxlxNouHn0_bpCQeSH06-ZDtWcxEygblQsPmLgE_EdDsAWZ220Xdi7UPAKF6ps1ym_CHY_bn6dlqIcOj4MNvrWNtLSTBVb7wc-y3I2UIr887wPUA-4HEHSAnD-hHuoR3EJWaNI9Omd_7WjsWU6s4gv1Jr2sWufecB6tX8AH2ZxYDrBJsta7eoLLD-k_9efuOb82YkgFL7FQGYIZXlA8IxgAqZp7-oJf4-8ZA0aCJ1hleOp3vUcQKysMZsVwl7h2NMzuac7NBw5YQtnMH1sJ7NRrx3Mgl_zno9yJyBchOLEv-faLJDPEn9FJcwm5rUorg0WG9CszYp_HUUNgmhVqRhe9A-ok_tsG-a2NuGHgkjJQ_RqbT1GXl6qJMu-ep0JYmPd_BjmUh3t3G2Lrr_6Ji4sN9brgwAnOWPbV8ljiQdJwrzBG0hBERWADPYbbc0Q52rCpVRzzCuy0qXMqhzaLlEb-XDhArppgo1yVgKvJgEiVI5nu0dPrbcJbL_cJWw4NwGKdu9yMVL9BYIkX9pDvD2a-xvB5_-PbW3RLUB2aCH99C-R4RC__iSEDM3pJMK0jKz-oeA625dx1-MJl-4PQSlKL3krvTnK0g34SKUa7r721GRq7OlzX8cUJXzZOqM-mXB1ZknU45zvLK0NgKvAZHkOWEjg7QuJXWRlN0EslztzrdBHx8D-xL0FR3QE33RNzQ6EIQZMEt62q4EnaKzHnGhfRrlKTaZ2mR7Lj9DtpHDx4w3j8wUfhzDwYXK7-Y0nXNYx0yY2AlZdorda2olWXDVzfyFNl5eDcSJjzneSX2MylFVOC2y4OekxxR5vUn9htyyL_Tpo8ZYlmsMZ5YYeEN8x6PuAJMR4uNxebAOi4CTuNh8YLJSnRDYq1hCFM2nA43IXf_EbyTVVU6XFBKURrXRWjoTkFp8YYMh3VaSrdH9cElS-KPhl_scBBwDoArdbVPOlw7M-g4m9gjufkHLpW1DWsQ5Ii7BWcENMkrCErP9lidSl4ee.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_056f68698580a42f016ab5f290f5dc87d185265679a2cf4ba1",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 106,
+     "completion_tokens": 536,
+     "total_tokens": 642,
+     "cost": 0.0002786,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002786,
+      "upstream_inference_prompt_cost": 1.06e-05,
+      "upstream_inference_completions_cost": 0.000268
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 141,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: their order arrived with a different item than they ordered. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309014-UqfJMuEWM63ijmzKCkVG",
+    "object": "chat.completion",
+    "created": 1790309014,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"I bought the black phone case, but the package had a clear one in it. Could you help me get the right one?\",\"The box came today, and it contained a size small shirt instead of the medium I selected.\",\"I received a set of mugs, but these aren\u2019t the design shown on my order. Please let me know how to sort this out.\",\"I was sent the wired headphones, but I paid for the wireless ones.\",\"The parcel had a phone charger inside, not the notebook I was expecting.\",\"I ordered a green water bottle and got a red one instead. Can I exchange it?\",\"My delivery arrived with the wrong book in the package. The title on the cover is not the one I purchased.\",\"I bought two white pillowcases, but the package contains two grey ones.\",\"The shoes that came are a different style from the pair on my receipt. What should I do next?\",\"I received the right brand, but it\u2019s the smaller bottle rather than the large size I chose.\",\"The package was delivered, but the item inside is a blue scarf instead of the grey one I selected.\",\"I ordered a pack of six pens and received pencils instead. Please advise how to get the correct item.\",\"The sweater in the parcel is a different color from the one I chose at checkout.\",\"I got a laptop sleeve, but I had purchased a tablet cover. Could you check the order?\",\"The box contains a different flavor of coffee pods than the one listed on my confirmation.\",\"I selected the wooden frame, but the one I received is metal. I\u2019d like to exchange it if possible.\",\"My order included a striped towel, but the parcel has a plain one in it.\",\"I received a charging cable instead of the screen protector I purchased.\",\"The package came with a size 8 pair of gloves, although I selected size 9.\",\"I opened my delivery and found a red lunch bag inside. I was expecting the navy one from my order.\"]}",
+       "refusal": null,
+       "reasoning": "**Creating varied customer messages**\n\nI need to generate 20 varied messages in a customer format about the situation where someone received the wrong item. It's crucial not to use exact phrasing, like \"different item than they ordered.\" I should express the situation plainly and realistically, focusing on variations. I'll use simple language, such as stating they got blue instead of black, avoiding over-specific product mentions. Each message will be between 1-3 sentences and the format must be valid JSON. Let's get crafting!",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Creating varied customer messages**\n\nI need to generate 20 varied messages in a customer format about the situation where someone received the wrong item. It's crucial not to use exact phrasing, like \"different item than they ordered.\" I should express the situation plainly and realistically, focusing on variations. I'll use simple language, such as stating they got blue instead of black, avoiding over-specific product mentions. Each message will be between 1-3 sentences and the format must be valid JSON. Let's get crafting!",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfKasdkpjmcSYjpoVG6EQts8Iq5TLZrJrbObUWg1bjCqh3h6_x-NQBGnFsDGppKRm51jVydiyJxCKU1Acn68u5lbYQbDQwg19N-BurgJX6X5trlHUB_iDMVu6xaMZ1NLl45FPKba_c8XoBtUj7rGw78pp5jfA_Z1w_kyarTM_-Od23cxPJ6LgfnNj_CF6FNwuMm7l_IcWdtNvDs5TywVO-i-lkKtsMsjOMHxfqUDoA6QIzV_HwpaFO4PyhV35dXrBTH-MaPgiRRjjCGx8Ga2TasImGf7k1lX3ND6wra1WsiXluV4cACcWvLIno8rFablFL_nCycyeQa0Jdl5-1vKIn1-HV3ytO3eSYfXEOso2az4prIOjLehFhc6OcGze6Cr1rHdwfXZnWF3hA-x0FVRHtBnYEClj3tBsRP0afOm9eAPRpkjzOmjdNZnkiWN60U4L_dgBuPm4FxkvtFvKjYReJgo2juWC9R59Kj3JeB4TGMXzupHw3A0FhvPMVPUUqdbDKH-1vY9M8Xz_cm1_7DL2_Mj9_NAYdW7YU8ax_wEG7Pi0_CkBTuba3cCqBybHZGZ8TDrEt8RCyqLx3Jgy7fhkAGzawyK7o1Hj_gfKa9ZouroWff17bE0r3WeNddYrLeQGJZ9wCZt8Y5xFTHntI-CDQOysLx1yiSFJUpxu6qZ0-svWJSberhlSxgzT8uhVKIvKbe5U2qyOwy2LL-cY_-tbnQ70jhc1pksAL16SZ7E_oIRcJ97CjT-siv2mkDzt2ZdRkOitsSMgpNUtT-C4qOtoAGadFxSXVoHWCGUSBcceLhhRalv4Na3Qk9wlHhwwoe9p0pftebi8XjJmM-XoFgLAf2ZfaIuW5uK7BO9qwp8t8LzhLxyDhUVgfjH76AVmPELIUTtoWZ6BaPwKXHo2mzv15rcdMiSTnBeCHyw8HV9fb4NQi6bHs_kEEeHdTEEz_TTVHxUlqLsZWS1bvAz2ZJLpqlXpCqzDaDXdxUbHv5uHiAaDAlZnA8srm2Y3g6t87L1lcgTkeFrL5_SATh3bxr1W6KBVORfs2mSaNXfkiYEaK_UInuQmuUreaQRuhl2yIqbKIvnEmdQLjndli1pYOXzn9tjrDdN5BgdlgeOUoys-ZaJlbtuHvRIibIkN6TXiBbX0f1HIdcwXD3LgojYXyfOdwVaCgVJjvGClqqUN2zp8VsvD3RYbj6mC-D2Sf0GxFv4tNp0_qn6c4w394Rj--Bp0F-1r7HzoDVT1Ea1cI-uPmrwqUv1xizCn77lrz9n_2cVVjNk2LVxlm-0QaJnb1FWLuUQ_tXv4J7DnrYeKhhYOeJjZ7_pT7L7EBQqoeWXxqt55-2kNtyJ27jrK7YkStiFzszbRkk1b19RDWDkA1flEHatK5ynCiYZN6Tsysspxbr1oTiI48P_j6UfDg7di0k2EWdO8LUYJr_Pe-OnYnC3r0XBpErMdmn5tj4Wn3LgXUK5lidehzUTGZgCsf6cdt1XIjp8ESjcTdDVqcMb6jE_AQetD1o1y7FjPMZZuT3KHMn2LuPL2OFxuCJywBrexaiUVbYEYbLf8Z8D-rTcPLnBZqdH0FfgtA3qbqQS5y3aR78Q-wj4fwqZ1GJmilEICiJYUXLWQb3dd6UfhBS4GJ9gJepoCY2trgIPXCetNPXsvd2byvK1esApET8FgJnyjNBnyQNj3HSxU6wcsS1-yJG3ZzdTuJOcVb7s-E4ygF0rh53eS3Wsh5CxpfVO3ZLvW5mZ6zwohdGvghPuBbZKTNTNrJ3QZ_YhvrMoqZA2yRAnLAiJ1PnHnQOP4bN85GhlfrhYLqj18EaW5oEg2SIPegQXsCKdcoE6fs90c10nOwDTc5fN0qewdr86oBdlukosMu7Y2PgJ8FOYRhnD9zYbG0nJIZd34mph5IingzYgGqEzx8RL66PlVnfoUjIzU5Vm_zI2Hz6kc9q35Pa5xGFSrq30zmQNaO9lS8MwDVt54jZsulZ9tdymhf79MIbSbNc4bSjxnUMXe1_Ez3eosHZ5_MPgga6rYTcfKKe89YRLa3em0CbtFllHGoBRYQyCjUwBpt4RS1WbveCASO0RwK1w01WJTVg4DXJ8Td24P-ZrUpONCR8tyfbu1RUmhogzKDkMHrzFeSAkt6_7Ve0T6vEfFR0e6lF5tGFri49l-INRp40fAtXpIviyfvhVII-5HWyij5yer01ASemxk_JY1TzA6q8gxZP3I0yY5yt2X9sOZl2gqQaBY5gQbbLU2Z7YGTXUcTtwuM6VyYvNPCxICOTJvdO2CnlDbCKPk7mbZV5D6yc4QXpdqz0zfyt3UDz0YJEv3LznhJZEzadJBGOm02P0j3yEkGhpH1ACKNNtYTxsrtUvA3j6YwnSfsgZxdTArauZ6c_eu-vPWn7dYNZ4v4XMG997KGjZ8Wo=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0a771fb4fccc168a016ab5f2977fac87d1b52cda909220dec5",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 106,
+     "completion_tokens": 570,
+     "total_tokens": 676,
+     "cost": 0.0002956,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0002956,
+      "upstream_inference_prompt_cost": 1.06e-05,
+      "upstream_inference_completions_cost": 0.000285
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 162,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "I received a phone case, but I bought a charger. Can you help me get the right one?",
+  "The package came today, and the shirt inside isn\u2019t the one I selected.",
+  "I opened my parcel and found a set of mugs instead of the headphones I purchased.",
+  "You sent me the wrong size of the jacket. I chose a medium, but the tag says extra large.",
+  "There\u2019s a blue notebook in my box, but I paid for the red one.",
+  "My delivery included a different book from the title I checked out with.",
+  "I got a pack of batteries instead of the desk lamp I was expecting.",
+  "The item in the parcel doesn\u2019t match my receipt. I was supposed to get the black backpack, not a gray one.",
+  "I received someone else\u2019s product, I think. This is a blender, and I ordered a coffee grinder.",
+  "The box had a pair of sandals in it, but I had purchased running shoes.",
+  "The wrong cable was included. I need the USB-C version, but this one has a Lightning connector.",
+  "My package arrived with a small instead of a large. Could you send the correct size?",
+  "I was expecting a ceramic bowl, but the box contained a glass vase.",
+  "The headphones I received are wired, while the ones I selected were wireless.",
+  "I bought a pack of six towels, but what came was a single bath mat.",
+  "The parcel contains a different color from the one I chose. I wanted green, not yellow.",
+  "I got a children\u2019s puzzle instead of the cooking pan listed on my confirmation.",
+  "This isn\u2019t the item shown on my order details. The box has a phone stand, but I bought a tablet cover.",
+  "I received the wrong flavor of coffee. I chose vanilla, and the bag is hazelnut.",
+  "There\u2019s a pair of socks in the package instead of the scarf I paid for. Please let me know how to sort this out.",
+  "I bought the black phone case, but the package had a clear one in it. Could you help me get the right one?",
+  "The box came today, and it contained a size small shirt instead of the medium I selected.",
+  "I received a set of mugs, but these aren\u2019t the design shown on my order. Please let me know how to sort this out.",
+  "I was sent the wired headphones, but I paid for the wireless ones.",
+  "The parcel had a phone charger inside, not the notebook I was expecting.",
+  "I ordered a green water bottle and got a red one instead. Can I exchange it?",
+  "My delivery arrived with the wrong book in the package. The title on the cover is not the one I purchased.",
+  "I bought two white pillowcases, but the package contains two grey ones.",
+  "The shoes that came are a different style from the pair on my receipt. What should I do next?",
+  "I received the right brand, but it\u2019s the smaller bottle rather than the large size I chose.",
+  "The package was delivered, but the item inside is a blue scarf instead of the grey one I selected.",
+  "I ordered a pack of six pens and received pencils instead. Please advise how to get the correct item.",
+  "The sweater in the parcel is a different color from the one I chose at checkout.",
+  "I got a laptop sleeve, but I had purchased a tablet cover. Could you check the order?",
+  "The box contains a different flavor of coffee pods than the one listed on my confirmation.",
+  "I selected the wooden frame, but the one I received is metal. I\u2019d like to exchange it if possible.",
+  "My order included a striped towel, but the parcel has a plain one in it.",
+  "I received a charging cable instead of the screen protector I purchased.",
+  "The package came with a size 8 pair of gloves, although I selected size 9.",
+  "I opened my delivery and found a red lunch bag inside. I was expecting the navy one from my order."
+ ]
+}

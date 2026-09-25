@@ -1,0 +1,84 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: their order has not arrived; it is late or lost in transit. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309087-0dX646wEQJeLKTxRnslu",
+    "object": "chat.completion",
+    "created": 1790309087,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, the delivery date was yesterday and there\u2019s still nothing at my door. Could you check what\u2019s going on?\",\"Hey, quick one \u2014 tracking hasn\u2019t moved since Monday and I\u2019m still waiting for the parcel.\",\"I was expecting this last week. The tracking page keeps showing the same depot scan, so I\u2019m not sure if it\u2019s coming.\",\"Nothing has turned up yet, and I\u2019ve checked with the neighbors too. Can you help me find out where it is?\",\"Sorry, typing on my phone: parcel still not here. Tracking says \u201cin transit\u201d for 6 days now.\",\"The courier texted that it would arrive today, but nobody came and there\u2019s no delivery photo. What should I do?\",\"I placed this quite a while ago and the tracking seems stuck. Could you please look into it and let me know the next steps?\",\"Hello, I think my package may have gone missing. It hasn\u2019t had a tracking update in over a week.\",\"Any update on this? The expected date passed, but the tracking still only says it\u2019s on the way.\",\"I\u2019m a little frustrated because I needed this for a birthday yesterday. There\u2019s been no sign of the parcel, even though the tracking says it left the sorting center.\",\"Hi! Maybe I\u2019m reading the tracking wrong, but it says the package is moving and hasn\u2019t changed since the 12th. Is that normal?\",\"This is the second time I\u2019ve contacted you. The parcel still hasn\u2019t arrived, and the carrier hasn\u2019t updated its location since last Thursday.\",\"Could someone check this shipment for me? The delivery window has passed, and I can\u2019t tell whether it\u2019s delayed or stuck somewhere.\",\"I\u2019ve waited patiently, but at this point I don\u2019t know if the parcel is still coming. Please tell me what you can see on your end.\",\"Hey, it was meant to come two days ago. Nothing outside, nothing with reception, and the tracking page is no help.\",\"My tracking number hasn\u2019t changed from \u201cdeparted facility\u201d in nine days. I\u2019d appreciate an actual update rather than another estimated date.\",\"Good afternoon. I have not received the parcel, and the carrier\u2019s website has shown the same status for several days. Would you please investigate?\",\"It\u2019s been nearly three weeks since I ordered, and there\u2019s still no package. Can you confirm whether it\u2019s been misplaced?\",\"Hi, I\u2019m traveling soon and was counting on this arriving before I leave. It hasn\u2019t shown up, and the last scan was over a week ago.\",\"Just checking in \u2014 the delivery date keeps shifting and now there\u2019s no new estimate. Can you find out where my parcel is?\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfLiRTnkYWtEHmRVB8SnrItqHh2OhQmE4Cm_3pFlwCXiKF3suD1yEDbQUVdDSGmbbbfo-MKoF7XL9UxwieVqMtrvZDe4NmMOi4YDNjza1pSuA1-CfZV6Esy1p7Q2E_kVi1jAsPZ_54SLz5eSalL9_LnAHCpvPlIAznm_awKnNN6F38pkM2aytUmZYBEz3J_KXKew44fV9PSvED_mgWQrIuHOUiDRXcRcbZ-p-3R2bPr7P5gLfAUFkl-tnq7uWALBLcf0S8GrbF628QrQ5dJXk7ddpprBDaWcuiqWJSgUtVH86ltNiTXvm5tbz4Mw91xLhV4ZfUjdIclf5iR-7kTENbfUSlkLT3go2ZeUiLFWXunKQIXzlY5VK3uFBDd77UEaXLOVaPbNupGXBUPlV-2mQsMTD01X-9mxgddm6gcXLVrmPVn8LLUeYTQYb4XOa2zqfoTCLfjbELlKzZVqwX6lOF_v8GsMRM4x72MqDEmtbZLv8XNJ-Bx9CLTJUAN3i0ZKbnFKtMHwZEb77puw5hIp9anXXmGSJfH21nt3dOrZXJP-x94oBzVdTSchvmBZN4iC9e5V8itVNEsQfup7Fc3YM9OxzskhgYD0jdp3Io6XmhmnI7RqbIFG8LGRYm14GoWKudiT7DkD8OVzdTA2_sQjYS7Dmo-L7gi4sE0NHDdcpS6KvzA7WiYl3X10Fr4qlu5EI1PKfJFI-weXpWB6el9CajTSvJjqAFSB7P4bvGkhLg1wFW1ooqiR9JVKEuLv0n8VX8aaX-oVgHtZESqTAyxcdsfxml85X69--pJrhZBTUI7yWnfWpwwTEV6HfYbh4pdFVyBX-FVU2rvULUGJY4c-AOlN8X5rFJBre3pUXj1YYifthppamU400Ackb7M6o9WFdtPkTCtN8eJPSkZMlRfwaGcEVGe1bjxiw7yDVURncrUIPW83BhqKYpuw4n28qVDSfqTFbtAdNJFauN_wvGu47LF0D4trRQy7r8Rja9CkU_i4JGXjYrEMRrez2_4VU3X4hR7N1SWEafJ4Fw-KQfoAai0Xf8n2lIODmaqUvIn3u6t6WmhIMER6zawAI6N1fdv7N4JjEn5IEV_dn9b6dHyuboH06qt_QSCEuUbSNZIabO5C9--VnoogaWAFRBHiM3ONQM2183RJq2Fh8HN3-iGFt_DtLo7Qzr5ghFWI5IyjVb2O96yxFrrNtxCn8uqKqRSgPwoSQOpkAO2PqhnhTEpc7jWvqil0ZDwDdkXa-uC_Hf_P4kzuTpWaiTXsJL1cSrLaXMXnPsonQ2MuN26oCp_WCuL7egZNlCrfZ3LDdutZ31DRetF6CGFmjJkjyELKU_tk_7xPZckj3v9gTZ15rA_p7jPIPIF8xHMj707U6LYS9jkymhxEdy9DZsItImQX4J9JjIQ92oQub1SHywxtV1tfaOEVsxDgIdMkiOd1P4LJuAi2U0bJqzGcH5jUWZVqXPgKRP65hKGdIrc0ukv7bGLYInkbkQVJrbRNmvbjelB8YoXvdpx4mFoBqOzqmwB8NU8COnO05zEpYqAZ3UHvTJVW94tU6lnIqFbYbmRLxS_gb-dD56Acwfcx1Vdukd8w-VTjZoxQq40FmwKpmsHvWRwY7EFUz4JYyGiBQpmLYqU1gzdEQkTeusgI5bz4WMFsc7Dz3uHCMSwBM2dCf5VSDSsKgo8QqYP2M1KeSeCmS2vHpZErAk3xP-6WYZtiWEfNJS2I6DwUHTh2jtQYdmCwXqqGrMUvaokrJDf7n0Q47VPoC4uHkKhVWBo8lQBecgGeZfMZuPUuJwvBxouVZK3S2nQOFCiqD9EOZnFqTbJoNPQ5fDnia4tmvH3q1xmw_32kguVwHEM6BhGX5oKXGQd_wWTmRZFhUqx7HH8Nuzd9LVhPeZWEV3WL0iLhWOgdpl0zFTkLGdGvAZQqVADZwHvU60qd66o5NkGXjNRbfcScATodnjcjrc5393i-nmz0gJM9ja74Y7aT4qcigTTzqblbHVgUXL0pYuW1s0JWRqPnKnOL3HtINrXRiBQ20WJDwHPa1a427oC5akwGLIaB3wzD_0Vl8i3BJW6kaABfcBE1vfkx4ZEaw6xVJi6ZTWftKSIC1WH3lIT1xjQsjya0YtrJ6hqVWfjUFVWboBEQSYQ4E4253D12OsF0bSqwu3ICKO3LUL7DDHX4F_hH5CjpfC_dbODHQy4au9gW1RdjE3qBIJwPIww3C7nZnlx8Ir2UEOi-eeRfjsFI.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_04995b2a6566de37016ab5f2e061c087d1aa89bcc053af78b7",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 117,
+     "completion_tokens": 693,
+     "total_tokens": 810,
+     "cost": 0.0003582,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0003582,
+      "upstream_inference_prompt_cost": 1.17e-05,
+      "upstream_inference_completions_cost": 0.0003465
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 136,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, the delivery date was yesterday and there\u2019s still nothing at my door. Could you check what\u2019s going on?",
+  "Hey, quick one \u2014 tracking hasn\u2019t moved since Monday and I\u2019m still waiting for the parcel.",
+  "I was expecting this last week. The tracking page keeps showing the same depot scan, so I\u2019m not sure if it\u2019s coming.",
+  "Nothing has turned up yet, and I\u2019ve checked with the neighbors too. Can you help me find out where it is?",
+  "Sorry, typing on my phone: parcel still not here. Tracking says \u201cin transit\u201d for 6 days now.",
+  "The courier texted that it would arrive today, but nobody came and there\u2019s no delivery photo. What should I do?",
+  "I placed this quite a while ago and the tracking seems stuck. Could you please look into it and let me know the next steps?",
+  "Hello, I think my package may have gone missing. It hasn\u2019t had a tracking update in over a week.",
+  "Any update on this? The expected date passed, but the tracking still only says it\u2019s on the way.",
+  "I\u2019m a little frustrated because I needed this for a birthday yesterday. There\u2019s been no sign of the parcel, even though the tracking says it left the sorting center.",
+  "Hi! Maybe I\u2019m reading the tracking wrong, but it says the package is moving and hasn\u2019t changed since the 12th. Is that normal?",
+  "This is the second time I\u2019ve contacted you. The parcel still hasn\u2019t arrived, and the carrier hasn\u2019t updated its location since last Thursday.",
+  "Could someone check this shipment for me? The delivery window has passed, and I can\u2019t tell whether it\u2019s delayed or stuck somewhere.",
+  "I\u2019ve waited patiently, but at this point I don\u2019t know if the parcel is still coming. Please tell me what you can see on your end.",
+  "Hey, it was meant to come two days ago. Nothing outside, nothing with reception, and the tracking page is no help.",
+  "My tracking number hasn\u2019t changed from \u201cdeparted facility\u201d in nine days. I\u2019d appreciate an actual update rather than another estimated date.",
+  "Good afternoon. I have not received the parcel, and the carrier\u2019s website has shown the same status for several days. Would you please investigate?",
+  "It\u2019s been nearly three weeks since I ordered, and there\u2019s still no package. Can you confirm whether it\u2019s been misplaced?",
+  "Hi, I\u2019m traveling soon and was counting on this arriving before I leave. It hasn\u2019t shown up, and the last scan was over a week ago.",
+  "Just checking in \u2014 the delivery date keeps shifting and now there\u2019s no new estimate. Can you find out where my parcel is?"
+ ]
+}

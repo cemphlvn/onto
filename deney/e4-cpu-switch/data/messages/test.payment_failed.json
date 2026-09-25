@@ -1,0 +1,84 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 20 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: their payment was declined or failed. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790309078-wSbLOj363j0QNVPfUpmm",
+    "object": "chat.completion",
+    "created": 1790309078,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, I tried to check out twice and my card wouldn\u2019t go through. Can you tell me what happened?\",\"The order page says the charge didn\u2019t complete, but there\u2019s money showing as pending in my account. Please let me know if I should try again.\",\"I\u2019m in a bit of a rush\u2014checkout keeps sending me back to the card details screen. Nothing seems to be processing.\",\"I tried using my debit card this morning, but the purchase wasn\u2019t accepted. The card works everywhere else, so I\u2019m not sure what\u2019s going on.\",\"My subscription renewal didn\u2019t go through today. Could you check whether there\u2019s an issue on your end?\",\"I got a message saying my transaction could not be processed, even though I entered all the details correctly. What should I do next?\",\"Tried three times on my phone and it keeps saying something went wrong with the charge. I don\u2019t want to get billed three times if it suddenly works.\",\"Hello, I am trying to buy this item but my bank card is not accepted here. I have used this card before without problem.\",\"The checkout spun for a while, then showed that my card couldn\u2019t be used. I checked my bank app and there\u2019s no completed charge.\",\"I updated my card information, but the site still won\u2019t take the charge. Could someone help me finish the order?\",\"My account is showing an unpaid invoice, but when I press \u201cPay now\u201d the transaction stops. I\u2019ve tried both my laptop and my phone with the same result.\",\"Quick question: my online purchase keeps getting stopped at the final step. Is there another way I can pay?\",\"I\u2019m pretty frustrated. I\u2019ve been trying to renew for the last 20 minutes, and each attempt ends with a notice that the charge wasn\u2019t approved, but my bank says the card is fine.\",\"The card reader at checkout gave me an error, so I used a different card and that one didn\u2019t work either. Can you check if the order went through at all?\",\"I think something is wrong with your checkout. It won\u2019t complete the charge, and I need the order today if possible.\",\"I made a purchase attempt a few minutes ago and saw an error message. There\u2019s a temporary hold on my account now, so please confirm whether you received anything.\",\"Sorry, maybe I do something wrong. I put the card number and address, but it say the transaction cannot finish. Please advise.\",\"Can you help? My saved card suddenly stopped working for the monthly plan, and I haven\u2019t changed anything on my account.\",\"I tapped the pay button, got a spinning wheel, and then the page went blank. When I returned, the order was still in my cart and no receipt arrived.\",\"I\u2019ve tried a credit card and a prepaid card, but neither one will complete checkout. Is there a known issue with card payments right now?\"]}",
+       "refusal": null,
+       "reasoning": null,
+       "reasoning_details": [
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfLZwoqmvQ44kn8QgdfSRAqJZtjMyhISLPPTYM28_gH2x7Ioygwl3zDPjYbJczQTi_kfTS6x3wzeWkwkjnySzepeAjFg70l5GyJO0tGosfwKJrVxDDT3cy_y2hLZxs0M3-6ZXs8vWj-0zhAjdxZjwV65rkAo7iiQe7jVw8oGp-z51CgyR7xFuAhII6yOFnuellI1pH8cx-A-9Oo3eLPOkL7CalVddvOnuqXIb-bhI06rrVTBoYQShBRV52ygbIMR0tU8FWNNR6eIpSvkJZRmGmOjDmxsyAJqboTwG3eDoJpHwosciU9z8gBp5daE56_OFAZF9J9smGaHRTNUrA2ZQC2gsLcLlxQziOuQi_pC2pi5rsATKXBGzHMNsxaNwA6SQ8djq7SfsW69i8zLN_cFh3nF9tQcRcGYBmxlKBd2rBi7LnM2MikH59Zdacnox9GTQK8Fqir-iyMPUNeXCGHO_5V4u9ei56P-0aS3rQOomshY36FL_pvpKM_7WrFY3vAG8SFM-kUft6nu0x04m9DlLkuZyKE9BP_Km-JIoKHsZ340dWVszNz0IZtgtLd46idcqYanqkFUfyQmsnVtn-J4uUZ6nUXpK_5Ok29px7URpkDU7aZCs4zltfFDXjBEI3PdUiHUpvd5YbOKuiVnQO3DxFMsxgIJmkwlgbFxNsBRzBxe8b_CLcVZg1GFsfLev1DsgzoToCdq3XM_IlMZRuhs-oEkceSjeyATFRji2q4fbxvgWRjO3wbjsruOkKdv24pLvkB3hRBs3C-1njOyAgiartfggAFxaVGlbNWfxp3wVOtkyOI_doMxLRW9KzeX5YmhR5JPNyjamZU11M7A_LjEJ8tE2NUkUFQKAeHagFk1adXq7ys0OkN5cggz3v7NVzxBuyEh8cuLko6wUgpqCecVP3G2PemXiFme4XgGVG5nRSDAydccT2uj7grSPPpXAuaLaqwf5k6n8Q9zuy_UXgAdEIR__dc6_f8kAYYhd-mzEvRws54E9aY4TfGolQL7N8N1pvgBWb7vUnlhNVPzeXo8zKwnLweq7lXW5uk2sUNyu3yoI7P0jelYTIBlvu3eL9cZ0K3A4uYygLBsONDJTeIMj4vU2B7srowymKvn5RXAcHUKWKKqAyQwwcV6rTlnkOiEnRlYHbjy6A1tQpWULO_HHNvcw1pvTV7cjmL-AINDVypQ_PykH2hm2s13GNLME41dt0HZ5XaBA2TIzSPyD5vEUAOFplj_Uh8EvykMiu019wzvIrahtM1zsnF6BxcJPwe72Cn_8uTbgftuKA-Xb8oEmixjJMg0SJdKIOowDAC61ALt-wBzC6TfUvfoYOAy8Z2xX7Ray9E9BfaNiBDYbEK1B5yejk-nwIsWbmVhBdoTEMmxW5AJFKAkL_Fu3_gEe7vYDokPZL1V0mHLfAve9n-5Bov6hoALKE9vmBUr2VUY24hdSM707_C2CEtNQOW_O3Q417YJzOrJRCeFwPk-MCOuHcLZEBC1gKAHEhfYwuhZO5YkzEJ8JUB_ghAzONg1aYzpanxM5oC7dELcIMFMn5iB2djNuU0vXq7fbXzGPXfQ3Lq-mzZMifoa_qCh9JPkR8FoSZTRYP7Rn_xZaXOiqd6Txg3U8Laa8OQ7LS8E3IKzZXln9LmJZeS_4QYH8-7e7ct1X-fjcGFIH7d1jAEJQ9GpjTk1Pdlpp8TRBan3NNSxXUuqr9r7kAAyQJ5y3j_1pUBu8CA1AC0G1WUdOGwz444IcHjB0YJHjhNkjBp5_ZzrZZ21_XzCflAaoXklvg_z69p-FS6nIEG1j65im8g2VrLa4ZvLecJ4pIgUBaTIV8g1m-6_S-9XJS7MeWmncm8qnFQrxB9sd_qHZuksSeGLWPrHq0WNiy8I0aAEjEdiOjwQSsI10h-jTmND0DD_C4cDZz_XNApzc8VHLHjGjDoAVs2ydeQNiwShZHjgUDze-ZDSd6ZYCi2TdgxhfEqHQ8NTetnhqONgjlpQ__ckNPuJHatrjNdYFA9D7Ls8cPDf8ZUaLj5kFR7PIXMUBiqCNtruIsxNYum6UOatqyfNyyX1-lF_HgX2MAqFYevKNmM-5OvKuTJDQzrk4lPlR7qocoK80SahdJQ7zmTr7yQ-my8Bxx1D9Fz60DzrCmXo_FsAdXj2gfSdjzDQATwUvlbtiUgoOLEFC0bJQ1-7moLggPjkHkgeH3RenlL2dMqpK3plL1yZe4sHxFbDcnZsVp6oRhaViRbCLwiK0EVL9rJcoqVF0Y6tSB-0q9PEH7_CUFvTwN70fuN7gM7n7nd1N5RzuNwVH4165sfx1LnYxBpXrgiggdCB1y4x0iyQxlI-haqkr1fJKBuFUtc=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0ea5f5eb0ead8819016ab5f2d7eb3487d18925020b10ed9447",
+         "index": 0
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 110,
+     "completion_tokens": 748,
+     "total_tokens": 858,
+     "cost": 0.000385,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.000385,
+      "upstream_inference_prompt_cost": 1.1e-05,
+      "upstream_inference_completions_cost": 0.000374
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 151,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Hi, I tried to check out twice and my card wouldn\u2019t go through. Can you tell me what happened?",
+  "The order page says the charge didn\u2019t complete, but there\u2019s money showing as pending in my account. Please let me know if I should try again.",
+  "I\u2019m in a bit of a rush\u2014checkout keeps sending me back to the card details screen. Nothing seems to be processing.",
+  "I tried using my debit card this morning, but the purchase wasn\u2019t accepted. The card works everywhere else, so I\u2019m not sure what\u2019s going on.",
+  "My subscription renewal didn\u2019t go through today. Could you check whether there\u2019s an issue on your end?",
+  "I got a message saying my transaction could not be processed, even though I entered all the details correctly. What should I do next?",
+  "Tried three times on my phone and it keeps saying something went wrong with the charge. I don\u2019t want to get billed three times if it suddenly works.",
+  "Hello, I am trying to buy this item but my bank card is not accepted here. I have used this card before without problem.",
+  "The checkout spun for a while, then showed that my card couldn\u2019t be used. I checked my bank app and there\u2019s no completed charge.",
+  "I updated my card information, but the site still won\u2019t take the charge. Could someone help me finish the order?",
+  "My account is showing an unpaid invoice, but when I press \u201cPay now\u201d the transaction stops. I\u2019ve tried both my laptop and my phone with the same result.",
+  "Quick question: my online purchase keeps getting stopped at the final step. Is there another way I can pay?",
+  "I\u2019m pretty frustrated. I\u2019ve been trying to renew for the last 20 minutes, and each attempt ends with a notice that the charge wasn\u2019t approved, but my bank says the card is fine.",
+  "The card reader at checkout gave me an error, so I used a different card and that one didn\u2019t work either. Can you check if the order went through at all?",
+  "I think something is wrong with your checkout. It won\u2019t complete the charge, and I need the order today if possible.",
+  "I made a purchase attempt a few minutes ago and saw an error message. There\u2019s a temporary hold on my account now, so please confirm whether you received anything.",
+  "Sorry, maybe I do something wrong. I put the card number and address, but it say the transaction cannot finish. Please advise.",
+  "Can you help? My saved card suddenly stopped working for the monthly plan, and I haven\u2019t changed anything on my account.",
+  "I tapped the pay button, got a spinning wheel, and then the page went blank. When I returned, the order was still in my cart and no receipt arrived.",
+  "I\u2019ve tried a credit card and a prepaid card, but neither one will complete checkout. Is there a known issue with card payments right now?"
+ ]
+}
