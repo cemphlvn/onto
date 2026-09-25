@@ -1,0 +1,26 @@
+{
+ "written": "2026-09-25, before any case was generated or judged",
+ "hypotheses": {
+  "H1": "Boundary cases put far more switches in the middle of the probability range than E1's labelled sets (E1: 21 of 2889 switches between p 0.1 and 0.9; 12 of 147 calls with top p < 0.9).",
+  "H2": "The team loop is a label for cross-team boundaries and blind within a team: when the intent judgment is wrong across teams, the loop disagrees (surprise) far more often than when it is right; within a team, a wrong intent still maps to the right team, so the loop cannot see it.",
+  "H3": "On this distribution Jev's intent switches are measurably miscalibrated somewhere in the middle range (enough mass there to estimate it), and the expected calibration error is larger than E1's 0.003."
+ },
+ "levels": {"clear_a": "a", "lean_a": "a", "even": null, "lean_b": "b", "clear_b": "b"},
+ "per_level": 2,
+ "pairs": [
+  {"id": "w1", "kind": "within", "team": "Billing", "a": "refund", "b": "double_charge"},
+  {"id": "w2", "kind": "within", "team": "Billing", "a": "payment_failed", "b": "update_payment_method"},
+  {"id": "w3", "kind": "within", "team": "Technical", "a": "error_message", "b": "app_crash"},
+  {"id": "w4", "kind": "within", "team": "Account", "a": "login_problem", "b": "password_reset"},
+  {"id": "w5", "kind": "within", "team": "Shipping", "a": "where_is_order", "b": "delivered_not_received"},
+  {"id": "w6", "kind": "within", "team": "Legal", "a": "data_export_request", "b": "privacy_complaint"},
+  {"id": "x1", "kind": "cross", "team": "Security|Account", "a": "account_takeover", "b": "account_locked"},
+  {"id": "x2", "kind": "cross", "team": "Security|Account", "a": "suspicious_login", "b": "two_factor"},
+  {"id": "x3", "kind": "cross", "team": "Product|Technical", "a": "bug_report_ui", "b": "error_message"},
+  {"id": "x4", "kind": "cross", "team": "Product|Technical", "a": "integration_request", "b": "integration_broken"},
+  {"id": "x5", "kind": "cross", "team": "Billing|Account", "a": "cancel_subscription", "b": "delete_account"},
+  {"id": "x6", "kind": "cross", "team": "Security|Legal", "a": "data_breach_concern", "b": "privacy_complaint"}
+ ],
+ "generator": {"endpoint": "https://openrouter.ai/api/v1/chat/completions", "model": "~openai/gpt-luna-latest"},
+ "labels": "A case's label is its generation target (the intent the generator was asked to write, clearly or leaning); `even` cases have no label and are used only for confidence and resonance. Synthetic labels, not human ones."
+}

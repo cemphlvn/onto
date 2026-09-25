@@ -1,0 +1,962 @@
+{
+ "E2-w1-clear_a-1": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "refund",
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-clear_a-2": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "refund",
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-lean_a-1": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "refund",
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-lean_a-2": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "refund",
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-even-1": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-even-2": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-lean_b-1": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "double_charge",
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-lean_b-2": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "double_charge",
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-clear_b-1": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "double_charge",
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w1-clear_b-2": {
+  "pair": "w1",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "double_charge",
+  "a": "refund",
+  "b": "double_charge"
+ },
+ "E2-w2-clear_a-1": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "payment_failed",
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-clear_a-2": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "payment_failed",
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-lean_a-1": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "payment_failed",
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-lean_a-2": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "payment_failed",
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-even-1": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-even-2": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-lean_b-1": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "update_payment_method",
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-lean_b-2": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "update_payment_method",
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-clear_b-1": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "update_payment_method",
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w2-clear_b-2": {
+  "pair": "w2",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "update_payment_method",
+  "a": "payment_failed",
+  "b": "update_payment_method"
+ },
+ "E2-w3-clear_a-1": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "error_message",
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-clear_a-2": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "error_message",
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-lean_a-1": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "error_message",
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-lean_a-2": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "error_message",
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-even-1": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-even-2": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-lean_b-1": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "app_crash",
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-lean_b-2": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "app_crash",
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-clear_b-1": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "app_crash",
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w3-clear_b-2": {
+  "pair": "w3",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "app_crash",
+  "a": "error_message",
+  "b": "app_crash"
+ },
+ "E2-w4-clear_a-1": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "login_problem",
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-clear_a-2": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "login_problem",
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-lean_a-1": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "login_problem",
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-lean_a-2": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "login_problem",
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-even-1": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-even-2": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-lean_b-1": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "password_reset",
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-lean_b-2": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "password_reset",
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-clear_b-1": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "password_reset",
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w4-clear_b-2": {
+  "pair": "w4",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "password_reset",
+  "a": "login_problem",
+  "b": "password_reset"
+ },
+ "E2-w5-clear_a-1": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "where_is_order",
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-clear_a-2": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "where_is_order",
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-lean_a-1": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "where_is_order",
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-lean_a-2": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "where_is_order",
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-even-1": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-even-2": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-lean_b-1": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "delivered_not_received",
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-lean_b-2": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "delivered_not_received",
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-clear_b-1": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "delivered_not_received",
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w5-clear_b-2": {
+  "pair": "w5",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "delivered_not_received",
+  "a": "where_is_order",
+  "b": "delivered_not_received"
+ },
+ "E2-w6-clear_a-1": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "data_export_request",
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-clear_a-2": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "clear_a",
+  "intent": "data_export_request",
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-lean_a-1": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "data_export_request",
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-lean_a-2": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "lean_a",
+  "intent": "data_export_request",
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-even-1": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-even-2": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "even",
+  "intent": null,
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-lean_b-1": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "privacy_complaint",
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-lean_b-2": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "lean_b",
+  "intent": "privacy_complaint",
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-clear_b-1": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "privacy_complaint",
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-w6-clear_b-2": {
+  "pair": "w6",
+  "kind": "within",
+  "level": "clear_b",
+  "intent": "privacy_complaint",
+  "a": "data_export_request",
+  "b": "privacy_complaint"
+ },
+ "E2-x1-clear_a-1": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "account_takeover",
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-clear_a-2": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "account_takeover",
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-lean_a-1": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "account_takeover",
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-lean_a-2": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "account_takeover",
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-even-1": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-even-2": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-lean_b-1": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "account_locked",
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-lean_b-2": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "account_locked",
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-clear_b-1": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "account_locked",
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x1-clear_b-2": {
+  "pair": "x1",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "account_locked",
+  "a": "account_takeover",
+  "b": "account_locked"
+ },
+ "E2-x2-clear_a-1": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "suspicious_login",
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-clear_a-2": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "suspicious_login",
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-lean_a-1": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "suspicious_login",
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-lean_a-2": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "suspicious_login",
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-even-1": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-even-2": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-lean_b-1": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "two_factor",
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-lean_b-2": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "two_factor",
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-clear_b-1": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "two_factor",
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x2-clear_b-2": {
+  "pair": "x2",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "two_factor",
+  "a": "suspicious_login",
+  "b": "two_factor"
+ },
+ "E2-x3-clear_a-1": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "bug_report_ui",
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-clear_a-2": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "bug_report_ui",
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-lean_a-1": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "bug_report_ui",
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-lean_a-2": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "bug_report_ui",
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-even-1": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-even-2": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-lean_b-1": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "error_message",
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-lean_b-2": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "error_message",
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-clear_b-1": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "error_message",
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x3-clear_b-2": {
+  "pair": "x3",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "error_message",
+  "a": "bug_report_ui",
+  "b": "error_message"
+ },
+ "E2-x4-clear_a-1": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "integration_request",
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-clear_a-2": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "integration_request",
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-lean_a-1": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "integration_request",
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-lean_a-2": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "integration_request",
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-even-1": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-even-2": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-lean_b-1": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "integration_broken",
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-lean_b-2": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "integration_broken",
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-clear_b-1": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "integration_broken",
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x4-clear_b-2": {
+  "pair": "x4",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "integration_broken",
+  "a": "integration_request",
+  "b": "integration_broken"
+ },
+ "E2-x5-clear_a-1": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "cancel_subscription",
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-clear_a-2": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "cancel_subscription",
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-lean_a-1": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "cancel_subscription",
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-lean_a-2": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "cancel_subscription",
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-even-1": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-even-2": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-lean_b-1": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "delete_account",
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-lean_b-2": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "delete_account",
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-clear_b-1": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "delete_account",
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x5-clear_b-2": {
+  "pair": "x5",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "delete_account",
+  "a": "cancel_subscription",
+  "b": "delete_account"
+ },
+ "E2-x6-clear_a-1": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "data_breach_concern",
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-clear_a-2": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "clear_a",
+  "intent": "data_breach_concern",
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-lean_a-1": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "data_breach_concern",
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-lean_a-2": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "lean_a",
+  "intent": "data_breach_concern",
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-even-1": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-even-2": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "even",
+  "intent": null,
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-lean_b-1": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "privacy_complaint",
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-lean_b-2": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "lean_b",
+  "intent": "privacy_complaint",
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-clear_b-1": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "privacy_complaint",
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ },
+ "E2-x6-clear_b-2": {
+  "pair": "x6",
+  "kind": "cross",
+  "level": "clear_b",
+  "intent": "privacy_complaint",
+  "a": "data_breach_concern",
+  "b": "privacy_complaint"
+ }
+}

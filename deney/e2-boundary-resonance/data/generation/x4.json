@@ -1,0 +1,58 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = integration_request: asks for an integration with another product that does not exist yet\nB = integration_broken: an existing integration with another product stopped working\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302114-bEy89gy56Nb9ysUQmIyT",
+  "object": "chat.completion",
+  "created": 1790302114,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"Could you add a connection to Monday.com? We\u2019re moving our project tracking there and don\u2019t see a way to bring those boards into your app.\"},{\"level\":\"clear_a\",\"text\":\"It would save us a lot of copying if your service could send updates to Freshdesk. Is support for that on your roadmap?\"},{\"level\":\"lean_a\",\"text\":\"We\u2019re using Airtable for inventory, and right now I have to export a CSV every morning to keep your dashboard current. A direct connection would help, especially since Airtable changed its API recently.\"},{\"level\":\"lean_a\",\"text\":\"Could your app connect with Linear? Our team has been passing issue links around by hand, and we\u2019re hoping to get status updates into the same place without all the extra steps.\"},{\"level\":\"even\",\"text\":\"I\u2019m trying to get our Salesforce records showing up in your workspace, but nothing is coming through. I thought we already had this set up, though our admin says it may have been handled by an old custom workflow.\"},{\"level\":\"even\",\"text\":\"Can you help me get the connection to Teams sorted out? Messages aren\u2019t appearing in the project feed, and I\u2019m not sure whether we had this working before or just planned to set it up.\"},{\"level\":\"lean_b\",\"text\":\"Our HubSpot sync is still running, but it stopped bringing over company notes last week. Could you also include call summaries while you\u2019re looking at it?\"},{\"level\":\"lean_b\",\"text\":\"The connection to QuickBooks has been dropping invoices since yesterday, even though it\u2019s still pulling customer names across. It would be great if it could include refunds too once the current issue is fixed.\"},{\"level\":\"clear_b\",\"text\":\"The Slack connection that\u2019s been working for us for months stopped posting alerts this morning. I\u2019ve reauthorized it twice, but new alerts still aren\u2019t showing up.\"},{\"level\":\"clear_b\",\"text\":\"Our Google Drive files used to appear in the document picker, but the list has been empty since Tuesday. Nothing changed with our permissions, and reconnecting the account hasn\u2019t helped.\"}]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdeq07KjzVaNiUb_fp6Jqri8ATPQs0_ogtt5yHw_cy2SA2RMhBpxJPiiiZbsaJ-hCpHwf4jmJYVJzwNXHgyAUHfqRiu5I9ws90LqWHk5dpsPWcDW0doG410MHapZXoOpkKdLRgW9RZDpB4t6fFpq8DEY5tRoeFgI6ZB2gcm-zVWk9l4vxRWgHlEL6NVkl_cq0_lyWPjgnhzw3tppqGddzrAxksk2OVB4yLOMB4_BFZaYF5oX-qIomcxGK96EO5LXZoxSHqHy_uS7xT2L21mDeAd4JK95W2PIxEZ-iyrY327kf0Q8pD2_0GoPEFWlFKqL6u8CIoSVinu-4OuVIb_cGtN5tBBLvplqYwGGuEe4Y2ZKRoIMeE2OjplNPvGW56_v0-pPgABlY2Nxpy426pQq7lKvLARkAcQQO_-tcnbDApAQhd2n67HxslCGS2v37gkczxQ2Vod4-dnM9HSMUgSrihLCHS6067ghxBfkbG7-q_WJX3zN_CKD2cRaH_G34OWklnb8DiSm_xkaNlU2gUKDmkSuS33lDnN4KDuwY_wVxwKCLErnjQRw0QgjbfqvoVFxtUf3HNiLCeEpzb0cQKmtJPPWBrrnKCNtSs4nmyLyxoomossIwLHvdpv_VNkIAiOBUNlNbGDJltjo1Tz1gi_s8bswNdgj74STeAvAEquCdbYoo0ZKWgKMOc7EaybjgUC6OVpqwBcNZXP25ID3tIakEt7mJxacIa6_d7fXVKq1LSJnZ87V4xHuLFQJRAuREQiFowIaf2g-JAPusFTstYRlFte7-jViYmShPQnme9mBR3_9W8rvjOeBhOWJJbWX7izDDXXneHk8sZVcTXBZClns3yN6ilX1CjENmatOadGNRb3ir-f7fuVoq8UB4sWEzOT2NCA2-Wx5BtxF9JiaBCo5s7-Mg-xpgBfrmGhKSUpO92oQ8RbdyWqA8GgY5lw-gVuHXCN0vGtXi584wwMNWEq8_ZdXYkmGGtVHL9xGPUinKaL6Q9EGOdqmGzx95O-S7I2C6bonLaw5Iw9ZWnwa9IULFWRPruUofuHALLuuHLYcrSqo3yyfdpFnhjq9N8NSAersL06JxTDC-qQjZSpFbrdMrqTmE_vHfj5HFp0fpZezqO3SoMCxxqx-roeJJAXhjCfkbGPvkUTCQ_HahnZNgJDeuDzoS6_-DZ5N1zlgmxpfmgioQThS6zF1ZPTUsxYUc__tBbRmMWSNg7SaGEpp4AbgvIIHFtSp6h1j-ZZ595h6VYk08ZqT1YCmn15ClCXXeDzQbj5fr2R1whcPoS9zwGxVYjQy5PXEZJsAJNIFgr0tOkXE8sSZUuAEIp_7b6esU9B-nO1QT2jFYJVDTL8nORn9RfCvCQRGPIhYAEWJ-Rqf4jCFfZWuXmfH_B1rAxehvdgAmCghzXDxdyaD4AVFLggul9VotQeBKKl-ySAC7BRYzxrWBrUw31J86shU0sLS1BV4OkSiXvXPu8y42Al3ypf8BwSwQLscKBYuxf3K1icBMrQSf0icAaGJ4O-mrJfRA8yLrNqT7ujj9S5PALk1KSIXNVzrUzu4LO9Q8IhnV0bkGC6UXPuEn332CuJPUvXU3YkWtqCipMJLKAZOZbJbQ7ZTDLGFiUIpv8eeyZy59ZVCSHRGLuFoYxhEv1KdS3CUwjYm8V0COyV30brjPWbf-40j7TNq0-gTngA1g9Vz_Y5ltdIURHlzciPQ9_TAJ8S30y4XCrHo-z1XDIaEwg8ClqkO98M4ETIOAIygsCwQXpQ8tAYrtu_KWCM2nTrxnKz_n13eIuYK9TgZ0M_V3ltnfGDoaJ2yTVCi_z1bzXuBQJKAT2-zKdol3fPvvNAb5iRjvuYZYG3ZfbBwakD67gtUVjfNjKVY8wKa988KEwLUV7fTw0rW85NHxn2fddYF9VMwUlj_E0hVRutW8Maj27-BEgspWY3Ee3FroSKnOAgG7RNzvdXhsGsgbMOaWOGFQoJvYWi_Xrx8pQ8ZrPzT3-nlAoK59uMb_07M4iyWHtFdk8b8UJS6JwLvFDX9ja7-4ysaLd1gphfLYMS-GRcVP8MgamhQSkr0pyBYA1NLn5ZvfR_BdigipiaLoTeXXac-mbqOYSCflUR9asKSz94LzpSQ3uyD1YTFAZbtSt1yLww61iX-6mrp4EQKyfRfq_bqB3gaKIsyydlqiBAFQ5Y_mJP1R1Oi8VP86dSoYfyN9LagK0-rsy_mLkh2i5z5LZSYPb0jWvuG-nlMW2e_S_9SCO1MjW0EQxsXlrHvwab0X2jUY3oLY65M7je9fwyGAsObONISNXdr_bh4M3VbAQnxF0MwWKtjzXI_3v3XuJl9__6uCf3qKQ8v6GMLSI0q8_jKWsy0-hAVSY-2zWvS8sGuP71c3ii1AZm2rFdRL09vDSE0CRptZP2SIFYjl6AC2YRF6bY0AUzdjL1EZBUgb-hUYZglyDQYZUEVZkNxLMVWBf9Tq_L0ErT6n_-aRE22rsZbBYcRZGMePmU_C0HxXiPO5os-YRDx2bRCBDdBdTftmK3mFUAOAip6HaivNJvNAvqr7CjGLv4X-hTV093JFv4FMDujmquudm0y1K8Qnv9A4U7eMk-hVLZNVRzDq5aF4spoh4rVkHOCPdXXlZiMdagdhwc9i47xf4qbETpA4HDKbsvEgHCw_2C2dCERr-iEtAh_E85-hUxhG-ktquOL1YYrquLIM-Vk6LuMeER1orcS5obRAKSr5O3pwVLBE57hLNoW_FbbOtfMUNLE3vm_h9m1Rrv6MuhOV4ya7WRSwPmiSPxMIM8fsGb1aC3hVsH852kWV-efUx7IPzX2ZcOarOj_jeqP5-Kvf_F7c0PZLCAln2whw26G-55JNn-IszwyqHeYP7kLsIL8PyNGD5-wXJx0FkQT1IYhFPriKCtlXIhKKb_qdlnIiknTNsK22hKbYAOplDoZI2KKm7OZe7L9SvM2i8QAAr0wlqJCH6RK1Q7WlxwmAH_J-kR7Tpf96dSRNXv8TMIq-VSFQ6yK_9Fr43P9XDIewDRZi5lVCsIqFGsjoP78RWAb_TTJX_nNHjporyl-BREOeh82hKUXG1lL0JI18UhtQXiR3Qw-oe9uNDwmpZLPyu3EKRnWPBsJc_QgUko6tO5EWfQ49fuFADS3TFZeo1RfGDtJ_ptme8PQETE63gINVKOS6-3bcK5TVM39hWOQrlcF-74X-5UdCZHa_oysPyjbO9JFbpjB3-uQJzjcPsxzgZshpEpNVkIWZW2Uq5EOkp_PWEHtIe5EOiUFLf2OvgNw4PDTfvTF8e8QghU0V-YX7inM_rQGAR3P8jnmCSd03X_B-PAwIWkjxjgeE11qyV1m1SWOkL1QR7_WqXBp1uKTGlGk5hmEf3uYUOvdcFRu6ce9cG58vIFQbJ6Avonz-1FP0yZslG-ZpLeD34xRvruEi4QW1uyfAV5Qp5rZ-0zQ3HndFdpJJ5659OUK3oKlQ-iNeschErHB84m6-5GS_RMlECb15txboduVygwu3314cF-2l9fwXFsISnJz383D-uPcX8EP9qHBsUP90dPt5n8stmUWweUJL9ZcE6y-35MCc34Q18pLH4N9jWD9F-wUWke2syFKlX9SWSTw_KNTSLQXXGct4q-NzeQjElLIJYBBt85C3iO1Sv5RxMoQZVIGzB5yDcxv-sHsvhsk0qthtqEB5_hkbWgsoQAQ2SP48yry9u1JBo2DjJDWe0KpDYBlK7YmzJ5hLxwAvEicwpQ74Zfs6PUcPO52qSAWJutJMU5DIKtLT33JlWQHaM9q76Yd0tRt5JRXOWpGInFFTK183gziwXEcafN9u508QIHq2AxCIHWqK2IARE6l1NkwJ6enRCukxqckrtcUMaoYmSf-D9b6Ffdc2k7-oXwuzBaiyYSSZTlvmi_ifPpAwNiSnivo-iXuSk5XyMCHY05A1jls21qX6L7XTykL5SJwbLCdkI0IFwHa9WycxV3i_HSWhc3dbsB5krtQGe0qLiZWUYPduhgyb3R-XqXF-jfjK31w1fUaON9bGsMbLKQ1y-TDUel4hHlNj-xcx1uyKb0Tzcy4tmiEhTR0oThrQpKHrnj001-4euAh9gVT6ELNJBUImRpD2vSIROULPnV63aKPXTmq0QLBu0EYSfGhsQBgjhC7-CiZhf-rD6D8BkzNJZvyXHm3cPxHY4lJj7c3j05dwmk-bS-V_Ekl1MdgDCVkZtUzGdzMjT4VMneHQgOMFU3zS_qMKdz-1fnmG-c06sr_o9uqSNx4kZHiz7gOwB5ESorV_ONExIiCPyd1jFldnpvHVV2c2uRJoPEnIBvqUuD05vJs-Egc91UO0JNVgjX9310uTFm1POOtu0JV4rxPNwKO1shzpQyTfomYYAqnYmvfoNXcrkzeXsU70I-JUM1hMz6DR_r8Aj54RxPfSyjpRw6SZ5IRLAMh-YNG5bPXpa6FHer3J0anvk4ljd5HgzDp95h_gC6Rn7wlWsLKOyZjZBpQUPdcJ7IG2FIWJYRvhLRhu6EAhfJAHMEbXabKYUgbLD5bQE20uFbKfKow8BYKbc1ihDJ5gBE-CgBbd9OFNiBOwfBJdAfvkPuStgHlZqWB3jGAxFM4r0xPPqFksVbYW8qfXtqqzG5AVItzWotYf2Tz5MPUuH6zBJu5ydUIpRok6pCdbLpLP7ClTRG6a7uu9Q3oiAyg46xRgrIvxPG6JtHZ2maQ8OpQP1YQe2MFW0kKzeLkkShkEIrdVQsZGouV1bXLt0WKJbnpl1e4msiPfCdwpcilg_ioj0uoymn-ObVcPZgULR5_qHSRTZVbnWmuc7kDaMf3E6RAk6REIRTZR8125CjQlZtfIqq9nT7KWptezRAbwS4H4qVkeDSIMnaGqpglWL4ttWK1y7rboHeGYTj2Xiks0zZi__8nvj_CaK01ubRLYRjHSzEX9IZHkbje.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0f1989c77c6d6acf016ab5d7a2ebac87d18aabac29f809d7e6",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 189,
+   "completion_tokens": 963,
+   "total_tokens": 1152,
+   "cost": 0.0005004,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0005004,
+    "upstream_inference_prompt_cost": 1.89e-05,
+    "upstream_inference_completions_cost": 0.0004815
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 516,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

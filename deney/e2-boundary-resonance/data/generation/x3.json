@@ -1,0 +1,77 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = bug_report_ui: reports a visual or layout problem in the interface\nB = error_message: an action fails with an error message\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302104-NDRcxF8Iu4Lv3ZKoxnmI",
+  "object": "chat.completion",
+  "created": 1790302104,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"The settings page looks really cramped now\u2014the labels overlap the toggles, and the save button is almost cut off at the bottom.\"},{\"level\":\"clear_a\",\"text\":\"Since the update, the text in my inbox is tiny and the columns are all squished together. It\u2019s hard to read, but everything still opens normally.\"},{\"level\":\"lean_a\",\"text\":\"On my phone, the checkout button is partly offscreen and a little \u201cPlease wait\u201d notice sits underneath it, though I can still place the order.\"},{\"level\":\"lean_a\",\"text\":\"The dashboard cards are stacked on top of each other, and a red \u201cTry again\u201d banner keeps appearing even though the numbers seem to load.\"},{\"level\":\"even\",\"text\":\"When I submit the form, the fields shift down and a \u201cRequest couldn\u2019t be completed\u201d notice appears at the bottom; I can\u2019t tell whether it went through.\"},{\"level\":\"even\",\"text\":\"After I pick a date, the calendar disappears and the page shows a blank panel with \u201cOops\u201d at the edge. I\u2019m not sure if my selection saved or if the screen just failed to update.\"},{\"level\":\"lean_b\",\"text\":\"Saving my profile fails with \u201cUnable to update\u201d every time, and the dialog also jumps halfway off the screen when I click save.\"},{\"level\":\"lean_b\",\"text\":\"I can\u2019t export the report because it says \u201cDownload failed\u201d; the notice pops up over the buttons and is hard to dismiss.\"},{\"level\":\"clear_b\",\"text\":\"Every time I try to reset my password, it says \u201cLink expired\u201d and won\u2019t send me a new one.\"},{\"level\":\"clear_b\",\"text\":\"Uploading my invoice stops at 80% and then says \u201cFile processing failed.\u201d I\u2019ve tried the same file a few times.\"}]}",
+     "refusal": null,
+     "reasoning": "**Evaluating dashboard issues**\n\nI\u2019m noticing that the dashboard cards are all piled up after the latest update, and there's a persistent red \"try again\" banner, although everything seems to be loading. It feels like visual errors rather than any actionable failures. \n\nOn my phone, the checkout button is partly offscreen, and the \"please wait\" message still appears. However, I can still place my order. There's a sense of ambiguity when submitting forms too\u2014sometimes it just sits there, making it hard to tell if it went through or not.**Identifying layout and error messages**\n\nI\u2019m seeing potential errors popping up with clicks and layouts. After selecting a date, the screen goes white except for a small strip saying \"Oops...\" which leaves me confused about whether the calendar is broken or if my selection didn't save. \n\nSaving my profile fails with \"Unable to update,\" and the dialog jumps off the screen\u2014definitely feels like a consistent issue. Also, every time I try to reset my password, I get a \"Link expired\" notice, and uploading invoices gets stuck at 80% with a \"File processing failed\" message.",
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Evaluating dashboard issues**\n\nI\u2019m noticing that the dashboard cards are all piled up after the latest update, and there's a persistent red \"try again\" banner, although everything seems to be loading. It feels like visual errors rather than any actionable failures. \n\nOn my phone, the checkout button is partly offscreen, and the \"please wait\" message still appears. However, I can still place my order. There's a sense of ambiguity when submitting forms too\u2014sometimes it just sits there, making it hard to tell if it went through or not.**Identifying layout and error messages**\n\nI\u2019m seeing potential errors popping up with clicks and layouts. After selecting a date, the screen goes white except for a small strip saying \"Oops...\" which leaves me confused about whether the calendar is broken or if my selection didn't save. \n\nSaving my profile fails with \"Unable to update,\" and the dialog jumps off the screen\u2014definitely feels like a consistent issue. Also, every time I try to reset my password, I get a \"Link expired\" notice, and uploading invoices gets stuck at 80% with a \"File processing failed\" message.",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdef-643aKdmbLPrVcNgjkVpNGW7egW-YeNYr0Rxdyr5NrgE-SDalKKyqZ1kiXlyl0qKabxD7fwumQcGim--yt2KtwYE-0vSrXzI-2IP-5wpHzinD6PzS64znTlKKC2JWR4JJ1CuH-74md5Xpv3n6wpkvKi3pp6N2GSEaBtX1w7CE3C0bu1JFzxIHye50vx7Z9mkLXlahaBg1l7zZbO5EwKYjOkT06E6AWKVH1ClVdhVqVk-IHrSYx76E7tASODVN-BE1mhVm_2jFRYJX4gz3BQ-XCeFYXVlLNg5ihRbPdobntXYAAuKL8JR4pC7rIIzCB1Qc_5oMCqz1wpEZQKLqAQaRHLjLhXeAth3yWdzpMFVPHJSRIBcqnGP2AjAQOuAsX83SjQ1nniEgvqjK-fvvjcA8Ggh_DSRbVnJQuje9BVHiWuWB3xNmEyO2DgOYfNRPJm3ha3QIaE0AEbinrGMCKNDd8cX5onrW8ifCZ6E40-5r5vJIuaQdYgDtsvoRwTDqjirxlm3y47QehUeF7vX2oiaOPzMtd8NbSS_1xwn9i2CowcvS3roeYZMMAAlwy-0iEt7Yb2JXora0-NZfTnad1kSANE2NNYAMXscPRVNd3S16v3X0iiZg3gqekjr6UFuYkJqSQR6OGIl-iT7rO79d9-vP8iYGC4iBGSk6s9UC_3kVcwSdBMgXgqGILvp7T6rv_6npm8JqGb5a8cG182xzVslDEe3LYIPMl7gPTu9p6nUPSR8M4VXRJT_vtf4Jagr58fjPXCQ901WXBqnSvhUi-gHwWo-iSZsZm4XMDlSwspVRTs2omxykqMiTtN-ZFB7GYOkv4xc_8BJsc7YF-a1OBKgsNvwqvvfZvDKxAojjaswYl0PCEvVZOMwE24pdY0eDKp_8Znf7ldcAkKKvgbx9I3htGyc0nCpAStMpbiMkMmyAmq923khuvAxBf4i95KHHWxXhuARwR4C5piAWA8tUo6OR_mvkyqv0Bb5cHRHZ3JSz1Bos_fyj9vdU-enI4-q_n1pquvtXNcjFNLUidP7bbPZTJ7QKOjoQ7lLwL4pxHpZDEoKGp7x8Ao93M2dKIAVSYqseyV1WVOcT9-ulvMQ3JpL5JGeUeJFYuxH0F8sqylyvsyDAfRHR8htSFGqv7E0SxusQValaGVbz-ILbB9gaL_RGVKz5dFaBwmvz2lDZEfER3yRi5GYuzy7z2JlPKRiYiPWEJBhiFyNjrvR8hjpKHe7ehHYpWLCJkCisiIH1hJ9OuPZDyzu10j2qMcXCp291fKa79-2_6jU9ZJX1Ne5UKYpbohmAH1dk3oZptHrzHvyQukLDnoQj5P7XjXjlk6RIy_eyF3j2s2Hz0IQepESsQXM007CRIhJD6xGr_1nRNVsM5YIj-PrXHrmvWqTZrMn3RPprth7QwlkOJiEmWL4gTtPTa2ZtFTtDbfcTbmFBUsGlYQUmk9CmCZkA77iW8giBTgPAlFSQUCRMhFEWrnXB-JWbTm0DPImMbxRP3L9NI5ig064nHyT-77hv9FzVnmZhnS9JXMvYFf4VdWAX2gk4zLMMTixpECDSmSb2PG8J5yXomZQwXIMiNoWPvHgJJNFFUoX124py3vC2lfTuc12qnB3I9JevmNZbybRO4c9kDTfs9Aujvrg1LWszZiSh6xZwJ2HxSi9kZb0ldOz-zSvayamWd7OjBkc-Po4pP5MizRk-pdzJ1eYr_GNHQlpWGWZ0J7syiHWuh2NEkQ0Be9_DF0EGMzx6wpC95GsNq1VNViOU0Vcb1vQ7CPI-WOGsG9Y0je1T_eEuhw9miYCV7Y8i5h5Py0NJZiP-a_t10izbFoJr03ESvWS-SNtf8EEmA0vQsibeqliZIxruZedYaQ9JpQ8dus5Z6XU7n8AhOGb8W0_LEHMV_5XjQ0lwtwt5sTRBRCWbKQZqVJV1B6jX_EL7nhraKMaZPLlv-Omj_ziDVRrR3Vrk3tmW03Xy2zNYotwirMQ4Mw0ecjlVuY-CYCPlbkdxxYjVJxDIjKcEY6L7rOfD31LBUjbVY13d-pYtdD3pUlGoaCKxYy5-5JZsCX0yUEiOj5g1KaTCuJiRVuxZ63qNUYT-O5-qQ9au808I7iTib1ARFjz0l_PTsD3TOX_XbRTeNMBFDB5RcEGkqhhqFbzc1uIIQday7nb7x7l9KmTrBLRlMPK7ReGCFH8GeRSdWBy6wuJiajbdcZ8rzmgizBw_2XvZC27imrFLJaq9k_-ReDtJ_-fFUulCzcADGzw-sQlar3xv7_E4k4peP0y9217zg1ewGQJ_y_vPvBK9yIFrRl4XTQvrlVKwN7mPLe3QIRuEFL0ungF2rpokQGNKDbhwlQ12HqYZvBqU1_NAkGkFr8KQhnbKsBy5Ef7c1BpPDre5tBI6ZzLEYFs7KT_BFKdETu9XnxPZxE9e3bEs3K8PKe0oduRCtxtWk9_vcnRM51mbCNsoAIUxXPn7hRMWYP1O2lgRiJRMT_mBCMs048TWsoUKqb9FAIObxArIMyfDrJ1_BcOeZeb7uCksNwF0GhxFo7O57rEY1a4xzOaLP5irIWc_E5S8mMFvaHo7J0bfDgvKPZNeJwElLAe9gRzEV6cf1qRrdiFipcwaTmYHqaAt-Uil4b0XCJ2Ukg9oBS9eUr0UB2ZmYR2W01iCCGXNc1Sn9tHP1JZMSOH0lgepqlv1SzpP_BZyNENCEkvN1JTvahv1S5Sn4Qkn7K2bbLqyOTY4MIcnww9ZXFGUXqkbfQqdk9g4PGwnBs70c83CvJQLZRuMmPqZfCzHIZ3XDEDtKGSAd6DvGpr3o5bjpv5X4PhI2KLT4uwW2eocvGvTDo-wHLqW6IIVYv7y4DEOk0xsMTSZ7OPrDYoQA_M5zZCnluSFPcWNjVoPPS9pkaUvovehHp-X501BREvn5QI58ioQdIaZxUVRkuKXgNqU84bIEMpyFfVPCT-CaND8TFWVA1f72DL_D1K-9-YTg1vD4jOiCo1PB7kknrWM15OGeI_CEu4M61OBXrvPTR4HTx_JB-HBwkeHc_bQjHev0mumqaY0N2nd-y-AJkjWQOVdZgPX_WbFlIYlrsl6hzRDHh0L-CMlOqMR40EgEDiFFVXAq-c_bTnjEO_ERdX4gwhrKfFsI_1KcMP3mAjK5YTHc38fVSoh5naZgwK2wU7qYhblQPn0aeb_irZ1VU-xT2P1BgGIREd6R5ZzijlpyGSZWNYBMY2PNInW9eN5hayUkrjhfjLjDWozgMPfHlCGQ0Xc1siQ2wpOV035lM38Hxcd5y9bp6qmLVrmuF_fSC4-gl3f_WYDyJ5k1uzeVQLxW_tbe-kfzHMOWi0Owd7P1n6NwUqvH_19ValOAW8YtDJ2DH4vI4DA-hj07IXC5jrJVrXBxSGqmLykCjnxwfT5atns2XO8Sk-1KreIckBMpnwAvPSaCMr_VP-x2w6yC6otp9NvJD2ExF7BQ-JEi4fX21uuhQCjBPkHYjGFLP-6WCba_VypWMhBUbNg1OdRzZeXHy6oUyttHeBfaEQErkL9lX2cCYaY6_ogdWWHaxad5bc7XFQZxXkw6mLtiPHV3xIm-iRpsiwki9FbHNpFbNFgSg_3GGtWHYBM5_I8mAjntU3HfkYv-M5sMZ1JB8LfVlqjDnLSKrc03zaRL0St7NLc5mWr3o_U823DoqmUuGc1SmvKc21OYpG55zJRtmuly7ImNyXv6m8yyH_ql2g12p-G3IdOvVwwqbW_99lIPTIQu7MNAQMIwP0UtWBeUkAVzt78gMlV6Osv3RIadp0h_Ujww7JP8OtHY1iSJwzm-bidAJ6QCmDlEbXRZDWCFXpKTuzcxfGO-DJEK5jCGp-Aspnq1y6u66NoEOfG1MZ2rbBlEzcSsgOpRqdVK7aaZS3Z8xtIL8xpwTu6_4eVcdPkds4DaSSB94neAns3OK9Q1mSNfLAAtyzlLY38nqWo1E0-dydjaN5DiB4ARpOEci-apUnGAZlmqxHj-W7V9uzha9VGTe6Tcf9sIyvsEURtodPhKVk6xQBUqtLNCikhC9c_SfoP4vaonz1MlcEs10NdmBqTrRryAs04qFJQGzXz_zQ_y7-4nlfn3TbFEUjbRjaOloj-OqP_VLGiU-4mfHUCNUHZIRsXeuF9iH_PLXrH-st4APPhkDythJzD6FcwFZEJ5oKWqTHFL1Or_cBm_oJfDBZYadd2o7FvbWumO2IjnrEgLsA8UqxgWBfnOVna-B0Vw-lWHON3cEFRVbifSG6xPLNwAh3mcxCZSR9ZyGv3Yua8vad1qtoqciiClrMOQcV8OfJRdVyPkgoiK-KdNocmUf8hfKOTW3YVSBlP0iPQO77IV1Tzqauq411loKKc7lUSBVaJTWD5xPyTjvJC3eeaTlyw9F5OQo67_BSY8oMXv-2KSoaUQ9p66AcBe9QTXCnqKQRHMCh9mE1FxHxggOX-7nrzdpWsjYnSuIro9V5dTfXKo_WziK4hyG9VH5-Hqzz3O-6qWDaHpBmb4eSXJjzULYEVzVJYNUpiNVk_tDCKh89PALdGKwbGmXc8ToaIRueXd3ypgnhksg4zJKkrStr9doFCCt9eIiR2bNfiY1cLVmiOD9SNGVx0pcG7rqfKSXb6Wsz1MG-4ecT7ZkNK3L1_OMqEmfGddWPAThpGjwz_R0WdGF43bJqSvOWx99QSkA4ELw4N3bWp8p3YoMDxsyvsg==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_01021e64a31e0d08016ab5d79919fc87d1a85a258af29d343c",
+       "index": 1
+      },
+      {
+       "type": "reasoning.summary",
+       "summary": "**Considering error phrasing**\n\nI want to be careful with how I communicate about error messages. It seems best to avoid using that exact wording. I\u2019ll stick to JSON format only and ensure my quotes are valid and properly escaped. It makes sense to stay clear of the word \"error\" altogether. This way, I can keep communication smooth and clear. I'm trying to focus on providing a positive and constructive approach in my responses!",
+       "format": "openai-responses-v1",
+       "index": 2
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdegg2JfR7D_ONyNjZgd3XJ7mJZHcHzpSJ2Q84l016UAn9vnkUNGHGmfdcisvbu0hmZkV3o_UvNqjDDP196AOIk9lU7y9Gg4blOcJBxQmMImwknRjyfgBv9nSPw3AHesGwjurONjiJOhJhgaEa1PxQf9nTGbHQiA0Cawg3Kft9FNtcOotGEhEPH7RPB4TaghYiSOvQMLyZSxuiR30e1GoT_3IpdflOgSt7ULm11YnMp3xHF-ciVN_nJCwvxSor93BQtfyyu9mJQjak7p9-V412X4pcT3SYJAtuZj2PNTRvpc67QtHZJMD5ttVvSfd8Ygol5kqsbF29MyE54CFlRjMlSUGsmSF_nB8WLLqatEzaoqEu4lvJspbEZTqNg3trWPrYVfwz3WoTnNaJJDUtPjrw7aKPkfPUmxM2qvNjFlL7K7FJuajdfQ6Aed0Q-CUR6jah6dmB3qFSxMaKAAVmpNi4jgjkdCwHq1VYUDUs6OSW-iLxqGGmUiHPt6gAtde-yRO-0Ll77b4mCZEPPkblk-7as44UQDD9ngFIEAWRmYhMIEP795jAN1lG7g0p411HLc2FpLa4Hn4VWWUhvzGNBmrITOYCAyuSJrDG5gsS41VaabderWA3lpJ0el_5Ydr5OpgcWi0e43uozl73JYAiHV_PHaMMKaQtwgCq0O8uPV0sP8jKpklbk_Ma_1VpstyFbndWUOxZHYMOwDwRmCJ3ezfm0TaFjYh5n9dZzw2Fk3lmRvJjsONMyZy4Z-SP7Ff9uZROumO6Pc-FCPgXPP-ErgfLOSnx0NgVFP9zfZ5QeMdf7ydRs2BkOAESHHs5IbxeNhwKHe94u8LuhoPpelA6edpw-ATTcocHOXGI4KRsWmwrY2m3eiZjouHJnDkD1YVMZmxZy5Tb5Funs79ps-aQANKNtzSc69RhwK4hDV-pJ5g5xfbdUI9E6KHDVaRUgKMzhanrxXA9FGmqOCYdw4CVuzqgDniqEozfgoLhVVfFuNlwg2aVss7kN2xvcYSXtodtxbSBNr13BmoNZvye9RbCJh2njbGf4xqZcnzUgCTPBWr6vj8dVKJnrxIuB20CxL2rzhnn7mRfd9fxbrd3mwooFp5nJnkHUYofnMzLBEt60_iSXL4MxdIuRiBj2kFLwFK1T-_nrcrWZo-TjKU0ak3tc2_0E9dqvmws5vS6qPhF6GTIOkHz5c51Fvpz3QI5_jzcGyYHQlgqcIgaNHhLoJPzgl0wIEV0qrooRHlrA7C83gCGqVqkgquHfAEB5v3fweQALkgFwM98dGpNkgsTMtfD3Q_MBkGVtkup8IJbQO3BZN5bwouD7yZ4uYUbNOk4AxaKq5Rh-dGs5YI2dd_iMq0Kg3Kt1lvkiIn6_eaf79gHX6L68uGk1QwQCDwSSRLrEeoKqA7f_4kVwFCcaXZLBTngJial5YCVsaKv6Xel2GRma5rkYmsXF0aKdSl3ejVM5-A_GVqiNTERm5B88HjGcYq3Q3VA0o2GuD2IDcDBsdu1uvpWbJy6-fNUWmE1y6yN6Os_PlcW7d.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_01021e64a31e0d08016ab5d79fb70087d19f98ca378946076d",
+       "index": 3
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 185,
+   "completion_tokens": 942,
+   "total_tokens": 1127,
+   "cost": 0.0004895,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004895,
+    "upstream_inference_prompt_cost": 1.85e-05,
+    "upstream_inference_completions_cost": 0.000471
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 554,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

@@ -1,0 +1,58 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = account_takeover: says someone else has taken over their account\nB = account_locked: the account is locked or suspended\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302086-sjhuv64MltFi0kdPJBm0",
+  "object": "chat.completion",
+  "created": 1790302086,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"My profile now has a different email and phone number, and there are posts I never made. Someone\u2019s clearly been using it as me.\"},{\"level\":\"clear_a\",\"text\":\"I got an alert that my password was changed, but I didn\u2019t change it. Now the recovery details belong to somebody else.\"},{\"level\":\"lean_a\",\"text\":\"I can\u2019t get into my profile, and the password reset goes to an email I don\u2019t recognize. The screen says access is temporarily restricted, too.\"},{\"level\":\"lean_a\",\"text\":\"My account suddenly stopped letting me sign in, and I received a notification about a new device in another country. It also says I need to contact support before access can be restored.\"},{\"level\":\"even\",\"text\":\"I can\u2019t sign in, and the app says access is unavailable after a security check. I don\u2019t know if something changed on my profile or if there\u2019s a problem with my account.\"},{\"level\":\"even\",\"text\":\"This morning I was asked to verify my identity and then couldn\u2019t get past the sign-in screen. I haven\u2019t received any explanation, so I\u2019m not sure what happened.\"},{\"level\":\"lean_b\",\"text\":\"I got a notice that my account has been suspended, and I can\u2019t use it right now. There was also a sign-in alert I don\u2019t recognize, so I\u2019m wondering if that\u2019s related.\"},{\"level\":\"lean_b\",\"text\":\"My access was disabled after what the app called unusual activity. I did see a login notice from a device I don\u2019t use, but I don\u2019t know whether anyone actually got into my account.\"},{\"level\":\"clear_b\",\"text\":\"I received a message saying my account has been suspended for violating the community rules. I haven\u2019t been able to use any of its features since.\"},{\"level\":\"clear_b\",\"text\":\"The app says my account is temporarily disabled while a billing issue is reviewed. I\u2019m just trying to find out when access will be restored.\"}]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdeLT8qYODtuQgOtWo9VrKCtJPA0czljAcnHraOgNs4im9cZpHYul1Vje-88uspXAztbnczOb62sb-k0CP4vBA0Vd4Fz9cr0EuUhFiTT8UBGgpLHQlZI873PjEbhC6mrtOGLpnQZPBvuniu6NQKe1Tq2KjwdZYKV-lKaUeGUGRtnOe_YaY6ZtrIFiW21CS8hVOdU9MNuXdurOGZcpMMdPGdT25SCpLWgsTE6W45rc9cnos56ieOgi1JiXlLBP65GSwbJuph2uQPGMAL_iXI6fW8xoAYo01O19fm31f0pVdY-XUqSvUWKtSLlQnhpGd45NLH-Wzfh_U5FlgEsa-4UVLUTH9XNBE0tOtPJhphOV6HEcawMANlCBJN725Lz5x1cU9SlnTyN2t4p2V2caXRriBqLInz99VPEGXMKPqGbJ13XAsEI5IIQg25pUHDFEvdfGkuyMQFW_F14MR85YWFDJmY7UmXYhzuspokJTJOboMURCK3OYM7FKjrFucI3tsUDrswqhSZXYrp9ddXUOMgCcI1JqJKR_A_Y3xo6l_sEQhjkhDIKbXnHFQBtrvMipKchKxn_HDLxJGOKTjAQO_h19GZ9AHofTvx1leBDpf3sUB-gijSiYYNsIwALhCYsHJ0eNFVypTRAvSbsupG3yi3b1pN-Nm3FqiPziu27YMGgyQu4Yyo1pk7YvjRx2XTBh9LwNNHt9onzi8rpDpTJb6RWoLvMrBjR4bjdIes3rs1RfmVRurd87qIjtHWQdxAsU9ilUtIVJXTHX1J75XzbB6kFsM6l8ZgG7DdMHzbE01jcZvmH93aMXYEBSXwbD7TIFGSJuzWTgPnHvZz5-urki5JMuI4nQ_sEiCQNHvWvvjZvMnfuPVjKpz2G4H8C_dcF1nZofcM-BPcg7w4ZKT-o4rdZtw7MZ3v1UVXATQNHXbRfCvh66NsT3jDbslVNqbSn8B-4unHZaqLMY4jH-HF92W8SbQrzZbgTGfkZJ0OMnfxdh43JXeh03VxjIRHAFP_YyAye0j--gCdaf-e9ZlbgwyHarR7S6idU8ggj5wf37JtqKGkD8kAUgNI7VsLpk5ZUNSzfn7MOFEgvbtn-oZJRLlhlrMRBPTtCXr56PbN1uZKDpa6KEAdnRO2yIQbmt6OftGzwk-6stjeAANFweNZjPFamutiAwgnj5Jv7u1jqTo35EXEJNXZT6UVaxLYxAQoWYNUKwUevUvZmM_sTCaxESxcc88bHwFa0o3zIdZT18Bb4u-F4kqwv_UlkovTPjtQF-m77GsmE_db38qIFx1a8YOvh8rnaFJwV70ZEUnzJfaLFu-oHEyAJY54yksE-5FAHr0OKyPsdVMKTFMvME2MYjsrNoEyMWt6SwcGFIbH-VL3u0DRrCFm7r8-0s8YURyNNF1Nhzph7ujvLqFGxu5jhQs3o6O6xwVwEpkle2slwNQ5G5SuLnkWasHt9w5Y-jZezpnm9GFNUtWyx4k4UN1KfpsgYuPcrx_OS0aSBHiPX-EJij65Rg7KjMJqOIZJ9fuB_uLudoT7NKSDqM9h0sSK7X885ijCSrkGMIvZ4v4HkZaGrathFFXOsi9YNDfy5JLFx4NrZsrMnc2ePAd6QILIkISmkd9ALiVYiE9qBN4SSqQ433dZV_93TLwFbaO9xNWJU4x9tpUsSoV1uOOf5wDFdu0oVboisOtH7qtl7OsuPhxEvHQ1V9C-fm_HFzm7_7Aa4wZuCSoXzbWLIjGyCQLrMgQ7KhkikkMF5_q0bWhqxJVQXgY29pdQ77Vq_h0Nntk6ctyvjMzSbIekd6CQHZtndQKDhSqv384eRWFNF0Qt24Ogo6gARV0ieHyZ6lxdwDpgirvVplFYSk0jODf5CiA4vuVwYBJP4qDXU0T2XxjW3brGyI851U2L0wvtfbVwUif4YQDZKAnfVUWHBcvn6fprNWtytqctKoLdVXEdB2G67aTHamgo17IVHn86vy4tMfr2xDPkUOj2PvaCARVp7-z5_u4KFMz5Dtg_b3VJFmNCWLJPW_46QgKL9JsLXo-N7Tqt3LPR9-lzs4jZVPgQrDTod4LRZm6vNFXMtnSnLQw9LEQDbcE1ny7U4RfU2rXOxLdeuZTyn3ERiF3ZQrrLuyJp0VB2UaTEVdoRUiemBSVUsJMAV4zMvTQ4weL29Aag4oKERijVKOrkeOaag7Y4KEYTknmchCXw06JFqr5OtHC5FD-8CGFzexPONSbOdgDz-T80RUflikC6sTXNAtlRXl-cpsYs7R888GmQil8f5qF5FRUgzDWrTFDCX5J5Csd8PBF1eZBDfaIoAMibv7P93PeTuVUYjCiU9097jKh39sGfg5vhJIQNCDwVcHJGV8sfrXC_nUEK7adf_7FRAfYmfDp7qvQi8UfooHePk45JDPB44LvIu-Hq38tBRe7FYpGobpZtGsWIFNH4FcIJDW_lyhGKtpEBa5guyLIVBs3Q42IVo2tTiakuEOV1nGmDWLkIYPKXZvu2Mzo2lY5U7ytuvH90AF59kpPM4vMIBCYZl8IbYHSE2kAPQ3efcwZe7K9hiz6TVuUZCuf7bmkbPJV-JjMhbB2YKxqMZ3bBsL7I19i-sc40RwtSBG7mKwyisDYFw4Di04gqpTZO_2JcDMj7FH-17Z7lsDrlrNoaOb3dBbQHi0hXKE-8yRUFRgXn9BKwmB_02wZH07hcT-vO6jC23s0W8jU-m08a7YN3hMrEnsugOPajBp-ZlrT8a77nvA7PEtE4HvdCZCXx3V5tjcZMsyVFW7sf56nD3oRM23zWVcVx2yPJ35VpcEcU97IzyHyowH9uvmcDbs_za33kfCcH8aDxbTLOhHRpq61vyY_5zUfvYBdgl-XbPb94jBLhXorTecalGyCWkT0QFbvOUM1uumaLROyAsP05xHWXmgSG_qr83v2yhUWN-cwl_-d6tGh8ZK5gEJwWPm6PHntv0lqDnoRxvuUP8Lt0NOGw4aGxFDbsDd-5P4oC4LOMJOLppG0O2zUP3QujWqyIcFzwvkOGn0oJnq_NUeXk66MeQN71SptgWEAPSfgyBgBBmIaSZ3_178HW3v0uxGll-zzA3vyv4cdrPcSyHjcYqCUvfC89gngR_jY9Ahivp6XTLUPss6-cvKGTEuLKzqarICxfEPhohT7DCJC2Gz_CT4_BQQTAHHnPcZFQjzZ4QpbxZJLlWHwD5L2YuiPmeejrBI_HUE0Dq2N9taGPxlLBTM3qu7hlOosoBC1Yy-XMKMqi9yByMhVQAA-zkZEZnyesb7sRvHllq-HUv1ss7-tC2l00EDkl2zaTebmm_IXyeZgwlkf7df7RCmyjaLjnZ9E55lhOJRy_tgEbaSWOkqqTTH5A8N-zDDeh1TeciLf0AKCqWlxcBopXdyxkv3lyBlEI1U-HhmYd_0DlPrtNTJlRgVfSvL-QKeJehl-DGz35Jz4RpQPDhQgtWhe1W0y8tFf51hkhh83EVn04AzChLkXuab02yIlHoU_hJai3KUd7t9z1hkesWdGHEE3z2ww0l7EG0xmYCg3Xoh1Nm2Tx8L7ByaqEW_GybAXYhR73uwNFLDl7rMohK6XDhuqCpKYvtC-ROVsXkiGARrE3mumoZY1GEHQYYDm2yrbAQPT9898nffVUcZQGjJdT3g3IM_Z7eQ7Zl2vyxGHVDxxefF1Q0GdNg-SjAkbq8hIyS6xFOOgPFb_hzLY3hD7AURlMbEznBc7iXwJnmRtCBbDRbdz_0CtrG6EutcLjm_S8TQ_EnRVc-ll1WJfxyzXv-60QnpM-u9SuOqAqqa5YS1xe7xhk-emG_tkxYuhPLk8mGh30HTeiccFt93faf4K2i6TIvSJBVaWZ1iPfP4tRKq4HJU_v0Vu-V5VJqydDDIQ0UWQJXYY0d48Czt9nEEPIzRJx4rRUAQ-fz35llxCmhIBli60v7LZ0u6iNgBgcQJEuTSaDoECU1SlbM2c3wSlLu3O2xuuU4tTZulKEJMxxqXzR94f-C1eMSaJSW6tDzq_amNAVadUWylKHUICTGN6cgO8o0hioUMWCr.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_05ea326513a814cd016ab5d7872f1487d1af58545abf5b3cc2",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 183,
+   "completion_tokens": 821,
+   "total_tokens": 1004,
+   "cost": 0.0004288,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004288,
+    "upstream_inference_prompt_cost": 1.83e-05,
+    "upstream_inference_completions_cost": 0.0004105
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 398,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

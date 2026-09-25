@@ -1,0 +1,64 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = data_breach_concern: worries that their data was leaked\nB = privacy_complaint: complains about how their personal data is used\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302136-fq12R0ewgxT4kUhtUN2F",
+  "object": "chat.completion",
+  "created": 1790302136,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"I got a password-reset email for an account I didn\u2019t try to access, and support says there was a sign-in from another country. Can you check whether someone got into my account details?\"},{\"level\":\"clear_a\",\"text\":\"A caller knew the address and phone number I used only on your site, and I\u2019ve also seen unfamiliar login alerts. I\u2019m worried someone may have gotten hold of my customer records.\"},{\"level\":\"lean_a\",\"text\":\"I signed up for your service last week, and now I\u2019m getting convincing messages that use the same details I gave you. I don\u2019t know if someone saw my information or if it\u2019s being shared with marketing partners, but I want to know how it got out.\"},{\"level\":\"lean_a\",\"text\":\"My account page showed a device I don\u2019t recognize, and afterward I started receiving ads tied to a health issue I searched for in your app. Did someone access my profile, or is the app using those details to target me?\"},{\"level\":\"even\",\"text\":\"I keep getting calls that seem connected to things I\u2019ve entered in your app, and I can\u2019t tell whether that\u2019s because another company has seen the information or because your systems are putting it to use. Could you explain what\u2019s going on?\"},{\"level\":\"even\",\"text\":\"A few details I shared with your service have started showing up in places I didn\u2019t expect. I\u2019m not sure whether someone outside your company got them or whether they\u2019re being used in a way I never agreed to.\"},{\"level\":\"lean_b\",\"text\":\"Why am I seeing ads based on private notes I saved in your app? It feels like those details are being passed around, and I\u2019d like to know who can see them.\"},{\"level\":\"lean_b\",\"text\":\"I gave your service my location so it could provide directions, not so it could build a profile of where I go. I\u2019ve also noticed unfamiliar activity on my account, so please tell me what\u2019s being done with that location history.\"},{\"level\":\"clear_b\",\"text\":\"I\u2019m uncomfortable that your app uses my purchase history to personalize offers, especially since I never opted into that. Please turn off that kind of targeting and tell me how to remove the profile you\u2019ve built.\"},{\"level\":\"clear_b\",\"text\":\"I provided my email address to receive receipts, but now your company sends me promotional messages and shares offers based on my browsing habits. I want my information used only to provide the service I signed up for.\"}]}",
+     "refusal": null,
+     "reasoning": "**Ensuring JSON Accuracy**\n\nI need to produce JSON 10 and ensure I'm using exact wording carefully. The guidelines say to avoid naming intents or using phrases like \"data leaked\" or \"data breach concern.\" Instead, I should focus on distinguishing between suspected exposure or unauthorized access and personal data usage concerns without suggesting direct intent terms. I should phrase things ambiguously, leaning towards usage concerns while hinting at privacy complaints. Each point should be articulated in 1-3 sentences, ensuring the final JSON is valid.",
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Ensuring JSON Accuracy**\n\nI need to produce JSON 10 and ensure I'm using exact wording carefully. The guidelines say to avoid naming intents or using phrases like \"data leaked\" or \"data breach concern.\" Instead, I should focus on distinguishing between suspected exposure or unauthorized access and personal data usage concerns without suggesting direct intent terms. I should phrase things ambiguously, leaning towards usage concerns while hinting at privacy complaints. Each point should be articulated in 1-3 sentences, ensuring the final JSON is valid.",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtde7fsiYTXQD93MBA4eZofcl8YIYEKO4aEiIegg9pQj34mYHT2d4F7ziWvdjIpFUDb2tSrU_QYqIGE1qlXi9P29pCuPDEqG6HTza2BtU-fYKZgmC99_vUgNzaay5RLXE7kd15ToOxWdMfdajG6H2T-w5MONeRWdYzisXu2DxJndzCwDlPF_49kMP785SPi0Grz0UIrC9709r5bfY8J9McMn37ZMnaLc-M5Nw2BuN0GObANohQQ081nYyXkgua8HkyhrH1B8aRt3ThOU6-Mr141HuAw9dSBD51RY_MENRGmeo_DhnhFKJ5phYWb47qw4X9u5OHoZZAE_5TuWFiro6di79FCWPbki_iOpUnhOm-O6X6pDzwzZOF0nH6bk8gAISmec0hZx-xLM_pNUQmgf0z8EmyLoK2TKHJB-LLOxDsE3FR1w92kLvI7rBeCvjH18v1lqz3O_iXXBTbKx2hX4-50XTytFUV2qIwiDBAFGxOPs5L554QFWIyc-PN2T0TNT7xDv5pOXUO310m6wCGGxlxuXCUSmfr6onx0ecnDpssoL0dvMZIZZyNfgbN6D1QmZ7oKb9Gmvo5695f8h_37Gv2jKO9BXeh1qU5_N1b1o8ubZr2jGYpewhcpQwqg5pA_kWJn6S9zWXvhR6q-ilw_R0NNljQys-arcohxdJE9AgX7Iz5BtlQdwI49Eae6QQ6GIakDW8fTwU9KcNpQX1cedOHuMcnL4pP62aPhXTIZVJAUFqS8mJy4k2Wh7E4feIbJb160Oxk40-m8kMzKRU0E43YOP21wj1E0cm1CRFKJ4wgkgQvdalyy5YMNflAhfqiaPQJFO4T4U9IG5UOw6jMMQVfJQdOy3xu_sGadCCjbA1P91p2KG9PbIHv9fFmWvHY6QSrY4vBKx8iHTtHef3o8B8mGgqGeu6MFvOv24zQ7VCGdDnN2dPWrijDJhkWoiDDWiF1VNNIsoSMN2VnBtAha8aKZ-Qn6K7neUMEx0VBB_saClKpjorh3ZFv0MI3jisbOAgja6bX0qxPwFohRPaEVAJYZPfa8Y2G8KJUnRa3pp1aFFu6HOu7gUO3Vvr0hyeLafknuSrZbaRFCIV3GjLxH_RzLGzlz7b3Ph2xlBOvTHzXjxgbJGD9VyI0wwsjKmy7abD2ZbQQJsW_7y_DZgFZduf88_3s4oUM6TE9iZ_x8RhnoRRWnAZx2TKgq2DLBDEWLaBsKc15Wvbe1Y8UFe5JMFicfFDI5uyVu6ajP5ILC8skorpH3Bm3sYQhNheGjuW3FwuZ4Xcg5GI_xCrIyoCzKSv1aj_9XZRE_rrBLzK4Mtdq9eg5Z0q7dpDf1Ka7lgFjxbemMr6O_Xg4j8Y4J-fWLJ3XCHxL224BxLE_Jl2N8QlNH7ADaOljYsyP9QelDDcz1OB3Bst82JyXknEviJuIsMh8HikNYOIV1zluHwpiUNvli5NuCuYC9tbs2CGhEZlEmRjdoqA43Jn-278okgY8RdHlZWJNfzJslqQ6kAQHSPLNLaWz-057lHJShUUAZiYAX-ThkFGODp2hvvgcpUuwv69n8MXPyTHCoT9ugcYDUGnjhKoAtFHdW41d-c1jIWGlzF5eF_epuTqU9opzc7TUvhEV3qwhvToi4AxTbW9AChbJnS0YrQw2-gT4-CIq_4ZuugBOYtgtcVpifv4Av1QRm9VKy3839L-5MdyWOPa8b0S6_hwy49KsTTBgO9fy80TYJGD4KTeLs_Xc2_v8AA_LhJKsv5b5ZGR6ijRufq4hk4wEwGufY18hGtRdweLdanlm0ivFf_-d0wgecQf00qEv0o8m10NQpL26FIcxUWLqJnBbs_9HYQapXmZm0E9lQ0bPAeaSyZ941Vl1328ZET3sOAauQBg7SP9Gig8MZrYT4AV8BKNyBN_0nv-VI4eaYUk7NNnVYwNIKY23sofRoQsTgJcUXglbLYuKlNWlGULHTEawx-ykW9XG2bEpmbDhwE6gacmAagjR5bhFEHlEo8ZzTHLERyvmszSYKIos7VSsKZkgCDVr8q-mhS5lEuLOpFXSFWpXBmBuXIrFRQMlKksCOq2FR_dfUlHVmQQSa5N6PZ5bgmBzY6hWy-7sHPVPbVffH1JFMm08ZY0--47g5h0Y8WrtFCkWvTFyH2Akn16MV3KcfELq-uKy_UHcc3BA0wkVzlNNpP-gAmDGa3f8V3GouClaMVL-5qcUhhEXSS_6ymyU4TMzVueTl9O4xKf2V1CgiFlod9q.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0930fca9d108a6a1016ab5d7b8e3f887d1b557cae96cb2a182",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 187,
+   "completion_tokens": 669,
+   "total_tokens": 856,
+   "cost": 0.0003532,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0003532,
+    "upstream_inference_prompt_cost": 1.87e-05,
+    "upstream_inference_completions_cost": 0.0003345
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 143,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

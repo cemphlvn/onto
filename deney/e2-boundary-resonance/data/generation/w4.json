@@ -1,0 +1,58 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = login_problem: cannot sign in although the credentials seem right\nB = password_reset: wants to reset or change a password\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302055-YXyKT3Wmy6MSdxLDqauU",
+  "object": "chat.completion",
+  "created": 1790302055,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"I\u2019m entering the password I use every day, but the app keeps sending me back to the login screen. Could you check whether there\u2019s an issue with my account?\"},{\"level\":\"clear_a\",\"text\":\"I\u2019ve double-checked my username and password, and both are right, but I still get an error when I try to access my account. This started this morning.\"},{\"level\":\"lean_a\",\"text\":\"My usual password is being rejected, even though I\u2019m sure it\u2019s correct. I tried the \u201cforgot password\u201d link, but I\u2019d really like someone to figure out why I can\u2019t get in.\"},{\"level\":\"lean_a\",\"text\":\"I can\u2019t get past the login page with the password I\u2019ve been using for months. I wondered if making a new one would help, but first I want to know why this one suddenly stopped working.\"},{\"level\":\"even\",\"text\":\"I\u2019m locked out and the password I have saved isn\u2019t getting me anywhere. I can\u2019t tell whether I need to make a new password or if something else is wrong.\"},{\"level\":\"even\",\"text\":\"I\u2019ve tried a few times to access my account, but no luck. Should I update my password, or is there another problem with the login?\"},{\"level\":\"lean_b\",\"text\":\"I can still get into my account on my phone, but I\u2019d like to replace my password with a new one. The website keeps rejecting it when I try to sign in there.\"},{\"level\":\"lean_b\",\"text\":\"I want to update my password, but I\u2019m stuck at the account page because it won\u2019t accept the one I\u2019m using now. Can you help me sort this out?\"},{\"level\":\"clear_b\",\"text\":\"I\u2019m already logged in and everything is working, but I\u2019d like to choose a new password for better security. Where can I update it?\"},{\"level\":\"clear_b\",\"text\":\"Could you tell me how to change my account password? I\u2019m not having trouble accessing the account; I just want to use a different one.\"}]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtddsC1vSnHiaQfYHi_5feD0Q6oKQR72wZBN_fhxjJY_l1nvEGgVQw6jmv26KsWAIVVUIMw5DjyoTjB4hWbz-U6UXmmSdYa1jH_9KAOcV2J-Qeg_-U1JjdkgbNn5HGhP2wwRtV5sYOfAKsrWI4uf6fKl-agcTfC2EFvmm_7XnKvxfM7XxC4sn9BcQvaPVORHicgohCaaTLUCxBIiI5pOJOUZPQ9NOLlvgno-lA8vQ_cAdOIH5sqsCWtKpyEaIATwa9i-qOtSrdrP0pAQIqZMfMyHKpgEA8-Z7guQZ7FP_ljXGoVfdJF6R2ogF5Muq_8J2YXuRQjM8Ksfd4LOSZA-RBuWu6mBQxtuvZ93ViIIL58A7YWSybwRhKpCde3SyPua5nJSzKpqav7PiyRJZ7h9l2qIm1BvwKZMld-y1f3Q-2hl7PSL5fO_vkGI198qOuizhY-ynjqpnxMGLkDsLyQn9B5Bnow90PVFAJIRmbjiwKT2-bMO0pSbMiHAqtSzbotah4Bydjb6Zywt8RnfEK1JH-me2jIJAxS6NJkNNIvdhxfIQk6CYUoYgFkTjTbdCZIJc8Zp9n52KrP6rAAA7BJt0SpXJ32_l01jlMlTNo7n3eS117fXRJa1buAOYlAQBnFNa__S3uI9qf1rEM5KYkgp6OnsrVefWvWBNKQvs7rkq4NrbOGGxoxmhqM5o8yqduim7qqjNZDXxBeOCMH5R-emLybOTF7p7qd2h6OEO_FGNWROfTi9DBL9hpgBehbYEo169vWJkPmGe0rN3wD79XQUQoyx3UJ7CIcvHN4mcwf5gz0GuQqitYsp9Y5VU9xe2A34FCl2vpsaBRaETj_DKAyjdt2oXyC06EtlsQx_Qyqbma4dwaw_AgjUIgMgK6DQj6pPI6GJP10gh1_JXT06_nZdgmDnjOwg5udDVp6FGKH40_UCJlS775tDI4OPvlHoEaEH3HYN-oWb9pdBQ8eu_Lhf82jq4PZ9kyaHlEDqY-r4OygD0sIpn-REK_mF-w_-u0AHonxNZ3jsppS8GogALVFNDOCNKFLSvLAUeDd0f6_xk5Im_gBiCwqrbTlD3l-OjJ6JoyJ04T-S0Iga_-XRvin3y1DtvSzR4RDzmrw6TaIjQg-SCZMnDYbDN1Q0ZeO9WYeyZFMra6wPhYYzRVY7nVFzFsw_A-d99qR1qNuvUaWo8X8qAfSmHndOFG7k3eLeZyt-NpXmNrNwnD_aSOIcYLizKtXWSYqWSBqM1ijWdaCeqy7k1SYMwrgYvKv9j-_NhvycwW0o7JdufWLk_uzi6pJnyJ1dwe9VLP-3EM8gF6jwZ5X1QK71YUBv1ljffybrPEX0BIFy4Ok6T6V9SttgAQl-xJ5FPusRbUTm8_0HaXs-FuZR36SmQd2rqhOj1rh1UWtLEHyF4WjnjnhUqcUIm2bn592lRfMhvlpuVnCrD2JTaKPofe9xoCPjbIYj-T_liLue9c8yEzaBspszATjsMFIOURmj-4CqCFx6T4p_GFqy2dobQ_4Wwl2PoYkCSH3OTnfDs6J4qhk6-PYmMKcimlNLIlmNghOcGPT0HKq0ZeQ6_ZuXphUbGlPyUS6fYUp8tfX-sM7uBzj7u6f76Wi1NB9E4L7RU7ARNM8YtAz5U_0X3mAyaXaEIj5-tJqpy5XCpWtKCinoTVBtvV7GXGOuiL4fUxxT9QBVheuArZOMB6QctFq2Y0U12wQKhZe0hlOSVDJnMaBty14X4tYg2x0YNW1dvMTt_etFuCV8nN2b4ZuPelMkuObFeP5CrMXubbazHnUjyynNfyMN2zs4t8_V10UYwPIw87eYERah6-VMADrxL592neZ0lhb05HeQM95Z7TrnDt6E_cd7U4NV-6FL0VOKh29b8ShUnn_L6ovCyutTTNhZ8uqk63ObtL0CD9H9g95t8CK7dN6ztQ023CgJirDP-E8oNgIIuktJjV6IfnDZvbn0Ns-QyIxL58HFCnEpQFCkiR7E-W_c7OD2s-gPDEat1TK7BCwaG0eEyUSpNMsBAf8mVdOAOQdYwOiePyrqDFztJsPvtrseBskDZfsj4c2TdM7IEyr4EQKjzh3Jn9_8medI6NKZtHBeCPXtb_28_4uGImnqVrmD8prugtwHHTCJ-Q_YYAEnsn5BWEMeOZKLl28i3SwxoLPeifNp5Gmt6ygPvYf_VlSYCc_p4ffgADEjpYwrBRH5R2Z0TQLLCgUOY45g6HHrXjfzLkYnXZMgA4DTaRBByELZCJCFf0zis0XAw5lTY8aghd7yAkkbrgdURrQL1iYH9EDwjxBWBsoTtgjGXQIYIfAH4CuRZwlThiOQPtMjNCTT_ytObZZOCObi0OV82XABSZAHwCCYP6G-4T_Vdnk4wsYtMwoGox1qWZ74vkD7kz-pS4enhawLXdSniZaAr2roMmdc1Jl4-BqdJHKV_PmWS4q7xzaWwO9GjuXAZmguPTpmMAm_RaMcmPJOnyZ5UOIGO3c7325LoC8IvwZjNun15cxxFhsySqNzgeA8dJy1FWiiGrRLwvJzNMyiOa_kPrOKxY_6v9Y0LpejUCYCCETLdaecN8NM-0lEZpW5YZMWps18OxnU228hjVZxzIkatK-g9iF9dGxvUKIRbKPpXuGVEhwTjesE53-sJktnr6YguaXo2DsBmQdeZTw2GftTJoGMLCqWKrf7gZiGTvAU1MwdY8fjGx2Uo0GUnrdQQ2cJTRyd2XWjQvNKCRhjX49dwc26RJRHBY-vqkz-fsEM59vqwm-zlY4XvTIpljwZgYOmVhRSoPwPGlkjhVoA5r2jsEm9wkfwPE8TAN1XjHqYTSA6TLAS05ErqqNAGJlWGe-6BaEa0Yde9sfub_EBmuw_26gJssNEIiQZLlz8kTzf3k7jAsLEp3Mt1_LU_0E-TcI9UXZ7XAO11bUs2p3cxXcak048jEd_bnGDWFmn38VxqWoauLBObUtOsFZPP6w1TJBKcPxNnTUkKwm7nhjTzNfBtajC1iimcl7Rz1FxvWfH7kIDJBYI6F73b2otrckkL4Zo76rBzW1xtkQmV5vOKMhUtlohO0So0tC3CijiFlQxHIcG5FU81yAAHKrlE97WeEOfy6a_HXoG1wL4zWNJKykS76OfS2pv6U4g9Li_YsS6yKlJlWqFOo86iwCsTxK5x_Y0WkrsdF5BcqmUQEGv_psrcWKJHq1T-WPYzYHv9RWmn6ipHK78G0SShONoLWbLw8yjiN6b_h4B0wvtWeVcqveU6nF-J6aXzQ-OKwX7WVDjUZAeuFZZmXwn-hPXlAbZnsqu9vtb6C9QaeaQD1kj2rgv4IMsCmFp43idVO5_8FypEZSWpNG48RCscS88Yin8NPZYQ2yuGEXzPBOTTgeUr7xlxuNrc5Sc4TlE-A8p5tGZSRVDVIjddgO1JCGlZoXbxjFQHdfUE_l3KThWy6Z8GbNIh95K4zaC3w4StB8y07OyC7inm0jHlslGFg9YmOrbLzqrz73QDjytm8Jcv25OENiSnGk8=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_04ae9e294c6e208a016ab5d7687c4c87d1bcf276f25e505bfb",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 183,
+   "completion_tokens": 776,
+   "total_tokens": 959,
+   "cost": 0.0004063,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004063,
+    "upstream_inference_prompt_cost": 1.83e-05,
+    "upstream_inference_completions_cost": 0.000388
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 339,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

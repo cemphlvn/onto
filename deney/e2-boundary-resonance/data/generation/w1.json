@@ -1,0 +1,58 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = refund: the customer wants money back for a charge\nB = double_charge: the customer was charged twice for the same thing\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302016-H34VMYKSS70aumW47SmD",
+  "object": "chat.completion",
+  "created": 1790302016,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"I was billed $36 for the annual plan, but I meant to cancel before it renewed. Please send that payment back; I only see one transaction.\"},{\"level\":\"clear_a\",\"text\":\"The headphones arrived, but they don\u2019t work at all. I paid once for them and would like my money returned.\"},{\"level\":\"lean_a\",\"text\":\"I\u2019m unhappy with the meal-kit box and don\u2019t want to continue, so I\u2019d like the $52 payment back. I got two order emails, though my bank only shows one payment.\"},{\"level\":\"lean_a\",\"text\":\"I paid for the hotel night and then had to cancel because my flight was called off. There\u2019s just one $180 entry on my card, but could you return it? I also received a second confirmation email and wasn\u2019t sure if that meant anything.\"},{\"level\":\"even\",\"text\":\"My account shows two $48 entries for the same order, but one is marked pending. Can you look into it? I\u2019m not sure whether one will drop off or whether some of the money needs to come back.\"},{\"level\":\"even\",\"text\":\"There are two $29 lines next to the same app subscription in my statement, and I don\u2019t remember authorizing both. Could you check what happened and let me know how this should be resolved?\"},{\"level\":\"lean_b\",\"text\":\"I see two completed $74 payments for the same concert tickets. Please return the extra one\u2014though if the second entry is just a temporary hold, I\u2019m happy to wait for it to clear.\"},{\"level\":\"lean_b\",\"text\":\"My grocery order appears twice on my card, both for $63, and I only placed it once. I\u2019d like the extra amount back, unless one of those lines is just pending and will disappear.\"},{\"level\":\"clear_b\",\"text\":\"I bought one desk lamp for $31, but my statement has two completed $31 payments for that exact order. I haven\u2019t made any other purchase from your store.\"},{\"level\":\"clear_b\",\"text\":\"The same $12 monthly membership payment posted twice today, and both entries are settled. I only have one membership and just want the account corrected.\"}]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtddHmyKN0HWnMmiD8BlAixPq6nlyl3O2Vrf-pfZzxG41ZLpyFyeg85pSL6wrvRBYPvaFyC5Bm2nOj-WILQtRFVrG9cl2Dm9tbtiOMfqC0YlnRfTy3o9bDMLfn7RpIDqNemP3XrYz3luv3gwsvFIvbYrjyLOJYMFoPSyTfgXoxWFQNEe8ll7LOPL9av7eCFsKXnwOisOW3MeW_v1mfzlLiiHwO5w371Hho9au7TpE6XbCI2AMRSlSrzTbLYEdOYceASKsgKkf0o9bo3nRaN6fzxjLldZ8FPTVN8eyXENwJ73YlhyXpGKpU5g0sep1tlgo_8135-AYKHviybWQunrhF841-bAewcqmm7deoO7VdGMiUhNXsiCM7kG7enVfXrU_95oLSD3aGuJPzoQdw5JYykCASWYGOD9ko9Xg2w9VeseQWI0TM0ou8x1LW6cohTI1KjlVx-WlyvRFFvSBL5ii9SD8T8dj4mmt8kjP8kFeUuYacqqNkEdHwDktCu8aw47o54L3QRDe1sooX8d0tdzMExT_ce3bNi6mmPmGnOnL3_Dzu3b70e8CzqvBTn5KeB5036iRnqMseUA1CxBFSvlTxKNTvCDvi31yK2YlWjC8vj69gB1ZN7HjlUmAChO7qa9YvPTZr6Eo_P0mpydWPgMezYBFyf5TqcBh4_aF4ADIdKeZWTE0L1CcBzc4CBlf8sIccGO4v_w0gxOz7bH7iM5u8hla8ZRUX0X9G4nmOPwai-jUzEYvOsQcUujHDh12TvKDZwnw0GRhjdOWQxU57LKzawwJvwNMCCJwwvB0Jx91ONSZPT1GIfiT_C1bLSRh4DxrhHexkoF6XPToV-TLyixe8WGdJM5CtU30xSXSO8pAhOgUiXKk-l-ubwbPUPJzR-TXh7iNQL4C6Ggb_-LjcalUy5fH0OvcuO-nge2wdbj6T2wdaMRWnOo0JkQyfXWxu0VtpF6EUiJn5BH6JW5WviXm-iFFWAdzy8qO9g-W6LOGQpiE8v_UaII2a4gWnRGS10WRlspXUGG774taoSYklVJAjCZ1cDqlMmH1G97Gxn7JKn9dzWUyJ_mhhQORXV8QUp3i--DXNnRLuHm9KViy1Olpm8TMcKM5Eh4IQLp4Mg8z4TGVYjXwIvmpNVQKcO3rYrx-wLo3yg13_6wUCZS8j0J6yZys1HO9ipjvFOn9pctoLUQo218VxEtI_l31FSjcjW_BqNFSH4-YP3uwsqU0cDj2OQ7csrk_YHW8I-NSabbAWo_QR9YJHE25CA1JPN8mi-af5aXr7HQy--4aMymQgNwK_jpu7qBw_6WkU4djtNHCyghHQjRLRh_ZhLHq8dgwDj_bzmEkDM0h8m4uYAPlm7WxAszsXvIUtmKO12xob3WzJ9m09OY9QnjvCf5oLYCYWI4KtcJNxbgcl2WhD_HrUsTovn1cdGJic21NB0TBg42pFRnG-XvbOtDRzPyatbgU8d6jY2nfkFsqQyOi6cEXA3eB1jwsQmauMSSltM1_FaV4Fj43-RAynMoWuxqYcPHa3tKkStlX1SWosGHN3Azx2ZnG9Bef3o3QdqD8hQ1OJaa39TEuQoN6DhQKnC0Zx9Ci3Rg8Z_LtI3Vo7i_hKC-jLG2JlpgsfQDaffMfv4j4LcmC-M52FYlZuGRmmeojjC2KDtM_QuLQLc-stkyC0JzrW58hk6yrrthTzT4nUxqzSqLUY0bTCbkbF5KU60LIBmKmZWqunHeVgWELo1_GbpAhIMWqtYKqB6ZqP2IRgLtOC5PS8WY-tAqfgWoOCBz6WIWMuqxdqmjMAsDe6qZTsZqMJqh3aYWOpmW-KpPx4PEO2uSzcvU4lqixR2s3SEH6qTXLFGjUpOX4Vx_ePTVR2OnJG4KiLr-tddSMgEfIu_7UOcRiFciW7AEKFggFEqYjLBIBd6McmVpBgJhF6-4xbKJ2K6sUHW0bbyYsC3nhVxnMKKjXkX6pYFDxY5kqXrkJXHqXea8hisjtEJkIJ5mp41ERBa77CWUYqFSpE6CM0nYn7OgD1vS2DzvGk-I6wLA-kJWUeIyYG0-p_hjjPf20qT80_7YiAmuFJebeaZBwFqDanCz41Ia3c_5Tg20dBif3X-Jzet7qtV7oe-OQ9i9PfKneDme9IqVOkYw3q8uceY37FMVz5k3wHaZbX1zfsABNjqZJjhJx5gQ8dWsa-TIItoGlmhSzevj3Kh7P36GXyZ7bZO7tGAWUiPY3ClazKWN1cLgtRhydwCHxzS-WUT4mzTpPKAQ0SNXyz2ljPEw_TIoVE932eNcpyLR5WlnasAxLys0l3iBknxUYH8XCI3nXmU6mmzhBK-KKPVj5i3fJo3a0tFbLEhOY3mmOUI08c9nc3Egwj6XvnNF1u42QnhA6RbWJ8R-40h7JTVcRlIWdi-iRNt2H04BrDpMmmoS6Y65AEmQDoiACW5wJzChOmYqT1pYmF3gXUM5WkVg9sh_Z6o7EyjlT6UjHUco5fmmEkAcN_MVI_0WEUcpSZeWBL9GLSYiBlQjonIGXKRQPYGT6OlA1yLHpZjDXNAJU4blzZIse_ubHhiIkeU61oKAlQAZhS3VXtl4Qvp4ebvdHdKLfEcGpFV-0m_kMMTrZ2zjch1TddCqUuoQGNV7WwLFcpxk30vv7TlLm9_PzfYWiccWn041Yu6OgT6P7dPs3lyembPwk7FZ0BRDLKRy5z_EEsRA5c-nL3Aj-i9F8Xb8NX8Sr0UW50SHnjm-YTabcfMCnWczntl7Y1QCjeJ0dj-uV-C94E9ACwJXr-p4HwIGmEVTfcbcWgGw2iCXa9UoCXbyqUy7mXJjjRUlhpzZ0eXCnpy2bQ7waMJVWweAEqqinyAhDYcVXHFusBPpfhWusLmDlu-e-DgCnNoeDgrQIsTBfnGFUkTr0AYGQJ4HDDOQwRVILIDqDuPkBw0iXbadrWEqANLQ3tZAyrj6BJJ78VUUkfBvLDch1WRVKrfyo7BT9MM-PMFBlQ6hyl6EOhuGBaMS4cgq2vlhSA7WlWFfGHo1WDlwPrsJ6yt9X-2tMw0NFoCsiLlzPcHxgTkqgu7iYs8Y4kexpdl1pDbcHsWLKC7VGXGyBRzoAIVbi02AdYRzeGUDVW8-xln-nakQskxkPBnRwIK1txdB652RK0fV6xeMus3KkLjq3U6R7f-q6blAxSZ3PenkSA13mAkyy_cgzt_t6q2HnsUd_phs616N5QlsA6hKRhP1bKp8wab3pj7XrTlKwvBUcme3qHXfaPWnLVTHhoC59DZlayhsUSBYgbwL7JmWuWr9LUHfIxfuXTl9TvvqzeNehIF3Klm5vpgvyuatqqSj2J02o6OEYnAegd1OyuqPoteDRV_MOG87PQo9ruASnNS8CmAPQMuAa5GD8E5ZT1MR8PPHfrn4Jio_ZSzxFAjGZQk_qArgJ12K04GHmIXE7Nv4rPOXPrf8yQN2X9XlF1pF4Y2Kmu5RcHVhI6vw7ezQrVpP05LLJJ1X-PxCenDFS9KHlnsnsFPDbaWBcOU1kJXF3XVIauPRsK_sPXdc59NVPYXtjYty0TswyEzAAzIxRhSI5XPI5SLZZGeZjRYvqLaPRrhw0N2O0iJwD9KkgioDHevcqY6uON-ezkHgGNfVcFSLH2Kic85AgNDAVBduKYTgrFZiMO9vrOkdszxUZP_c-doznj-9EukgY9al3W3Fsor-UvT819bKjd8XnTwpFskHThb3OTDQ4nqGFdCn2W53ppG-XWydAg_4OmozpHbwxaztuiF90cg-LgoX2usSwi39UR1KrZSC1b3sUGqIybtC8Vbk3voQUVMA1TWD6ybyoA5QUR3VRA5jUfsOqE6AaZKmBMhueCda-WILZ0nSqXP8z6-EaulUAp781QT8FlR7pxbzvOgCMs1pbDEXVElPQUIfagzHoNU_12geu.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_027bca7ca3ebdf69016ab5d742280087d1af0573607415ad0e",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 184,
+   "completion_tokens": 851,
+   "total_tokens": 1035,
+   "cost": 0.0004439,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004439,
+    "upstream_inference_prompt_cost": 1.84e-05,
+    "upstream_inference_completions_cost": 0.0004255
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 386,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

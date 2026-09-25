@@ -1,0 +1,64 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = suspicious_login: reports sign-in activity they do not recognize\nB = two_factor: trouble with two-factor codes or the authenticator device\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302094-NpBFv8uTaCohqsyfi3zs",
+  "object": "chat.completion",
+  "created": 1790302094,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"I got an email saying my account was opened from a phone in Prague last night, but I was asleep and have never been there. I can still sign in normally.\"},{\"level\":\"clear_a\",\"text\":\"There\u2019s a session listed from a Windows computer I don\u2019t own. I didn\u2019t log in yesterday, and I\u2019d like to know how to end that session.\"},{\"level\":\"lean_a\",\"text\":\"I saw a notice that someone signed in from a new browser while I was at work. The code prompt mentioned in the email sounds familiar, but I didn\u2019t try to access my account.\"},{\"level\":\"lean_a\",\"text\":\"My account history shows a successful visit from another country, which definitely wasn\u2019t me. I do use an authenticator app, and it hasn\u2019t given me any trouble.\"},{\"level\":\"even\",\"text\":\"I received an alert about an access attempt just as a code prompt appeared on my phone. I\u2019m not sure whether I\u2019m having trouble getting in or should be worried about the alert.\"},{\"level\":\"even\",\"text\":\"The account page is asking me to verify something, and I also got a notice about a new session. I can\u2019t tell whether the verification step is failing or the session notice is the real issue.\"},{\"level\":\"lean_b\",\"text\":\"I can\u2019t get into my account because the codes from my authenticator keep being rejected. There was also a login notice from a city I don\u2019t recognize, though I\u2019m not sure when that happened.\"},{\"level\":\"lean_b\",\"text\":\"My phone was replaced yesterday, and now the account keeps asking for a code I can\u2019t generate. I noticed an unfamiliar device in the security page while trying to sort it out.\"},{\"level\":\"clear_b\",\"text\":\"The six-digit numbers in my authenticator app aren\u2019t accepted, even though I\u2019m entering them right away. I can access the account from another device, but I\u2019m stuck at the verification screen on this one.\"},{\"level\":\"clear_b\",\"text\":\"I switched to a new phone and can\u2019t get the authenticator set up for my account. Could you help me reconnect it or use another way to verify?\"}]}",
+     "refusal": null,
+     "reasoning": "**Evaluating issue codes**\n\nI'm trying to figure out if the app is rejecting my code or if the access alert indicates someone else is attempting to log in. It\u2019s a bit unclear. I believe the auth code may not work due to the unfamiliar location alert I saw yesterday. Overall, it seems like there\u2019s no unknown activity. I\u2019ll create a list of 10 organized tickets in a clear format without using \"two-factor\" and make sure to keep the voice varied.",
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Evaluating issue codes**\n\nI'm trying to figure out if the app is rejecting my code or if the access alert indicates someone else is attempting to log in. It\u2019s a bit unclear. I believe the auth code may not work due to the unfamiliar location alert I saw yesterday. Overall, it seems like there\u2019s no unknown activity. I\u2019ll create a list of 10 organized tickets in a clear format without using \"two-factor\" and make sure to keep the voice varied.",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdeVicrn0RZHKok-6gIc2NInxy6J9t9RHbHF_SKFh0NFrBPZGqUFq1NelCVgfsP7xXMGli8opc1A3M6_eN5KqJBdrMOicjkwKpJstC_g6YtsUbmIAzd9-wiQabOm8G_ALs0oqpKVo5Atyws2BiL5MbtLNMneokPugnxZ6epRTf22yYvePa_1tf3ytPTtwbitz2EKpZp_ZevV6dIe5YoSabQB9uDCHNvKIaE4g1S0oVqeJHTHhABy0_fiCPXbosUM8dAE4wMqpYcZtSlN4dCPwn73m1YaEzXva-b_9AjfPcMEd2uzXSdJPtLyuGWZxFnDw_Hk9KDH70Hxrciv9u3uD-AEgh5qq5_4yyjEmLZpd6vPvMdBSc4AyIvXUUhjq5qoAmfbIAJ9X1zMGU7vuWb214OwPGESTAS8jbUlAV8zcAuBezspfaxZ5CgMXurX6rUsYdBrQlQpOeIfOTmxdrLyI6mC9j1FuxTq1EPU0j0nQK2L9V1i4LuT_Y59SrEUCKAFHDY3_Uk1yzFTudjZ2xVhVVUFXQ_G9Yt7m7MmO-wA-aUaACP6BQoM_c5rxUKk8A5kxe4PthmR8Cx4QJ5PWmAo1KhjLdfNfw_tHgSdSVMWSqWDRDSdMtnuw8LvH8mD7SNn_yboZkrhIAOZDMnA_EMkL6qVWC_65z812xTApaASjDsqdEesIP8OPM7pvskOXLlEj7hIHM7yYuMuSTuJC3xQP6Oqun-QC7-UI7gBAtETf2tD8Zg8g2fBGwiQXfOxDX-TqTVwxTY6BG5iXV0tJzVYr2S5CNwJUVH92JY54TN-zEdI0cM6KkRyftZ3eiUeW77pE0umlw8v4fk3v6cc_oiP_HBGGM-y_Mtgw_jZUdiii8trhy-rSZrESeGRiXFqvi8wojlXK2ubyU12IJuQwYfexR8TgIqIWqA2TWy3XurIbwUujUY1fz6_eipS24DO8lLvKv_dwBFrNpPf8x1VoUnGe0TtPvVH6BY97O19Z0Ts-l5grHwG7VqyeqBXpgiYozVc5CtkLO60m5qbKYW4Qmc7c5VakoDirxdg2_MfiGbFrfMXiKfQf4lX5DHaBeKmNr3Lgl1Cma-YKliWIEoM3YOIbgNQN6Vjyg-tDgflRLkAjXuOvId1MY6aSXBnOPBOIeatjPZKIXLVA1RQKvwOO88Dj3fnHKG4Nw85-LvxOzUJlDq09zk0Ne_1OjbaH4oY1eMxYdy2ZEnUF-Gp5q2uZsXOzxUqURfNajsM9ASyJEIKxLDju_J3Qouaa08BiqaU7B7uR9aD-JL0LcgZkvmoCjGY6u-kMOeEDGKIIYw89BaJoXeQ5SyKY3xNLcJ5GeJmASpm4NEUx3H45RgXBoRFrb0WAxlWGajrH6ty0g68Q4WKZeb7CKtNv3wCU-wdYnT50yL6uYtMHKoCXok3DkZtNhZ3s3sY4Lba2sY42q8-J0AH_MCJINdwP6h7J7clBAt1ClrXYXPkhN4dfnmWzxVs4v4gBCH6Rotr12XX3zX17CU64wrQ0d914YyKfDii4GQzKps1ixNczemf9U9dyPnggB00U2p34i2m0HopOz2QezIW831HmNikhVnR-dGpQbaKf4dnabe0k5eZLsjGEGzfnrdFTzyjwzw6HLi0F7LKza9KIDKZqd8RAPyytQJ098NWYMMGdCIGVzgbWsMk9LhFLmTE1Iq4jDDiMP6TUSP3gxKgwuPcI_jzUd4eewb8XCKgu6f0976zpUU_ggEudkM7jUVLbIi2gs9lYe9YZJo48d4IT0jsle1T2JWWakRg_Mu8RPZYDgLuk4VhV4gAPs8BrcACChEnMGEFVv_q2Q8QBez_mZuudF_4PqrsRbT587rEEl4h3-0oHcUQnAeBIDqrKnv0fF3_dfPByundHrth2_agxCNVn4Yjbq05i5m9hh1hoCIoC8rNSiJyjvmYIQ8OWgYAONy4QTVlIvu9igp28vrrFTOk7E36G4bfbkrisrkj84ZYVZ4smYrR0OeayXMXWPXFcmI_KlGaG-U4HnJwFSlCFEXB9WKVlyR1pYe7LTqTyTxdqKREZvwtpHwdSeIshaZXLXuRUg3od81LTDtF3bgmKip6pC4J6bAz7uOG8cFlTLczjPw_wRSdmqUBX0bJRkPjTq4sN0RxoXRIPwxqMyfXwENY2fI-dN9xjQcoi89CSqKpWWdG-gL6-mp-hASqbYdYTVKC0vqNss_ZQzb2avrOJXIK0nb30VyPgPVdbvFNJWYoBcfIQFh4MNbnhtPbknE4KkJRkMLstGvN-Xmp7IwRJLm3imaHLC8r8WlEEq3zTO2hiXJCVE4-nD6lR_kLZMpvOj2Hsbcduy-G5Mdna4HtPBkKYUYXfP86sQS6kLH6FLf9FeULrjPUXhQpTLGojq673xUH-3GD_Dpaff3bh91sIfd4NeFdle4xlbtQH_FcIk2hOA2CcZdoocfz-UceaAMQTr8EYNH5peLE6Spfyrjm0zZ037fFHE8f2130xMl7FrrHnXJwUL2mQBOCU56KY8NMKvxW2nInLX3yJvlZOkWXD-cuS26OwwMqsEUv6uU6YlbHF_bGDQPprQEo4tuQZ_8rstelLPs2t3riWcPPGjBRdg15eqmP38SXcJy6EVVTyIgvbIqnxWLZaI3TQctQx3XN37ybJnXuo7mVBZ2Gm-viInXteskOIEv90ySg0GKkoSC1fh2neLLm6Q4oUjX9mDsVYGFzfln4gv9PxflLQXSAdMkiJgYUB9Kj2PAnq1Ob3nOMamTSuqumZ8ZReMx1Xw6b8bwqESnHLm_q_U3S80LDUWFIzBkoSY6g6IaRP2_TyrDPn-Ik4S_2aVkcDJbLJm9ZC8ATGQ-Q2ELgYk3_Cy4_vdzyb6tTw1xfDw4GMS9BFLpAPgnm-66BJKMTtfjY525pPlQ5qwrBtkQTm5u9SqC1hJ9eeZoW3GubZgaObuGKiDqyy3t1Q4aO1XywV4MlILE-IQnt4nglHqg9UPCZJD8MrNKFQnPhU9IRjW3quCLMEUOiezdEbGVweEFzBnMOk-bYfgdiVHCQDCu9qkIYXuQW3zEBkiHeq7vwt0ScsV9m09TCTijb8gQ_QfbU_5XvKf7gatOcILubpXpJPp_tG96U_sQVY5kI9QWXhvfkWLRPcO41ylhgTEa3Xado165qCLzdg3JbxXuibxcsfCt7Ij3JB_KRaFpGOWDcj9fR_6ZWbTxNj3uPutdyU2NueEnLS0lXKf9XuNQGu4KK12-yCIatBjKIikYly8OhKLL7r48-X4DzomXfMvPYT8Ri8qt7Fgp-Sta8QaVnGK4hF48rYO9vAqSUnHGU_n8DuaIf_RfPSqnHfhY45kMhsRUej2k6oABz41qsGZ-_l1yVfQkowcKoAnmcw40ZdjY2W4f08dns7iIZx7EeyHqHUi4w2hcfkIFdCBxLoUVRrxFByuby9YWMEAF2UMlbfT-z0Ajzo7sHIoKAlJ7Caj4gkJ3JPMhxVmmCw5-TncDjRVKQxwJqxiQzOKDhGmazYFMVFTYOqg481wZPlTD19KUbs5uRJc7Gqu8CDBTx82JqF0rWaJi7Yvg1kGUHcOuRPSZUUjoOKrCH7uvdj4WCilYCF_nZ7ZfPkUqkmB3lwN-b8i4fiZM-ixKOVJFJqgZaIHyvZzfCPexqFMXA8Fg8sbOIngXRbRo6D7lnf51djzIAIvXzqSxOpuiR_HSY-0HiuM8Nm-KLlpmqPputxdlkdg6RZPqa-k5UikVXDbalwuyM0hfH26xlqeKzRcb-AloeFxi3M-RrraaOssXlg4K5a77vb0KsEPdPOHeNQueBQnDKP7yMQcxERZ0nDSdZIFeYz1rVfuXc2K9IzVCrBeI5UXxEZt2bAlowp_qQ_j2tnOBwZgLoG_dCuzBz_wElhW8gPV41BfLNOrhJw3EyiGUdWJ4HRdcGkQ7Iqxj6yi_-YM3EjLdMRRn6CzoPEtnA5f5nPl9pU9VnUTOw-vx2DXnAxuZgTn6xXoco3NlmnDj0orjbRhzp1ffXCeZMjj3wIJvN0t81LNSGsK1NuBg1PSLkMk1ccfxBDZEimPIYKE7TKc4TzAhKBwUR64buhf4oAEYy7Wy5vNAZvLHP3UGCDKbTUGHWaR46AesATG09Al4ST_wX8dYs_KGM2SYKJygGc2sMHAfDFOE3L0HOy6JoBjGQBaDdtk_coNHD8He2RYIQduW8MRNl-mn88vPYrQzzj7lc4dIVKCzOahpSi1LlOX1Q482p9lvTeSqGhc2kAfOKkLkiuQhYCg1L2eu_L_G9kZslg9_nnDNt-oSeE-pfAT1Aps-_Bz1rpodx1FHTQ-C9zpwVDRMvgCzSnApmhYRMMAq84gG_uRJ1Qe0vNWeWQjR0UJA3L-7XeHM-W1t8mWNqz1M3PfjSU5_GH2kUEISyimTwO0gIB5W07N7_oa4ixe7zdOXAi8PgmPAND_FcFjia3dbqFn_SBA9ZJ6LfyrLIuLGq9Re0ht7oywbQNcSoKlMCVgbX85OX0p_lkyVMvOZOcXwBYc258uTHweyjQk8rHAIGHCyX6PGaUCdjuRjWYOOVae0txyylaAp-hm5wJST-OpK7tyPXqKrs_993DF3T9muFoa6b5Chw5KwRJQP6e84r.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_03090e3f5f967b08016ab5d78fc84c87d1b8c5d8783fe7226a",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 186,
+   "completion_tokens": 956,
+   "total_tokens": 1142,
+   "cost": 0.0004966,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004966,
+    "upstream_inference_prompt_cost": 1.86e-05,
+    "upstream_inference_completions_cost": 0.000478
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 496,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

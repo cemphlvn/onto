@@ -1,0 +1,58 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = cancel_subscription: the customer wants to stop a paid subscription\nB = delete_account: wants to close their account\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302127-fu7SExkeOZb0tKBfBWHb",
+  "object": "chat.completion",
+  "created": 1790302127,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"Please switch off my Plus plan before it renews next week. I still want to keep my login and saved projects.\"},{\"level\":\"clear_a\",\"text\":\"I\u2019m no longer using the paid tier, so please stop the monthly charge. Don\u2019t remove my profile\u2014I may come back later.\"},{\"level\":\"lean_a\",\"text\":\"I\u2019m trying to cut expenses, so please end my Pro access and stop billing me. I\u2019d also like my profile to look inactive, but I don\u2019t need it removed.\"},{\"level\":\"lean_a\",\"text\":\"Could you make sure I won\u2019t be charged for this service again? I\u2019m taking a break from the site and would prefer my personal page not show up publicly.\"},{\"level\":\"even\",\"text\":\"I\u2019m ready to be done with this service. Please shut down whatever needs to be shut down so I won\u2019t have to deal with it anymore.\"},{\"level\":\"even\",\"text\":\"Can you close things out for me? I don\u2019t want to keep using this, and I\u2019m not sure whether that means removing my profile or stopping the recurring charge.\"},{\"level\":\"lean_b\",\"text\":\"I want my profile and its stored information removed for good. I\u2019m also paying for an extra feature, so please make sure that doesn\u2019t keep running afterward.\"},{\"level\":\"lean_b\",\"text\":\"Please close my presence on the site and wipe my personal details. I noticed a monthly charge recently, so I\u2019d like that handled as part of this too.\"},{\"level\":\"clear_b\",\"text\":\"Please remove my profile and all the personal information attached to it. I\u2019m on the free plan, so there\u2019s no billing to change.\"},{\"level\":\"clear_b\",\"text\":\"I want my account and its data permanently erased, including my messages and profile details. I don\u2019t have any paid services with you.\"}]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtde0BKHAcgk2x1XETIRVzWVasj6cpIBjLCAfYtP5lN7lsE0BlGmVAT4SNSaza5Wnyi7xkovMAry00ilbYazPzN02MlFMyB1xoPLHyZpjK3gl86oHirnT4AYPVEwuLq8V4Yny3ykHOWccPRbcc7sg0YJucpjnmobb4I-VZkWvniuaqeSTA3Aske46HPraGEbqoE71MfoBVpv7pcSHeATTyF6rBkVlP6TEPvE8zILBsWkbGfswRcsrb0EwfsvglmX-WO-b0HDNsBNh6OJH63pkPogaNpQ2D8Alh8bmOQZbb2rs09eST4z9kTDZlCUU9y4fHeIgW7M3ha7iVEwpGPWOHzia_p2U6Acx7j6sL3H6tB1iN6UTifl6orUTkqyChnZ5O_V_2SnbOAd2ScEqk4HlfPYGN4DnV3HepZlGQtI3SM6t7KUq3jjyk_HquDefK6nz2XJttJzlujj1kIDIfP7ZTwWswAiZMbkwNlbbh69gpHLKuDBqtziBhlaa7e4_qxnPbfuvgGWx3up4TNMJxt8G4RRo4zDTs_p_kCf0N_t-0MLSvct1LsYUxXAV34FGgGpSTahqxX8t7ZO28sGMN_q4fsh3swpWw4bamSqctI405eEWB15w40WEvk9eTsMqOZqawRi1SFKPHKD2jW0Dg_uorZMiuHlPk-1P_Y2bdN7n9XxcAfC7aDQvZkUd1y8Cj_ZGcXfnF7b2SPluHXPdY3rgbJ3MJZMgML_oGsNy8jMjGfTyfRzuddJrZL_ZIC0CKylkCg4Rz9Ev9eFjEqOiLoKS9pg2nYTZwAIxJMZ2wsabLFGnCWHjtkI_aIgw_X9_TJ1b8gN84zEusc31Ud_7OBzHIlAt9Opd7V9agf3cnGwuDewcUc3OKLXFWaIKGS0E4SHhdxxPP4RxQKUbWs4SybLkbNdQ-vTwaM8TapGiQA-ULt7w5F7gaOCblr3p5mymrBlW8EH6mhq9kS_USmTIlYEqGO0ORsNzw0l3SSJ3Cu_V0RiRVJPFUeFM2v97Gt5qJCLM8YERSuJDIXMhWwIZQLvqAjy5PQp_oH-GSmBM8DXxCl_s5f36RCX0_REvIaHS7LykSQ9SxcsvLbOOgs8VZ06-_FFOm4S1UjnZ0_HhRt6IvU0w9Aptx4ncttzOfGKD57vmFRhIt7dylIRobl93XG1cyvXyBe7gWAvQzbiY_-T0uqfPhWsq3oKB8tNr4nzWSzgiiqtZQCA90IFBkldj88GkMSItLGKm6gpZrCI-pGOa81CIvV_-kTsW9aTTQQBU3WZqN9mXlGi2-k8sCSudBrTQKlHVEe26AK7wNfG3-WOO5S912TJ8iCp_EmmBPJAZSLhnso8DDZQ25dFKtmDkXOhaTcAjPJIXRiBLCRYAD56BHPVAF-xIMsr3d-H7NZN0rbxT5yMDK0M6JYDxvHs4jiN3sOFFoLiCr-YTsu8WDde_xmSUWAIFK3YBNs_f0y4E3RCKSGPHc3pUw7yTLgnoTGOWOnhoUz_1jeQa24bKAfmd3z0oVg7TKzLt0FdjvjIDtvhQwH2-cKtfbYnUcx6tY2abedcU8gjELs63XVH0k5vm5iy8tZ6EACAXGEGiD8KoMqeSS0t-CpaiDlsrwqbEU3J4pbH18JN5vrYoC9SS3kTWFoCrE7sbfgjQy-em4xLgbyKr0WHklKwxyyFjOSfnaiwKa8y02BvH9fL2VwRn9ct2FnrRWUB7jT8dpquntjKYmLTwu85ZSvAmm77jc43qBLZ_QGHcUg8n6dIvtCytNu_FvD0oWpH_wyHstgLpHHA51M1ZxHZWYc9cmoBHrZ78-R9SXKPhJFjvf1uGl2FJe9ISxYHTh-6zuBTM5PEyLPI_PtLNctSN-NKkD184wJP1lJZLc_icDDpOyNBFPMq_Y6FZ0MDySJdkePHukR5zOScw3cOuIu6MCSGPSISlkjo0cR9-R2RTajvF2vkLixQ0aRz2surZfNY4O0rRm2_zKnvqxIARBTPefDuGaFfLObsNgZgh2rNR4npqO7I9wyqHJisEol6hdnLakGwFod9KeUVNgJrZ3hLqR3DDMTT_msADaE7ey0tYI4iQaTyJY73avBOpkCwe6piCnenmxjGUL4Gkx8hvYCXTucAB1FBHWInWcsLpTVtMYDYK_y6DK2ezANigif2c5tUeUU5i35dvL1xz-8fiyOxUcSnYr3d-jfmTAmR9TDCsDHntydBtjgLj2J1KTu8D9IVS4m1xDmAOIdwckNNdLMd-f742UHvxG1mfLkrFjcIDHoXP4iWiqDYXUSb6IfcSXgTTUJhfKQKZWuqjcEUL_7VzU8yNSWtzlHo9cqvhOPhieq83Oq7_HGI-BPVbx-Ac0-TMjBdpX63Oq-sxGKcyH_J72k_pF4zOEYBvzm-u8PgewlZGrm_X2yynDmjfUaSK2FljDyeN6ndjnfB0ZwN1XBYL1tyTnwg7XRF538gpdX7PPFSTel-c9tSKTv6HyMTUz-NrdyRX0oGAQEqZOw2dVYCnHnFaihiPTCdsImbK7_VbhOmubvIZEFfVXmyvEsr26W_avc331xwQA8msfEQGFZUsiT5kv-QMN_PXZ0kQb3g3o4vIZyxMG7-30PaVmFL8OU6ZyYmqyHjbypNMRQ96z-VnF-2jOqnzdJs3YOrG2MgIP2wAIGFvN0rIgxx8wZTikCQcFnowSCgOw6lBpeFEDHt1DJD18ziQe3SLUACAd32DF_bk4E4SGX4SFRy7JUQt0rzIv59JwsL5lQZaRHVZQJJhknRIkHo2-ilg4yk9bCq5UxBv6bkkOaiR0l6QsUNAcDxeL5kdP8R-Txl_6esnTK872S2qX8jQuNReMIKY5B4Ach1k_0Wqrkzwrt_qY4pdWHJsZoDR4HPUWtvn5Id-ApmHMgJvpC4o5UWFZ-vtSwyVzdeJ8rXm_2VCV5FIvGdAObk_HkT5CnXHqXvJZjkg0DWlfXSx5sz6N4K-ZZPTFW0ycc5J986e4bkz_aiit5Wj7T38E7RESARpEZULrIdrgxiMd3sdRSiy663jQ1eM-S_oDLYsBbVl6lzy9r22Jbd-427o4beVrOlly9prdjncL6iJbmKpH6kocCVIPEZ5Efsj8Q==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0b2a5ee35db343b8016ab5d7b09d4487d1a88718dfb3b91031",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 181,
+   "completion_tokens": 665,
+   "total_tokens": 846,
+   "cost": 0.0003506,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0003506,
+    "upstream_inference_prompt_cost": 1.81e-05,
+    "upstream_inference_completions_cost": 0.0003325
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 270,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

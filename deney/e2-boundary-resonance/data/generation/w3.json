@@ -1,0 +1,64 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = error_message: an action fails with an error message\nB = app_crash: a mobile or desktop app closes or crashes\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302045-YV8C0ldaEW32YLvUEXyE",
+  "object": "chat.completion",
+  "created": 1790302045,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"Every time I click Save, a red banner says \u201cUnable to save changes.\u201d The document stays open, but nothing gets saved.\"},{\"level\":\"clear_a\",\"text\":\"Checkout won't go through\u2014the screen says \u201cPayment method declined\u201d even though my card works elsewhere. I can dismiss the notice and keep browsing.\"},{\"level\":\"lean_a\",\"text\":\"When I start uploading a photo, the window freezes for a few seconds and a box says \u201cUpload failed.\u201d It comes back to normal after I close the box.\"},{\"level\":\"lean_a\",\"text\":\"I hit Submit and the screen flickers black for a moment, then shows \u201cRequest timed out.\u201d The form is still there, but my entry didn't go through.\"},{\"level\":\"even\",\"text\":\"I tap Sync, see a brief \u201cCouldn't complete sync\u201d notice, and then I'm back at my phone's home screen. I'm not sure whether the sync failed first or the app disappeared first.\"},{\"level\":\"even\",\"text\":\"I choose Export, a small \u201cExport unsuccessful\u201d notice flashes, and suddenly I'm looking at my desktop. I can't tell if the export stopped or the window just went away.\"},{\"level\":\"lean_b\",\"text\":\"The app disappears whenever I open my account page, and just before it goes I catch a notice saying \u201cSomething went wrong.\u201d It happens too fast to read the rest.\"},{\"level\":\"lean_b\",\"text\":\"I was halfway through sending a message when the whole app closed; a \u201cMessage couldn't be sent\u201d banner was visible for a second as it vanished.\"},{\"level\":\"clear_b\",\"text\":\"The game shuts itself down a few seconds after I open it. There's no warning or other notice\u2014it just takes me back to my desktop.\"},{\"level\":\"clear_b\",\"text\":\"My notes app keeps vanishing while I'm typing, and then I'm back on my phone's home screen. I don't see any notice before it closes.\"}]}",
+     "refusal": null,
+     "reasoning": "**Evaluating app behavior**\n\nI\u2019m noticing some features of App A when I click upload: it seems to produce a dialog, and the window briefly flickers or almost disappears but then recovers. I\u2019m thinking it should mostly be about A, not B. In one instance, I see \"I tap...\" before the screen seems to go back to the home screen \u2014 is the app closed due to an error or the user\u2019s action? Maybe just sharing the sequence would help clarify this ambiguity. I\u2019ve got a couple of varied examples to explore.**Analyzing application behavior**\n\nI\u2019m considering various levels of app messaging. Clear Level A involves a straightforward message while keeping the application usable. For Lean A, there\u2019s an explicit dialog and a temporary screen freeze before the app recovers, though it might hint at some feature interactions. \n\nThen there's a scenario where my action attempts result in an ambiguous pop-up before returning to the home screen. In Level B, the app sometimes closes with a vague \"Something went wrong\" message. It's crucial to avoid using the exact phrasing of error messages in my feedback.",
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Evaluating app behavior**\n\nI\u2019m noticing some features of App A when I click upload: it seems to produce a dialog, and the window briefly flickers or almost disappears but then recovers. I\u2019m thinking it should mostly be about A, not B. In one instance, I see \"I tap...\" before the screen seems to go back to the home screen \u2014 is the app closed due to an error or the user\u2019s action? Maybe just sharing the sequence would help clarify this ambiguity. I\u2019ve got a couple of varied examples to explore.**Analyzing application behavior**\n\nI\u2019m considering various levels of app messaging. Clear Level A involves a straightforward message while keeping the application usable. For Lean A, there\u2019s an explicit dialog and a temporary screen freeze before the app recovers, though it might hint at some feature interactions. \n\nThen there's a scenario where my action attempts result in an ambiguous pop-up before returning to the home screen. In Level B, the app sometimes closes with a vague \"Something went wrong\" message. It's crucial to avoid using the exact phrasing of error messages in my feedback.",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtddk2SQ9HnpCeJTmiO6UENHaql4_CR5XOt3GDCnqkYjPhwlgK9HMUH5vOzbaLdW3COEiw5LTRjjqYE0zyRvs_cUL6VNN0hC9H9izm_4SXxsn21JAWEABEHMmgc01yb5W36L3D47uEmigkXgSqJKHUJwCdRPhy61ikpNz-GFeV7G0h1cZdXJDojn85lH_WL9opvUkh3boPSKmKWMX1pbR7c6r4ZOjKUUXO9u8EsCWjGPhHqLmc4G2H2phMD_YpyEvMtQ8QIYk6A7aQ1HD7PLy48G319ECMT7uVMR5UUxDkhhCQ0L4ZEg_JBldPWNVi_icbu-7QqA3DyTsmeyQLD7e5hYWKzhoalUbedz5d0aKHK1kVZh2AwTm3Y5S6UlQA4TVcly_eR9LrFngq34L9Je8z_4MLD9NJczQ4wRh6JKKqpihdaXb_fSPJDJYOngcN60P4aHOxK58YrUjRdKpdqs8f5Ez7KZ5GmefN5znU-da4TLQl8gTkDKCKhaX0BUcvuglKOHsabnd-hD0UXa7HhsF2ChKaUIVnokTswlxgQcr8RQVbZq7GAAxlnr_YQxJhXMX9vFjAKiDp5b-anEJLZSxES_SZ1VssH9X7zRzzTPI22SX7c-szsiAl6zMdGuvVcHUi83pYKK3qk5D5X5frd-L18QB6dgshbKDEXhiVKkIVKrPNI_JSYy3fkvGiG305Mi0imZDsP5mahD581Mpn_ByKuBVGxeGtRDhFHNL2IIY0bRJz4y7u-qTQH3Pu4HL0aF2QaF2DABTOOTgSvVJXxYe-ygzy_fD8x9O6ENe_51SEwlgH1-ES8EAZfGN32HZ8FmRowzEAcylY5f3Slyn_RYfgGNwvStg4YCsZpr4D9zcERdlR8YFjMYVSRNBoXAb6YDRN10HO7o6Trj1_4wlK9xGd_qBHJtTP8q37v4HOeheV2FzABARPzLuqsUzshIAQajII6Ri2stG8bjvT8jiGKqHMAaxzBuloBK7DFgKOxQkKdfx1ETaezcC8UkekilbPr2CQnOZ7Gyq2NsUocbrNl-OnSes1-LpMboezqPzxT_NQmlG70H10BT5eDgJKfVUhLJRiFcXGsShZyYv4xYQA0pL_2nsN-y73oaCLFpDTXE6NxXs8wdWJbkjGzDBibk-orkrsdslKW8wO4Adwu6r5FaeiHbNguWE6S_bEoilPtKlbn0zOH_DMYGC-4g1iPA4M7mnj_KJlhCJy39Jz4zMVUVoND1obGJQscCchlZzCX1tNb1s4RhgOk0CvEHQhQtZBOZW5CVbygv9DSZT1UugHav2zP2hrSVcYTi-DDMJqV7ekx3U0-Dp36ALAVG2mvPLl7QVa9VflcUDx3BRuGNLCQgvtc32xSKq9IgI9O-H6SulfEXm2uxwSBEAWYmbUs00hBSw_OY2EQZSk9UV5ZjL3JBGKMd7YMvcwBNuV8KoHX1oA-6VreVKavhPQ6_fs4lxFCBN6j0z-X1MjifuoAn53S_tdmNm5NI-7HNUd8VPbSGjgzpW7MrKBriZFxYjXTfZeAcpEl8xt5Kd9FNUngrFImc-WKHNdWewinTzzuWRm0LrNDW-57jUmdNEx59lQEgOTawkPgK_JbTmdeB8QT3XZpBCZuYz_pNr1TOElrjjlY-isF4AIf6rBKlobdHJ9i9YZdItHH-Pv01cuMg_Mc9xPFx4eDlNMcf0sgwXcfgYZSE_P5fTQKonfD6TwUzWkCsi2Ge5uxnfedG2Reykw4Obx0-a5C2HtDLeonwAtBhGuy2M9NZXDvt7npRMq13U7VB7i11-QK_LatNPsqdCY4GU3_Bn-clWITY95We_eOiflBH0_qskX_pCfX3HzyWi81DAQ99BX7GxQW3IvqxcJNieUeURNPmqhYPnaTF9-F6pn_ez1P-q2jM0elokjJiyTQ_msRIAByNoVgqqDwA45BsrJvGVgroDNw-ECkFnpxXlwS4Y1b98qeXI1G68kUiyYPViZ4rPQmgGfi6XrYzsbXhEt6CkZfE5nUACEPpdL1f4tHIQ5HvpEP-y9iSgZGXeWB_AS4LsV0KUeEKxeR_6JLkKUMOZl5zwrlXOO_5jrk1fRz16_DetngfctoYmsSJZxK_6LJuPNGvnFfgNB2bpMkvRfl5CrJf59Z559LhzdWSf3d0zFg8pGw68llBVDmV3dmoZ-Mnmhxb1SwywcX1CxeuLN9dYRPWuhfYIy7G6W544T6Egk7B9RmhmZ-eOI_x5XYmf2GxA3ijsyRMfmqTVRcuDOfpCZRX9pUXy9sEhCcMtpSzANewzdl8VCT7oD_z8dMAndIERGrSZ58BGKyCufafkc_KuuUCB5ZH4a2_gvfqoza4D7h1alkSwMybO9jCZBky0PmF1Qh6sQxaXP0LPF0KTN21OfVPx0tptg9yy9VglQypyQkPSpCk0aHxc3GdxFQPLvgO8Uw2Ytwu36MRD-I_wJG2PRK-4AWWevx7DC3pFXNZmIIyGyeijIH9cfELyEKX0MsxaK1jdP7TCHXz7bP5G4xSg3UpTmvIEFTo3i2dbvK2Ymzk4mTtxB2l6NZsBqp0MChPdOqbUw0QVW56dKNb42fubkTrmK0n7iOVfrJD9ey-JQhNKUVMEsJ_qVDyLcIqPuJ-IqdirCERwGpmc4OGehUJsMrCuLhXwEEK07jZHD2XIy14DUcLAzoGoJlyyLS82dmAYt9yZWozHUdUPsiQUJrNf3I2sfHl66IMcMwBkuMk6sML6Ysb4pJmYoqZt01roVU2yLpFUk8qLn-bbfkIoMrYzhwjb5yX1yC149v8j7lQw4_gD4dpD26dMuQN6uw6sj5jJekl4tPQi6MJcKd4VI7fOZ57xiLIc4eOv-AiCFqx7zVDwspGKWDTwtdDMuq9PqBTurMV-qoyXyvjemnK4OjC1QjCKwF4wDWdX-kuUpBbBnEBNVPJdVMZptNDOfoTXBachALRszZsbvptBWKmA1KnWhtVZ1JStwow6AZjlvmc3bGDAdp7WcrQyVd61Oh2Nz0i1fFzBadwlkbrN88T48zml6an0o_btr6iTps_TYKNbWAy2tCtN6JeM1Ox4Jn73Zv0nH7uXqobZcT_abqQcQjdZVdb18xV2Dwartfy7oHp8Iu2yDk1EWZtDnxw9e4NO6OzCEyEvbPxJQxMbrmTYEs0SgyoRIS3KM55yRJelbNrkb31-nHMcuZrRmj2QYzMlsuOPk0WeuEJvvL-wq1eCz1hHfxHdk9l_kg6EAB-yRzj1OEAULaLj1SNbPOppvFXj2H5z7NAWjrlw99sLsVfDLo8-cjUPfb6r10soUUV8X_AAE191QFR2JqIpdETFFwycNqRs-AzrXUk0ZtNGfG9A9W8XAGJZHXzx7F0lqgmi41-1as0MRiWkUMk8vrI-V7wC0091p_vK7hEdWBKK1AU7U2wJOmtS9ZoCcRhLQEHDwOWHygcqWtUyfVstdSFQhZjUyuqEPHT8pE27SJnZjPEz9AnFjlwzER9xodPypnJ-i486iDrphh7s5bwqg2yUZTHYQ23NGbG2bOyf3VkwXP1lwIqHfHLSzDWLFZ0Gor0JOPIkOtufZV7AJeSVzQptnkJ0ErpYxAWDKTS8WBZSSYCDAHTawQszKrLDcazulCJVYCSseIor_-MAJMsXX4_y882KcLR101GIqsymqWZCbrhKZHqYmra7w8Sl2-4Ebvs6r1BEOX-bZKcRg-S9n7eelyt-jQ8cw-Wa5BvPwqEzFmm_B06mhrNYHQAhOC0_RXF0VPpUN2rfyfYGgDEFPgaUguzCCbNBOmdcYqBOSlaA4ZaWn-uQVF5-puL8Y3Dqi7eX1RdQoau7C8afKAmYbX2If3c9P_aD2D5dTEZAtQFwk6Rc4j_i03z5b2s8TRh9XgbZ3UHq3qFhPdHvqlHEAiAMQaRFbeZ_Z2sVevbED_XZWkAy0uElmsgXrQP0OHguzMDq0-17Y0lygCuUhEaAMjVtAlf9IAlNy_zW1oaAbcHexZFNSUdAqaBPAaq0Ll1ktfoqbBzV3AqoX-vWQD76ukFCeDKSsgVm7_4dGhUZWmU9cBBVOYBmvth-gXGW3Fa5kHyddjEoj2l9Rmncj-fND36-Qzuqhlow5EOODruYcqM9s7-lJiOL7QCpC_Os3VxokDnei7lWTNg_XImY0-7_emh8W4qt4xv9Sx7CzOm7m6-1rCWbnX9J8tcoHWrxL7FhZZLCly3GN1nxnlut7reQAJqoJOpRNgVahsVyy3bTeOr0GaFR88cpSVbkM0qWfrnhA-Cv6aqC_kPz-kEyR-Sg8b7pJriV0hvW6aCrWg1CAW6g2hdXsVfZZqgZhescMna3VCa6qIWf0l2_AWg_h2wB0D1-yRK4yY9cnJ6Ooe7A3I-5GDA1xd8k6VV1ViOfhRjMwJo-IbeTSlR6FxVXO2meMuCfpNi3k3zKb9HjGPllOpPhCX8u4sEkrhZA8yrus2aOaQpUrylL6wuB4xLVpsPd582kgTopZnkJyQKfzO7oCalPdJHrtVIME1Wr9Vj3X9cYMxi-atFFuAJU8HOu6LLIlgTiwqSFBf5hXlYskv2x-KJcu3fVKgCieBs8lQ==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0e990e12b0029c6c016ab5d75ea03087d19610276eae333e1c",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 184,
+   "completion_tokens": 909,
+   "total_tokens": 1093,
+   "cost": 0.0004729,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004729,
+    "upstream_inference_prompt_cost": 1.84e-05,
+    "upstream_inference_completions_cost": 0.0004545
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 501,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

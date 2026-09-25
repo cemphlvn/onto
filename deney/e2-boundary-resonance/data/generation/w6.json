@@ -1,0 +1,65 @@
+{
+ "prompt": "You write realistic customer-support tickets for testing a ticket router.\n\nTwo intents the router must tell apart:\nA = data_export_request: asks for a copy of the personal data held about them\nB = privacy_complaint: complains about how their personal data is used\n\nWrite 2 tickets for each level below (10 tickets in all), each 1-3 sentences, in a customer's own voice, varied in tone and detail. Never name the intents or use their exact wording.\n- clear_a: plainly A, not B.\n- lean_a: mostly A, with some features of B.\n- even: genuinely ambiguous between A and B; a careful person could not tell which.\n- lean_b: mostly B, with some features of A.\n- clear_b: plainly B, not A.\n\nAnswer with JSON only: {\"tickets\": [{\"level\": \"clear_a\", \"text\": \"...\"}, ...]}",
+ "response": {
+  "id": "gen-1790302076-xnNZhnNFnyIYwSCmsFTI",
+  "object": "chat.completion",
+  "created": 1790302076,
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": "{\"tickets\":[{\"level\":\"clear_a\",\"text\":\"Could you send me a downloadable file of the information associated with my account, including my profile details and activity history? I\u2019m organizing my records.\"},{\"level\":\"clear_a\",\"text\":\"I\u2019d like to receive a copy of the information you keep on my account, preferably in a format I can save. Please let me know how to get it.\"},{\"level\":\"lean_a\",\"text\":\"After seeing my searches influence the recommendations I get, I\u2019m uneasy about what\u2019s retained. Could you send me a copy of the information linked to my account?\"},{\"level\":\"lean_a\",\"text\":\"I don\u2019t love that my location seems to affect the offers I see, but first I\u2019d like a downloadable copy of the details and activity you have associated with me.\"},{\"level\":\"even\",\"text\":\"I noticed the recommendations seem connected to things I\u2019ve looked at. Can you tell me what information you have about me and how it factors into those suggestions?\"},{\"level\":\"even\",\"text\":\"An old address of mine appeared in a recent interaction, which caught me off guard. I\u2019d like to understand what details of mine are on file and what they\u2019re being used for.\"},{\"level\":\"lean_b\",\"text\":\"It\u2019s unsettling that an ad seemed to reflect something I only discussed near my phone. Could you show me which account details or activity might have shaped it?\"},{\"level\":\"lean_b\",\"text\":\"I never expected my browsing to affect the offers I receive, and I\u2019m uncomfortable with that. Please show me the profile categories you\u2019ve linked to my account so I can understand what\u2019s driving it.\"},{\"level\":\"clear_b\",\"text\":\"Why are you using my purchase history to target me with ads? It feels invasive, and I want that practice stopped.\"},{\"level\":\"clear_b\",\"text\":\"I turned off personalized recommendations, but the app still seems to use my activity to tailor what I see. This is frustrating and makes me question how my information is being handled.\"}]}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdeB_8cX9sPqmIQfTxUK0adFMjOEgakDO9KDUyLBknvIi9p9fijVCCFU5DOvFeuvo1GKV3E7JQNEsJqJJwbYNwb5KgXvWFmKaboRw3Q4F1fce6INnQ2R7UB9VPisq8pPm2Qi-CcsGQ02RfZCdEimDE138TbtswQpxEaZXsy1wcqxTN4K4SQLlY8ArIS_58U-16JDS4A9IajnmI3QBuK3kcLxupMTNXC6PvWWqtjwsCszXtw-Z_w8b9Ola546_ORnrq0H-iuW1fqYFS4bhu_KtJSyXvNFa-vXM5SpcF7ShBwUDGUlOO-mhPYI8PnSkQbMn7ENJOf7XjpTSqyPNBAhbfIpMDKGwnw60BkVgiwZchesZA-fgKYtgSpHV6n15LAtujVMFq0t383q9tilhgQTH4GT52s-uRAVIPnzJ-xQk4q_3h9MWNFFzVn3x82mw9RHsCBd5QKDzqQieVzIwmGEvkW8su1x4rIn68gR2ePLEoC3n9veTXgWq2VcGDWNMtts9C3j4qWbU1K5lm64_z3B809nuDepA-MeI066hJjT07Gzs0XOrneOzeEDrgHelV_W_Os5Btw0B_70RiNhgf_aod0jxySsV5yKHn1EKu4Vb2jiTHq1IuJ9J8sOI5cKJiqQbvYKxX4uJNJtdIX4AzHDDbBBTGe1IsmF8ioDBm1Eyho-F8fgntrG_llLiVsMQpn3siermmgAFNl7zfi9HB4H3p8Eg20IIWPe88CJh_nIUJrVF16CLjnK3K6V8ztcGh6ELij7wgj6q5_YUN7Ie4OkMWeTwV67xqY2MsImfCtxe37zRK7p-ZKLSdKdWdaQVoZzV766noW_4G8e7Djqj_8Rmgsj1e5xsZDpm1MgPzjoN4B5IQeuClMjSPmfcBehRpAWYq8K8BNgkcU2TbUddrxLoPYg2UUennSDqCm_lp4VYT6CF_TIQN20jyBcMKMNeJA16U23AUoToM7RlysdP5r1RnV07WnpKIDp9_EIaBiBpZ5VrBWBlpaIxhXRPuSz6BLVCIeR1co2Jmf1eY-d9t_wwwAsYRpVsYZ57pAFk8C12zOTGx6LAszaZbs-9WkBRv9jaoJOZ3C131GpBonItR-bX22J_d8JsfO7glz8qjAAxYppGv71UX0jL-KOPX0EbtZbocXbmNDYJ0TUpdWNjbafNbxV300sBX-CsNEGzrfg48dnTMqISmEzh317Y3tME4o__tgRevHbZhTR0hp_6JpLjopagGW1l5-yXYl_hqBXdg0EVeQwwtB_38ZM4RvkCidZua-tBPQoD8YuwJsCmhK15LpD13PpTKsd1BLvkl4zzJMVzw2JQXdVQhF0DgIKOj6gUtNpMEb38lFqKfCKEYc2grgxp1MhjM75Zx5RPn5j2YQBqlIm2RwpzQLELjLMUWrV2LebE2cb2ZgTdTiCIhj1sn-qpUoA8Y3NUdbSc4BPlCJ_nz4Z_1t_84KieyJwnw_6_2wo9q26Mazv8vhVVeVgYQB2M1kXMmn4MmnQRy-KkfVjLOGDgey9KgyzdnY_VYOJOECoWv4HFLRV8mm-iOxCuINgNR7W6VGNIGWKtUN84ztfTinuW7PTclTYa1Ms0LnKuyG_AyrHKuvOfm7MWAdjJzN6wzwKix0pozM9U3Tnvb2ws7YKVaRuN7XCbX6cuoFKErpc0LRf5tkq51LMXyRGeurdli5a_CEfneK3AK4sU-EtDh7P3tciEwUY5gUvdtvJ8kuuKpjzIdpfBv5fETYNOrhv-le_3QHuTbcj3ar2Rv6BkR6_ggp-UkK_R_mpFJHZbiOrRjZGPRdhZ__4XsG9GBSk7OjRvNfO2piJXLhygoPBOUXnEt8Gde_Rszm2fyTukctPzdgXKKOuN4sFX0hPCSEx7tE69GpuM725NGd330G3Dsc6mw-3gwrsEYDY4cVePehrfx3ipp8mWv2OOgDB9yNCUcHGHPYma2gUXxLx7L-nBDFil9kRm29DFzUVJCWtZE5nAHbnwbAzrcpq75YswwLMY8oZ_vpODduvBhcE91OEXojt_XySn6jexzuf36pj1Atw2XC2iJmo-ml4orzmgb0JZGPVyACyVW2AcBmFiEeEPuiZ_v5rTyZhHGsDfV6bxcAriMMDDk4vgzldk0uTiL9wQlcjB-oIFwt5LcbOzu6wScUNDSvlLO1nb4IJNMkcdUgcgOS-MpIbztKIvMZh51gChme5CKvib8HixCk0oBcHQOUjfhyt0DVzCBVxHIWldwmSOFFkV35T5mr--XyA027uBntlwpPH5zcpInkj2QEZ7sOCus4TcaFB_0Z4QurTatR-kUQjIRsgtqOFZ9Zb9gfQRvCv7_wxUXqWvmzXYzaaL0RYgcILStVp01DvvOSmaVvG3oM1ztEQGwCjLizo95aQDIjK38366gpVRSrmUUU3lCsr2BS6rgX8vw9WE-5Rnm0gESnUDAf1S4nL49PlzHDlfQpRNTDlWw6WTFGwCMwS3NgHGSczKlg6Suz2OGWAXDCo4oF1aJRYtqlqpYHmvLtfsGr0QS_nqgydWHDdYv4I1O_Vf4SDMzK_tVBIGB0E4CXI6AmLorIxjEJG-0xf1WcbV7ZNwmVkhVwLbMgjK2imS4OYxyJkHc8u9Ac3r8E91f1HmdvgCPruiJM1Sul_0VJlMsehFnB8RN4WrbNK7LnmdR5Xh_TKX0P9_Fy-8ddAXwG1a-BRHR7I3XeAHoBIQsNyydkeWCOECYav_KdJgoTy9SJ1DfNf8kigFB8WiNEK3PfrJCQmSQgqQafJBA7uAlMJPDpnBuNyfSdbmrOSQotAKfWWi1jDhLSf_dQeA-us4GGIlLwiSkPlBGRrohpUw_C1W16apFhKm1vOtwdK-Yn4P47r2gTV7YkDEeDYOU74QqCVwIp_GQLrbzBS9ogdr_qgh4KJQs86p7BYwCRH94vl3j0kexBvB6eYReZzQ37s9eDmro3k_ZJlmKQ4wAbFT4YCqMox1AqZTJys-cc6qnRrpoH3ID_6wJJMEjPInhyeDjXOfDOnCBQgBDe8ViOLBF5BLBRgYu8I2j0pfjJjvzwKWCKnkx3bvU25GM1fV-aas2G-WJZ_lgzIRls35_typAjtP0Cs7mvLrCGe0niPw3WppfIsQKxs2TWn_37CEDKlYSI5d6UkryQvnFvpLtEjnb1z4txf750SSxAfHFZ5HYAS5C8JYTkmSCDJ2okCDlcPgRa9XiDUvCLJufWD5jUczzaGkGW7Ro1zS5r4QDJH45hqLrRnXB3vDDy368wngWMjkcaxNVqWOAPZAWgbq-OUUtH0zXh7YPsUyJToiw_GHUMry4bKtevdB7jdvDzaiJ8ez1LksDKEKUY0SV_ZdErkRXaTP--eEE7X4mvFWii4pbZzsVBwGPEG2WviwUuhicskqMlDdNaVbnnaelrHopS6EbbrZ1rQWdfby6U22AHtgj-eU-tpDuIHY34ixwy0ZElUHP-PTEcm6NLV0m-Y1g5_n_xeUMXeUYasdhSPuHJiMlVrvmDZEYlyHVJa82Straako-0oMPKmwvP3Nn0-knKuCbamNcVHfsGrmXV1Dhi3D7EjbzM1BH_N9spkU_W-M4jiLIIW216nbVorQmyz1EJprR21EwID1T-yr_AK4Nq3OGCFlLSSGPOxRP6PPMUSTMcLmKJzeoJq6Nf1_GuclijD2OpSXuyUjilD7TN5MyddbmWfT_XbrQs6gq3Ewhz1_2PfJL-gU3KagTbxjBE_zzd3mZst_Zi0zbnpd5zL5CPK26ENjjUGzEZmBNe88s1tSaQZd3mqESc9jxmpZr0NlBktBpuKkMveIIhDIBSHf2ZMTgoIhUuQbFNrEj_NJnzlPqbrErdrc0VZcyJl-mC0gXZy9uuKywHjFOrt9MFW-JGHJgYgLUgVdssT7M_ksfAAarfD9Bm0Cb0QINDpAZVmVT_q3fxnELwchh2haO8YsZaA2B2LXMY3HiPL0EJK5hZD-Y84gn25T8RsYdwJS3tb7ufwErD6K3R3sachaOFD-0-hvLhyCcGcdwAcJqkVySjYaUAWTvjYvHMgWInePvnb5H7e3D73ba8IoX9Av0CXU4pmZduq44G4ro3SAhdEA4Yz6I6iwZfhEUca8nDTtE-wS6uCw2FbPTP9UerXjLQg3VPd2Y1e0OWhJqLVef3KX9rjYZgyXK4A5zL8XG74dETnyRP1e2hgqaHHxhs2w0K_8CKzPZhPcmDAM3VwL5w2Lzq6ppIIimNfxcWOD0BvqDNVcnR0VA4Tv_OO4slnAjcPuJS98mqM6cgqYrZMT4fgWwn-wKp0jeGHYHgAUjRGkDyNCEvbCeAJcSQnMz06xE6OGMUmgiLAZt-OUeCD2Jt6esW0WBKLPxgZ6F_R_Id-JmRCE4l9N0bg14-U6lyWsFH-SheaZvJSQhq2VnzmExoo5YQjuxen3_5e6kRz3nbRiE16EMeUNk0cEuXiWKXOzRCbvOenp_rnLWkBfrbL4X1qdgCU-CZFY1_0kw3fli2uI7eXOvNEEro3ASGhIAvaN_xjCRZPQBBt9mQwKyu2sl4xV-i7tLNupumi_MMtrmhKE5pgfWyLDGVKiDyXMHqYar38DapJYEa_C4R_qFmAiwVr0C5-j-uL7ndduyhMYLJeFm-HvvO51j_KWw6wK-e73lkO7Z5zI9mruMuXyPWP69dVbqK2TwQFOe5oXzs8kOM4X7ZsdNHaICIBnFFSxmcttpKX4o5wDjWI3rc=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0385c76c54e35657016ab5d77cf2f887d1b9340a6fbc520e93",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqtdeDll79L9tIcgPJqZacb9idr8RK8cK7Jh0y8vnYOLwPf0MiF3U-1-AYwR5RikYQSQiRiGAIIEshX9V0N-59wGzDI-LmM_nQ7f8cuXiyinRDE5F8V3BRfoRJx-FQ_lxNUT-lG7nL87S1wpcivkmH_aYXdI8-aaLdN9U0GoI9gtUig5DKQ2s7BboUFNC9Re7iHb8LEih65ZxJy5G0wCOeH_rLMqy8h3AJUn9pqJCW0vFzslQt_Y17RiLhNa2N7snqxZB2xRAWgzhdJovtjx2jP-o7Pv_0YFArXLjMpYTjMUgTA5mW5iY8nOuUxmruFyKDvF6FVJeIbLluS6qvcgm1JdQU4rQgKe90OGjKi3vTgUN9I4Zd1bdGwoxPL_bTpXBDSH2jeB5sIYmPtzP10bSEWhdHxpjAX5qz7huENRDr9tUP4GLyJ5nDg5HqfuqnKY19oJeLv0tWwnFxR-YJ4ECGrmByiod72b1JwiKjlbB63HhytuMUXd2SbbEFMeLEACAWHG0w06fOwo2BT5OJF7GqgQuWxCCsbBkCY7I1OMSkszrX53Lmq6uQN_BXqBt69JZuT5fymD2dqnvxqiMkTvjG-S2qV_Z_qnklGF5oPm72-Kne6sIZVhwtRkCoFOYZyrBezk8uf4wkq2kSmBkw4ha9pzh5rovd0bkfh66RaWsZDheBtjnU8edGQ7qskRt9QmQyBgeMdDtXCQ5gySsnsomIomCJdQjPQCFTpVu5g6J1vYc2H-GmaNhUaKE1a5-3B3xG0oCcXACkok5hjR1HM7KiMLfJ7Um0rpTLLCP0T3AzQwLcI7I2VE2nrTCyyXyiz4CNGh4HNfdL3hGwXqZMT3WCtEQG8AUZLvTuOotkLqACEl6MOkijh9DdW082IVBTbvgwk_Sy-dpGvVDa0PMgYushqgEIjW_Tum0QkYUORXhLfl33ycv5iCvCwPGzyUYMzNOrraqX-ybVacLxAiMIKdQmLhq6nTdURtPomsw8xlus20i8CO9SM01KSOpheHCdOKb3RZu4uLSDEvuiO1Yxuyh-v5yekAhOlT9cFupvSI-4ilGN5LFqdwGy3vxevCkebL9j48ItXcsEY4IIsDtHGy0WgXqPDYJphu4RuWGmUOheRQwmZnlbROAVqIsMiSGj2lB3rmLHWqVFoDX3KI8LSlsLSgUrIy480dUb9-uB9MWnJRtDjCM1vvBNi_MH14-7OSlc6obsJkdLjva9MPL3pa20lLdFxHw_5HF1RhMe1ne0FHqPENfVCO49DT49xqTyJJ1Zd5Y-sIeFKH7PpbDWzO7DQ6KukvAmzMafmnUMq7-Wd-7Z6OGxp7h67V6IzsPk_kQzEyr6bjsdE-JGeLt0YH1r59cQhyPT7HnkJBGW3OmvRSjO1i22_uO17zQKtv_AUTVnpisIy68Kso5-eenlZyxYWxJIEjuiTdmY1PyXjrmZsR1V3Uwk1L5bfRP1-scjvD8i9FWkcaiLWjs_TckgfpqURJnTt6hR0WOBoYNbePnT5D_pF-HeGFmBeuD1mIH4Ml0uacRatxMaU_DzPuvZlLhIVzrB4PhTwDFZe7UamFyywvJ7zao7V42V8FozEkTPcNBfPwdWoIDEblcX5GpuqWAiZu83i8ryVMnQ4nKbN0LuhD-d4OQpgCX1gCTb2L3AABw9nLptbwTf8RNhFpGILsUqaq1kFGcxomFd23eyPAKJFZGE2Zs_7mkEimAPoDMVLEWEVhgdns9GbCrwELzRLhBugQQgkIaW_4tkivyjQ4ed0NgrhiRQgYsX_-FNjxV3R1HKycvvJ2SN75tWe9T5N7aexn2UduLe1TG0kt3OWZ6q5oluOsP4XOSoPOavnECX-aEtea19MO25NRa9WD_7SuSn2ufwGmlavHuOCABkNNufwzNsuVGvPQhtZyBhxtq8zk1Jol3GjKz-gR9ubul4VoeXAkLBTvDzgm98ZbHeLGDGGUl5Hip7OVoLSqY96TMInkbjsHYol4XMl9TOAGQ1l_KYpKbo6BPYzcZp-MAA19lJFOzh1P0=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+       "format": "openai-responses-v1",
+       "id": "rs_0385c76c54e35657016ab5d781cd4087d19f907aee1c20ed7b",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 190,
+   "completion_tokens": 1046,
+   "total_tokens": 1236,
+   "cost": 0.000542,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.000542,
+    "upstream_inference_prompt_cost": 1.9e-05,
+    "upstream_inference_completions_cost": 0.000523
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 628,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}
