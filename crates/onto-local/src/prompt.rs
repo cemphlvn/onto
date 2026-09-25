@@ -105,12 +105,24 @@ fn lettered_with(
     } else {
         "Answer with the option's letter."
     };
+    // Wide frames put the options first so cases share the cached prefix
+    // (their likelihood readout is costly without it). Letter frames keep
+    // the case first: options-first cost MiniCPM5-2B 34 of 142 support
+    // tickets (87 -> 53) and lowered every model tried (bench ablation,
+    // 2026-09-25).
     let user = |state: &Value| {
-        format!(
-            "{head}\nQuestion: {}\n\nState:\n{}\n\n{how}",
-            text(question),
-            serde_json::to_string_pretty(state).unwrap_or_default(),
-        )
+        let state = serde_json::to_string_pretty(state).unwrap_or_default();
+        if wide {
+            format!(
+                "{head}\nQuestion: {}\n\nState:\n{state}\n\n{how}",
+                text(question)
+            )
+        } else {
+            format!(
+                "State:\n{state}\n\nQuestion: {}\n\n{head}\n{how}",
+                text(question)
+            )
+        }
     };
     Ok(Prompt {
         system: SYSTEM.into(),
@@ -311,12 +323,12 @@ mod tests {
     }
 
     #[test]
-    fn options_come_before_the_state() {
-        let ps = frame(&req(Primitive::Choice, 3)).unwrap();
-        let (o, s) = (
-            ps[0].user.find("Options:").unwrap(),
-            ps[0].user.find("State:").unwrap(),
-        );
-        assert!(o < s, "the static part is the cached prefix");
+    fn wide_frames_put_options_first_letter_frames_the_state() {
+        let order = |n| {
+            let ps = frame(&req(Primitive::Choice, n)).unwrap();
+            ps[0].user.find("Options:").unwrap() < ps[0].user.find("State:").unwrap()
+        };
+        assert!(order(60), "wide: the static part is the cached prefix");
+        assert!(!order(3), "letters: the case comes first");
     }
 }
