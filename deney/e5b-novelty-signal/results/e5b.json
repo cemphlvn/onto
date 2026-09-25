@@ -1,0 +1,436 @@
+{
+ "primary": {
+  "L0": {
+   "per_call": {
+    "mean": 1.901,
+    "min": 1.679,
+    "max": 2.215
+   },
+   "accuracy": {
+    "mean": 0.966,
+    "min": 0.942,
+    "max": 0.982
+   },
+   "base_accuracy": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.47,
+    "min": 0.403,
+    "max": 0.547
+   },
+   "cpu_errors_known": {
+    "mean": 18.0,
+    "min": 11.0,
+    "max": 34.0
+   },
+   "cpu_errors_new": {
+    "mean": 4.6,
+    "min": 1.0,
+    "max": 7.0
+   }
+  },
+  "detector_auroc": 0.842,
+  "detector_cases": {
+   "new_to_learner": 127,
+   "known": 6173
+  },
+  "L1": {
+   "per_call": {
+    "mean": 1.879,
+    "min": 1.658,
+    "max": 2.031
+   },
+   "accuracy": {
+    "mean": 0.965,
+    "min": 0.956,
+    "max": 0.982
+   },
+   "base_accuracy": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.464,
+    "min": 0.395,
+    "max": 0.506
+   },
+   "cpu_errors_known": {
+    "mean": 17.7,
+    "min": 11.0,
+    "max": 25.0
+   },
+   "cpu_errors_new": {
+    "mean": 5.4,
+    "min": 1.0,
+    "max": 8.0
+   }
+  },
+  "L2": {
+   "per_call": {
+    "mean": 1.869,
+    "min": 1.602,
+    "max": 2.143
+   },
+   "accuracy": {
+    "mean": 0.967,
+    "min": 0.944,
+    "max": 0.98
+   },
+   "base_accuracy": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.461,
+    "min": 0.374,
+    "max": 0.532
+   },
+   "cpu_errors_known": {
+    "mean": 17.5,
+    "min": 12.0,
+    "max": 33.0
+   },
+   "cpu_errors_new": {
+    "mean": 4.4,
+    "min": 1.0,
+    "max": 7.0
+   }
+  },
+  "L3": {
+   "per_call": {
+    "mean": 1.841,
+    "min": 1.602,
+    "max": 1.958
+   },
+   "accuracy": {
+    "mean": 0.969,
+    "min": 0.959,
+    "max": 0.98
+   },
+   "base_accuracy": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.453,
+    "min": 0.374,
+    "max": 0.488
+   },
+   "cpu_errors_known": {
+    "mean": 16.7,
+    "min": 11.0,
+    "max": 22.0
+   },
+   "cpu_errors_new": {
+    "mean": 4.0,
+    "min": 1.0,
+    "max": 6.0
+   }
+  },
+  "L4": {
+   "per_call": {
+    "mean": 1.218,
+    "min": 1.026,
+    "max": 1.833
+   },
+   "accuracy": {
+    "mean": 0.989,
+    "min": 0.971,
+    "max": 0.998
+   },
+   "base_accuracy": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.143,
+    "min": 0.024,
+    "max": 0.453
+   },
+   "cpu_errors_known": {
+    "mean": 6.4,
+    "min": 1.0,
+    "max": 15.0
+   },
+   "cpu_errors_new": {
+    "mean": 0.7,
+    "min": 0.0,
+    "max": 4.0
+   }
+  }
+ },
+ "secondary": {
+  "L0": {
+   "per_call": {
+    "mean": 1.816,
+    "min": 1.662,
+    "max": 1.895
+   },
+   "accuracy": {
+    "mean": 0.953,
+    "min": 0.913,
+    "max": 0.97
+   },
+   "base_accuracy": {
+    "mean": 0.998,
+    "min": 0.998,
+    "max": 0.998
+   },
+   "person": {
+    "mean": 0.5,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.447,
+    "min": 0.396,
+    "max": 0.47
+   },
+   "cpu_errors_known": {
+    "mean": 11.3,
+    "min": 5.0,
+    "max": 25.0
+   },
+   "cpu_errors_new": {
+    "mean": 13.2,
+    "min": 6.0,
+    "max": 27.0
+   }
+  },
+  "detector_auroc": 0.776,
+  "detector_cases": {
+   "new_to_learner": 140,
+   "known": 4960
+  },
+  "L1": {
+   "per_call": {
+    "mean": 1.718,
+    "min": 1.636,
+    "max": 1.806
+   },
+   "accuracy": {
+    "mean": 0.959,
+    "min": 0.941,
+    "max": 0.981
+   },
+   "base_accuracy": {
+    "mean": 0.998,
+    "min": 0.998,
+    "max": 0.998
+   },
+   "person": {
+    "mean": 0.4,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.417,
+    "min": 0.387,
+    "max": 0.444
+   },
+   "cpu_errors_known": {
+    "mean": 6.9,
+    "min": 3.0,
+    "max": 14.0
+   },
+   "cpu_errors_new": {
+    "mean": 14.3,
+    "min": 6.0,
+    "max": 22.0
+   }
+  },
+  "L2": {
+   "per_call": {
+    "mean": 1.8,
+    "min": 1.656,
+    "max": 1.888
+   },
+   "accuracy": {
+    "mean": 0.956,
+    "min": 0.915,
+    "max": 0.972
+   },
+   "base_accuracy": {
+    "mean": 0.998,
+    "min": 0.998,
+    "max": 0.998
+   },
+   "person": {
+    "mean": 0.5,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.443,
+    "min": 0.394,
+    "max": 0.469
+   },
+   "cpu_errors_known": {
+    "mean": 10.9,
+    "min": 5.0,
+    "max": 24.0
+   },
+   "cpu_errors_new": {
+    "mean": 12.3,
+    "min": 5.0,
+    "max": 26.0
+   }
+  },
+  "L3": {
+   "per_call": {
+    "mean": 1.704,
+    "min": 1.622,
+    "max": 1.776
+   },
+   "accuracy": {
+    "mean": 0.962,
+    "min": 0.937,
+    "max": 0.98
+   },
+   "base_accuracy": {
+    "mean": 0.998,
+    "min": 0.998,
+    "max": 0.998
+   },
+   "person": {
+    "mean": 0.4,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.412,
+    "min": 0.381,
+    "max": 0.437
+   },
+   "cpu_errors_known": {
+    "mean": 7.0,
+    "min": 4.0,
+    "max": 14.0
+   },
+   "cpu_errors_new": {
+    "mean": 12.4,
+    "min": 6.0,
+    "max": 25.0
+   }
+  },
+  "L4": {
+   "per_call": {
+    "mean": 1.295,
+    "min": 1.044,
+    "max": 1.646
+   },
+   "accuracy": {
+    "mean": 0.983,
+    "min": 0.961,
+    "max": 0.998
+   },
+   "base_accuracy": {
+    "mean": 0.998,
+    "min": 0.998,
+    "max": 0.998
+   },
+   "person": {
+    "mean": 0.5,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "base_person": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "cpu_share": {
+    "mean": 0.209,
+    "min": 0.043,
+    "max": 0.391
+   },
+   "cpu_errors_known": {
+    "mean": 4.3,
+    "min": 0.0,
+    "max": 9.0
+   },
+   "cpu_errors_new": {
+    "mean": 3.9,
+    "min": 0.0,
+    "max": 18.0
+   }
+  }
+ }
+}

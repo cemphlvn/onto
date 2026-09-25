@@ -1,0 +1,12 @@
+primary L0 {'per_call': 1.901, 'accuracy': 0.966, 'base_accuracy': 1.0, 'person': 1.0, 'base_person': 1.0, 'cpu_share': 0.47, 'cpu_errors_known': 18.0, 'cpu_errors_new': 4.6}
+primary L1 {'per_call': 1.879, 'accuracy': 0.965, 'base_accuracy': 1.0, 'person': 1.0, 'base_person': 1.0, 'cpu_share': 0.464, 'cpu_errors_known': 17.7, 'cpu_errors_new': 5.4}
+primary L2 {'per_call': 1.869, 'accuracy': 0.967, 'base_accuracy': 1.0, 'person': 1.0, 'base_person': 1.0, 'cpu_share': 0.461, 'cpu_errors_known': 17.5, 'cpu_errors_new': 4.4}
+primary L3 {'per_call': 1.841, 'accuracy': 0.969, 'base_accuracy': 1.0, 'person': 1.0, 'base_person': 1.0, 'cpu_share': 0.453, 'cpu_errors_known': 16.7, 'cpu_errors_new': 4.0}
+primary L4 {'per_call': 1.218, 'accuracy': 0.989, 'base_accuracy': 1.0, 'person': 1.0, 'base_person': 1.0, 'cpu_share': 0.143, 'cpu_errors_known': 6.4, 'cpu_errors_new': 0.7}
+primary detector AUROC 0.842 {'new_to_learner': 127, 'known': 6173}
+secondary L0 {'per_call': 1.816, 'accuracy': 0.953, 'base_accuracy': 0.998, 'person': 0.5, 'base_person': 1.0, 'cpu_share': 0.447, 'cpu_errors_known': 11.3, 'cpu_errors_new': 13.2}
+secondary L1 {'per_call': 1.718, 'accuracy': 0.959, 'base_accuracy': 0.998, 'person': 0.4, 'base_person': 1.0, 'cpu_share': 0.417, 'cpu_errors_known': 6.9, 'cpu_errors_new': 14.3}
+secondary L2 {'per_call': 1.8, 'accuracy': 0.956, 'base_accuracy': 0.998, 'person': 0.5, 'base_person': 1.0, 'cpu_share': 0.443, 'cpu_errors_known': 10.9, 'cpu_errors_new': 12.3}
+secondary L3 {'per_call': 1.704, 'accuracy': 0.962, 'base_accuracy': 0.998, 'person': 0.4, 'base_person': 1.0, 'cpu_share': 0.412, 'cpu_errors_known': 7.0, 'cpu_errors_new': 12.4}
+secondary L4 {'per_call': 1.295, 'accuracy': 0.983, 'base_accuracy': 0.998, 'person': 0.5, 'base_person': 1.0, 'cpu_share': 0.209, 'cpu_errors_known': 4.3, 'cpu_errors_new': 3.9}
+secondary detector AUROC 0.776 {'new_to_learner': 140, 'known': 4960}

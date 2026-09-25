@@ -11,6 +11,7 @@ Headline numbers per experiment, kept on every experiment branch (machine-readab
 | E3 | do loops over different information catch errors; U vs number of perspectives | independent: slope −1.08 [−1.43, −0.87] vs ln ē −1.11, three perspectives worth 2.97, detection 92%; correlated: slope −0.11, k_eff ≈ 1 | law: U ≈ ē^k_eff; k_eff ≈ k for independent information, ≈ 1 for shared |
 | E4 | a CPU switch learner against Jev | structured: CPU 100% at 0.02–0.07 ms (Jev 100% / 90% at 320 ms); messages: CPU 95.6% (Jev 99.4%), 77% taken at gate 0.8 with system at 99.4%; unseen situations 1.9% | structured: CPU; free text: CPU under a gate; open vocabulary: not lexical |
 | E5 | self-building loop: intents per model call within the same accuracy | loop 1.82× per call at 95.3% (Jev 1.00× at 99.8%); errors: new situations 132, early overconfidence 113; guard 1.30× at 98.3% | the learner needs a novelty signal (E5b) |
+| E5b | a novelty signal and minimum evidence for the loop | fresh stream: L3 1.84× at 96.9% (Jev 100%); detector AUROC 0.84 but 2% prevalence; known-situation errors 16.7 of 20.7 per order; guard 1.22× at 98.9% | the threshold must come from a target error rate; known-situation errors dominate |
 
 ## Across experiments
 
