@@ -1,0 +1,12 @@
+[package]
+name = "deney-e0b-strict-resonance"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# Its own workspace: an experiment, not part of the onto build.
+[workspace]
+
+[dependencies]
+onto-core = { path = "../../crates/onto-core" }
+serde_json = "1"

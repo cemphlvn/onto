@@ -1,0 +1,140 @@
+{
+  "blocked_by": {
+    "long_context": 3,
+    "open_vocabulary": 219,
+    "unlabelled": 197
+  },
+  "ceiling": 0.5522388059701493,
+  "joint": [
+    {
+      "also_admitted": [],
+      "ceiling": 0.5522388059701493
+    },
+    {
+      "also_admitted": [
+        "long_context"
+      ],
+      "ceiling": 0.5549525101763908
+    },
+    {
+      "also_admitted": [
+        "open_vocabulary"
+      ],
+      "ceiling": 0.7299864314789688
+    },
+    {
+      "also_admitted": [
+        "long_context",
+        "open_vocabulary"
+      ],
+      "ceiling": 0.7327001356852103
+    },
+    {
+      "also_admitted": [
+        "unlabelled"
+      ],
+      "ceiling": 0.6987788331071914
+    },
+    {
+      "also_admitted": [
+        "long_context",
+        "unlabelled"
+      ],
+      "ceiling": 0.7028493894165536
+    },
+    {
+      "also_admitted": [
+        "open_vocabulary",
+        "unlabelled"
+      ],
+      "ceiling": 0.9959294436906377
+    },
+    {
+      "also_admitted": [
+        "long_context",
+        "open_vocabulary",
+        "unlabelled"
+      ],
+      "ceiling": 1.0
+    }
+  ],
+  "label_sources": {
+    "evidence": 12,
+    "evidence+person": 20,
+    "none": 197,
+    "person": 43,
+    "person+resonance": 73,
+    "resonance": 392
+  },
+  "long_context_chars": 2000,
+  "primitives": {
+    "choice": 718,
+    "noul": 12,
+    "score": 7
+  },
+  "rule": "loose",
+  "runs": [
+    {
+      "admitted": 10,
+      "run": "01-incident-response.jsonl",
+      "switches": 26
+    },
+    {
+      "admitted": 208,
+      "run": "02-support-large.jsonl",
+      "switches": 208
+    },
+    {
+      "admitted": 32,
+      "run": "03-infrastructure-change.jsonl",
+      "switches": 32
+    },
+    {
+      "admitted": 12,
+      "run": "04-hospital-discharge.jsonl",
+      "switches": 36
+    },
+    {
+      "admitted": 16,
+      "run": "05-consent.jsonl",
+      "switches": 21
+    },
+    {
+      "admitted": 0,
+      "run": "06-support-repeated-gaps.jsonl",
+      "switches": 41
+    },
+    {
+      "admitted": 3,
+      "run": "07-benefits-catalogue.jsonl",
+      "switches": 40
+    },
+    {
+      "admitted": 0,
+      "run": "08-incident-perspectives.jsonl",
+      "switches": 48
+    },
+    {
+      "admitted": 35,
+      "run": "09-discharge-with-the-patient.jsonl",
+      "switches": 35
+    },
+    {
+      "admitted": 0,
+      "run": "10-support-open-world.jsonl",
+      "switches": 98
+    },
+    {
+      "admitted": 91,
+      "run": "11-merger-transport.jsonl",
+      "switches": 152
+    }
+  ],
+  "seen_chars": {
+    "max": 2109,
+    "p50": 297,
+    "p90": 407
+  },
+  "switches": 737,
+  "unresolved_frames": 19
+}
