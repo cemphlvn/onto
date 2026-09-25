@@ -1,0 +1,489 @@
+ensemble Perspectives: 3 columns → Situation · consensus all · 80 case(s)
+world: closed (declared graph only)
+world: closed (declared graph only)
+world: closed (declared graph only)
+
+  E3-cor-double_charge-1: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    … incomplete:  concluded nothing
+
+  E3-cor-double_charge-2: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    … incomplete:  concluded nothing
+
+  E3-cor-double_charge-3: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 1628 ms)
+
+  E3-cor-double_charge-4: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 1704 ms)
+
+  E3-cor-double_charge-5: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 1787 ms)
+
+  E3-cor-double_charge-6: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-cor-double_charge-7: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-cor-double_charge-8: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 1946 ms)
+
+  E3-cor-double_charge-9: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 1946 ms)
+
+  E3-cor-double_charge-10: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 1965 ms)
+
+  E3-cor-refund_request-1: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 1951 ms)
+
+  E3-cor-refund_request-2: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 2018 ms)
+
+  E3-cor-refund_request-3: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 977 ms)
+
+  E3-cor-refund_request-4: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 993 ms)
+
+  E3-cor-refund_request-5: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-refund_request-6: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-refund_request-7: Determine the customer's situation.
+    Message        at Read                   → Observed
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    … incomplete: Message concluded nothing
+
+  E3-cor-refund_request-8: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-refund_request-9: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 1270 ms)
+
+  E3-cor-refund_request-10: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 1265 ms)
+
+  E3-cor-payment_failed-1: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-payment_failed-2: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-cor-payment_failed-3: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 1585 ms)
+
+  E3-cor-payment_failed-4: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 1707 ms)
+
+  E3-cor-payment_failed-5: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ✓ agreed: PaymentFailed (first at 1856 ms)
+
+  E3-cor-payment_failed-6: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ✓ agreed: PaymentFailed (first at 1695 ms)
+
+  E3-cor-payment_failed-7: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 1843 ms)
+
+  E3-cor-payment_failed-8: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    … incomplete:  concluded nothing
+
+  E3-cor-payment_failed-9: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-payment_failed-10: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ✓ agreed: PaymentFailed (first at 1566 ms)
+
+  E3-cor-not_delivered-1: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    … incomplete:  concluded nothing
+
+  E3-cor-not_delivered-2: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 1669 ms)
+
+  E3-cor-not_delivered-3: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-not_delivered-4: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 1724 ms)
+
+  E3-cor-not_delivered-5: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 1865 ms)
+
+  E3-cor-not_delivered-6: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 1886 ms)
+
+  E3-cor-not_delivered-7: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 1470 ms)
+
+  E3-cor-not_delivered-8: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-not_delivered-9: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-not_delivered-10: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-cor-damaged-1: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ✓ agreed: Damaged (first at 1881 ms)
+
+  E3-cor-damaged-2: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ✓ agreed: Damaged (first at 1590 ms)
+
+  E3-cor-damaged-3: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ✓ agreed: Damaged (first at 1678 ms)
+
+  E3-cor-damaged-4: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-damaged-5: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ✓ agreed: Damaged (first at 1857 ms)
+
+  E3-cor-damaged-6: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-damaged-7: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-damaged-8: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-damaged-9: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-damaged-10: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at NoSignal               → Observed
+    Events         at Damaged                → Damaged
+    … incomplete:  concluded nothing
+
+  E3-cor-wrong_item-1: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-wrong_item-2: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-wrong_item-3: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-wrong_item-4: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 1961 ms)
+
+  E3-cor-wrong_item-5: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 2061 ms)
+
+  E3-cor-wrong_item-6: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-wrong_item-7: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-wrong_item-8: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 1599 ms)
+
+  E3-cor-wrong_item-9: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-wrong_item-10: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-cor-account_locked-1: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 1946 ms)
+
+  E3-cor-account_locked-2: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 2065 ms)
+
+  E3-cor-account_locked-3: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 2108 ms)
+
+  E3-cor-account_locked-4: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at NoSignal               → Observed
+    Events         at AccountLocked          → AccountLocked
+    … incomplete:  concluded nothing
+
+  E3-cor-account_locked-5: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 1699 ms)
+
+  E3-cor-account_locked-6: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 1669 ms)
+
+  E3-cor-account_locked-7: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 1774 ms)
+
+  E3-cor-account_locked-8: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 1829 ms)
+
+  E3-cor-account_locked-9: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 1985 ms)
+
+  E3-cor-account_locked-10: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 2113 ms)
+
+  E3-cor-account_takeover-1: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 1871 ms)
+
+  E3-cor-account_takeover-2: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 2013 ms)
+
+  E3-cor-account_takeover-3: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    … incomplete:  concluded nothing
+
+  E3-cor-account_takeover-4: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at NoSignal               → Observed
+    Events         at AccountTakeover        → AccountTakeover
+    … incomplete:  concluded nothing
+
+  E3-cor-account_takeover-5: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 2080 ms)
+
+  E3-cor-account_takeover-6: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 2133 ms)
+
+  E3-cor-account_takeover-7: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 1927 ms)
+
+  E3-cor-account_takeover-8: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 2061 ms)
+
+  E3-cor-account_takeover-9: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1395 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-cor-account_takeover-10: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 2103 ms)
+
+wall 2198 ms
+gaps: 1 signal(s) for curation appended to runs/gaps.Message.jsonl (onto curate)
+gaps: 4 signal(s) for curation appended to runs/gaps.Events.jsonl (onto curate)
+gaps: 1 signal(s) for curation appended to runs/gaps.Situation.jsonl (onto curate)

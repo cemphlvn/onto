@@ -1,0 +1,103 @@
+ensemble Perspectives: 3 columns → Situation · consensus all · 16 case(s)
+world: closed (declared graph only)
+world: closed (declared graph only)
+world: closed (declared graph only)
+
+  E3-pilot-double_charge-1: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 939 ms)
+
+  E3-pilot-double_charge-2: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 1097 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-refund_request-1: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 954 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-refund_request-2: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 901 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-payment_failed-1: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ✓ agreed: PaymentFailed (first at 939 ms)
+
+  E3-pilot-payment_failed-2: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at PaymentFailed          → PaymentFailed
+    ⚠ surprise: Ledger ⟂ Events (first at 1097 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-not_delivered-1: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NoSignal               → Observed
+    Events         at NotDelivered           → NotDelivered
+    … incomplete:  concluded nothing
+
+  E3-pilot-not_delivered-2: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-pilot-damaged-1: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at Damaged                → Damaged
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 921 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-damaged-2: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at Damaged                → Damaged
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-pilot-wrong_item-1: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 735 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-wrong_item-2: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 980 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-account_locked-1: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 986 ms)
+
+  E3-pilot-account_locked-2: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at NoSignal               → Observed
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Events (first at 928 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-account_takeover-1: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 907 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-pilot-account_takeover-2: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Ledger ⟂ Events (first at 959 ms) → a curation signal (the model of the world may be wrong here)
+
+wall 1098 ms
+gaps: 10 signal(s) for curation appended to runs/gaps.Situation.jsonl (onto curate)

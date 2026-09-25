@@ -1,0 +1,1449 @@
+ensemble Perspectives: 3 columns → Situation · consensus all · 240 case(s)
+world: closed (declared graph only)
+world: closed (declared graph only)
+world: closed (declared graph only)
+
+  E3-ind-double_charge-1: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1491 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-2: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 1431 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-3: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 1252 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-4: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1479 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-5: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at NoSignal               → Observed
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-double_charge-6: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-double_charge-7: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at NoSignal               → Observed
+    Events         at DoubleCharge           → DoubleCharge
+    … incomplete:  concluded nothing
+
+  E3-ind-double_charge-8: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1418 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-9: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at NoSignal               → Observed
+    Events         at DoubleCharge           → DoubleCharge
+    … incomplete:  concluded nothing
+
+  E3-ind-double_charge-10: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1269 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-11: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at Read                   → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4556 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-12: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 4597 ms)
+
+  E3-ind-double_charge-13: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Ledger ⟂ Events (first at 4654 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-14: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4734 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-15: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 4729 ms)
+
+  E3-ind-double_charge-16: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1456 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-17: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 1614 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-18: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-double_charge-19: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at Read                   → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4885 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-20: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 1723 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-21: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1740 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-22: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at Read                   → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 1630 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-23: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    … incomplete:  concluded nothing
+
+  E3-ind-double_charge-24: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-double_charge-25: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 1899 ms)
+
+  E3-ind-double_charge-26: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 1885 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-27: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at NoSignal               → Observed
+    Events         at RefundRequest          → RefundRequest
+    … incomplete:  concluded nothing
+
+  E3-ind-double_charge-28: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at NoSignal               → Observed
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events (first at 2047 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-29: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 2029 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-double_charge-30: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 2187 ms)
+
+  E3-ind-refund_request-1: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2176 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-2: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 2352 ms)
+
+  E3-ind-refund_request-3: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 2439 ms)
+
+  E3-ind-refund_request-4: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 2487 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-5: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2455 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-6: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2512 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-7: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 2816 ms)
+
+  E3-ind-refund_request-8: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 2907 ms)
+
+  E3-ind-refund_request-9: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 2958 ms)
+
+  E3-ind-refund_request-10: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at NoSignal               → Observed
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events (first at 2794 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-11: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3169 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-12: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 2866 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-13: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 2985 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-14: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3439 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-15: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-refund_request-16: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 3653 ms)
+
+  E3-ind-refund_request-17: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3747 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-18: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 3833 ms)
+
+  E3-ind-refund_request-19: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3976 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-20: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4040 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-21: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ✓ agreed: RefundRequest (first at 4101 ms)
+
+  E3-ind-refund_request-22: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at Read                   → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4229 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-23: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at NoSignal               → Observed
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events (first at 3521 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-24: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 3535 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-25: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 3594 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-26: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at Read                   → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4502 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-27: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 3714 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-28: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at RefundRequest          → RefundRequest
+    Events         at RefundRequest          → RefundRequest
+    … incomplete:  concluded nothing
+
+  E3-ind-refund_request-29: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at RefundRequest          → RefundRequest
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 3808 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-refund_request-30: Determine the customer's situation.
+    Message        at RefundRequest          → RefundRequest
+    Ledger         at NoSignal               → Observed
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events (first at 3807 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-1: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-payment_failed-2: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ✓ agreed: DoubleCharge (first at 4744 ms)
+
+  E3-ind-payment_failed-3: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    … incomplete:  concluded nothing
+
+  E3-ind-payment_failed-4: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 4059 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-5: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4075 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-6: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4091 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-7: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ✓ agreed: PaymentFailed (first at 4948 ms)
+
+  E3-ind-payment_failed-8: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ✓ agreed: PaymentFailed (first at 4928 ms)
+
+  E3-ind-payment_failed-9: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-payment_failed-10: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at NoSignal               → Observed
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-payment_failed-11: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4330 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-12: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-payment_failed-13: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at NoSignal               → Observed
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-payment_failed-14: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at PaymentFailed          → PaymentFailed
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4531 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-15: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4551 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-16: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    … incomplete:  concluded nothing
+
+  E3-ind-payment_failed-17: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at Read                   → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4655 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-18: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at PaymentFailed          → PaymentFailed
+    ✓ agreed: PaymentFailed (first at 4814 ms)
+
+  E3-ind-payment_failed-19: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4701 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-20: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 2162 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-21: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-payment_failed-22: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4602 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-23: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at PaymentFailed          → PaymentFailed
+    ⚠ surprise: Ledger ⟂ Events (first at 2455 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-24: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at PaymentFailed          → PaymentFailed
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 2591 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-25: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4790 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-26: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-payment_failed-27: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at PaymentFailed          → PaymentFailed
+    Events         at DoubleCharge           → DoubleCharge
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 2825 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-28: Determine the customer's situation.
+    Message        at DoubleCharge           → DoubleCharge
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at PaymentFailed          → PaymentFailed
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 2891 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-29: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at DoubleCharge           → DoubleCharge
+    Events         at PaymentFailed          → PaymentFailed
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3017 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-payment_failed-30: Determine the customer's situation.
+    Message        at PaymentFailed          → PaymentFailed
+    Ledger         at NoSignal               → Observed
+    Events         at PaymentFailed          → PaymentFailed
+    … incomplete:  concluded nothing
+
+  E3-ind-not_delivered-1: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 2708 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-2: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3299 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-3: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3409 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-4: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3531 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-5: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 3584 ms)
+
+  E3-ind-not_delivered-6: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3660 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-7: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 3787 ms)
+
+  E3-ind-not_delivered-8: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 3132 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-9: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 3253 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-10: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 4063 ms)
+
+  E3-ind-not_delivered-11: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-not_delivered-12: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2296 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-13: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-not_delivered-14: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-not_delivered-15: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4416 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-16: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4483 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-17: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4562 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-18: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4616 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-19: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4606 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-20: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 4697 ms)
+
+  E3-ind-not_delivered-21: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-not_delivered-22: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 2797 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-23: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-not_delivered-24: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-not_delivered-25: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 3116 ms)
+
+  E3-ind-not_delivered-26: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3194 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-not_delivered-27: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-not_delivered-28: Determine the customer's situation.
+    Message        at Read                   → Observed
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete: Message concluded nothing
+
+  E3-ind-not_delivered-29: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-not_delivered-30: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    … incomplete:  concluded nothing
+
+  E3-ind-damaged-1: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3447 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-2: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3471 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-3: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ✓ agreed: Damaged (first at 3589 ms)
+
+  E3-ind-damaged-4: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at Damaged                → Damaged
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3579 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-5: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 3761 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-6: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-damaged-7: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-damaged-8: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3771 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-9: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3813 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-10: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ✓ agreed: Damaged (first at 3827 ms)
+
+  E3-ind-damaged-11: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-damaged-12: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3976 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-13: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ✓ agreed: Damaged (first at 3976 ms)
+
+  E3-ind-damaged-14: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-damaged-15: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at Damaged                → Damaged
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4069 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-16: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 3456 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-17: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4217 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-18: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3665 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-19: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4291 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-20: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4304 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-21: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at Damaged                → Damaged
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4314 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-22: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-damaged-23: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4470 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-24: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-damaged-25: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4538 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-26: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at Damaged                → Damaged
+    Events         at Damaged                → Damaged
+    ✓ agreed: Damaged (first at 5099 ms)
+
+  E3-ind-damaged-27: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4574 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-28: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4692 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-29: Determine the customer's situation.
+    Message        at Damaged                → Damaged
+    Ledger         at WrongItem              → WrongItem
+    Events         at Damaged                → Damaged
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4723 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-damaged-30: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at Damaged                → Damaged
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 4799 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-1: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-2: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at Read                   → Observed
+    … incomplete: Events concluded nothing
+
+  E3-ind-wrong_item-3: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-4: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 3366 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-5: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 1657 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-6: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-7: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-8: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-9: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … undecided:  concluded nothing
+
+  E3-ind-wrong_item-10: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at Read                   → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 2138 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-11: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ✓ agreed: NotDelivered (first at 3971 ms)
+
+  E3-ind-wrong_item-12: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-13: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 2400 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-14: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-15: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-16: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 4492 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-17: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 2755 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-18: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2902 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-19: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 2986 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-20: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3106 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-21: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3199 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-22: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-23: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3375 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-24: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-25: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3570 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-26: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-wrong_item-27: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 5019 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-28: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at WrongItem              → WrongItem
+    Events         at NotDelivered           → NotDelivered
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3823 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-29: Determine the customer's situation.
+    Message        at WrongItem              → WrongItem
+    Ledger         at NotDelivered           → NotDelivered
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 3972 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-wrong_item-30: Determine the customer's situation.
+    Message        at NotDelivered           → NotDelivered
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-account_locked-1: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at NoSignal               → Observed
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Events (first at 3409 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-2: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 4224 ms)
+
+  E3-ind-account_locked-3: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3308 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-4: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 3347 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-5: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3387 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-6: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 3640 ms)
+
+  E3-ind-account_locked-7: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    … incomplete:  concluded nothing
+
+  E3-ind-account_locked-8: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 3756 ms)
+
+  E3-ind-account_locked-9: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    … incomplete:  concluded nothing
+
+  E3-ind-account_locked-10: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 3886 ms)
+
+  E3-ind-account_locked-11: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-account_locked-12: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 3956 ms)
+
+  E3-ind-account_locked-13: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at NoSignal               → Observed
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Events (first at 4108 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-14: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3827 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-15: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 4407 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-16: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 4675 ms)
+
+  E3-ind-account_locked-17: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 4810 ms)
+
+  E3-ind-account_locked-18: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4091 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-19: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 5079 ms)
+
+  E3-ind-account_locked-20: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4053 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-21: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4127 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-22: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 5228 ms)
+
+  E3-ind-account_locked-23: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4239 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-24: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 4150 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-25: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at NoSignal               → Observed
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Events (first at 4319 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-26: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4363 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-27: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4422 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-28: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-account_locked-29: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 4506 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_locked-30: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 4525 ms)
+
+  E3-ind-account_takeover-1: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3907 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-2: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    … incomplete:  concluded nothing
+
+  E3-ind-account_takeover-3: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1594 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-4: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at NoSignal               → Observed
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-account_takeover-5: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 1630 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-6: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-account_takeover-7: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 1823 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-8: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 1843 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-9: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-account_takeover-10: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 4416 ms)
+
+  E3-ind-account_takeover-11: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 2077 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-12: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 4525 ms)
+
+  E3-ind-account_takeover-13: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 4675 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-14: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 4837 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-15: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2465 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-16: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 5173 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-17: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2652 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-18: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ✓ agreed: AccountTakeover (first at 4434 ms)
+
+  E3-ind-account_takeover-19: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2862 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-20: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 2951 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-21: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at NoSignal               → Observed
+    ⚠ surprise: Message ⟂ Ledger (first at 2998 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-22: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ✓ agreed: AccountLocked (first at 4660 ms)
+
+  E3-ind-account_takeover-23: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3221 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-24: Determine the customer's situation.
+    Message        at NoSignal               → Observed
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at NoSignal               → Observed
+    … incomplete:  concluded nothing
+
+  E3-ind-account_takeover-25: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3419 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-26: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 4777 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-27: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3584 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-28: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountTakeover        → AccountTakeover
+    ⚠ surprise: Message ⟂ Events, Ledger ⟂ Events (first at 5053 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-29: Determine the customer's situation.
+    Message        at AccountLocked          → AccountLocked
+    Ledger         at AccountTakeover        → AccountTakeover
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Ledger ⟂ Events (first at 3791 ms) → a curation signal (the model of the world may be wrong here)
+
+  E3-ind-account_takeover-30: Determine the customer's situation.
+    Message        at AccountTakeover        → AccountTakeover
+    Ledger         at AccountLocked          → AccountLocked
+    Events         at AccountLocked          → AccountLocked
+    ⚠ surprise: Message ⟂ Ledger, Message ⟂ Events (first at 3891 ms) → a curation signal (the model of the world may be wrong here)
+
+wall 5439 ms
+gaps: 1 signal(s) for curation appended to runs/gaps.Message.jsonl (onto curate)
+gaps: 16 signal(s) for curation appended to runs/gaps.Events.jsonl (onto curate)
+gaps: 141 signal(s) for curation appended to runs/gaps.Situation.jsonl (onto curate)

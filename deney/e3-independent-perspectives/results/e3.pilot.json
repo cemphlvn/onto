@@ -1,0 +1,310 @@
+{
+ "condition": "pilot",
+ "cases": 16,
+ "manipulation": {
+  "Message": {
+   "clear": {
+    "n": 8,
+    "as_designed": 8,
+    "rate": 1.0,
+    "ci": [
+     0.6756,
+     1.0
+    ]
+   },
+   "absent": {
+    "n": 3,
+    "as_designed": 3,
+    "rate": 1.0,
+    "ci": [
+     0.4385,
+     1.0
+    ]
+   },
+   "misleading": {
+    "n": 5,
+    "as_designed": 5,
+    "rate": 1.0,
+    "ci": [
+     0.5655,
+     1.0
+    ]
+   }
+  },
+  "Ledger": {
+   "clear": {
+    "n": 10,
+    "as_designed": 10,
+    "rate": 1.0,
+    "ci": [
+     0.7225,
+     1.0
+    ]
+   },
+   "absent": {
+    "n": 2,
+    "as_designed": 2,
+    "rate": 1.0,
+    "ci": [
+     0.3424,
+     1.0
+    ]
+   },
+   "misleading": {
+    "n": 4,
+    "as_designed": 4,
+    "rate": 1.0,
+    "ci": [
+     0.5101,
+     1.0
+    ]
+   }
+  },
+  "Events": {
+   "clear": {
+    "n": 10,
+    "as_designed": 9,
+    "rate": 0.9,
+    "ci": [
+     0.5958,
+     0.9821
+    ]
+   },
+   "absent": {
+    "n": 2,
+    "as_designed": 2,
+    "rate": 1.0,
+    "ci": [
+     0.3424,
+     1.0
+    ]
+   },
+   "misleading": {
+    "n": 4,
+    "as_designed": 3,
+    "rate": 0.75,
+    "ci": [
+     0.3006,
+     0.9544
+    ]
+   }
+  }
+ },
+ "answers": {
+  "Message": {
+   "truth": 8,
+   "neighbour": 5,
+   "none": 3
+  },
+  "Ledger": {
+   "truth": 10,
+   "neighbour": 4,
+   "none": 2
+  },
+  "Events": {
+   "truth": 9,
+   "neighbour": 3,
+   "none": 4
+  }
+ },
+ "loops": [
+  {
+   "loop": "Message",
+   "k": 1,
+   "checked": 13,
+   "wrong": 5,
+   "undetected": 5,
+   "U": 0.3125,
+   "U_95": [
+    0.1416,
+    0.556
+   ],
+   "U_ind": 0.3125,
+   "R": 1.0,
+   "R_95": [
+    1.0,
+    1.0
+   ],
+   "D": 0.0,
+   "D_95": [
+    0.0,
+    0.4345
+   ],
+   "k_eff": 0.84,
+   "k_eff_95": [
+    0.524,
+    1.411
+   ]
+  },
+  {
+   "loop": "Ledger",
+   "k": 1,
+   "checked": 14,
+   "wrong": 4,
+   "undetected": 4,
+   "U": 0.25,
+   "U_95": [
+    0.1018,
+    0.495
+   ],
+   "U_ind": 0.25,
+   "R": 1.0,
+   "R_95": [
+    1.0,
+    1.0
+   ],
+   "D": 0.0,
+   "D_95": [
+    0.0,
+    0.4899
+   ],
+   "k_eff": 1.0,
+   "k_eff_95": [
+    0.586,
+    1.882
+   ]
+  },
+  {
+   "loop": "Events",
+   "k": 1,
+   "checked": 12,
+   "wrong": 3,
+   "undetected": 3,
+   "U": 0.1875,
+   "U_95": [
+    0.0659,
+    0.4301
+   ],
+   "U_ind": 0.1875,
+   "R": 1.0,
+   "R_95": [
+    1.0,
+    1.0
+   ],
+   "D": 0.0,
+   "D_95": [
+    0.0,
+    0.5615
+   ],
+   "k_eff": 1.21,
+   "k_eff_95": [
+    0.708,
+    2.123
+   ]
+  },
+  {
+   "loop": "Message+Ledger",
+   "k": 2,
+   "checked": 11,
+   "wrong": 5,
+   "undetected": 1,
+   "U": 0.0625,
+   "U_95": [
+    0.0111,
+    0.2833
+   ],
+   "U_ind": 0.0625,
+   "R": 1.0,
+   "R_95": [
+    0.0,
+    4.0
+   ],
+   "D": 0.8,
+   "D_95": [
+    0.3755,
+    0.9638
+   ],
+   "k_eff": 2.0,
+   "k_eff_95": [
+    1.208,
+    2.524
+   ]
+  },
+  {
+   "loop": "Message+Events",
+   "k": 2,
+   "checked": 10,
+   "wrong": 6,
+   "undetected": 1,
+   "U": 0.0625,
+   "U_95": [
+    0.0111,
+    0.2833
+   ],
+   "U_ind": 0.0625,
+   "R": 1.0,
+   "R_95": [
+    0.0,
+    3.0
+   ],
+   "D": 0.833,
+   "D_95": [
+    0.4365,
+    0.9699
+   ],
+   "k_eff": 2.0,
+   "k_eff_95": [
+    1.192,
+    2.524
+   ]
+  },
+  {
+   "loop": "Ledger+Events",
+   "k": 2,
+   "checked": 10,
+   "wrong": 6,
+   "undetected": 0,
+   "U": 0.0,
+   "U_95": [
+    0.0,
+    0.1936
+   ],
+   "U_ind": 0.0625,
+   "R": 0.0,
+   "R_95": [
+    0.0,
+    0.0
+   ],
+   "D": 1.0,
+   "D_95": [
+    0.6097,
+    1.0
+   ],
+   "k_eff": null,
+   "k_eff_95": null
+  },
+  {
+   "loop": "Message+Ledger+Events",
+   "k": 3,
+   "checked": 8,
+   "wrong": 5,
+   "undetected": 0,
+   "U": 0.0,
+   "U_95": [
+    0.0,
+    0.1936
+   ],
+   "U_ind": 0.0156,
+   "R": 0.0,
+   "R_95": [
+    0.0,
+    0.0
+   ],
+   "D": 1.0,
+   "D_95": [
+    0.5655,
+    1.0
+   ],
+   "k_eff": null,
+   "k_eff_95": null
+  }
+ ],
+ "e_bar": 0.25,
+ "slope": -1.365,
+ "slope_95": [
+  -1.551,
+  -0.187
+ ],
+ "slope_if_independent": -1.386,
+ "loops_dropped_from_slope_(U=0)": 2
+}
