@@ -1,0 +1,37 @@
+ensemble WithThePatient: 3 columns → DischargeReadiness · consensus quorum 2 · 5 case(s)
+world: closed (declared graph only)
+world: closed (declared graph only)
+world: closed (declared graph only)
+
+  H-1: Assess readiness for discharge today
+    Clinical       at MedicallyFit           → Ready
+    Social         at SupportArranged        → HomeWithSupport
+    Patient        at FeelsReady             → Ready
+    ✓ agreed: HomeWithSupport (first at 719 ms)
+
+  H-2: Assess readiness for discharge today
+    Clinical       at MedicallyFit           → Ready
+    Social         at NoSafeHome             → UnsafeHome
+    Patient        at FeelsReady             → Ready
+    ✓ agreed: Ready · dissent: Social → a person sees it before anyone acts
+
+  H-3: Assess readiness for discharge today
+    Clinical       at NeedsCare              → ClinicallyUnstable
+    Social         at Home                   → Assessed
+    Patient        at FeelsReady             → Ready
+    ⚠ surprise: Clinical ⟂ Patient (first at 734 ms) → needs a person (the perspectives disagree)
+
+  H-4: Assess readiness for discharge today
+    Clinical       at MedicallyFit           → Ready
+    Social         at SupportArranged        → HomeWithSupport
+    Patient        at NotReadyYet            → PatientNotReady
+    ✓ agreed: HomeWithSupport · dissent: Patient → a person sees it before anyone acts
+
+  H-5: Assess readiness for discharge today
+    Clinical       at MedicallyFit           → Ready
+    Social         at Independent            → HomeIndependent
+    Patient        at FeelsReady             → Ready
+    ✓ agreed: HomeIndependent (first at 734 ms)
+
+wall 739 ms
+gaps: 1 signal(s) for curation appended to runs/gaps.Social.jsonl (onto curate)

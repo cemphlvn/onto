@@ -1,0 +1,31 @@
+ensemble Outage: 3 columns → IncidentState · consensus all · 4 case(s)
+world: closed (declared graph only)
+world: closed (declared graph only)
+world: closed (declared graph only)
+
+  P-1: Assess the shop's condition from your signals, 14:05 UTC
+    Metrics        at ErrorsUp               → Degraded
+    Logs           at DeployErrors           → BadDeploy
+    Complaints     at CheckoutBroken         → Degraded
+    ✓ agreed: BadDeploy (first at 657 ms)
+
+  P-2: Assess the shop's condition from your signals, 09:40 UTC
+    Metrics        at Normal                 → Healthy
+    Logs           at Clean                  → Healthy
+    Complaints     at LoginBroken            → Degraded
+    ⚠ surprise: Metrics ⟂ Complaints, Logs ⟂ Complaints (first at 640 ms) → a curation signal (the model of the world may be wrong here)
+
+  P-3: Assess the shop's condition from your signals, 20:15 UTC
+    Metrics        at SaturationUp           → CapacityShortfall
+    Logs           at DatabaseErrors         → DatabaseFault
+    Complaints     at SlowPages              → Degraded
+    ⚠ surprise: Metrics ⟂ Logs (first at 640 ms) → a curation signal (the model of the world may be wrong here)
+
+  P-4: Assess the shop's condition from your signals, 23:30 UTC
+    Metrics        at Normal                 → Healthy
+    Logs           at Clean                  → Healthy
+    Complaints     at NoReports              → Healthy
+    ✓ agreed: Healthy (first at 688 ms)
+
+wall 688 ms
+gaps: 2 signal(s) for curation appended to runs/gaps.IncidentState.jsonl (onto curate)

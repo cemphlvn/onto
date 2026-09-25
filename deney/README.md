@@ -27,3 +27,4 @@ engine's or with each other's.
 | id | question | defined in | branch | status |
 |---|---|---|---|---|
 | E0 | what share of recorded switches could a CPU switch learner take, before building it? | `docs/12-calibrated-switches.md` §6 | `deney/e0-switch-ceiling` | done, 2026-09-25 |
+| E1 | how well calibrated is Jev per switch, where labels exist? | `docs/12-calibrated-switches.md` §6 | `deney/e0-switch-ceiling` (continues E0) | done, 2026-09-25 |
