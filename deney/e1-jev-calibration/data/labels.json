@@ -1,0 +1,131 @@
+{
+ "note": "Written before the E1 runs (2026-09-25). One expected arrow per labelled frame; `basis` says where the label comes from.",
+ "sets": {
+  "support-large": {
+   "basis": "large.jobs `expected`: the intent a person chose (written with the demo, 2026-09-24)",
+   "cases": {
+    "L-1": {
+     "SupportLarge:Ticket": "double_charge"
+    },
+    "L-2": {
+     "SupportLarge:Ticket": "refund"
+    },
+    "L-3": {
+     "SupportLarge:Ticket": "invoice_request"
+    },
+    "L-4": {
+     "SupportLarge:Ticket": "payment_failed"
+    },
+    "L-5": {
+     "SupportLarge:Ticket": "slow_performance"
+    },
+    "L-6": {
+     "SupportLarge:Ticket": "error_message"
+    },
+    "L-7": {
+     "SupportLarge:Ticket": "app_crash"
+    },
+    "L-8": {
+     "SupportLarge:Ticket": "integration_broken"
+    },
+    "L-9": {
+     "SupportLarge:Ticket": "login_problem"
+    },
+    "L-10": {
+     "SupportLarge:Ticket": "two_factor"
+    },
+    "L-11": {
+     "SupportLarge:Ticket": "delete_account"
+    },
+    "L-12": {
+     "SupportLarge:Ticket": "delivered_not_received"
+    },
+    "L-13": {
+     "SupportLarge:Ticket": "damaged_item"
+    },
+    "L-14": {
+     "SupportLarge:Ticket": "wrong_item"
+    },
+    "L-15": {
+     "SupportLarge:Ticket": "feature_request"
+    },
+    "L-16": {
+     "SupportLarge:Ticket": "phishing_report"
+    },
+    "L-17": {
+     "SupportLarge:Ticket": "suspicious_login"
+    },
+    "L-18": {
+     "SupportLarge:Ticket": "data_export_request"
+    },
+    "L-19": {
+     "SupportLarge:Ticket": "where_is_order"
+    },
+    "L-20": {
+     "SupportLarge:Ticket": "integration_request"
+    },
+    "L-21": {
+     "SupportLarge:Ticket": "accessibility"
+    },
+    "L-22": {
+     "SupportLarge:Ticket": "legal_notice"
+    }
+   }
+  },
+  "incident-perspectives": {
+   "basis": "comment in perspectives.jobs (written before the runs, 2026-09-24) and the case text",
+   "cases": {
+    "P-1": {
+     "Metrics:Signal": "errors_up",
+     "Logs:Entry": "deploy_errors",
+     "Complaints:Report": "checkout_broken"
+    },
+    "P-2": {
+     "Metrics:Signal": "metrics_normal",
+     "Logs:Entry": "logs_clean",
+     "Complaints:Report": "login_broken"
+    },
+    "P-3": {
+     "Metrics:Signal": "saturation_up",
+     "Logs:Entry": "database_errors",
+     "Complaints:Report": "slow_pages"
+    },
+    "P-4": {
+     "Metrics:Signal": "metrics_normal",
+     "Logs:Entry": "logs_clean",
+     "Complaints:Report": "no_reports"
+    }
+   }
+  },
+  "discharge-perspectives": {
+   "basis": "comment in perspectives.jobs (written before the runs, 2026-09-24) and the case text; H-3 social is debatable (\"home is fine\" in the comment; a knee replacement may need help)",
+   "cases": {
+    "H-1": {
+     "Clinical:Review": "fit",
+     "Social:Home": "support_arranged",
+     "Patient:Voice": "feels_ready"
+    },
+    "H-2": {
+     "Clinical:Review": "fit",
+     "Social:Home": "no_safe_home",
+     "Patient:Voice": "feels_ready"
+    },
+    "H-3": {
+     "Clinical:Review": "needs_care",
+     "Social:Home": "independent",
+     "Patient:Voice": "feels_ready"
+    },
+    "H-4": {
+     "Clinical:Review": "fit",
+     "Social:Home": "support_arranged",
+     "Patient:Voice": "not_ready_yet"
+    },
+    "H-5": {
+     "Clinical:Review": "fit",
+     "Social:Home": "independent",
+     "Patient:Voice": "feels_ready"
+    }
+   }
+  }
+ }
+}
