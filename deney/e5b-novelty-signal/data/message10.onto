@@ -1,0 +1,23 @@
+# E4's Message category (deney/e4-cpu-switch/data/perspectives.onto) with two new
+# situations for E5b's primary stream: subscription_cancel, address_change.
+
+category Message {
+    objects: Read, NoSignal, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover, SubscriptionCancel, AddressChange;
+    start: Read;
+    state { case: message; }
+    frame Read: choice "From the customer's message alone: which situation is this?";
+    double_charge: Read -> DoubleCharge "the customer was charged twice for the same thing";
+    refund_request: Read -> RefundRequest "the customer cancelled or returned something and wants the money back; there was one charge";
+    payment_failed: Read -> PaymentFailed "a payment was declined or failed";
+    not_delivered: Read -> NotDelivered "an order has not arrived: it is late or lost in transit";
+    damaged: Read -> Damaged "an order arrived broken or damaged";
+    wrong_item: Read -> WrongItem "an order arrived with a different item than the one ordered";
+    account_locked: Read -> AccountLocked "the customer's account is locked or disabled by the service";
+    account_takeover: Read -> AccountTakeover "someone else got into the customer's account";
+    subscription_cancel: Read -> SubscriptionCancel "the customer wants to cancel a subscription from now on (no refund asked for past charges)";
+    address_change: Read -> AddressChange "the customer wants to change the delivery address of an order that has not shipped yet";
+    no_signal: Read -> NoSignal "nothing here shows a problem of these kinds";
+    closed: Read, NoSignal, DoubleCharge, RefundRequest, PaymentFailed, NotDelivered, Damaged, WrongItem, AccountLocked, AccountTakeover, SubscriptionCancel, AddressChange;
+    admission: sealed;
+}
+
