@@ -32,3 +32,4 @@ engine's or with each other's.
 | E0b | E0 recomputed: only loops over different information are label sources | E2's finding | `deney/e0b-strict-resonance` (from E2's branch) | done, 2026-09-25 |
 | E3 | do loops over different information catch errors, and does undetected error fall exponentially with the number of perspectives? | E0b's lever | `deney/e3-independent-perspectives` (from E0b's branch) | done, 2026-09-25 |
 | E4 | can a CPU switch learner take switches from Jev, and which kinds? | `docs/12-calibrated-switches.md` §4, §6 | `deney/e4-cpu-switch` (from E3's branch) | done, 2026-09-25 |
+| E5 | does the self-building loop resolve more intents per model call, within the same accuracy? | `docs/12-calibrated-switches.md` §6 | `deney/e5-self-building-loop` (from E4's branch) | done, 2026-09-25 |

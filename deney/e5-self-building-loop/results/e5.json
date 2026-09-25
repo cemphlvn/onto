@@ -1,0 +1,176 @@
+{
+ "resolved_per_call": {
+  "mean": 1.816,
+  "min": 1.662,
+  "max": 1.895
+ },
+ "base_resolved_per_call": {
+  "mean": 1.0,
+  "min": 1.0,
+  "max": 1.0
+ },
+ "accuracy": {
+  "mean": 0.953,
+  "min": 0.913,
+  "max": 0.97
+ },
+ "base_accuracy": {
+  "mean": 0.998,
+  "min": 0.998,
+  "max": 0.998
+ },
+ "person": {
+  "mean": 0.5,
+  "min": 0.0,
+  "max": 1.0
+ },
+ "base_person": {
+  "mean": 1.0,
+  "min": 1.0,
+  "max": 1.0
+ },
+ "cpu_share": {
+  "mean": 0.447,
+  "min": 0.396,
+  "max": 0.47
+ },
+ "jev_calls": {
+  "mean": 297.9,
+  "min": 285.0,
+  "max": 325.0
+ },
+ "errors_by_source_total_over_orders": {
+  "jev on early situations": 8,
+  "cpu on early situations": 113,
+  "cpu on late situations": 132
+ },
+ "cpu_share_by_window": [
+  {
+   "cases_seen": 0,
+   "cpu_share": 0.0
+  },
+  {
+   "cases_seen": 30,
+   "cpu_share": 0.08
+  },
+  {
+   "cases_seen": 60,
+   "cpu_share": 0.4
+  },
+  {
+   "cases_seen": 90,
+   "cpu_share": 0.42
+  },
+  {
+   "cases_seen": 120,
+   "cpu_share": 0.617
+  },
+  {
+   "cases_seen": 150,
+   "cpu_share": 0.59
+  },
+  {
+   "cases_seen": 180,
+   "cpu_share": 0.653
+  },
+  {
+   "cases_seen": 210,
+   "cpu_share": 0.71
+  },
+  {
+   "cases_seen": 240,
+   "cpu_share": 0.74
+  },
+  {
+   "cases_seen": 270,
+   "cpu_share": 0.66
+  },
+  {
+   "cases_seen": 300,
+   "cpu_share": 0.003
+  },
+  {
+   "cases_seen": 330,
+   "cpu_share": 0.0
+  },
+  {
+   "cases_seen": 360,
+   "cpu_share": 0.12
+  },
+  {
+   "cases_seen": 390,
+   "cpu_share": 0.393
+  },
+  {
+   "cases_seen": 420,
+   "cpu_share": 0.57
+  },
+  {
+   "cases_seen": 450,
+   "cpu_share": 0.657
+  },
+  {
+   "cases_seen": 480,
+   "cpu_share": 0.69
+  },
+  {
+   "cases_seen": 510,
+   "cpu_share": 0.75
+  }
+ ],
+ "growth_fit_first_phase": {
+  "exponential": {
+   "s_inf": 1.0,
+   "tau_cases": 181.4,
+   "sse": 0.0387
+  },
+  "power": {
+   "a": 0.0122,
+   "b": 0.755,
+   "sse": 0.0532
+  }
+ },
+ "late_situations_cpu_share": [
+  {
+   "their_cases_seen": "0-9",
+   "cpu_share": 0.47,
+   "n": 100
+  },
+  {
+   "their_cases_seen": "10-19",
+   "cpu_share": 0.22,
+   "n": 100
+  },
+  {
+   "their_cases_seen": "20-29",
+   "cpu_share": 0.0,
+   "n": 100
+  },
+  {
+   "their_cases_seen": "30-39",
+   "cpu_share": 0.0,
+   "n": 100
+  },
+  {
+   "their_cases_seen": "40-49",
+   "cpu_share": 0.01,
+   "n": 100
+  },
+  {
+   "their_cases_seen": "50-59",
+   "cpu_share": 0.06,
+   "n": 100
+  },
+  {
+   "their_cases_seen": "60-69",
+   "cpu_share": 0.18,
+   "n": 100
+  },
+  {
+   "their_cases_seen": "70+",
+   "cpu_share": 0.478,
+   "n": 500
+  }
+ ],
+ "variant": "pre-registered"
+}
