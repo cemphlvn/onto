@@ -1,0 +1,256 @@
+{
+ "calls": [
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 30 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: plain, as a typical customer writes on a website form\n\nThe customer's situation: they want to cancel their subscription from now on, without asking for money back for past charges. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790310656-r9YM5Oy8WNl1XqAjSyMg",
+    "object": "chat.completion",
+    "created": 1790310656,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Please end my plan effective today. I\u2019m not looking for a refund on anything already paid.\",\"I\u2019d like to stop my membership and make sure it doesn\u2019t renew again. The previous payments are fine as they are.\",\"Please close my account\u2019s paid plan now. I\u2019m not requesting any money back for earlier charges.\",\"I no longer need this service, so please switch off my subscription starting today. No refund is needed for past payments.\",\"Can you end my plan right away? I\u2019m okay with the charges that have already gone through.\",\"Please stop my subscription from renewing and end it now. I don\u2019t need a refund for previous billing.\",\"I want to discontinue my paid access today. Please leave the earlier charges as they are.\",\"Please remove me from the subscription now. I\u2019m not asking you to return any of the amounts already charged.\",\"I\u2019ve decided to stop using the service. Please end my plan now; there\u2019s no need to refund past payments.\",\"Could you close out my subscription as of today? I\u2019m fine with the payments already made.\",\"Please turn off my paid plan immediately and prevent any future renewals. I\u2019m not requesting a refund for earlier charges.\",\"I\u2019d like to end my membership now. Please don\u2019t refund anything that has already been billed.\",\"Please stop my subscription today. I understand that payments from previous billing periods won\u2019t be returned, and that\u2019s fine.\",\"I don\u2019t want to continue with the service. Please end my plan now, and leave past charges untouched.\",\"Please deactivate my subscription effective immediately. I\u2019m only asking to stop future billing, not to have old charges refunded.\",\"I\u2019d like to discontinue my plan today. No money back is needed for charges that have already been processed.\",\"Please cancel the paid service on my account now so I won\u2019t be billed again. I\u2019m not seeking a refund for earlier payments.\",\"I want my subscription to end as soon as possible. I\u2019m happy to leave the previous charges as they are.\",\"Please end my recurring plan today. I don\u2019t expect a refund for any earlier billing.\",\"I\u2019m done with the service, so please stop my subscription now. The charges from before can stay as they are.\",\"Please make today the end of my membership and prevent another renewal. I\u2019m not asking for reimbursement for past payments.\",\"I would like to stop the paid plan immediately. No refund is necessary for amounts already charged to me.\",\"Please close my subscription now; I don\u2019t want it to continue into another billing period. I\u2019m fine with the charges already paid.\",\"I no longer want this plan. Please end it today, without returning any money for earlier charges.\",\"Please switch off my subscription and stop any future payments. I\u2019m not requesting money back for previous billing.\",\"I\u2019d like to leave the service starting now. Please end my paid access, and keep all prior charges as they are.\",\"Please terminate my recurring membership today. There\u2019s no need to refund anything from past months.\",\"I want to stop being subscribed effective immediately. I\u2019m not looking to reverse any charges that have already happened.\",\"Please end my account\u2019s plan now and make sure it won\u2019t renew. I\u2019m okay with the payments already made.\",\"I\u2019ve decided not to continue. Please stop my subscription today; I don\u2019t need a refund for anything billed before now.\"]}",
+       "refusal": null,
+       "reasoning": "**Crafting cancellation messages**\n\nI need to create 30 distinct plain forms for subscription cancellations effective immediately, making sure there are no refunds. I should avoid using certain exact phrases like \u201ccancel your subscription from now on, without asking for money back for past charges.\u201d Instead, I can express this by saying I want to end the membership or stop the renewal while ensuring it\u2019s clear there are no refund requests. These should be plain, varied messages in a valid JSON format.",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Crafting cancellation messages**\n\nI need to create 30 distinct plain forms for subscription cancellations effective immediately, making sure there are no refunds. I should avoid using certain exact phrases like \u201ccancel your subscription from now on, without asking for money back for past charges.\u201d Instead, I can express this by saying I want to end the membership or stop the renewal while ensuring it\u2019s clear there are no refund requests. These should be plain, varied messages in a valid JSON format.",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfkE6RHL1DgWljsRJ3R-_Cfbg2f5jLyCzTIMSKClY3nPCBAANqM7Fmis2xhDl2PvcOOrGD66Rbg_WvPul9zly5xu7QLhMwnnP-r2I03_SjKb215eBTFndTsjey-AhNxslIwqUhXIhaniBzF-e0J2rQBRc61sap2vZ2CsepxgBqy_OlPRKIvjWnwBgkePj23QXkQjps54o89inKR2Hi2hGnQeGoYr71ywO6K3_69dahuP58ascEvXgHHSqSMN1NpKfE1wZb1jTKyMjkcQkckFREDY19xifBc4SmElyR28wDwKyLoizPulVb_tBJaaHxSs5YUnqFnZOlvbIu3HRYSUVnQMG55K_o1bPwJNFxadTjQVeWQ5Xe378cctXzKSwfm1l1r_2niwYeP80faK0lEb7_U0UdcQjeQfe1vR-RFS35mxtnPq_msUzXVSV5SQuW9-1WIzcgQEzKPLPIPHUxtKkJM90vSJ8eCOMYj6_Yj5uCqv1xnmDBdQB_DOgdjMjxN55eBTqlyXNP00JAjs8_nzIE6CkVGd40RiVl8CUl84isaLU5cYvDcITFSz3TZ4IsRABDAA0o5TOlGHTqzT4f_ySNu4S3QPt7lSNEDtdfyZh59eu9DLtay0XwsMZLTvvEhVJGgQmAXAgNOlNBVrMM0QxwRt20aU5JfKYFZ97x1pPgFx6RX81_hCZsr3-4yzcgIfjyzn8LSeA5dX_KHfCbFH9rD-tBhHrCq76cuCk1pq308eiVnNrkJgKswqlf_vmLMQnL_G51KKmow4BWlsJNnjrS9gtpuCfNIyZdX592JMQZCTF8eWJ5niXgteFqFAx_QrLIqhOi-TmawXWUoxCYYfB2YlvRj2QrEIoCEqyiTXQfn4x990Gb63p-sxggOxYRIJ1Sfjpk_naH_3cZgfKDt45DL1vp-naEFBEtqQRAPuEdStKKDkDhAwt8zVOm8eKoUNJaXD6HCOdnOj_AMYxvBHt_7bBB0WFf7hsQaj2pWo0v8UjRh0kd33neHshuYG5rhCWJVW87fULSFjwmt9QLVSzq5UC-U59D3Da9cvgiywOSKiJqjYLFRwcMld9TbU3LAg66JD2rYF8GWtDyAq_a5W-bOTKA26Dl8JLFcvUlzLEWAjlQZmciuo5jJCA4ZN11wsNHc73uXVSLiCfcykhd81qUOBTotcxZ-Jc803_JBaO-Q-CGdUE0wdwJ6R55rxTPGNnNm6a-F5QdgiDZDulEV5hXZhYChSgVedKAMlvhfgwpzkSCy2Jiba_G8W_fIdHO_zGIpku8vj5zqMFyQzZWEagVlKonHfE-0T8haQqbvMzakVHs9SXvddRX6I034ALC2jplTBZ8kB2XXz93MxvuJpTJXUWBDi6Y1LDL01DJhdHCxfJAhGROHuep_QZZUcJTmxMsYba_DwQPi4yGnbq4HUhJjI4OKL_ofqPGvTZ-LJ5JoxQml-CNq-hlB5x_DPkvPT6Sinbt2ln-vjGfeIV1HqeeRyN6Yi1PhmIhakSFkmA43K2TWV3OAQ3D_wZragEm5Ff2FknrexH3Tb2zPk2cqDPfF7ntwLYYbnlfWeJ5WYGC6HcesdfMlebdJvuB5fags2TRUjd2djNIJE5C0QKi4fQJKFbnFPbesTvdhIYnUrKroxEdBsZ11mzQKlLoqbHgzJHlG_JpEciV0A1cslURgxyIwMv2EkkYOs7ePuiktBs6X310_UIW1O21cxSIZdM894Wvrj6CgaHiAB0NvcV0HGSM9JRdhq2quj__EMaAM-XrogBUyR4rK7G3a2ZX9rByf26N0eJOEV2em6hJ_8Xj3QuXKRMpozjhTYTkuzfbrR-kAblxjf3vj-62dyxzl0SebHYq_mwLLrwwq5fFAIz8nJ6nHeWeo9ntKMvjNNQhZNzqY-jVTpTXz2AX9D-_EmfKahldxnuSuiANv1-l4UwkP3f5f9nC2ulmcTFiPLuvdfzLFJvnS0VIeXITTctSWrknxyubN0j89_lfeBPjkzZs8lt8x_pxrE8Qw-AhGxwbPs3NVWDDkgyy9Q7kcn6Np8LsucwGzkAMfxUI6LClQqZhCq6WJFpMbmeGsSMwMyllU7fsNp2LPFM9SqyWi2K6UGR9jhAwyDM7H63WX6h-dnEGn8H-qFlFffLyea2sBbbJkyAKfxdEXRhDvn4ub3qBl07vRujVODfn_-iaiQH_qGanH-QWUff9UN2YrsaUoJcHFUhjMdNTTWevwgK-4HRkOE4h9l--amFQFDnicdwpko2SEwRRSplSkM61DL0wtupLWLHc-0cdgDXmuv8IVAjF0L_aVAK-Nq6F6quUhQxR-Zy9fLyB53uLrZmuVfA75YGDroOi7yEkhOeDeCf_ujC1XL_twdkUQYyvJNfAhp1D52hUsH4SYNzRxKWd1fjwIybUkudEM9zQylWkyz2XirZwSIFTwprNqaH-NErudRFiFJpuufwL0Knuf8fRJrby96M6fQkL7iggBj--7jAr0YJe-8KMUA8ZcQ9lC6nrnWrAgEr5aeaSujSQ==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_0393a6a49227f105016ab5f90147f087d1a1b918c58c20f586",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 114,
+     "completion_tokens": 854,
+     "total_tokens": 968,
+     "cost": 0.0004384,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0004384,
+      "upstream_inference_prompt_cost": 1.14e-05,
+      "upstream_inference_completions_cost": 0.000427
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 175,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  },
+  {
+   "prompt": "You write realistic customer-support messages for testing a router.\n\nWrite 30 different messages, 1-3 sentences each (longer if the style asks for it), in a customer's own voice, varied in tone and detail. Never use the words of the description literally.\nStyle: different from training: hurried mobile messages, non-native phrasing, or long detailed complaints, mixed\n\nThe customer's situation: they want to cancel their subscription from now on, without asking for money back for past charges. They describe it plainly.\n\nAnswer with JSON only: {\"messages\": [\"...\", ...]}",
+   "response": {
+    "id": "gen-1790310667-v52IeujKA2tQjUQ6l1TP",
+    "object": "chat.completion",
+    "created": 1790310667,
+    "model": "openai/gpt-6-luna",
+    "provider": "OpenAI",
+    "system_fingerprint": null,
+    "service_tier": "default",
+    "choices": [
+     {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "completed",
+      "message": {
+       "role": "assistant",
+       "content": "{\"messages\":[\"Hi, please stop my plan from renewing. I\u2019m fine with the charges already made; I just don\u2019t want any more.\",\"Could you switch off the paid membership today? I\u2019m not looking to get previous payments returned.\",\"I won\u2019t be using this anymore, so please end my account\u2019s paid plan and make sure no new charges come through.\",\"Please turn off automatic renewal for me. The earlier payments are okay as they are.\",\"Need to close my plan, thanks. No need to adjust anything I\u2019ve already paid\u2014just stop future billing.\",\"I\u2019d like to end my membership now. I\u2019m only asking that you prevent any upcoming payments, not reverse old ones.\",\"Please remove me from the recurring plan. I accept what\u2019s been charged so far and don\u2019t want another billing cycle.\",\"Can you stop my paid access from continuing after this period? I\u2019m not asking for money back for previous months.\",\"Quick request: please disable renewal on my account. Past charges are settled; I just want the next one to be avoided.\",\"I\u2019ve decided I don\u2019t need the service anymore. Please end the ongoing plan, and leave the previous transactions as they are.\",\"Kindly stop charging my card for this service going forward. I\u2019m not disputing the amounts already paid.\",\"Please cancel the upcoming renewal on my account. I\u2019m okay with the payments that have already gone through.\",\"I want to discontinue the paid service. There\u2019s no issue with earlier charges; please just make sure it doesn\u2019t bill me again.\",\"Can you end my membership effective now? I don\u2019t need any reimbursement for what I\u2019ve paid already.\",\"Please set my account so the plan won\u2019t continue next month. I\u2019m not requesting a credit for earlier billing.\",\"I\u2019m done with the service, so please shut off the recurring plan. Keep the previous payments as they are.\",\"Stop my membership please, I don\u2019t want another charge. What I paid before is fine.\",\"Hello, I would like to discontinue my account plan. No refund is needed for prior payments; please prevent future renewals.\",\"Please make this the last billing cycle for me. I\u2019m satisfied with the charges so far and just want to stop going forward.\",\"I no longer want to keep the paid package active. Please end it and don\u2019t send back any of the earlier fees.\",\"Could you cancel the renewal on my profile? I\u2019m not asking you to revisit the past charges, only to stop new ones.\",\"Please terminate the recurring service as soon as possible. The payments already taken are not a concern for me.\",\"I want to leave the plan, please. I don\u2019t need a refund, I only need billing to stop from here.\",\"Please make sure my account does not renew again. I\u2019m fine leaving all completed payments untouched.\",\"I\u2019m switching to something else, so please end my current paid plan. No need to return any money from earlier billing.\",\"Can you stop my subscription at the end of this month? I understand the previous charges and am not requesting them back.\",\"I\u2019ve been meaning to do this\u2014please turn off my membership renewal now. I\u2019m not unhappy about past payments, I just don\u2019t want future ones.\",\"Please close out the recurring plan linked to my account. I\u2019m okay with everything already charged; don\u2019t bill me again.\",\"Hi support, I\u2019d like to stop using the paid service effective immediately. No refund for earlier charges is needed; please confirm there won\u2019t be another payment.\",\"Please remove the ongoing plan from my account. I accept the fees already paid and only want the charges going forward to end.\"]}",
+       "refusal": null,
+       "reasoning": "**Crafting message variations**\n\nI need to create 30 diverse messages, avoiding literal descriptions. The instruction says not to use phrases like \"cancel your subscription from now on without asking for money back.\" Instead, I can use the word \"subscription\" naturally while ensuring clarity regarding stopping renewal and not asking for refunds. I should phrase things differently, maybe using \"turn off auto-renew\" or \"close membership at the end of the current term.\" The goal is to clearly express intent to stop future billing without disputing prior charges. JSON formatting is a must!",
+       "reasoning_details": [
+        {
+         "type": "reasoning.summary",
+         "summary": "**Crafting message variations**\n\nI need to create 30 diverse messages, avoiding literal descriptions. The instruction says not to use phrases like \"cancel your subscription from now on without asking for money back.\" Instead, I can use the word \"subscription\" naturally while ensuring clarity regarding stopping renewal and not asking for refunds. I should phrase things differently, maybe using \"turn off auto-renew\" or \"close membership at the end of the current term.\" The goal is to clearly express intent to stop future billing without disputing prior charges. JSON formatting is a must!",
+         "format": "openai-responses-v1",
+         "index": 0
+        },
+        {
+         "type": "reasoning.encrypted",
+         "data": "gAAAAABqtfkOF6egigKD59EwYssiKONv0G12a-nJbbCj7Ubx3oZUjV5sIEOyuzrXVyQNbli1F0W3pt0vWIqhb0FSfEOdjkGM7Nv08u-vtbu3A8yBvkFTfrK2sJYARiXaFG9QZahLQN2XqB-4oEraZfD4foUzLNn6oPLbk2cN6GuQH8-1mjjB7KHlVWh18d_C1TN47kt2usve3ozdmQEhPOAkKFZL6MznOIFTd04-rEcGGwZKAi1RLj8U_Fg0uffO78vYi6jnpX2PjttYZH1H2yz6wIvNk3NOmIcRt6V2kakMKNrfc4VnReZO9I88jwzisnkHWFMVRmSlA1KA-nTfGRP6rXJInBdZ5IS9iDRpvNVFaXjH0FlTXPPHxy3Mv7xBabHyc2np3fEu2J5oTeTZaTIiRpC3HOmq8cr5H2OmAoGjyCy2lu3nVslnF-gjY6M91JdPKdP_MO3GWaGXaj8GQ2KeNkrYGpthzOsPLJtmJ_Oiqap7bXEMhaEDIZhsusbV7u02Cv2WQrNasWsvwOPAUPMfjc8R5RPLJXqgRA0BMWfl7kmvpBDt5aVB2a2RwsJz_6hvv_D21UDR9MZ5SgqLyngf_g9L3f71jPsacSbV5vTaYpiJQTBhTsXOYDgussK2RUFevgYlX0trYi11_xyQ6Yf0BThVvNPlazv7QnvaAZOHaXNxEZC_7Tir5M1SlpELpVeCvAg2aL4I6g5XtMIZ_-NUA-HvVKON39b5govHbohb_5AxJrYAdpVLEUIPVnz-NdiTNZxDQEN4L5G5CnJjku3It0vYtxVMDN0gtMaR5kLyHw8J8kO-RMpRr6jRrZpUnncrAJ9WzWr6XiztMq-L2J6UFSWWgcET_ce_CLewfCeagTNq4V4bCO3qxTXgt3_d8p-IHmKB7HoSp735_3loZcsiR4bzMslir162stQ-e5U4gPTFKzhl6NQD3S_NakqBcjrgHvjtZuYCuxc0Wu2QunIwDdPA3BSf9V9Awhz_8sH4XRmYBOhrI72BaEbuR_hj_eQRVYyV1ZlFIb426oGz1wbAkZTCAf_8ES5g81b_RysTIWw0iZER3g54lxaH5eJIW6lHNMlwaNj407VkN1SmCT294EGFAALWhqS0SVaDWS_EWPOIi51ldYH1ZK2D9c1w1fVS86fCSULaJY_sqyHoIwycxChQYewhFIZA5q9V4ocXK-WfjvQ-neIc_O3SAFYtZ6qEyMi8sAFfAibcGRuGpyYIS-e2jRcVzJ0Muyl4bQndr-nF_rebGJsO7snjdyNViyaTWJIWg2PP7_45WqaMDt3VWnwzsSz7-hxJ6yOyQdpXv5LT4YrLRn4hU-M3ajFzemUh2ZgQnA1hq-YfpXUKQw5IfWherIYfKWjLoI8OXyW24ZmXhz4z44KwuGfaklP4x02drKLJa4UjPeq6WXVx6nB5AclJGDQ10tOwVSPAFNsrMBd4s1zFuOuiHJK5htFrueUmBn440QSJ7D8Ke4_PV_P4vHtombdvdB8gtiRM0eKjaL4lCg-QHAQMsotwOTdudSZsiuzkJMR5Uls8bQsH_X-JFSt2kYw_YrICwFTevwWQ15b-Q_0gnkF1OXwnTMyxAE0aTpaI9vn7qJHhfmCiJLtgI3sAaUHGNfPvfECi15TU1LoIjWORT9790foZhZ9v-1EutQlfwn9efth1Gn1vl9nlGlyVjbY5wfnyMJ-7pWmSr9iRPQi-8bE0H2ybqRqQ4FW0f_hMORVfdua5zJl_MGCQo9jMkPYubD-iFos-o6KzuBurzt7vfqVHgmjxREM7W_3yKMtrYiihuOGSSBmwTGOaOcuTaINM1iULON2uY1XV_1f2_-1jvIIfuV3BB3y-RTasU3dUUGqcPOx36VYxbv0x2Usp4Zh_FgTwmfpHs-Eh4KaSkjHczOOCN_QfV_OUVjzUsIbEyGzhIdLR-L4x162YWCqUIxJfFu9s6DnUJPDDo9zEsxrkreDHPSsersu7N-dip4FtZfrUWBuC8kdQ0bg1rpXdQMoc59S6oANhA5AxicphhqamQ6f6N6cZA5epd8QJbn1CJDue3igwzVhwEveo8SX1jbsrg1X5suCG2dfeEMqO2sANyLt-z5LFv8UrLv4qjqXlr8RtJqRpeVdPW0TctUV3s8duCqjw5JA5yyToEnXe8V2VuKtZZ_VcO-ZtHJ_3geRdUF5o_uBFiLNtiiHCtOK9tEbO_JfrzPv8zjW-O6k_5IhTuCYzH46tU79AawDyrUpTvmMyHOBcHyORW6giQ3tM5jRB7U-saHWOlazGKJCfIBdQ_3XWfKC-f-7mqG1UXW_AaUmuhMI4lU8dVo2x1dUWRX5cKIKyj_inlLkVK63x9gwFNEnWx5yrI4DGkc0-ypkYIbPDlvb4KblGCgbR1ucNYjbUC-xFSheC4B-1xcYNElbCdu4z-jrXqsuPf0aHd9MI7Yd5AtoaXDjX5UAhQBgZOKWdKwd6c3MONjgmdmAJuDMMiDdwloQlQN35ccCRVhc6uueLIXbI_BLK42NrVCbPS0lwenrLDUimaxkZ0Pse7Bb8rpYaU4Ylg1Q0hhlHFp7blPiG.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC02LWx1bmEtMjAyNjA5MjJ8b3BlbmFpIn0",
+         "format": "openai-responses-v1",
+         "id": "rs_021ca49e5d0c4a4b016ab5f90c184487d1bb6e13224eeb2c95",
+         "index": 1
+        }
+       ]
+      }
+     }
+    ],
+    "usage": {
+     "prompt_tokens": 122,
+     "completion_tokens": 913,
+     "total_tokens": 1035,
+     "cost": 0.0004687,
+     "is_byok": false,
+     "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+     },
+     "cost_details": {
+      "upstream_inference_cost": 0.0004687,
+      "upstream_inference_prompt_cost": 1.22e-05,
+      "upstream_inference_completions_cost": 0.0004565
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 180,
+      "image_tokens": 0,
+      "audio_tokens": 0
+     }
+    }
+   }
+  }
+ ],
+ "messages": [
+  "Please end my plan effective today. I\u2019m not looking for a refund on anything already paid.",
+  "I\u2019d like to stop my membership and make sure it doesn\u2019t renew again. The previous payments are fine as they are.",
+  "Please close my account\u2019s paid plan now. I\u2019m not requesting any money back for earlier charges.",
+  "I no longer need this service, so please switch off my subscription starting today. No refund is needed for past payments.",
+  "Can you end my plan right away? I\u2019m okay with the charges that have already gone through.",
+  "Please stop my subscription from renewing and end it now. I don\u2019t need a refund for previous billing.",
+  "I want to discontinue my paid access today. Please leave the earlier charges as they are.",
+  "Please remove me from the subscription now. I\u2019m not asking you to return any of the amounts already charged.",
+  "I\u2019ve decided to stop using the service. Please end my plan now; there\u2019s no need to refund past payments.",
+  "Could you close out my subscription as of today? I\u2019m fine with the payments already made.",
+  "Please turn off my paid plan immediately and prevent any future renewals. I\u2019m not requesting a refund for earlier charges.",
+  "I\u2019d like to end my membership now. Please don\u2019t refund anything that has already been billed.",
+  "Please stop my subscription today. I understand that payments from previous billing periods won\u2019t be returned, and that\u2019s fine.",
+  "I don\u2019t want to continue with the service. Please end my plan now, and leave past charges untouched.",
+  "Please deactivate my subscription effective immediately. I\u2019m only asking to stop future billing, not to have old charges refunded.",
+  "I\u2019d like to discontinue my plan today. No money back is needed for charges that have already been processed.",
+  "Please cancel the paid service on my account now so I won\u2019t be billed again. I\u2019m not seeking a refund for earlier payments.",
+  "I want my subscription to end as soon as possible. I\u2019m happy to leave the previous charges as they are.",
+  "Please end my recurring plan today. I don\u2019t expect a refund for any earlier billing.",
+  "I\u2019m done with the service, so please stop my subscription now. The charges from before can stay as they are.",
+  "Please make today the end of my membership and prevent another renewal. I\u2019m not asking for reimbursement for past payments.",
+  "I would like to stop the paid plan immediately. No refund is necessary for amounts already charged to me.",
+  "Please close my subscription now; I don\u2019t want it to continue into another billing period. I\u2019m fine with the charges already paid.",
+  "I no longer want this plan. Please end it today, without returning any money for earlier charges.",
+  "Please switch off my subscription and stop any future payments. I\u2019m not requesting money back for previous billing.",
+  "I\u2019d like to leave the service starting now. Please end my paid access, and keep all prior charges as they are.",
+  "Please terminate my recurring membership today. There\u2019s no need to refund anything from past months.",
+  "I want to stop being subscribed effective immediately. I\u2019m not looking to reverse any charges that have already happened.",
+  "Please end my account\u2019s plan now and make sure it won\u2019t renew. I\u2019m okay with the payments already made.",
+  "I\u2019ve decided not to continue. Please stop my subscription today; I don\u2019t need a refund for anything billed before now.",
+  "Hi, please stop my plan from renewing. I\u2019m fine with the charges already made; I just don\u2019t want any more.",
+  "Could you switch off the paid membership today? I\u2019m not looking to get previous payments returned.",
+  "I won\u2019t be using this anymore, so please end my account\u2019s paid plan and make sure no new charges come through.",
+  "Please turn off automatic renewal for me. The earlier payments are okay as they are.",
+  "Need to close my plan, thanks. No need to adjust anything I\u2019ve already paid\u2014just stop future billing.",
+  "I\u2019d like to end my membership now. I\u2019m only asking that you prevent any upcoming payments, not reverse old ones.",
+  "Please remove me from the recurring plan. I accept what\u2019s been charged so far and don\u2019t want another billing cycle.",
+  "Can you stop my paid access from continuing after this period? I\u2019m not asking for money back for previous months.",
+  "Quick request: please disable renewal on my account. Past charges are settled; I just want the next one to be avoided.",
+  "I\u2019ve decided I don\u2019t need the service anymore. Please end the ongoing plan, and leave the previous transactions as they are.",
+  "Kindly stop charging my card for this service going forward. I\u2019m not disputing the amounts already paid.",
+  "Please cancel the upcoming renewal on my account. I\u2019m okay with the payments that have already gone through.",
+  "I want to discontinue the paid service. There\u2019s no issue with earlier charges; please just make sure it doesn\u2019t bill me again.",
+  "Can you end my membership effective now? I don\u2019t need any reimbursement for what I\u2019ve paid already.",
+  "Please set my account so the plan won\u2019t continue next month. I\u2019m not requesting a credit for earlier billing.",
+  "I\u2019m done with the service, so please shut off the recurring plan. Keep the previous payments as they are.",
+  "Stop my membership please, I don\u2019t want another charge. What I paid before is fine.",
+  "Hello, I would like to discontinue my account plan. No refund is needed for prior payments; please prevent future renewals.",
+  "Please make this the last billing cycle for me. I\u2019m satisfied with the charges so far and just want to stop going forward.",
+  "I no longer want to keep the paid package active. Please end it and don\u2019t send back any of the earlier fees.",
+  "Could you cancel the renewal on my profile? I\u2019m not asking you to revisit the past charges, only to stop new ones.",
+  "Please terminate the recurring service as soon as possible. The payments already taken are not a concern for me.",
+  "I want to leave the plan, please. I don\u2019t need a refund, I only need billing to stop from here.",
+  "Please make sure my account does not renew again. I\u2019m fine leaving all completed payments untouched.",
+  "I\u2019m switching to something else, so please end my current paid plan. No need to return any money from earlier billing.",
+  "Can you stop my subscription at the end of this month? I understand the previous charges and am not requesting them back.",
+  "I\u2019ve been meaning to do this\u2014please turn off my membership renewal now. I\u2019m not unhappy about past payments, I just don\u2019t want future ones.",
+  "Please close out the recurring plan linked to my account. I\u2019m okay with everything already charged; don\u2019t bill me again.",
+  "Hi support, I\u2019d like to stop using the paid service effective immediately. No refund for earlier charges is needed; please confirm there won\u2019t be another payment.",
+  "Please remove the ongoing plan from my account. I accept the fees already paid and only want the charges going forward to end."
+ ],
+ "styles": [
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "train",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test",
+  "test"
+ ]
+}
