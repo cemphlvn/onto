@@ -1,0 +1,166 @@
+{
+ "model": "jev:jev-latest",
+ "tickets": 22,
+ "top1": 22,
+ "engine_correct": 22,
+ "answered": 22,
+ "precision": 1.0,
+ "judge_ms_mean": 445.3,
+ "wall_s": 0.92,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "double_charge",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "double_charge"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "refund",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "refund"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "invoice_request",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "invoice_request"
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "payment_failed",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "payment_failed"
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "slow_performance",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "slow_performance"
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "error_message",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "error_message"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "app_crash",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "app_crash"
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "integration_broken",
+   "p": 0.62,
+   "p_label": 0.62,
+   "selected": "integration_broken"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "login_problem",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "login_problem"
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "two_factor",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "two_factor"
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "delete_account",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "delete_account"
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "delivered_not_received",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "delivered_not_received"
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "damaged_item",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "damaged_item"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "wrong_item",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "wrong_item"
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "feature_request",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "feature_request"
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "phishing_report",
+   "p": 0.87,
+   "p_label": 0.87,
+   "selected": "phishing_report"
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "suspicious_login",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "suspicious_login"
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "data_export_request",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "data_export_request"
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "where_is_order",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "where_is_order"
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "integration_request",
+   "p": 0.81,
+   "p_label": 0.81,
+   "selected": "integration_request"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "accessibility",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "accessibility"
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "legal_notice",
+   "p": 0.99,
+   "p_label": 0.99,
+   "selected": "legal_notice"
+  }
+ }
+}

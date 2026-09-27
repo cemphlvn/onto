@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-izgara-d128-v0.25-t0",
+ "tickets": 22,
+ "top1": 0,
+ "engine_correct": 0,
+ "answered": 13,
+ "rank_mean": 17.9,
+ "mrr": 0.094,
+ "precision": 0.0,
+ "judge_ms_mean": 2901.3,
+ "wall_s": 5.45,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "suspicious_login",
+   "p": 0.973,
+   "p_label": 0.0,
+   "rank": 13,
+   "selected": "suspicious_login"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "slow_performance",
+   "p": 0.725,
+   "p_label": 0.0,
+   "rank": 30,
+   "selected": "slow_performance"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "two_factor",
+   "p": 0.906,
+   "p_label": 0.0,
+   "rank": 29,
+   "selected": "two_factor"
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "two_factor",
+   "p": 0.691,
+   "p_label": 0.0,
+   "rank": 11,
+   "selected": "two_factor"
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "suspicious_login",
+   "p": 0.717,
+   "p_label": 0.0,
+   "rank": 10,
+   "selected": "suspicious_login"
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "suspicious_login",
+   "p": 0.644,
+   "p_label": 0.0,
+   "rank": 27,
+   "selected": "suspicious_login"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "suspicious_login",
+   "p": 0.492,
+   "p_label": 0.022,
+   "rank": 4,
+   "selected": null
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "suspicious_login",
+   "p": 0.491,
+   "p_label": 0.0,
+   "rank": 21,
+   "selected": null
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "legal_notice",
+   "p": 0.522,
+   "p_label": 0.0,
+   "rank": 40,
+   "selected": null
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "legal_notice",
+   "p": 0.392,
+   "p_label": 0.069,
+   "rank": 5,
+   "selected": null
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "two_factor",
+   "p": 0.889,
+   "p_label": 0.0,
+   "rank": 34,
+   "selected": "two_factor"
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "suspicious_login",
+   "p": 0.754,
+   "p_label": 0.0,
+   "rank": 18,
+   "selected": "suspicious_login"
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "suspicious_login",
+   "p": 0.944,
+   "p_label": 0.0,
+   "rank": 35,
+   "selected": "suspicious_login"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "delivered_not_received",
+   "p": 0.455,
+   "p_label": 0.001,
+   "rank": 16,
+   "selected": null
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "how_to_use",
+   "p": 0.403,
+   "p_label": 0.0,
+   "rank": 22,
+   "selected": null
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "two_factor",
+   "p": 0.985,
+   "p_label": 0.0,
+   "rank": 26,
+   "selected": "two_factor"
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "legal_notice",
+   "p": 0.537,
+   "p_label": 0.048,
+   "rank": 5,
+   "selected": null
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "slow_performance",
+   "p": 0.452,
+   "p_label": 0.009,
+   "rank": 7,
+   "selected": null
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "suspicious_login",
+   "p": 0.857,
+   "p_label": 0.0,
+   "rank": 11,
+   "selected": "suspicious_login"
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "suspicious_login",
+   "p": 0.608,
+   "p_label": 0.0,
+   "rank": 14,
+   "selected": "suspicious_login"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "legal_notice",
+   "p": 0.355,
+   "p_label": 0.0,
+   "rank": 12,
+   "selected": null
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "suspicious_login",
+   "p": 0.692,
+   "p_label": 0.057,
+   "rank": 3,
+   "selected": "suspicious_login"
+  }
+ }
+}

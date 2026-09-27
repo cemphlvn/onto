@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-suyu-d128-a1500",
+ "tickets": 22,
+ "top1": 3,
+ "engine_correct": 2,
+ "answered": 12,
+ "rank_mean": 15.5,
+ "mrr": 0.235,
+ "precision": 0.17,
+ "judge_ms_mean": 3309.7,
+ "wall_s": 5.89,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "double_charge",
+   "p": 0.602,
+   "p_label": 0.602,
+   "rank": 1,
+   "selected": "double_charge"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "update_payment_method",
+   "p": 0.744,
+   "p_label": 0.0,
+   "rank": 30,
+   "selected": "update_payment_method"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "update_payment_method",
+   "p": 0.902,
+   "p_label": 0.0,
+   "rank": 11,
+   "selected": "update_payment_method"
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "accessibility",
+   "p": 0.593,
+   "p_label": 0.0,
+   "rank": 20,
+   "selected": null
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "update_payment_method",
+   "p": 0.412,
+   "p_label": 0.0,
+   "rank": 30,
+   "selected": null
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "update_payment_method",
+   "p": 0.361,
+   "p_label": 0.003,
+   "rank": 6,
+   "selected": null
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "update_payment_method",
+   "p": 0.638,
+   "p_label": 0.069,
+   "rank": 3,
+   "selected": "update_payment_method"
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "update_payment_method",
+   "p": 0.731,
+   "p_label": 0.0,
+   "rank": 16,
+   "selected": "update_payment_method"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "update_payment_method",
+   "p": 0.688,
+   "p_label": 0.0,
+   "rank": 31,
+   "selected": "update_payment_method"
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "two_factor",
+   "p": 0.926,
+   "p_label": 0.926,
+   "rank": 1,
+   "selected": "two_factor"
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "how_to_use",
+   "p": 0.442,
+   "p_label": 0.0,
+   "rank": 31,
+   "selected": null
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "how_to_use",
+   "p": 0.335,
+   "p_label": 0.0,
+   "rank": 26,
+   "selected": null
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "wrong_item",
+   "p": 0.454,
+   "p_label": 0.0,
+   "rank": 20,
+   "selected": null
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "wrong_item",
+   "p": 0.505,
+   "p_label": 0.505,
+   "rank": 1,
+   "selected": null
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "pricing_question",
+   "p": 0.497,
+   "p_label": 0.008,
+   "rank": 4,
+   "selected": null
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "update_payment_method",
+   "p": 0.736,
+   "p_label": 0.0,
+   "rank": 38,
+   "selected": "update_payment_method"
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "pricing_question",
+   "p": 0.793,
+   "p_label": 0.002,
+   "rank": 9,
+   "selected": "pricing_question"
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "pricing_question",
+   "p": 0.616,
+   "p_label": 0.182,
+   "rank": 2,
+   "selected": "pricing_question"
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "wrong_item",
+   "p": 0.546,
+   "p_label": 0.0,
+   "rank": 24,
+   "selected": null
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "how_to_use",
+   "p": 0.68,
+   "p_label": 0.0,
+   "rank": 18,
+   "selected": "how_to_use"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "update_payment_method",
+   "p": 0.921,
+   "p_label": 0.004,
+   "rank": 5,
+   "selected": "update_payment_method"
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "update_payment_method",
+   "p": 0.548,
+   "p_label": 0.0,
+   "rank": 15,
+   "selected": null
+  }
+ }
+}

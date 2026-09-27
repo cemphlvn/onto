@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-izgara-d64-v0.5-t0",
+ "tickets": 22,
+ "top1": 1,
+ "engine_correct": 0,
+ "answered": 9,
+ "rank_mean": 17.7,
+ "mrr": 0.132,
+ "precision": 0.0,
+ "judge_ms_mean": 2714.0,
+ "wall_s": 5.19,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "payment_failed",
+   "p": 0.81,
+   "p_label": 0.0,
+   "rank": 11,
+   "selected": "payment_failed"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "pricing_question",
+   "p": 0.662,
+   "p_label": 0.185,
+   "rank": 2,
+   "selected": "pricing_question"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "change_address",
+   "p": 0.498,
+   "p_label": 0.0,
+   "rank": 26,
+   "selected": null
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "pricing_question",
+   "p": 0.972,
+   "p_label": 0.0,
+   "rank": 11,
+   "selected": "pricing_question"
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "where_is_order",
+   "p": 0.372,
+   "p_label": 0.0,
+   "rank": 39,
+   "selected": null
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "two_factor",
+   "p": 0.654,
+   "p_label": 0.0,
+   "rank": 10,
+   "selected": "two_factor"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "pricing_question",
+   "p": 0.774,
+   "p_label": 0.001,
+   "rank": 11,
+   "selected": "pricing_question"
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "change_address",
+   "p": 0.592,
+   "p_label": 0.022,
+   "rank": 7,
+   "selected": null
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "how_to_use",
+   "p": 0.32,
+   "p_label": 0.0,
+   "rank": 20,
+   "selected": null
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "two_factor",
+   "p": 0.549,
+   "p_label": 0.549,
+   "rank": 1,
+   "selected": null
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "where_is_order",
+   "p": 0.322,
+   "p_label": 0.0,
+   "rank": 28,
+   "selected": null
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "pricing_question",
+   "p": 0.319,
+   "p_label": 0.0,
+   "rank": 22,
+   "selected": null
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "payment_failed",
+   "p": 0.48,
+   "p_label": 0.0,
+   "rank": 25,
+   "selected": null
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "payment_failed",
+   "p": 0.638,
+   "p_label": 0.0,
+   "rank": 13,
+   "selected": "payment_failed"
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "refund",
+   "p": 0.37,
+   "p_label": 0.0,
+   "rank": 16,
+   "selected": null
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "where_is_order",
+   "p": 0.352,
+   "p_label": 0.0,
+   "rank": 36,
+   "selected": null
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "pricing_question",
+   "p": 0.683,
+   "p_label": 0.0,
+   "rank": 38,
+   "selected": "pricing_question"
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "change_address",
+   "p": 0.553,
+   "p_label": 0.002,
+   "rank": 13,
+   "selected": null
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "payment_failed",
+   "p": 0.763,
+   "p_label": 0.006,
+   "rank": 5,
+   "selected": "payment_failed"
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "payment_failed",
+   "p": 0.658,
+   "p_label": 0.001,
+   "rank": 10,
+   "selected": "payment_failed"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "pricing_question",
+   "p": 0.363,
+   "p_label": 0.0,
+   "rank": 25,
+   "selected": null
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "where_is_order",
+   "p": 0.317,
+   "p_label": 0.0,
+   "rank": 20,
+   "selected": null
+  }
+ }
+}

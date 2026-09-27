@@ -54,4 +54,60 @@ frame; below it, not. One seed and one frame: a signal, not evidence.
 
 ## Results
 
-(Filled in after the runs; predictions above are not edited.)
+2026-09-27, M4 Mac, one seed, one frame. Mean label rank: 1 = always
+top; chance 20.5 of 40, standard error over 22 tickets ≈ 2.5. MRR chance
+0.107. Rank and MRR were added to the scorer after the first tkgd run,
+when top-1 turned out to sit at chance (not pre-registered).
+
+| judge | lang | top-1 | engine right / answered | mean label rank | MRR | wall |
+|---|---|---|---|---|---|---|
+| Jev | en | 22 | 21 / 21 | 1.0 | 1.000 | 0.7 s |
+| Jev | tr | 22 | 22 / 22 | 1.0 | 1.000 | 0.9 s |
+| tkgd raw, d128 6 000 steps | tr | 2 | 2 / 21 | 19.3 | 0.175 | 5.0 s |
+| tkgd calibrated, d128 6 000 steps | tr | 1 | 1 / 16 | 12.1 | 0.205 | 6.1 s |
+
+Against the predictions: 1 and 2 held (Jev lost nothing in Turkish). 3
+failed: calibrated top-1 is 1/22, below 2–6, and below the decision rule
+(≥ 4), so **no top-1 signal**. 4 held (2/22). 5 held: tkgd answered 16
+tickets above 0.6 with 6% precision.
+
+Why top-1 fails: both readouts collapse onto one favourite intent
+(calibrated: `cancel_subscription` on 9 of 22 tickets, p up to 0.999;
+raw: `delete_account` on 16). The sum of per-unit log-ratios over 15–25
+units has a wide spread, so one option wins the softmax outright.
+
+Yet the calibrated ranking carries meaning: the label's mean rank is 12.1
+against 20.5 by chance (z ≈ 3.4).
+
+**Does it learn?** The same readout across the TKG models:
+
+| model (fonto) | training | mean label rank | MRR |
+|---|---|---|---|
+| `kucuk-d1` (floor) | 1 500 steps, constant LR | 21.5 | 0.109 |
+| `kucuk-d4`, `kucuk-d16` | 1 500, constant LR | 18.5, 20.4 | 0.148, 0.140 |
+| `izgara` d64 (data 25/50/100%) | 1 500, constant LR | 18.1 / 17.7 / 18.7 | 0.120 / 0.132 / 0.145 |
+| `izgara` d128 (data 25/50/100%) | 1 500, constant LR | 17.9 / 20.0 / 17.7 | 0.094 / 0.158 / 0.165 |
+| `izgara` d256 (100%) | 1 500, constant LR | 22.5 | 0.084 |
+| `suyu-d128` | 1 500, warmup + cosine | 15.5 | 0.235 |
+| `suyu-d128` | 3 000 | 12.2 | 0.247 |
+| `suyu-d128` | 4 500 | **11.1** | 0.219 |
+| `suyu-d128` | 6 000 | 12.1 | 0.205 |
+
+- The 1 500-step grid is within two standard errors of chance at every
+  size and data share; d256 (the least converged, fonto Adım 10c) is the
+  worst.
+- The 10e run (warmup + cosine decay, 8.4 epochs) gets there: rank falls
+  15.5 → 12.2 → 11.1 over 1 500 → 4 500 steps and stops at 6 000,
+  matching fonto's reading that 10e has used up its data. The step from
+  1 500 to 3 000 is the one outside the noise; the later ones are not.
+- So the model learns something the frame can use, it is ordinal and weak
+  (the label lands in the top quarter), and training gives it; size alone
+  does not.
+
+Cold start of the tkgd worker (fonto `ff2db54`, tokenizer table cache),
+three interleaved runs each on a quiet machine: 22.3–22.9 s → 7.1–7.3 s
+wall (setup 19 s → 4 s).
+
+Next: a per-unit (length-normalised) PMI readout against the collapse;
+the HLM models of fonto T11 once `birim_hlm.py` can serve (it has no
+server mode yet); Adım 18 (HD state + ridge readout) once trained.
