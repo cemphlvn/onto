@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use clap::{Args, ValueEnum};
 use onto_core::walk::{Answer, Proposal};
-use onto_remote::{Jev, OpenRouter};
+use onto_remote::{Jev, OpenRouter, Tkgd};
 use onto_runtime::engine::StepRecord;
 use onto_runtime::frames::{Mode, PotentialityKind, Resolution};
 use onto_runtime::model::{
@@ -76,6 +76,9 @@ enum PolicyArg {
 pub enum AnyJudge {
     Jev(Jev),
     Mock(MockJudge),
+    /// `--judge-model tkgd:<model>`: a TKG model behind fonto's tkgd
+    /// server, read by calibrated likelihood (Turkish graphs only).
+    Tkgd(Tkgd),
     /// `--judge-model local:<file.gguf>` (feature `local`): the OpenJev
     /// method on this machine, no network.
     #[cfg(feature = "local")]
@@ -87,6 +90,7 @@ impl Judge for AnyJudge {
         match self {
             Self::Jev(j) => Judge::name(j),
             Self::Mock(j) => Judge::name(j),
+            Self::Tkgd(j) => Judge::name(j),
             #[cfg(feature = "local")]
             Self::Local(j) => Judge::name(j),
         }
@@ -95,6 +99,7 @@ impl Judge for AnyJudge {
         match self {
             Self::Jev(j) => j.judge(req).await,
             Self::Mock(j) => j.judge(req).await,
+            Self::Tkgd(j) => j.judge(req).await,
             #[cfg(feature = "local")]
             Self::Local(j) => j.judge(req).await,
         }
@@ -107,6 +112,7 @@ impl Critic for AnyJudge {
         match self {
             Self::Jev(j) => Critic::name(j),
             Self::Mock(j) => Critic::name(j),
+            Self::Tkgd(j) => Critic::name(j),
             #[cfg(feature = "local")]
             Self::Local(j) => Critic::name(j),
         }
@@ -119,6 +125,7 @@ impl Critic for AnyJudge {
         match self {
             Self::Jev(j) => j.nouls(state, questions).await,
             Self::Mock(j) => j.nouls(state, questions).await,
+            Self::Tkgd(j) => j.nouls(state, questions).await,
             #[cfg(feature = "local")]
             Self::Local(j) => j.nouls(state, questions).await,
         }
@@ -226,6 +233,11 @@ pub fn models(
         })
     } else if let Some(gguf) = local {
         local_judge(gguf)?
+    } else if let Some(t) = judge_model
+        .as_deref()
+        .and_then(|m| Tkgd::parse(http.clone(), m))
+    {
+        AnyJudge::Tkgd(t)
     } else {
         AnyJudge::Jev(
             Jev::from_env(http.clone(), judge_model)

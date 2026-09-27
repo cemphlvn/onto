@@ -1,7 +1,8 @@
 //! Remote model clients: Jev (TypeSafe System One) as the judge and
 //! critic, any OpenRouter chat model as the proposer. The engine calls
 //! them concurrently, up to `judge_concurrency` / `proposer_concurrency`
-//! requests in flight.
+//! requests in flight. `Tkgd` judges through fonto's local TKG server,
+//! for benchmarks.
 
 use std::time::Duration;
 
@@ -14,6 +15,9 @@ use onto_models::{
     Candidate, Critic, FrameRequest, Judge, ModelError, NoulQuestion, ProposalRequest, Proposer,
     Usage,
 };
+
+mod tkgd;
+pub use tkgd::Tkgd;
 
 const MAX_ATTEMPTS: u32 = 4;
 

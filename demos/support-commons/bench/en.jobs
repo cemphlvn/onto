@@ -1,0 +1,23 @@
+# large.jobs without `expected` (labels: labels.json)
+Ticket: {"goal": "I was charged twice for my March subscription", "id": "L-1"}
+Ticket: {"goal": "Can I get my money back? I cancelled within the trial period", "id": "L-2"}
+Ticket: {"goal": "I need a VAT invoice for last quarter's payments", "id": "L-3"}
+Ticket: {"goal": "My card keeps getting declined when I try to renew", "id": "L-4"}
+Ticket: {"goal": "The dashboard takes 40 seconds to load since yesterday", "id": "L-5"}
+Ticket: {"goal": "I get 'Error 502' every time I save a report", "id": "L-6"}
+Ticket: {"goal": "The iOS app closes right after it launches", "id": "L-7"}
+Ticket: {"goal": "The Salesforce sync stopped updating our contacts on Monday", "id": "L-8"}
+Ticket: {"goal": "I can't sign in: it says my password is wrong, but it is the right one", "id": "L-9"}
+Ticket: {"goal": "I lost my phone and now I can't get the two-factor code", "id": "L-10"}
+Ticket: {"goal": "Please close my account, I no longer need it", "id": "L-11"}
+Ticket: {"goal": "The tracking says delivered, but there is nothing at my door", "id": "L-12"}
+Ticket: {"goal": "The mug arrived broken in pieces", "id": "L-13"}
+Ticket: {"goal": "I ordered the blue jacket and received a red one", "id": "L-14"}
+Ticket: {"goal": "Please add a dark mode", "id": "L-15"}
+Ticket: {"goal": "Someone emailed me pretending to be you and asked for my password", "id": "L-16"}
+Ticket: {"goal": "I got a sign-in alert from a country I have never been to", "id": "L-17"}
+Ticket: {"goal": "Under GDPR I want a copy of all the data you hold about me", "id": "L-18"}
+Ticket: {"goal": "Where is order 5531? It has been ten days", "id": "L-19"}
+Ticket: {"goal": "Do you have a Zapier integration? I could not find one", "id": "L-20"}
+Ticket: {"goal": "Your settings page does not work with my screen reader", "id": "L-21"}
+Ticket: {"goal": "Our lawyer is sending you a formal notice about the contract", "id": "L-22"}

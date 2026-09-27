@@ -1,0 +1,48 @@
+# Support Commons, large, flat: 40 ticket intents in one choice frame (bench: judges compared, README.md).
+
+category SupportLarge {
+    objects: Ticket, Refund, DoubleCharge, InvoiceRequest, PaymentFailed, UpdatePaymentMethod, PricingQuestion, CancelSubscription, Outage, SlowPerformance, ErrorMessage, DataSync, AppCrash, IntegrationBroken, HowToUse, LoginProblem, PasswordReset, TwoFactor, DeleteAccount, ChangeEmail, AccountLocked, WhereIsOrder, DeliveredNotReceived, DamagedItem, WrongItem, ChangeAddress, ReturnItem, FeatureRequest, IntegrationRequest, BugReportUi, Accessibility, RoadmapQuestion, PhishingReport, SuspiciousLogin, DataBreachConcern, VulnerabilityReport, AccountTakeover, DataExportRequest, PrivacyComplaint, LegalNotice, TermsQuestion;
+    about Ticket: "a message a customer sent to support";
+    frame Ticket: choice "Which kind of ticket is this?";
+    refund: Ticket -> Refund "the customer wants money back for a charge";
+    double_charge: Ticket -> DoubleCharge "the customer was charged twice for the same thing";
+    invoice_request: Ticket -> InvoiceRequest "the customer needs an invoice, receipt or VAT document";
+    payment_failed: Ticket -> PaymentFailed "a payment or renewal was declined or failed";
+    update_payment_method: Ticket -> UpdatePaymentMethod "the customer wants to change the card or payment method on file";
+    pricing_question: Ticket -> PricingQuestion "a question about what something costs";
+    cancel_subscription: Ticket -> CancelSubscription "the customer wants to stop a paid subscription";
+    outage: Ticket -> Outage "the service is down or unavailable";
+    slow_performance: Ticket -> SlowPerformance "the product works but is slow";
+    error_message: Ticket -> ErrorMessage "an action fails with an error message";
+    data_sync: Ticket -> DataSync "data is missing or out of sync between devices";
+    app_crash: Ticket -> AppCrash "a mobile or desktop app closes or crashes";
+    integration_broken: Ticket -> IntegrationBroken "an existing integration with another product stopped working";
+    how_to_use: Ticket -> HowToUse "how to do something the product already supports";
+    login_problem: Ticket -> LoginProblem "cannot sign in although the credentials seem right";
+    password_reset: Ticket -> PasswordReset "wants to reset or change a password";
+    two_factor: Ticket -> TwoFactor "trouble with two-factor codes or the authenticator device";
+    delete_account: Ticket -> DeleteAccount "wants to close their account";
+    change_email: Ticket -> ChangeEmail "wants to change the email address of the account";
+    account_locked: Ticket -> AccountLocked "the account is locked or suspended";
+    where_is_order: Ticket -> WhereIsOrder "asks where an order is or when it will arrive";
+    delivered_not_received: Ticket -> DeliveredNotReceived "marked delivered but not received";
+    damaged_item: Ticket -> DamagedItem "an item arrived damaged";
+    wrong_item: Ticket -> WrongItem "a different item than ordered arrived";
+    change_address: Ticket -> ChangeAddress "wants to change the delivery address of an order";
+    return_item: Ticket -> ReturnItem "wants to send an item back";
+    feature_request: Ticket -> FeatureRequest "asks for a capability the product does not have";
+    integration_request: Ticket -> IntegrationRequest "asks for an integration with another product that does not exist yet";
+    bug_report_ui: Ticket -> BugReportUi "reports a visual or layout problem in the interface";
+    accessibility: Ticket -> Accessibility "reports a problem using the product with assistive technology";
+    roadmap_question: Ticket -> RoadmapQuestion "asks what is planned for the product";
+    phishing_report: Ticket -> PhishingReport "reports a message pretending to come from the company";
+    suspicious_login: Ticket -> SuspiciousLogin "reports sign-in activity they do not recognize";
+    data_breach_concern: Ticket -> DataBreachConcern "worries that their data was leaked";
+    vulnerability_report: Ticket -> VulnerabilityReport "reports a security weakness in the product";
+    account_takeover: Ticket -> AccountTakeover "says someone else has taken over their account";
+    data_export_request: Ticket -> DataExportRequest "asks for a copy of the personal data held about them";
+    privacy_complaint: Ticket -> PrivacyComplaint "complains about how their personal data is used";
+    legal_notice: Ticket -> LegalNotice "sends or announces a formal legal notice";
+    terms_question: Ticket -> TermsQuestion "asks about the terms of service or a contract clause";
+    closed: Ticket, Refund, DoubleCharge, InvoiceRequest, PaymentFailed, UpdatePaymentMethod, PricingQuestion, CancelSubscription, Outage, SlowPerformance, ErrorMessage, DataSync, AppCrash, IntegrationBroken, HowToUse, LoginProblem, PasswordReset, TwoFactor, DeleteAccount, ChangeEmail, AccountLocked, WhereIsOrder, DeliveredNotReceived, DamagedItem, WrongItem, ChangeAddress, ReturnItem, FeatureRequest, IntegrationRequest, BugReportUi, Accessibility, RoadmapQuestion, PhishingReport, SuspiciousLogin, DataBreachConcern, VulnerabilityReport, AccountTakeover, DataExportRequest, PrivacyComplaint, LegalNotice, TermsQuestion;
+}

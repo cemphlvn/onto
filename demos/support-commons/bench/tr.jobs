@@ -1,0 +1,23 @@
+# the same 22 tickets in Turkish, same ids (labels: labels.json)
+Ticket: {"goal": "Mart aboneliğim için iki kez ücret alındı", "id": "L-1"}
+Ticket: {"goal": "Paramı geri alabilir miyim? Deneme süresi içinde iptal ettim", "id": "L-2"}
+Ticket: {"goal": "Geçen çeyreğin ödemeleri için KDV faturasına ihtiyacım var", "id": "L-3"}
+Ticket: {"goal": "Yenilemeye çalıştığımda kartım sürekli reddediliyor", "id": "L-4"}
+Ticket: {"goal": "Panel dünden beri 40 saniyede açılıyor", "id": "L-5"}
+Ticket: {"goal": "Her rapor kaydettiğimde 'Hata 502' alıyorum", "id": "L-6"}
+Ticket: {"goal": "iOS uygulaması açılır açılmaz kapanıyor", "id": "L-7"}
+Ticket: {"goal": "Salesforce senkronizasyonu pazartesi günü kişilerimizi güncellemeyi bıraktı", "id": "L-8"}
+Ticket: {"goal": "Giriş yapamıyorum: şifremin yanlış olduğunu söylüyor ama şifrem doğru", "id": "L-9"}
+Ticket: {"goal": "Telefonumu kaybettim ve artık iki adımlı doğrulama kodunu alamıyorum", "id": "L-10"}
+Ticket: {"goal": "Lütfen hesabımı kapatın, artık ihtiyacım yok", "id": "L-11"}
+Ticket: {"goal": "Kargo takibinde teslim edildi yazıyor ama kapımda hiçbir şey yok", "id": "L-12"}
+Ticket: {"goal": "Kupa kırık parçalar halinde geldi", "id": "L-13"}
+Ticket: {"goal": "Mavi ceketi sipariş ettim, kırmızısı geldi", "id": "L-14"}
+Ticket: {"goal": "Lütfen karanlık mod ekleyin", "id": "L-15"}
+Ticket: {"goal": "Biri sizin adınıza bana e-posta attı ve şifremi istedi", "id": "L-16"}
+Ticket: {"goal": "Hiç gitmediğim bir ülkeden giriş uyarısı aldım", "id": "L-17"}
+Ticket: {"goal": "KVKK kapsamında hakkımda tuttuğunuz bütün verilerin bir kopyasını istiyorum", "id": "L-18"}
+Ticket: {"goal": "5531 numaralı sipariş nerede? On gün oldu", "id": "L-19"}
+Ticket: {"goal": "Zapier entegrasyonunuz var mı? Bulamadım", "id": "L-20"}
+Ticket: {"goal": "Ayarlar sayfanız ekran okuyucumla çalışmıyor", "id": "L-21"}
+Ticket: {"goal": "Avukatımız size sözleşme hakkında resmi bir ihtarname gönderiyor", "id": "L-22"}
