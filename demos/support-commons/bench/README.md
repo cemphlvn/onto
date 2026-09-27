@@ -199,3 +199,29 @@ readout for this bench and for T15's M3; if 1 fails, the collapse is a
 property of the model under every calibration tried, and the bench keeps
 the sum readout. This is the last readout variant tried on these 22
 tickets; any further one needs a new, held-out ticket set.
+
+D26 results (2026-09-27):
+
+| readout | model | top-1 | mean label rank | MRR | most frequent top-1 | engine right / answered |
+|---|---|---|---|---|---|---|
+| sum PMI (`tkgd:`) | d128, 6 000 | 1 | 12.1 | 0.205 | `cancel_subscription` 9 | 1 / 16 |
+| neutral prior (`tkgd-nb:`) | d128, 6 000 | 4 | **8.0** | 0.371 | `cancel_subscription` 6 | 3 / 18 |
+| sum PMI (`tkgd:`) | d128, 4 500 | 1 | 11.1 | 0.219 | — | — |
+| neutral prior (`tkgd-nb:`) | d128, 4 500 | 4 | **8.8** | 0.366 | `cancel_subscription` 7 | 3 / 16 |
+
+Paired bootstrap of the label rank, neutral prior against sum PMI:
+- 6 000 steps: −4.1 [−7.0, −1.6]
+- 4 500 steps: −2.3 [−5.2, +0.4]
+
+Against the predictions: 1 **failed**, narrowly: the collapse shrinks but
+stays, 6 and 7 of 22 on one intent against a limit of 5. 2 held (top-1 4
+and 4; rank 8.0 and 8.8 ≤ 11.0).
+
+Decision, as written: 1 failed, so the sum readout stays the bench's
+default and the decision readout for T15's M3. `tkgd-nb:` is reported next
+to it as a secondary readout, because it does move the ranking (−4 ranks at
+6 000). Most of the collapse was the empty-context prior; what remains
+belongs to the model.
+
+This was the last readout tried on these 22 tickets; a further one needs a
+new, held-out ticket set.

@@ -1,0 +1,190 @@
+{
+ "model": "tkgd-nb:tkg-suyu-d128-a4500",
+ "tickets": 22,
+ "top1": 4,
+ "engine_correct": 3,
+ "answered": 16,
+ "rank_mean": 8.8,
+ "mrr": 0.366,
+ "precision": 0.19,
+ "judge_ms_mean": 7829.1,
+ "wall_s": 13.04,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "cancel_subscription",
+   "p": 0.936,
+   "p_label": 0.05,
+   "rank": 2,
+   "selected": "cancel_subscription"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "update_payment_method",
+   "p": 0.779,
+   "p_label": 0.004,
+   "rank": 3,
+   "selected": "update_payment_method"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "invoice_request",
+   "p": 0.47,
+   "p_label": 0.47,
+   "rank": 1,
+   "selected": null
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "update_payment_method",
+   "p": 0.865,
+   "p_label": 0.002,
+   "rank": 7,
+   "selected": "update_payment_method"
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "cancel_subscription",
+   "p": 0.584,
+   "p_label": 0.0,
+   "rank": 13,
+   "selected": null
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "error_message",
+   "p": 0.997,
+   "p_label": 0.997,
+   "rank": 1,
+   "selected": "error_message"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "update_payment_method",
+   "p": 0.969,
+   "p_label": 0.014,
+   "rank": 2,
+   "selected": "update_payment_method"
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "cancel_subscription",
+   "p": 0.638,
+   "p_label": 0.004,
+   "rank": 4,
+   "selected": "cancel_subscription"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "two_factor",
+   "p": 0.846,
+   "p_label": 0.001,
+   "rank": 8,
+   "selected": "two_factor"
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "two_factor",
+   "p": 0.957,
+   "p_label": 0.957,
+   "rank": 1,
+   "selected": "two_factor"
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "update_payment_method",
+   "p": 0.915,
+   "p_label": 0.0,
+   "rank": 5,
+   "selected": "update_payment_method"
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "cancel_subscription",
+   "p": 0.752,
+   "p_label": 0.125,
+   "rank": 2,
+   "selected": "cancel_subscription"
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "cancel_subscription",
+   "p": 0.983,
+   "p_label": 0.004,
+   "rank": 3,
+   "selected": "cancel_subscription"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "delivered_not_received",
+   "p": 0.401,
+   "p_label": 0.399,
+   "rank": 2,
+   "selected": null
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "cancel_subscription",
+   "p": 0.49,
+   "p_label": 0.0,
+   "rank": 11,
+   "selected": null
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "double_charge",
+   "p": 0.485,
+   "p_label": 0.0,
+   "rank": 40,
+   "selected": null
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "double_charge",
+   "p": 0.826,
+   "p_label": 0.0,
+   "rank": 24,
+   "selected": "double_charge"
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "account_takeover",
+   "p": 0.902,
+   "p_label": 0.011,
+   "rank": 4,
+   "selected": "account_takeover"
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "cancel_subscription",
+   "p": 0.555,
+   "p_label": 0.0,
+   "rank": 30,
+   "selected": null
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "integration_broken",
+   "p": 0.987,
+   "p_label": 0.0,
+   "rank": 9,
+   "selected": "integration_broken"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "login_problem",
+   "p": 0.869,
+   "p_label": 0.0,
+   "rank": 21,
+   "selected": "login_problem"
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "legal_notice",
+   "p": 0.939,
+   "p_label": 0.939,
+   "rank": 1,
+   "selected": "legal_notice"
+  }
+ }
+}

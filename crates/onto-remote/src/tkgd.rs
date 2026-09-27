@@ -34,7 +34,14 @@ enum Readout {
     /// no longer outweighs the rest (the sum readout collapses onto one
     /// favourite intent, bench README).
     PmiPerUnit,
+    /// PMI against the mean of log P(option | neutral user turn) over
+    /// [`NEUTRAL`] (contextual calibration with content-free inputs, Zhao
+    /// et al. 2021), instead of against no context at all (D26).
+    PmiNeutral,
 }
+
+/// Content-free user turns for [`Readout::PmiNeutral`], fixed before D26 ran.
+const NEUTRAL: [&str; 3] = ["Merhaba.", "Bir sorum var.", "Yardımcı olabilir misiniz?"];
 
 pub struct Tkgd {
     http: reqwest::Client,
@@ -55,6 +62,7 @@ impl Tkgd {
         let (readout, model) = [
             ("tkgd:", Readout::Pmi),
             ("tkgd-norm:", Readout::PmiPerUnit),
+            ("tkgd-nb:", Readout::PmiNeutral),
             ("tkgd-raw:", Readout::Raw),
         ]
         .into_iter()
@@ -99,12 +107,27 @@ impl Tkgd {
         if let Some(p) = self.priors.lock().unwrap().get(options) {
             return Ok((p.clone(), 0));
         }
-        let (p, units, _) = self.score(&[], options).await?;
+        let (p, units) = if self.readout == Readout::PmiNeutral {
+            let mut sum = vec![0.0; options.len()];
+            let mut units = 0;
+            for t in NEUTRAL {
+                let (p, u, _) = self
+                    .score(&[json!({"rol": "user", "metin": t})], options)
+                    .await?;
+                sum.iter_mut().zip(&p).for_each(|(s, x)| *s += x);
+                units += u.iter().sum::<u64>();
+            }
+            let n = NEUTRAL.len() as f64;
+            (sum.into_iter().map(|s| s / n).collect(), units)
+        } else {
+            let (p, u, _) = self.score(&[], options).await?;
+            (p, u.iter().sum())
+        };
         self.priors
             .lock()
             .unwrap()
             .insert(options.to_vec(), p.clone());
-        Ok((p, units.iter().sum()))
+        Ok((p, units))
     }
 }
 
@@ -147,6 +170,7 @@ impl Judge for Tkgd {
         let kind = match self.readout {
             Readout::Pmi => "tkgd",
             Readout::PmiPerUnit => "tkgd-norm",
+            Readout::PmiNeutral => "tkgd-nb",
             Readout::Raw => "tkgd-raw",
         };
         format!("{kind}:{}", self.model.as_deref().unwrap_or("default"))
@@ -236,6 +260,7 @@ mod tests {
         let r = |s| Tkgd::parse(http.clone(), s).map(|t| t.readout);
         assert_eq!(r("tkgd:tkg-suyu-d128"), Some(Readout::Pmi));
         assert_eq!(r("tkgd-norm:"), Some(Readout::PmiPerUnit));
+        assert_eq!(r("tkgd-nb:"), Some(Readout::PmiNeutral));
         assert_eq!(r("tkgd-raw:"), Some(Readout::Raw));
         assert!(Tkgd::parse(http, "local:x.gguf").is_none());
     }
