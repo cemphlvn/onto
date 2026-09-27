@@ -154,3 +154,26 @@ Predictions:
 Decision: if top-1 ≥ 4/22 on both checkpoints, `tkgd-norm:` becomes the
 default TKG readout for this bench (and T15's M3 uses it); otherwise the
 sum readout stays and the collapse is reported as a property of the model.
+
+Results (2026-09-27, same 22 tickets):
+
+| readout | model | top-1 | mean label rank | MRR | most frequent top-1 | engine answered |
+|---|---|---|---|---|---|---|
+| sum PMI | d128, 6 000 | 1 | 12.1 | 0.205 | `cancel_subscription` 9 | 16 (6% right) |
+| per-unit PMI | d128, 6 000 | 4 | 12.2 | 0.298 | `cancel_subscription` 8 | 0 |
+| per-unit PMI | d128, 4 500 | 3 | 11.5 | 0.255 | `cancel_subscription` 12 | 0 |
+
+Against the predictions: 1 **failed**: the collapse stays (8 and 12 of
+22 on one intent). 2 held: top-1 3–4, rank within ±1. Decision rule
+(≥ 4/22 on both checkpoints): **not met**, so the sum readout stays the
+default. Per-unit PMI does change one thing: its softmax is flat, so the
+engine answers nothing above 0.6 instead of answering 16 tickets with 6%
+precision (confidently wrong → no answer).
+
+Since the collapse survives length normalisation, it is not a length
+effect. Next hypothesis, not tested here (a further readout picked after
+seeing results would be a forking path): the prior is scored with **no**
+context, which is unlike any user message; contextual calibration (Zhao
+et al. 2021) uses a content-free *input* ("N/A") instead. A neutral
+Turkish user turn as the baseline would test whether `cancel_subscription`
+wins by being generically likely after any request.

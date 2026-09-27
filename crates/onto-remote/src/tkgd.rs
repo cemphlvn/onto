@@ -23,42 +23,58 @@ use onto_models::{Candidate, Critic, FrameRequest, Judge, ModelError, NoulQuesti
 
 use crate::{clip, post_json};
 
+/// How option scores become a distribution.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Readout {
+    /// log P(option | case): favours short, a-priori likely replies.
+    Raw,
+    /// log P(option | case) − log P(option | no case), summed over units.
+    Pmi,
+    /// The same, divided by the option's unit count: a long option's sum
+    /// no longer outweighs the rest (the sum readout collapses onto one
+    /// favourite intent, bench README).
+    PmiPerUnit,
+}
+
 pub struct Tkgd {
     http: reqwest::Client,
     url: String,
     /// The tkgd model name; `None` is the server's default.
     model: Option<String>,
-    calibrate: bool,
+    readout: Readout,
     /// Scores of each option set with no case, computed once per frame.
     priors: Mutex<HashMap<Vec<String>, Vec<f64>>>,
 }
 
 impl Tkgd {
-    /// `tkgd:<model>` (calibrated) or `tkgd-raw:<model>` (plain
-    /// likelihood); an empty model is the server's default. The server is
-    /// at `TKGD_URL` (default `http://127.0.0.1:7470`).
+    /// `tkgd:<model>` (calibrated), `tkgd-norm:<model>` (calibrated, per
+    /// unit) or `tkgd-raw:<model>` (plain likelihood); an empty model is the
+    /// server's default. The server is at `TKGD_URL` (default
+    /// `http://127.0.0.1:7470`).
     pub fn parse(http: reqwest::Client, spec: &str) -> Option<Self> {
-        let (calibrate, model) = if let Some(m) = spec.strip_prefix("tkgd:") {
-            (true, m)
-        } else {
-            (false, spec.strip_prefix("tkgd-raw:")?)
-        };
+        let (readout, model) = [
+            ("tkgd:", Readout::Pmi),
+            ("tkgd-norm:", Readout::PmiPerUnit),
+            ("tkgd-raw:", Readout::Raw),
+        ]
+        .into_iter()
+        .find_map(|(p, r)| spec.strip_prefix(p).map(|m| (r, m)))?;
         let base = std::env::var("TKGD_URL").unwrap_or_else(|_| "http://127.0.0.1:7470".into());
         Some(Self {
             http,
             url: format!("{}/tkg/puanla", base.trim_end_matches('/')),
             model: (!model.is_empty()).then(|| model.to_owned()),
-            calibrate,
+            readout,
             priors: Mutex::new(HashMap::new()),
         })
     }
 
-    /// log P(option | context) per option, and the units scored.
+    /// log P(option | context) and the units scored, per option.
     async fn score(
         &self,
         context: &[Value],
         options: &[String],
-    ) -> Result<(Vec<f64>, u64, u32), ModelError> {
+    ) -> Result<(Vec<f64>, Vec<u64>, u32), ModelError> {
         let mut body = json!({"baglam": context, "secenekler": options});
         if let Some(m) = &self.model {
             body["model"] = json!(m);
@@ -75,7 +91,7 @@ impl Tkgd {
         let units = scores
             .iter()
             .map(|p| p["birim"].as_u64().unwrap_or(0))
-            .sum();
+            .collect();
         Ok((logp, units, attempts))
     }
 
@@ -88,7 +104,7 @@ impl Tkgd {
             .lock()
             .unwrap()
             .insert(options.to_vec(), p.clone());
-        Ok((p, units))
+        Ok((p, units.iter().sum()))
     }
 }
 
@@ -128,7 +144,11 @@ fn softmax(x: &[f64]) -> Vec<f32> {
 
 impl Judge for Tkgd {
     fn name(&self) -> String {
-        let kind = if self.calibrate { "tkgd" } else { "tkgd-raw" };
+        let kind = match self.readout {
+            Readout::Pmi => "tkgd",
+            Readout::PmiPerUnit => "tkgd-norm",
+            Readout::Raw => "tkgd-raw",
+        };
         format!("{kind}:{}", self.model.as_deref().unwrap_or("default"))
     }
 
@@ -144,11 +164,17 @@ impl Judge for Tkgd {
         }
         let options: Vec<String> = req.candidates.iter().map(option_text).collect();
         let context = [json!({"rol": "user", "metin": case_text(&req.state)})];
-        let (mut s, mut units, attempts) = self.score(&context, &options).await?;
-        if self.calibrate {
+        let (mut s, per_option, attempts) = self.score(&context, &options).await?;
+        let mut units: u64 = per_option.iter().sum();
+        if self.readout != Readout::Raw {
             let (prior, u) = self.prior(&options).await?;
             s.iter_mut().zip(&prior).for_each(|(x, p)| *x -= p);
             units += u;
+        }
+        if self.readout == Readout::PmiPerUnit {
+            s.iter_mut()
+                .zip(&per_option)
+                .for_each(|(x, n)| *x /= (*n).max(1) as f64);
         }
         let probs = softmax(&s);
         let answer = match req.primitive {
@@ -207,12 +233,10 @@ mod tests {
     #[test]
     fn specs_name_the_readout() {
         let http = reqwest::Client::new();
-        assert!(
-            Tkgd::parse(http.clone(), "tkgd:tkg-suyu-d128")
-                .unwrap()
-                .calibrate
-        );
-        assert!(!Tkgd::parse(http.clone(), "tkgd-raw:").unwrap().calibrate);
+        let r = |s| Tkgd::parse(http.clone(), s).map(|t| t.readout);
+        assert_eq!(r("tkgd:tkg-suyu-d128"), Some(Readout::Pmi));
+        assert_eq!(r("tkgd-norm:"), Some(Readout::PmiPerUnit));
+        assert_eq!(r("tkgd-raw:"), Some(Readout::Raw));
         assert!(Tkgd::parse(http, "local:x.gguf").is_none());
     }
 }
