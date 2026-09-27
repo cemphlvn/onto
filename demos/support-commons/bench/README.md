@@ -177,3 +177,25 @@ context, which is unlike any user message; contextual calibration (Zhao
 et al. 2021) uses a content-free *input* ("N/A") instead. A neutral
 Turkish user turn as the baseline would test whether `cancel_subscription`
 wins by being generically likely after any request.
+
+## D26 — prior from neutral user turns (pre-registration, 2026-09-27, before any run)
+
+Hypothesis (from the per-unit result above): `cancel_subscription` wins
+because the prior is scored with **no** context, and any user message at
+all raises it. Contextual calibration (Zhao et al. 2021) takes the prior
+from content-free *inputs*, averaged over several. `tkgd-nb:` scores each
+option after three fixed neutral Turkish user turns, chosen now:
+"Merhaba.", "Bir sorum var.", "Yardımcı olabilir misiniz?"; the prior is
+the mean of the three log-probabilities, and the score is the summed PMI
+against it (as `tkgd:`). Same models (d128 at 6 000 and 4 500 steps), same
+22 tickets.
+
+Predictions:
+1. The collapse breaks: no intent is top-1 on more than 5 of 22 tickets.
+2. Top-1 ≥ 4/22 on both checkpoints; mean label rank ≤ 11.0 on both.
+
+Decision: if 1 and 2 both hold, `tkgd-nb:` becomes the default TKG
+readout for this bench and for T15's M3; if 1 fails, the collapse is a
+property of the model under every calibration tried, and the bench keeps
+the sum readout. This is the last readout variant tried on these 22
+tickets; any further one needs a new, held-out ticket set.
