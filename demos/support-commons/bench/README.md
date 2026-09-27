@@ -133,3 +133,24 @@ wall (setup 19 s → 4 s).
 Next: a per-unit (length-normalised) PMI readout against the collapse;
 the HLM models of fonto T11 once `birim_hlm.py` can serve (it has no
 server mode yet); Adım 18 (HD state + ridge readout) once trained.
+
+## Readout against the collapse: per-unit PMI (pre-registration, 2026-09-27, before any run)
+
+Calibrated top-1 collapses onto one favourite intent because the score is
+a **sum** of per-unit log-ratios over 15–25 units: its spread grows with
+the option's length, so one long option can win the softmax outright.
+`tkgd-norm:` divides each option's PMI by its unit count (mean per-unit
+log-ratio). Same model (`suyu-d128`, 6 000 steps, and 4 500), same 22
+tickets; nothing else changes. This readout was chosen after seeing the
+collapse, so its result is exploratory, not a test of the original rule.
+
+Predictions:
+1. The collapse breaks: no intent is top-1 on more than 5 of 22 tickets
+   (sum PMI: 9 of 22).
+2. Top-1 rises to 3–6/22; mean label rank stays within ±2 of the sum
+   readout (12.1 at 6 000, 11.1 at 4 500), since ranking was already the
+   part that worked.
+
+Decision: if top-1 ≥ 4/22 on both checkpoints, `tkgd-norm:` becomes the
+default TKG readout for this bench (and T15's M3 uses it); otherwise the
+sum readout stays and the collapse is reported as a property of the model.
