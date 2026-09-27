@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-s13-tur-t0",
+ "tickets": 22,
+ "top1": 4,
+ "engine_correct": 4,
+ "answered": 17,
+ "rank_mean": 12.4,
+ "mrr": 0.286,
+ "precision": 0.24,
+ "judge_ms_mean": 3527.1,
+ "wall_s": 6.26,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "double_charge",
+   "p": 0.764,
+   "p_label": 0.764,
+   "rank": 1,
+   "selected": "double_charge"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "double_charge",
+   "p": 1.0,
+   "p_label": 0.0,
+   "rank": 23,
+   "selected": "double_charge"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "invoice_request",
+   "p": 0.952,
+   "p_label": 0.952,
+   "rank": 1,
+   "selected": "invoice_request"
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "how_to_use",
+   "p": 0.437,
+   "p_label": 0.0,
+   "rank": 29,
+   "selected": null
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "double_charge",
+   "p": 1.0,
+   "p_label": 0.0,
+   "rank": 16,
+   "selected": "double_charge"
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "wrong_item",
+   "p": 0.976,
+   "p_label": 0.0,
+   "rank": 33,
+   "selected": "wrong_item"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "app_crash",
+   "p": 0.886,
+   "p_label": 0.886,
+   "rank": 1,
+   "selected": "app_crash"
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "how_to_use",
+   "p": 0.692,
+   "p_label": 0.0,
+   "rank": 6,
+   "selected": "how_to_use"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "change_email",
+   "p": 1.0,
+   "p_label": 0.0,
+   "rank": 11,
+   "selected": "change_email"
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "wrong_item",
+   "p": 0.988,
+   "p_label": 0.0,
+   "rank": 17,
+   "selected": "wrong_item"
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "change_email",
+   "p": 1.0,
+   "p_label": 0.0,
+   "rank": 28,
+   "selected": "change_email"
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "how_to_use",
+   "p": 0.48,
+   "p_label": 0.001,
+   "rank": 8,
+   "selected": null
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "how_to_use",
+   "p": 0.955,
+   "p_label": 0.0,
+   "rank": 11,
+   "selected": "how_to_use"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "wrong_item",
+   "p": 0.911,
+   "p_label": 0.911,
+   "rank": 1,
+   "selected": "wrong_item"
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "wrong_item",
+   "p": 0.795,
+   "p_label": 0.079,
+   "rank": 3,
+   "selected": "wrong_item"
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "change_email",
+   "p": 0.946,
+   "p_label": 0.0,
+   "rank": 23,
+   "selected": "change_email"
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "wrong_item",
+   "p": 0.528,
+   "p_label": 0.002,
+   "rank": 4,
+   "selected": null
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "wrong_item",
+   "p": 0.941,
+   "p_label": 0.032,
+   "rank": 2,
+   "selected": "wrong_item"
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "change_address",
+   "p": 0.704,
+   "p_label": 0.0,
+   "rank": 28,
+   "selected": "change_address"
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "how_to_use",
+   "p": 0.834,
+   "p_label": 0.003,
+   "rank": 6,
+   "selected": "how_to_use"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "wrong_item",
+   "p": 0.542,
+   "p_label": 0.0,
+   "rank": 14,
+   "selected": null
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "data_export_request",
+   "p": 0.306,
+   "p_label": 0.016,
+   "rank": 7,
+   "selected": null
+  }
+ }
+}

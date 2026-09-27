@@ -104,6 +104,28 @@ against 20.5 by chance (z ≈ 3.4).
   (the label lands in the top quarter), and training gives it; size alone
   does not.
 
+**Is the stop at 6 000 real?** Paired bootstrap over the 22 tickets'
+label ranks (20 000 resamples):
+
+| from → to | Δ rank | 95% interval |
+|---|---|---|
+| 1 500 → 4 500 | −4.4 | [−7.8, −1.2] |
+| 1 500 → 3 000 | −3.4 | [−6.9, 0.0] |
+| 3 000 → 4 500 | −1.0 | [−3.1, +0.6] |
+| 4 500 → 6 000 | +1.0 | [−0.5, +2.5] |
+| 6 000 → 6 000 with number classes (`s13-tur-t0`) | +0.3 | [−4.7, +5.5] |
+
+Training helps up to 4 500 steps; from 4 500 to 6 000 the rank does not
+improve (a slight, non-significant worsening), in line with the 10e
+validation loss (lowest 1.91 at 5 000, 2.015 at 6 000; train–validation
+gap 0.15 → 0.55) and with the learning rate of the cosine schedule
+(1.6e-4 at 4 500, 1e-5 at 6 000). The pipeline is deterministic
+(`s13-degersiz-t0` reproduces 10e rank for rank), so seed noise is still
+unmeasured; changing only the number format moves single tickets by up to
+±5 ranks, so per-ticket readings are unreliable (`s13-tur-t0` reached 4/22
+top-1 with the same mean rank). The `s13-rakam` models no longer load
+(three digit units were added after they were trained).
+
 Cold start of the tkgd worker (fonto `ff2db54`, tokenizer table cache),
 three interleaved runs each on a quiet machine: 22.3–22.9 s → 7.1–7.3 s
 wall (setup 19 s → 4 s).
