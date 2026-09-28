@@ -760,6 +760,15 @@ streaming them is open (§11).
   events and records as a stream, resume and step), then `onto-py`
   (PyO3, maturin, abi3), then a C ABI if a consumer appears. `onto
   draft` (prompt → category + proofs) is a later, separate tool.
+- **Research track (after the M4 engine work): calibrated switches**
+  (`docs/12-calibrated-switches.md`): a self-building intent graph of
+  calibrated binary switches, checked by loops that must agree
+  (resonance), corrected by people where they are unsure; each loop run
+  as an experiment. Realized by Jev, or by onto's own CPU learner,
+  declared first as an OSIL contract (`contracts/calibrated-switch.osil`).
+  Engine needs: labelled record export, calibration metrics and maps per
+  switch, a resonance checker, the source of resume answers, a synthetic
+  case generator.
 - **After M4, separate:** an application library on the bindings, with
   opinions: connection mechanisms, self-expansion limits and automatic
   admission per part, which parts bring in a person, loop architectures

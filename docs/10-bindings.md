@@ -161,6 +161,9 @@ for walk in report["walks"]:
    mirrored as TypedDicts.
 8. **Provider entry points** for plugin discovery, and a registry the
    basic level reads its defaults from.
+9. **For the calibrated-switch research track** (`docs/12` §7): labelled
+   record export, calibration metrics and maps per switch, a resonance
+   checker, the source of resume answers, a synthetic case generator.
 
 Each item is useful to Rust callers and to the CLI on its own; the
 bindings then only convert.
