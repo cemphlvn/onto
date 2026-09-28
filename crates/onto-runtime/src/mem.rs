@@ -75,10 +75,18 @@ pub struct MemSample {
     pub heap_peak_bytes: Option<usize>,
 }
 
+/// Resident memory of this process; a browser does not report it.
+fn rss() -> Option<usize> {
+    #[cfg(not(target_arch = "wasm32"))]
+    return memory_stats::memory_stats().map(|m| m.physical_mem);
+    #[cfg(target_arch = "wasm32")]
+    None
+}
+
 pub fn sample() -> MemSample {
     let counted = INSTALLED.load(Relaxed);
     MemSample {
-        rss_bytes: memory_stats::memory_stats().map(|m| m.physical_mem),
+        rss_bytes: rss(),
         heap_bytes: counted.then(|| HEAP.load(Relaxed)),
         heap_peak_bytes: counted.then(|| HEAP_PEAK.load(Relaxed)),
     }
@@ -89,10 +97,8 @@ pub fn sample() -> MemSample {
 pub fn spawn_sampler(every: Duration) -> Sampler {
     let peak_rss = std::sync::Arc::new(AtomicUsize::new(0));
     let peak = peak_rss.clone();
-    let task = tokio::spawn(async move {
-        let mut tick = tokio::time::interval(every);
+    let task = crate::rt::spawn(async move {
         loop {
-            tick.tick().await;
             let s = sample();
             if let Some(rss) = s.rss_bytes {
                 peak.fetch_max(rss, Relaxed);
@@ -104,13 +110,14 @@ pub fn spawn_sampler(every: Duration) -> Sampler {
                 heap_bytes = s.heap_bytes,
                 heap_peak_bytes = s.heap_peak_bytes,
             );
+            crate::rt::sleep(every).await;
         }
     });
     Sampler { task, peak_rss }
 }
 
 pub struct Sampler {
-    task: tokio::task::JoinHandle<()>,
+    task: crate::rt::JoinHandle<()>,
     peak_rss: std::sync::Arc<AtomicUsize>,
 }
 

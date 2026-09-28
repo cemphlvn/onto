@@ -92,9 +92,11 @@ versions, transport, discovery) and can walk one case together as an
 │ ensemble    columns, positions, agreement / surprise                       │
 │ discovery   functor candidates judged by meaning                           │
 │ trace       telemetry → typed raster events + insights                     │
-│ providers   Jev (TypeSafe) judge and critic, OpenRouter proposer; mocks    │
+│ model       onto-models: Judge / Proposer / Critic contract; mocks here    │
 │ telemetry   JSON lines · mem: heap counter + RSS                           │
 └────────────────────────────────────────────────────────────────────────────┘
+  onto-remote   Jev (TypeSafe) judge and critic, OpenRouter proposer (HTTP)
+  onto-local    OpenJev judge on the device (llama.cpp / wllama)  docs/11
 ┌─────────────────────── onto-core (Rust, synchronous) ──────────────────────┐
 │ category    objects + arrows, u32 ids, CSR frames; learned layer; admission │
 │ parse       `.onto` modules: categories, functors, ensembles, imports      │
@@ -125,8 +127,10 @@ versions, transport, discovery) and can walk one case together as an
 ```
 
 `onto-core` stays synchronous and light (egg, serde_json, sha2, ed25519; serde optional)
-so it can sit behind a C ABI. `onto-runtime` adds the async loop and the
-network clients. `onto-cli` (the `onto` binary) is **not yet** a thin
+so it can sit behind a C ABI. `onto-runtime` adds the async loop; the
+model contract lives in `onto-models` and the network clients in
+`onto-remote`, so an app with only a local judge ships no HTTP client
+(`docs/11-platforms.md`). `onto-cli` (the `onto` binary) is **not yet** a thin
 shell: it also holds the "world" (loading modules, the learned layer,
 lenses, the library and precedents; saving learned arrows, recalls, gaps
 and memory as files next to the `.onto`). M4 moves that into an app API
@@ -616,6 +620,11 @@ streaming them is open (§11).
 | D65 | functor discovery: structure decides what is possible (roles; every arrow a path), evidence ranks it (meaning: a judge chooses among admissible targets or none; behaviour: co-visits of the same cases); a model proposes only what these leave open | live, structure alone mapped 2 of 12 objects, behaviour 9, meaning 12; structure rescued a weak judgment (0.28) |
 | D66 | a discovered functor is a proposal with provenance, adopted by a person; authority and contract violations are reported, not pruned | a functor is policy (transport, views, standards, ensembles); the true map of the merger violates authority, and that is the finding |
 | D67 | behaviour keeps testing an adopted functor: pairs the same cases rarely share are flagged | a functor can be sound while the organisations handle those cases differently (live: how-to tickets, closing steps) |
+| D68 | the model contract (`Judge`, `Proposer`, `Critic`, requests, errors, type-erased adapters) is its own crate, `onto-models`, with no engine and no network | local judges, remote clients and every binding implement one contract without depending on the engine or on reqwest (`docs/11`) |
+| D69 | network providers move to `onto-remote`; `onto-runtime` no longer depends on reqwest | an on-device app with local models ships no HTTP client and no keys; parallel API calling is a module an app adds |
+| D70 | the runtime asks an `rt` module to spawn, sleep, read the clock and collect tasks: tokio natively, the JavaScript event loop on `wasm32` (by target); `tokio::sync` stays | the engine must run in a browser; on one thread walks still interleave while a model call is pending |
+| D71 | local judges use the OpenJev method (option logits in one forward pass) over GGUF through llama.cpp, natively and as wllama in browsers; one model loaded, parallelism by shared prefixes; thresholds re-measured per model | zero token cost and private; the same model file on every device makes results comparable; copies of a model contend for one GPU; Jev's calibration does not transfer |
+| D72 | Swift and Kotlin through UniFFI (`onto-ffi`), JavaScript through wasm-bindgen (`onto-wasm`); both only convert, as `onto-py` does | one Rust source of truth for every platform (`docs/10` rule 1) |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |
@@ -707,6 +716,7 @@ streaming them is open (§11).
   | B ✓ | learned-structure library: presence effect (`replay --without-arrow`), active / dormant / retired, recall before catalogue and LLM | incident-response (unused learned arrows) · support-commons (parcel stream) | how an arrow's presence shifts judgments; recall with no model call |
   | C ✓ | M3 phase 4: functor discovery | support-commons, two support organisations merging · their customers | discovered vs hand-written map; wrong candidates caught by the functor checks |
   | D | M4: onto as an embeddable engine with unopinionated Python bindings (primitives, protocols, values; basic and advanced levels), then a C ABI; `docs/10-bindings.md` | consent-enforcement · developers | a developer given only the docs builds the consent app in Python, basic and customized: time to a first correct decision, and whether they had to read Rust |
+  | F | onto on every platform with local models: `onto-models` / `onto-remote` split, a wasm-capable runtime, the OpenJev local judge, UniFFI and wasm bindings; `docs/11-platforms.md` | support-commons, incident-response, consent, hospital-discharge / benefits as on-device apps · people whose cases must not leave the device | accuracy and p50/p95 per device (M4 Mac, iPhone 15 Pro – 18 Pro) with no network, beside Jev |
   | E | M5: OSIL bridge (functor reports as preservation contracts) | secure-infrastructure-change, or OSIL's own repository governance · to be grounded in OSIL's docs first | an onto functor report and an OSIL preservation claim say the same thing |
 
 - **Consensus policies (A2 done):** only columns that concluded count;
@@ -782,6 +792,13 @@ streaming them is open (§11).
   review; column switch; natural transformations; geometry (research).
 
 ## 11. Open questions
+
+- **Labelled demo cases reach the model.** `support-commons/large.onto`
+  declares no `state`, so a case's whole JSON, its `expected` label
+  included, is shown to the judge; accuracy measured on `large.jobs` is
+  optimistic unless the label is removed (the appstudio bench does) or
+  the demo declares `state { goal; }` / `invariant unseen: case.expected`.
+  The reported Jev run (22 tickets, 1.4 s) was made the same way.
 
 - **Resume (M4).** How an answer from outside (a person, another system)
   re-enters a stopped walk: the same record or a new one with an `after`

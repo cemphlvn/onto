@@ -1,0 +1,190 @@
+{
+ "model": "tkgd-norm:tkg-suyu-d128",
+ "tickets": 22,
+ "top1": 4,
+ "engine_correct": 0,
+ "answered": 0,
+ "rank_mean": 12.2,
+ "mrr": 0.298,
+ "precision": null,
+ "judge_ms_mean": 3210.0,
+ "wall_s": 6.25,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "cancel_subscription",
+   "p": 0.066,
+   "p_label": 0.033,
+   "rank": 7,
+   "selected": null
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "slow_performance",
+   "p": 0.054,
+   "p_label": 0.027,
+   "rank": 12,
+   "selected": null
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "invoice_request",
+   "p": 0.05,
+   "p_label": 0.05,
+   "rank": 1,
+   "selected": null
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "slow_performance",
+   "p": 0.048,
+   "p_label": 0.023,
+   "rank": 22,
+   "selected": null
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "slow_performance",
+   "p": 0.051,
+   "p_label": 0.051,
+   "rank": 1,
+   "selected": null
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "error_message",
+   "p": 0.053,
+   "p_label": 0.053,
+   "rank": 1,
+   "selected": null
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "slow_performance",
+   "p": 0.051,
+   "p_label": 0.034,
+   "rank": 7,
+   "selected": null
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "cancel_subscription",
+   "p": 0.058,
+   "p_label": 0.02,
+   "rank": 30,
+   "selected": null
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "account_takeover",
+   "p": 0.046,
+   "p_label": 0.018,
+   "rank": 31,
+   "selected": null
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "cancel_subscription",
+   "p": 0.046,
+   "p_label": 0.037,
+   "rank": 3,
+   "selected": null
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "account_takeover",
+   "p": 0.052,
+   "p_label": 0.044,
+   "rank": 4,
+   "selected": null
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "cancel_subscription",
+   "p": 0.053,
+   "p_label": 0.039,
+   "rank": 5,
+   "selected": null
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "cancel_subscription",
+   "p": 0.056,
+   "p_label": 0.036,
+   "rank": 3,
+   "selected": null
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "slow_performance",
+   "p": 0.053,
+   "p_label": 0.038,
+   "rank": 4,
+   "selected": null
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "cancel_subscription",
+   "p": 0.05,
+   "p_label": 0.038,
+   "rank": 3,
+   "selected": null
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "cancel_subscription",
+   "p": 0.046,
+   "p_label": 0.014,
+   "rank": 38,
+   "selected": null
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "account_takeover",
+   "p": 0.047,
+   "p_label": 0.021,
+   "rank": 27,
+   "selected": null
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "account_takeover",
+   "p": 0.074,
+   "p_label": 0.03,
+   "rank": 11,
+   "selected": null
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "cancel_subscription",
+   "p": 0.054,
+   "p_label": 0.019,
+   "rank": 31,
+   "selected": null
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "slow_performance",
+   "p": 0.059,
+   "p_label": 0.034,
+   "rank": 7,
+   "selected": null
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "slow_performance",
+   "p": 0.048,
+   "p_label": 0.026,
+   "rank": 19,
+   "selected": null
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "legal_notice",
+   "p": 0.051,
+   "p_label": 0.051,
+   "rank": 1,
+   "selected": null
+  }
+ }
+}

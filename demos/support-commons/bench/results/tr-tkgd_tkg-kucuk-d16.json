@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-kucuk-d16",
+ "tickets": 22,
+ "top1": 1,
+ "engine_correct": 0,
+ "answered": 16,
+ "rank_mean": 20.4,
+ "mrr": 0.14,
+ "precision": 0.0,
+ "judge_ms_mean": 2781.8,
+ "wall_s": 5.23,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "app_crash",
+   "p": 0.721,
+   "p_label": 0.269,
+   "rank": 2,
+   "selected": "app_crash"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "double_charge",
+   "p": 0.702,
+   "p_label": 0.0,
+   "rank": 36,
+   "selected": "double_charge"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "double_charge",
+   "p": 0.567,
+   "p_label": 0.002,
+   "rank": 5,
+   "selected": null
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "app_crash",
+   "p": 0.761,
+   "p_label": 0.007,
+   "rank": 4,
+   "selected": "app_crash"
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "app_crash",
+   "p": 0.966,
+   "p_label": 0.0,
+   "rank": 40,
+   "selected": "app_crash"
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "app_crash",
+   "p": 0.694,
+   "p_label": 0.0,
+   "rank": 31,
+   "selected": "app_crash"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "app_crash",
+   "p": 0.447,
+   "p_label": 0.447,
+   "rank": 1,
+   "selected": null
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "app_crash",
+   "p": 0.682,
+   "p_label": 0.0,
+   "rank": 24,
+   "selected": "app_crash"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "double_charge",
+   "p": 0.496,
+   "p_label": 0.0,
+   "rank": 21,
+   "selected": null
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "double_charge",
+   "p": 0.529,
+   "p_label": 0.0,
+   "rank": 8,
+   "selected": null
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "app_crash",
+   "p": 0.785,
+   "p_label": 0.0,
+   "rank": 37,
+   "selected": "app_crash"
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "double_charge",
+   "p": 0.705,
+   "p_label": 0.0,
+   "rank": 9,
+   "selected": "double_charge"
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "app_crash",
+   "p": 0.807,
+   "p_label": 0.0,
+   "rank": 31,
+   "selected": "app_crash"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "app_crash",
+   "p": 0.984,
+   "p_label": 0.0,
+   "rank": 15,
+   "selected": "app_crash"
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "app_crash",
+   "p": 0.987,
+   "p_label": 0.0,
+   "rank": 38,
+   "selected": "app_crash"
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "double_charge",
+   "p": 0.566,
+   "p_label": 0.004,
+   "rank": 4,
+   "selected": null
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "app_crash",
+   "p": 0.939,
+   "p_label": 0.0,
+   "rank": 18,
+   "selected": "app_crash"
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "double_charge",
+   "p": 0.563,
+   "p_label": 0.0,
+   "rank": 18,
+   "selected": null
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "app_crash",
+   "p": 0.757,
+   "p_label": 0.0,
+   "rank": 35,
+   "selected": "app_crash"
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "app_crash",
+   "p": 0.667,
+   "p_label": 0.0,
+   "rank": 39,
+   "selected": "app_crash"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "app_crash",
+   "p": 0.605,
+   "p_label": 0.0,
+   "rank": 23,
+   "selected": "app_crash"
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "app_crash",
+   "p": 0.776,
+   "p_label": 0.0,
+   "rank": 9,
+   "selected": "app_crash"
+  }
+ }
+}

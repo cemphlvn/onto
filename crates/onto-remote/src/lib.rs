@@ -1,5 +1,8 @@
-//! Live model clients: Jev (TypeSafe System One) as the chooser, any
-//! OpenRouter chat model as the proposer.
+//! Remote model clients: Jev (TypeSafe System One) as the judge and
+//! critic, any OpenRouter chat model as the proposer. The engine calls
+//! them concurrently, up to `judge_concurrency` / `proposer_concurrency`
+//! requests in flight. `Tkgd` judges through fonto's local TKG server,
+//! for benchmarks.
 
 use std::time::Duration;
 
@@ -8,12 +11,19 @@ use onto_core::category::NONE_OF_THESE;
 use onto_core::walk::{Answer, Distribution, Proposal};
 use serde_json::{Value, json};
 
-use crate::model::{
+use onto_models::{
     Candidate, Critic, FrameRequest, Judge, ModelError, NoulQuestion, ProposalRequest, Proposer,
     Usage,
 };
 
+mod tkgd;
+pub use tkgd::Tkgd;
+
 const MAX_ATTEMPTS: u32 = 4;
+
+fn transport(e: reqwest::Error) -> ModelError {
+    ModelError::Http(e.to_string())
+}
 
 /// POSTs JSON, retrying 429/529/5xx and transport errors with exponential
 /// backoff (250ms, 500ms, 1s).
@@ -29,7 +39,7 @@ async fn post_json(
         let result = http.post(url).bearer_auth(key).json(body).send().await;
         let retry = match result {
             Ok(resp) if resp.status().is_success() => {
-                let v = resp.json::<Value>().await?;
+                let v = resp.json::<Value>().await.map_err(transport)?;
                 return Ok((v, attempt));
             }
             Ok(resp) => {
@@ -41,7 +51,7 @@ async fn post_json(
                 }
                 err
             }
-            Err(e) => ModelError::Http(e),
+            Err(e) => transport(e),
         };
         if attempt >= MAX_ATTEMPTS {
             return Err(retry);
@@ -140,17 +150,6 @@ impl Critic for Jev {
     }
 }
 
-/// How an arrow reads as an option, condition or level: its instructions
-/// when declared (text gets the target appended; JSON is wrapped with it),
-/// else a sentence built from its name.
-fn describe(c: &Candidate) -> Value {
-    match &c.instructions {
-        Some(Value::String(t)) => json!(format!("{t} (leads to {})", c.to)),
-        Some(structured) => json!({"leads_to": c.to, "description": structured}),
-        None => json!(format!("follow `{}` to {}", c.arrow, c.to)),
-    }
-}
-
 /// The frame as TypeSafe questions, one request per frame.
 fn render(req: &FrameRequest) -> Result<Value, ModelError> {
     // After a fork, each branch handles one aspect of the case.
@@ -178,7 +177,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
             let mut criteria: serde_json::Map<String, Value> = req
                 .candidates
                 .iter()
-                .map(|c| (c.arrow.clone(), describe(c)))
+                .map(|c| (c.arrow.clone(), c.describe()))
                 .collect();
             criteria.insert(
                 NONE_OF_THESE.into(),
@@ -194,7 +193,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
             let mut qs = serde_json::Map::new();
             for (i, c) in req.candidates.iter().enumerate() {
                 let mut instructions = json!({
-                    "condition": describe(c),
+                    "condition": c.describe(),
                     "question": format!("Given `goal`, the case, and the walk so far (`hops`), does `condition` hold for this case?{scope}"),
                 });
                 if let Some(frame_question) = &req.instructions {
@@ -206,7 +205,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
                 );
             }
             if req.can_fork && !req.parallel && req.candidates.len() > 1 {
-                let options: Vec<Value> = req.candidates.iter().map(describe).collect();
+                let options: Vec<Value> = req.candidates.iter().map(Candidate::describe).collect();
                 qs.insert("fork".into(), json!({
                     "type": "noul",
                     "instructions": {
@@ -222,7 +221,7 @@ fn render(req: &FrameRequest) -> Result<Value, ModelError> {
             Value::Object(qs)
         }
         Primitive::Score => {
-            let levels: Vec<Value> = req.candidates.iter().map(describe).collect();
+            let levels: Vec<Value> = req.candidates.iter().map(Candidate::describe).collect();
             json!({"level": {
                 "type": "score",
                 "instructions": question("Where does this case fall on the scale, given `goal`?"),

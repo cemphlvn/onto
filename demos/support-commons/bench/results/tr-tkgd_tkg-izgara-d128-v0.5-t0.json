@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-izgara-d128-v0.5-t0",
+ "tickets": 22,
+ "top1": 2,
+ "engine_correct": 2,
+ "answered": 17,
+ "rank_mean": 20.0,
+ "mrr": 0.158,
+ "precision": 0.12,
+ "judge_ms_mean": 3444.5,
+ "wall_s": 6.04,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "phishing_report",
+   "p": 0.847,
+   "p_label": 0.0,
+   "rank": 30,
+   "selected": "phishing_report"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "phishing_report",
+   "p": 0.903,
+   "p_label": 0.0,
+   "rank": 31,
+   "selected": "phishing_report"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "phishing_report",
+   "p": 0.718,
+   "p_label": 0.0,
+   "rank": 33,
+   "selected": "phishing_report"
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "phishing_report",
+   "p": 0.522,
+   "p_label": 0.0,
+   "rank": 23,
+   "selected": null
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "phishing_report",
+   "p": 0.701,
+   "p_label": 0.0,
+   "rank": 38,
+   "selected": "phishing_report"
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "phishing_report",
+   "p": 0.821,
+   "p_label": 0.0,
+   "rank": 18,
+   "selected": "phishing_report"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "suspicious_login",
+   "p": 0.535,
+   "p_label": 0.0,
+   "rank": 18,
+   "selected": null
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "phishing_report",
+   "p": 0.945,
+   "p_label": 0.0,
+   "rank": 27,
+   "selected": "phishing_report"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "suspicious_login",
+   "p": 0.583,
+   "p_label": 0.0,
+   "rank": 10,
+   "selected": null
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "phishing_report",
+   "p": 0.924,
+   "p_label": 0.0,
+   "rank": 16,
+   "selected": "phishing_report"
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "accessibility",
+   "p": 0.418,
+   "p_label": 0.0,
+   "rank": 26,
+   "selected": null
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "how_to_use",
+   "p": 0.638,
+   "p_label": 0.0,
+   "rank": 40,
+   "selected": "how_to_use"
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "phishing_report",
+   "p": 0.727,
+   "p_label": 0.0,
+   "rank": 14,
+   "selected": "phishing_report"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "phishing_report",
+   "p": 0.921,
+   "p_label": 0.004,
+   "rank": 3,
+   "selected": "phishing_report"
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "phishing_report",
+   "p": 0.949,
+   "p_label": 0.0,
+   "rank": 32,
+   "selected": "phishing_report"
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "phishing_report",
+   "p": 0.661,
+   "p_label": 0.661,
+   "rank": 1,
+   "selected": "phishing_report"
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "suspicious_login",
+   "p": 0.779,
+   "p_label": 0.779,
+   "rank": 1,
+   "selected": "suspicious_login"
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "phishing_report",
+   "p": 0.585,
+   "p_label": 0.001,
+   "rank": 9,
+   "selected": null
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "phishing_report",
+   "p": 0.679,
+   "p_label": 0.0,
+   "rank": 8,
+   "selected": "phishing_report"
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "phishing_report",
+   "p": 0.737,
+   "p_label": 0.0,
+   "rank": 28,
+   "selected": "phishing_report"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "phishing_report",
+   "p": 0.97,
+   "p_label": 0.002,
+   "rank": 5,
+   "selected": "phishing_report"
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "phishing_report",
+   "p": 0.813,
+   "p_label": 0.0,
+   "rank": 28,
+   "selected": "phishing_report"
+  }
+ }
+}

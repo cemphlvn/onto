@@ -7,16 +7,31 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-memory-stats.workspace = true
 onto-core = { workspace = true, features = ["serde"] }
-reqwest.workspace = true
+onto-models.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["sync", "macros"] }
 tracing.workspace = true
 tracing-subscriber.workspace = true
+
+# The executor (D70): tokio natively, the browser's event loop on wasm32.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+memory-stats.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "time"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+gloo-timers.workspace = true
+wasm-bindgen-futures.workspace = true
+web-time.workspace = true
 
 [dev-dependencies]
 base64 = "0.23.1"
 ed25519-dalek = "2.2"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = "0.3"

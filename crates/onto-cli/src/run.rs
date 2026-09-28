@@ -5,13 +5,13 @@ use std::time::Duration;
 
 use clap::{Args, ValueEnum};
 use onto_core::walk::{Answer, Proposal};
+use onto_remote::{Jev, OpenRouter, Tkgd};
 use onto_runtime::engine::StepRecord;
 use onto_runtime::frames::{Mode, PotentialityKind, Resolution};
 use onto_runtime::model::{
     Critic, FrameRequest, Judge, MockJudge, MockProposer, ModelError, NoulQuestion,
     ProposalRequest, Proposer, Usage,
 };
-use onto_runtime::providers::{Jev, OpenRouter};
 use onto_runtime::{Config, Engine, Job, Policy, RunReport, telemetry};
 use serde_json::{Value, json};
 
@@ -76,6 +76,13 @@ enum PolicyArg {
 pub enum AnyJudge {
     Jev(Jev),
     Mock(MockJudge),
+    /// `--judge-model tkgd:<model>`: a TKG model behind fonto's tkgd
+    /// server, read by calibrated likelihood (Turkish graphs only).
+    Tkgd(Tkgd),
+    /// `--judge-model local:<file.gguf>` (feature `local`): the OpenJev
+    /// method on this machine, no network.
+    #[cfg(feature = "local")]
+    Local(onto_local::LocalJudge),
 }
 
 impl Judge for AnyJudge {
@@ -83,12 +90,18 @@ impl Judge for AnyJudge {
         match self {
             Self::Jev(j) => Judge::name(j),
             Self::Mock(j) => Judge::name(j),
+            Self::Tkgd(j) => Judge::name(j),
+            #[cfg(feature = "local")]
+            Self::Local(j) => Judge::name(j),
         }
     }
     async fn judge(&self, req: FrameRequest) -> Result<(Answer, Usage), ModelError> {
         match self {
             Self::Jev(j) => j.judge(req).await,
             Self::Mock(j) => j.judge(req).await,
+            Self::Tkgd(j) => j.judge(req).await,
+            #[cfg(feature = "local")]
+            Self::Local(j) => j.judge(req).await,
         }
     }
 }
@@ -99,6 +112,9 @@ impl Critic for AnyJudge {
         match self {
             Self::Jev(j) => Critic::name(j),
             Self::Mock(j) => Critic::name(j),
+            Self::Tkgd(j) => Critic::name(j),
+            #[cfg(feature = "local")]
+            Self::Local(j) => Critic::name(j),
         }
     }
     async fn nouls(
@@ -109,6 +125,9 @@ impl Critic for AnyJudge {
         match self {
             Self::Jev(j) => j.nouls(state, questions).await,
             Self::Mock(j) => j.nouls(state, questions).await,
+            Self::Tkgd(j) => j.nouls(state, questions).await,
+            #[cfg(feature = "local")]
+            Self::Local(j) => j.nouls(state, questions).await,
         }
     }
 }
@@ -205,10 +224,20 @@ pub fn models(
     let http = reqwest::Client::builder()
         .timeout(Duration::from_secs(60))
         .build()?;
+    let local = judge_model
+        .as_deref()
+        .and_then(|m| m.strip_prefix("local:"));
     let judge = if mock {
         AnyJudge::Mock(MockJudge {
             latency: Duration::from_millis(150),
         })
+    } else if let Some(gguf) = local {
+        local_judge(gguf)?
+    } else if let Some(t) = judge_model
+        .as_deref()
+        .and_then(|m| Tkgd::parse(http.clone(), m))
+    {
+        AnyJudge::Tkgd(t)
     } else {
         AnyJudge::Jev(
             Jev::from_env(http.clone(), judge_model)
@@ -226,6 +255,17 @@ pub fn models(
         )
     };
     Ok((judge, proposer))
+}
+
+#[cfg(feature = "local")]
+fn local_judge(gguf: &str) -> Result<AnyJudge, BoxError> {
+    let opts = onto_local::llama::LlamaOptions::new(gguf);
+    Ok(AnyJudge::Local(onto_local::llama::judge(opts)?))
+}
+
+#[cfg(not(feature = "local"))]
+fn local_judge(_: &str) -> Result<AnyJudge, BoxError> {
+    Err("this onto was built without local models: cargo build -p onto-cli --features local-metal (or local, local-cuda, local-vulkan)".into())
 }
 
 /// Every frame record of the run, walks in id order, as JSON lines.

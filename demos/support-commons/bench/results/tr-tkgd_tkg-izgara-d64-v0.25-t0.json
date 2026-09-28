@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-izgara-d64-v0.25-t0",
+ "tickets": 22,
+ "top1": 0,
+ "engine_correct": 0,
+ "answered": 14,
+ "rank_mean": 18.1,
+ "mrr": 0.12,
+ "precision": 0.0,
+ "judge_ms_mean": 2924.4,
+ "wall_s": 5.83,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "refund",
+   "p": 0.936,
+   "p_label": 0.01,
+   "rank": 4,
+   "selected": "refund"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "where_is_order",
+   "p": 0.664,
+   "p_label": 0.198,
+   "rank": 2,
+   "selected": "where_is_order"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "refund",
+   "p": 0.549,
+   "p_label": 0.0,
+   "rank": 22,
+   "selected": null
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "where_is_order",
+   "p": 0.982,
+   "p_label": 0.0,
+   "rank": 30,
+   "selected": "where_is_order"
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "refund",
+   "p": 0.977,
+   "p_label": 0.0,
+   "rank": 24,
+   "selected": "refund"
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "refund",
+   "p": 0.86,
+   "p_label": 0.0,
+   "rank": 28,
+   "selected": "refund"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "where_is_order",
+   "p": 0.989,
+   "p_label": 0.0,
+   "rank": 7,
+   "selected": "where_is_order"
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "legal_notice",
+   "p": 0.62,
+   "p_label": 0.0,
+   "rank": 27,
+   "selected": "legal_notice"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "change_email",
+   "p": 0.55,
+   "p_label": 0.027,
+   "rank": 5,
+   "selected": null
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "refund",
+   "p": 0.405,
+   "p_label": 0.0,
+   "rank": 24,
+   "selected": null
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "where_is_order",
+   "p": 0.557,
+   "p_label": 0.0,
+   "rank": 33,
+   "selected": null
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "refund",
+   "p": 0.978,
+   "p_label": 0.002,
+   "rank": 4,
+   "selected": "refund"
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "where_is_order",
+   "p": 0.962,
+   "p_label": 0.0,
+   "rank": 32,
+   "selected": "where_is_order"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "where_is_order",
+   "p": 0.953,
+   "p_label": 0.0,
+   "rank": 22,
+   "selected": "where_is_order"
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "legal_notice",
+   "p": 0.461,
+   "p_label": 0.009,
+   "rank": 5,
+   "selected": null
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "where_is_order",
+   "p": 0.778,
+   "p_label": 0.0,
+   "rank": 35,
+   "selected": "where_is_order"
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "where_is_order",
+   "p": 0.588,
+   "p_label": 0.0,
+   "rank": 32,
+   "selected": null
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "where_is_order",
+   "p": 0.86,
+   "p_label": 0.002,
+   "rank": 7,
+   "selected": "where_is_order"
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "feature_request",
+   "p": 0.371,
+   "p_label": 0.258,
+   "rank": 3,
+   "selected": null
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "delivered_not_received",
+   "p": 0.944,
+   "p_label": 0.0,
+   "rank": 8,
+   "selected": "delivered_not_received"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "refund",
+   "p": 0.501,
+   "p_label": 0.0,
+   "rank": 26,
+   "selected": null
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "where_is_order",
+   "p": 0.862,
+   "p_label": 0.0,
+   "rank": 18,
+   "selected": "where_is_order"
+  }
+ }
+}

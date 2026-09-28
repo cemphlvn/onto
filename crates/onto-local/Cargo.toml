@@ -1,0 +1,22 @@
+[package]
+name = "onto-local"
+description = "Local System-1 judges: option probabilities read from one forward pass of an open model (the OpenJev method), on the device"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[features]
+default = ["llama"]
+# llama.cpp through llama-cpp-2: macOS/iOS (Metal), Linux, Windows, Android.
+llama = ["dep:llama-cpp-2"]
+metal = ["llama", "llama-cpp-2/metal"]
+cuda = ["llama", "llama-cpp-2/cuda"]
+vulkan = ["llama", "llama-cpp-2/vulkan"]
+
+[dependencies]
+onto-core.workspace = true
+onto-models.workspace = true
+serde_json.workspace = true
+tokio = { workspace = true, features = ["sync"] }
+llama-cpp-2 = { version = "0.1.157", optional = true, default-features = false }

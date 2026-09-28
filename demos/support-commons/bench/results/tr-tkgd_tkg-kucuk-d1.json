@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-kucuk-d1",
+ "tickets": 22,
+ "top1": 1,
+ "engine_correct": 0,
+ "answered": 0,
+ "rank_mean": 21.5,
+ "mrr": 0.109,
+ "precision": null,
+ "judge_ms_mean": 3042.6,
+ "wall_s": 5.61,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "legal_notice",
+   "p": 0.029,
+   "p_label": 0.024,
+   "rank": 30,
+   "selected": null
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "legal_notice",
+   "p": 0.036,
+   "p_label": 0.031,
+   "rank": 6,
+   "selected": null
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "legal_notice",
+   "p": 0.034,
+   "p_label": 0.031,
+   "rank": 4,
+   "selected": null
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "legal_notice",
+   "p": 0.033,
+   "p_label": 0.024,
+   "rank": 22,
+   "selected": null
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "legal_notice",
+   "p": 0.034,
+   "p_label": 0.026,
+   "rank": 20,
+   "selected": null
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "legal_notice",
+   "p": 0.033,
+   "p_label": 0.028,
+   "rank": 8,
+   "selected": null
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "legal_notice",
+   "p": 0.032,
+   "p_label": 0.025,
+   "rank": 20,
+   "selected": null
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "legal_notice",
+   "p": 0.035,
+   "p_label": 0.02,
+   "rank": 36,
+   "selected": null
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "legal_notice",
+   "p": 0.034,
+   "p_label": 0.024,
+   "rank": 23,
+   "selected": null
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "legal_notice",
+   "p": 0.032,
+   "p_label": 0.024,
+   "rank": 24,
+   "selected": null
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "legal_notice",
+   "p": 0.034,
+   "p_label": 0.021,
+   "rank": 35,
+   "selected": null
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "legal_notice",
+   "p": 0.032,
+   "p_label": 0.025,
+   "rank": 21,
+   "selected": null
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "legal_notice",
+   "p": 0.033,
+   "p_label": 0.027,
+   "rank": 11,
+   "selected": null
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "legal_notice",
+   "p": 0.034,
+   "p_label": 0.019,
+   "rank": 39,
+   "selected": null
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "legal_notice",
+   "p": 0.032,
+   "p_label": 0.024,
+   "rank": 25,
+   "selected": null
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "legal_notice",
+   "p": 0.032,
+   "p_label": 0.02,
+   "rank": 39,
+   "selected": null
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "legal_notice",
+   "p": 0.029,
+   "p_label": 0.026,
+   "rank": 11,
+   "selected": null
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "legal_notice",
+   "p": 0.033,
+   "p_label": 0.027,
+   "rank": 10,
+   "selected": null
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "legal_notice",
+   "p": 0.033,
+   "p_label": 0.026,
+   "rank": 17,
+   "selected": null
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "legal_notice",
+   "p": 0.033,
+   "p_label": 0.022,
+   "rank": 34,
+   "selected": null
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "legal_notice",
+   "p": 0.034,
+   "p_label": 0.02,
+   "rank": 38,
+   "selected": null
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "legal_notice",
+   "p": 0.033,
+   "p_label": 0.033,
+   "rank": 1,
+   "selected": null
+  }
+ }
+}

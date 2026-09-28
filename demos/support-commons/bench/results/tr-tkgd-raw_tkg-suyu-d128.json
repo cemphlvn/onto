@@ -1,0 +1,166 @@
+{
+ "model": "tkgd-raw:tkg-suyu-d128",
+ "tickets": 22,
+ "top1": 2,
+ "engine_correct": 2,
+ "answered": 21,
+ "precision": 0.1,
+ "judge_ms_mean": 2384.2,
+ "wall_s": 5.02,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "delete_account",
+   "p": 0.925,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "delete_account",
+   "p": 0.759,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "delete_account",
+   "p": 0.994,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "delete_account",
+   "p": 0.734,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "delete_account",
+   "p": 0.808,
+   "p_label": 0.192,
+   "selected": "delete_account"
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "slow_performance",
+   "p": 0.938,
+   "p_label": 0.003,
+   "selected": "slow_performance"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "delete_account",
+   "p": 0.999,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "delete_account",
+   "p": 0.69,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "delete_account",
+   "p": 0.993,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "delete_account",
+   "p": 0.998,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "delete_account",
+   "p": 1.0,
+   "p_label": 1.0,
+   "selected": "delete_account"
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "delete_account",
+   "p": 0.99,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "damaged_item",
+   "p": 0.865,
+   "p_label": 0.865,
+   "selected": "damaged_item"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "damaged_item",
+   "p": 0.885,
+   "p_label": 0.0,
+   "selected": "damaged_item"
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "delete_account",
+   "p": 0.485,
+   "p_label": 0.0,
+   "selected": null
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "delete_account",
+   "p": 0.971,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "damaged_item",
+   "p": 0.966,
+   "p_label": 0.0,
+   "selected": "damaged_item"
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "delete_account",
+   "p": 1.0,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "delete_account",
+   "p": 0.98,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "slow_performance",
+   "p": 0.999,
+   "p_label": 0.0,
+   "selected": "slow_performance"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "slow_performance",
+   "p": 0.623,
+   "p_label": 0.0,
+   "selected": "slow_performance"
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "delete_account",
+   "p": 0.99,
+   "p_label": 0.0,
+   "selected": "delete_account"
+  }
+ }
+}

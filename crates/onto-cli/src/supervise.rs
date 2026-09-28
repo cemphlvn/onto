@@ -13,8 +13,8 @@ use std::time::Duration;
 use clap::Args;
 use onto_core::supervise::{Admission, Outcome, structural};
 use onto_core::walk::Proposal;
+use onto_remote::Jev;
 use onto_runtime::model::{Critic, MockCritic, ModelError, NoulQuestion, Usage};
-use onto_runtime::providers::Jev;
 use onto_runtime::supervisor::{Review, review};
 use serde_json::Value;
 

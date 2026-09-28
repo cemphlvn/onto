@@ -22,7 +22,9 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::pin::pin;
 use std::sync::Mutex;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+
+use crate::rt::Instant;
 
 use onto_core::{Join, ObjId};
 use tokio::sync::Notify;

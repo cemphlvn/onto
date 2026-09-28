@@ -1,0 +1,190 @@
+{
+ "model": "tkgd:tkg-izgara-d256-v1.0-t0",
+ "tickets": 22,
+ "top1": 0,
+ "engine_correct": 0,
+ "answered": 19,
+ "rank_mean": 22.5,
+ "mrr": 0.084,
+ "precision": 0.0,
+ "judge_ms_mean": 3496.3,
+ "wall_s": 6.26,
+ "per_ticket": {
+  "L-1": {
+   "label": "double_charge",
+   "top": "two_factor",
+   "p": 0.889,
+   "p_label": 0.105,
+   "rank": 2,
+   "selected": "two_factor"
+  },
+  "L-2": {
+   "label": "refund",
+   "top": "two_factor",
+   "p": 0.719,
+   "p_label": 0.0,
+   "rank": 9,
+   "selected": "two_factor"
+  },
+  "L-3": {
+   "label": "invoice_request",
+   "top": "two_factor",
+   "p": 0.741,
+   "p_label": 0.0,
+   "rank": 19,
+   "selected": "two_factor"
+  },
+  "L-4": {
+   "label": "payment_failed",
+   "top": "two_factor",
+   "p": 0.673,
+   "p_label": 0.0,
+   "rank": 19,
+   "selected": "two_factor"
+  },
+  "L-5": {
+   "label": "slow_performance",
+   "top": "double_charge",
+   "p": 0.931,
+   "p_label": 0.0,
+   "rank": 36,
+   "selected": "double_charge"
+  },
+  "L-6": {
+   "label": "error_message",
+   "top": "double_charge",
+   "p": 0.942,
+   "p_label": 0.0,
+   "rank": 25,
+   "selected": "double_charge"
+  },
+  "L-7": {
+   "label": "app_crash",
+   "top": "two_factor",
+   "p": 0.991,
+   "p_label": 0.0,
+   "rank": 19,
+   "selected": "two_factor"
+  },
+  "L-8": {
+   "label": "integration_broken",
+   "top": "double_charge",
+   "p": 0.717,
+   "p_label": 0.0,
+   "rank": 23,
+   "selected": "double_charge"
+  },
+  "L-9": {
+   "label": "login_problem",
+   "top": "two_factor",
+   "p": 0.664,
+   "p_label": 0.0,
+   "rank": 14,
+   "selected": "two_factor"
+  },
+  "L-10": {
+   "label": "two_factor",
+   "top": "double_charge",
+   "p": 0.731,
+   "p_label": 0.123,
+   "rank": 3,
+   "selected": "double_charge"
+  },
+  "L-11": {
+   "label": "delete_account",
+   "top": "double_charge",
+   "p": 0.644,
+   "p_label": 0.0,
+   "rank": 30,
+   "selected": "double_charge"
+  },
+  "L-12": {
+   "label": "delivered_not_received",
+   "top": "two_factor",
+   "p": 0.72,
+   "p_label": 0.0,
+   "rank": 27,
+   "selected": "two_factor"
+  },
+  "L-13": {
+   "label": "damaged_item",
+   "top": "double_charge",
+   "p": 0.951,
+   "p_label": 0.0,
+   "rank": 32,
+   "selected": "double_charge"
+  },
+  "L-14": {
+   "label": "wrong_item",
+   "top": "double_charge",
+   "p": 0.987,
+   "p_label": 0.0,
+   "rank": 22,
+   "selected": "double_charge"
+  },
+  "L-15": {
+   "label": "feature_request",
+   "top": "double_charge",
+   "p": 0.975,
+   "p_label": 0.0,
+   "rank": 34,
+   "selected": "double_charge"
+  },
+  "L-16": {
+   "label": "phishing_report",
+   "top": "two_factor",
+   "p": 0.59,
+   "p_label": 0.0,
+   "rank": 39,
+   "selected": null
+  },
+  "L-17": {
+   "label": "suspicious_login",
+   "top": "two_factor",
+   "p": 0.916,
+   "p_label": 0.0,
+   "rank": 22,
+   "selected": "two_factor"
+  },
+  "L-18": {
+   "label": "data_export_request",
+   "top": "two_factor",
+   "p": 0.907,
+   "p_label": 0.0,
+   "rank": 8,
+   "selected": "two_factor"
+  },
+  "L-19": {
+   "label": "where_is_order",
+   "top": "two_factor",
+   "p": 0.704,
+   "p_label": 0.0,
+   "rank": 28,
+   "selected": "two_factor"
+  },
+  "L-20": {
+   "label": "integration_request",
+   "top": "two_factor",
+   "p": 0.999,
+   "p_label": 0.0,
+   "rank": 38,
+   "selected": "two_factor"
+  },
+  "L-21": {
+   "label": "accessibility",
+   "top": "double_charge",
+   "p": 0.582,
+   "p_label": 0.0,
+   "rank": 36,
+   "selected": null
+  },
+  "L-22": {
+   "label": "legal_notice",
+   "top": "double_charge",
+   "p": 0.574,
+   "p_label": 0.0,
+   "rank": 10,
+   "selected": null
+  }
+ }
+}

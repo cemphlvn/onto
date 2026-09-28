@@ -1,0 +1,48 @@
+# Support Commons, large, flat, Turkish: the same 40 intents (same ids), Turkish text (bench: README.md).
+
+category SupportLarge {
+    objects: Ticket, Refund, DoubleCharge, InvoiceRequest, PaymentFailed, UpdatePaymentMethod, PricingQuestion, CancelSubscription, Outage, SlowPerformance, ErrorMessage, DataSync, AppCrash, IntegrationBroken, HowToUse, LoginProblem, PasswordReset, TwoFactor, DeleteAccount, ChangeEmail, AccountLocked, WhereIsOrder, DeliveredNotReceived, DamagedItem, WrongItem, ChangeAddress, ReturnItem, FeatureRequest, IntegrationRequest, BugReportUi, Accessibility, RoadmapQuestion, PhishingReport, SuspiciousLogin, DataBreachConcern, VulnerabilityReport, AccountTakeover, DataExportRequest, PrivacyComplaint, LegalNotice, TermsQuestion;
+    about Ticket: "bir müşterinin desteğe gönderdiği mesaj";
+    frame Ticket: choice "Bu ne tür bir destek talebi?";
+    refund: Ticket -> Refund "müşteri bir ödemenin parasını geri istiyor";
+    double_charge: Ticket -> DoubleCharge "müşteriden aynı şey için iki kez ücret alındı";
+    invoice_request: Ticket -> InvoiceRequest "müşteri fatura, makbuz ya da KDV belgesi istiyor";
+    payment_failed: Ticket -> PaymentFailed "bir ödeme ya da yenileme reddedildi veya başarısız oldu";
+    update_payment_method: Ticket -> UpdatePaymentMethod "müşteri kayıtlı kartını ya da ödeme yöntemini değiştirmek istiyor";
+    pricing_question: Ticket -> PricingQuestion "bir şeyin ne kadar tuttuğuna dair bir soru";
+    cancel_subscription: Ticket -> CancelSubscription "müşteri ücretli aboneliğini durdurmak istiyor";
+    outage: Ticket -> Outage "hizmet çöktü ya da erişilemiyor";
+    slow_performance: Ticket -> SlowPerformance "ürün çalışıyor ama yavaş";
+    error_message: Ticket -> ErrorMessage "bir işlem hata mesajıyla başarısız oluyor";
+    data_sync: Ticket -> DataSync "veriler eksik ya da cihazlar arasında eşleşmiyor";
+    app_crash: Ticket -> AppCrash "bir mobil ya da masaüstü uygulaması kapanıyor veya çöküyor";
+    integration_broken: Ticket -> IntegrationBroken "başka bir ürünle var olan bir entegrasyon çalışmayı bıraktı";
+    how_to_use: Ticket -> HowToUse "ürünün zaten desteklediği bir şeyin nasıl yapılacağını soruyor";
+    login_problem: Ticket -> LoginProblem "bilgileri doğru görünmesine rağmen giriş yapamıyor";
+    password_reset: Ticket -> PasswordReset "şifresini sıfırlamak ya da değiştirmek istiyor";
+    two_factor: Ticket -> TwoFactor "iki adımlı doğrulama kodlarıyla ya da doğrulama cihazıyla sorun yaşıyor";
+    delete_account: Ticket -> DeleteAccount "hesabını kapatmak istiyor";
+    change_email: Ticket -> ChangeEmail "hesabın e-posta adresini değiştirmek istiyor";
+    account_locked: Ticket -> AccountLocked "hesap kilitlendi ya da askıya alındı";
+    where_is_order: Ticket -> WhereIsOrder "bir siparişin nerede olduğunu ya da ne zaman geleceğini soruyor";
+    delivered_not_received: Ticket -> DeliveredNotReceived "teslim edildi görünüyor ama ulaşmadı";
+    damaged_item: Ticket -> DamagedItem "bir ürün hasarlı geldi";
+    wrong_item: Ticket -> WrongItem "sipariş edilenden farklı bir ürün geldi";
+    change_address: Ticket -> ChangeAddress "bir siparişin teslimat adresini değiştirmek istiyor";
+    return_item: Ticket -> ReturnItem "bir ürünü geri göndermek istiyor";
+    feature_request: Ticket -> FeatureRequest "ürünün sahip olmadığı bir özellik istiyor";
+    integration_request: Ticket -> IntegrationRequest "henüz var olmayan başka bir ürünle entegrasyon istiyor";
+    bug_report_ui: Ticket -> BugReportUi "arayüzde görsel ya da yerleşim sorunu bildiriyor";
+    accessibility: Ticket -> Accessibility "ürünü yardımcı teknolojiyle kullanırken yaşadığı bir sorunu bildiriyor";
+    roadmap_question: Ticket -> RoadmapQuestion "ürün için neyin planlandığını soruyor";
+    phishing_report: Ticket -> PhishingReport "şirketten geliyormuş gibi yapan bir mesajı bildiriyor";
+    suspicious_login: Ticket -> SuspiciousLogin "tanımadığı bir giriş etkinliğini bildiriyor";
+    data_breach_concern: Ticket -> DataBreachConcern "verilerinin sızdırıldığından endişe ediyor";
+    vulnerability_report: Ticket -> VulnerabilityReport "üründe bir güvenlik açığı bildiriyor";
+    account_takeover: Ticket -> AccountTakeover "hesabını başka birinin ele geçirdiğini söylüyor";
+    data_export_request: Ticket -> DataExportRequest "hakkında tutulan kişisel verilerin bir kopyasını istiyor";
+    privacy_complaint: Ticket -> PrivacyComplaint "kişisel verilerinin nasıl kullanıldığından şikâyet ediyor";
+    legal_notice: Ticket -> LegalNotice "resmi bir hukuki bildirim gönderiyor ya da duyuruyor";
+    terms_question: Ticket -> TermsQuestion "kullanım koşulları ya da bir sözleşme maddesi hakkında soruyor";
+    closed: Ticket, Refund, DoubleCharge, InvoiceRequest, PaymentFailed, UpdatePaymentMethod, PricingQuestion, CancelSubscription, Outage, SlowPerformance, ErrorMessage, DataSync, AppCrash, IntegrationBroken, HowToUse, LoginProblem, PasswordReset, TwoFactor, DeleteAccount, ChangeEmail, AccountLocked, WhereIsOrder, DeliveredNotReceived, DamagedItem, WrongItem, ChangeAddress, ReturnItem, FeatureRequest, IntegrationRequest, BugReportUi, Accessibility, RoadmapQuestion, PhishingReport, SuspiciousLogin, DataBreachConcern, VulnerabilityReport, AccountTakeover, DataExportRequest, PrivacyComplaint, LegalNotice, TermsQuestion;
+}

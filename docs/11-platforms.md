@@ -1,0 +1,167 @@
+# onto — On Every Platform, With Local Models
+
+Status: **design, agreed direction — 2026-09-25** (plan step F, beside
+M4). Step F1 is built; the rest is not. Code follows this document.
+
+## 1. What this layer is
+
+onto as an engine that runs **inside an app on a phone, in a browser, or
+on a desktop**, with its System-1 judge running **on the device**: no
+token cost, no case data leaving the device, no network needed. The same
+engine can still call remote models (Jev, OpenRouter) in parallel when an
+app chooses to.
+
+It extends `docs/10-bindings.md`, not replaces it: the same hourglass,
+the same rules (mechanism, not policy; Rust as the single source of
+truth; bindings only convert), with more clients at the top and the
+model layer split so that a client can take the local half, the remote
+half, or both.
+
+```
+   iOS / macOS app    Android app    PWA / web    Python    Rust callers
+        │ Swift           │ Kotlin       │ JS/TS      │
+   ─────┴─────────────────┴──────────────┴────────────┴──────────────────
+     onto-ffi (UniFFI)            onto-wasm         onto-py (docs/10)
+   ────────────────────────── FFI boundaries ────────────────────────────
+     onto-runtime   concurrent engine; executor: native (tokio) | wasm
+        │ holds any Judge / Proposer / Critic (type-erased)
+        ▼
+     onto-models    the model contract: traits, requests, answers, errors
+        ▲                         ▲
+     onto-local                onto-remote
+     OpenJev method over       Jev + OpenRouter over HTTP; parallel,
+     llama.cpp (GGUF);         retried, bounded by judge_concurrency
+     batcher: one prefix,
+     many option readouts
+   ──────────────────────────────────────────────────────────────────────
+     onto-core      categories, walks, proofs (sync; builds for wasm32)
+```
+
+## 2. The crates
+
+| crate | holds | depends on | builds for |
+|---|---|---|---|
+| `onto-core` | categories, parsing, walks, proofs | egg, serde_json, sha2, ed25519 | native, wasm32 |
+| `onto-models` | `Judge`, `Proposer`, `Critic`; `FrameRequest`, `ProposalRequest`, `Usage`, `ModelError`; type-erased `DynJudge` / `DynProposer` / `DynCritic` next (`docs/10` §4 item 1) | onto-core, serde | native, wasm32 |
+| `onto-remote` | Jev (judge, critic) and OpenRouter (proposer) clients: retries with backoff, one POST per request | onto-models, reqwest, tokio (time) | native (wasm later: reqwest's fetch backend) |
+| `onto-local` | the OpenJev judge (§4) and its batcher, behind a `Backend` trait: `llama.cpp` native, `wllama` through `onto-wasm` | onto-models | native, wasm32 |
+| `onto-runtime` | the engine, joins, frames, supervisor, trace; mocks | onto-core, onto-models, tokio (sync, macros; rt + time natively); wasm-bindgen-futures, gloo-timers, web-time on wasm32 | native, wasm32 |
+| `onto-ffi` | UniFFI surface: load, run, events, protocols as callback interfaces | onto-runtime, onto-local, onto-remote | iOS, Android, desktop |
+| `onto-wasm` | wasm-bindgen surface; a JS judge (wllama) as a protocol object | onto-runtime, onto-local | browsers |
+
+`onto-runtime` re-exports `onto_models` as `onto_runtime::model`, so
+callers written against the old path keep working.
+
+## 3. Rules
+
+1. **The model contract has no engine and no network.** A provider
+   (local, remote, a binding's callback) depends on `onto-models` only.
+2. **The engine has no HTTP client.** An app with only local models
+   ships no network code and no keys.
+3. **The engine has no executor of its own.** It uses `tokio::sync`
+   (runtime-free) and asks the `rt` module to spawn, sleep, read the
+   clock (`Instant`: `web-time` on wasm, where `std`'s panics) and collect
+   tasks: tokio natively, the JavaScript event loop on `wasm32`, chosen by
+   target, not by feature. Browser futures that are not `Send` cross the
+   model interfaces in `rt::SingleThread`, sound only on single-threaded
+   wasm (a build with `atomics` does not compile it). On one thread
+   the engine is still concurrent: walks interleave while a model call
+   is pending.
+4. **One model file everywhere.** Local judges read GGUF through
+   llama.cpp: natively on iOS (Metal), Android (Vulkan / CPU) and
+   desktop, and as `wllama` (llama.cpp in wasm) in browsers. The same
+   file, the same state, the same options give comparable results across
+   devices; only the hardware differs.
+5. **Calibration is per model.** Thresholds tuned on Jev (the unknown
+   band 0.3–0.7 of D21, `low_confidence`) are not assumed for a local
+   model. Each local model is measured on the demos' labelled cases
+   before an app relies on its probabilities, and its measured accuracy
+   is shown beside its speed.
+
+## 4. The local judge (`onto-local`)
+
+The OpenJev method (SemIf): the frame's state and question are one
+prompt; the options are labelled; **one forward pass**, then the logits
+of the option labels are read and normalized with a softmax. No token is
+sampled. A `choice` frame is one readout over its labels, a `noul` one
+readout over yes/no per question, a `score` one readout over levels.
+
+Parallelism on one device comes from **shared prefixes, not model
+copies**: one model is loaded; copies would contend for the same GPU.
+
+- The **batcher** collects the frame requests pending within a short
+  window. Requests with the same state prefix (the several questions of
+  a noul frame, or a critic's questions) are evaluated as one prefix
+  followed by one suffix per question.
+- Different cases are evaluated one prefix after another on the loaded
+  model; the engine keeps walking other cases meanwhile.
+- `judge_concurrency` bounds requests in flight to a remote API; for a
+  local judge the batcher's window and size are the bounds instead.
+
+Reference (SemIf's README, RTX 3090, Qwen3.5-4B): 2.33 decisions/s
+scored fresh, 10.75 with serial prefix reuse, 20.03 with parallel
+suffixes. No mobile measurement exists; step F3 produces one per device.
+
+### 4.1 Measured (2026-09-25, M4 Mac 16 GB, Metal, flat 41-option frame)
+
+The 22 labelled support tickets, `expected` removed from the case (see
+`docs/00` §11: the demo declares no `state`, so the label otherwise
+reaches the model). Top-1: the model's own first choice; engine: what the
+walk did at the 0.6 threshold (the rest escalated).
+
+| model (GGUF) | top-1 | engine correct | answered, precision | wall (22) | peak RSS |
+|---|---|---|---|---|---|
+| Qwen3-0.6B Q8_0 | 8/22 | 8/22 | 10, 80% | 8.8 s | 1.6 GB |
+| MiniCPM5-1B Q8_0 | 3/22 | 0/22 | 0 | 9.7 s | 1.4 GB |
+| MiniCPM5-2B Q4_K_M | 14/22 | 14/22 | 19, 74% | 28.4 s | 1.8 GB |
+| Qwen3.5-4B Q4_K_M | 21/22 | 19/22 | 19, 100% | 67.9 s | 2.8 GB |
+
+Readouts (`onto-local/src/llama.rs`):
+- frames of up to 52 options: one forward pass, the option letters'
+  logits (` A` with its leading space; a space token first in
+  vocabularies that split it);
+- wider frames (BANKING77's 77 intents, CLINC150's 150): likelihood.
+  Each option's own words plus the end token are scored as the whole
+  answer, as parallel sequences sharing the cached prompt (32 per decode),
+  minus the same under a content-free case (contextual calibration,
+  computed once per frame). Numbered options were tried first and
+  failed: small models put their mass on favourite numbers (`37`, `70`)
+  whatever the case; uncalibrated likelihood favoured options that are
+  likely a priori (surface-form competition).
+- prompts put the options and question first and the case last, so
+  every case at a frame reuses the cached prefix (support-commons: 22
+  tickets in 1.5 s instead of 8.8 s with Qwen3-0.6B).
+- rigid caches (hybrid models) are never cut: checkpoints of the
+  model state are restored instead, and the parallel option sequences
+  are cleared whole (Qwen3.5-4B: 4.6 s instead of 19 s per BANKING77
+  query).
+
+Found while measuring, and fixed:
+- the label is read with its leading space (` A`) after `Answer:`; a bare
+  `A` after a lone space token made MiniCPM5-1B choose `E` for every
+  ticket and cost every model accuracy;
+- hybrid models (Qwen3.5's linear-attention layers) cannot drop a suffix
+  of their cache: the scorer clears it and recomputes (no prefix reuse
+  for them);
+- the worker thread is joined on drop, or Metal asserts at exit.
+
+Model classes (from openjev.com): Qwen3 0.6B (639 MB) for phones and the
+browser, MiniCPM5 2B (1.56 GB), Qwen3.5 4B (3.01 GB) native only on
+devices with enough memory. Browsers cap a tab's memory well below the
+device's, so the PWA defaults to the small models.
+
+## 5. Plan
+
+| step | builds | test |
+|---|---|---|
+| F1 ✓ | `onto-models` (the contract) and `onto-remote` (providers) out of `onto-runtime`; the runtime has no reqwest | the whole workspace test suite and the CLI unchanged |
+| F2 ✓ | the `rt` module; `onto-runtime` builds and runs on `wasm32-unknown-unknown` | `tests/portable.rs`: triage and the 22 support-commons tickets give the same paths on tokio and on a JavaScript event loop (Node, `wasm-bindgen-test`); a browser run follows with F4 |
+| F3 ◐ | `onto-local`: the OpenJev judge over llama.cpp (llama-cpp-2; Metal, CUDA, Vulkan, CPU), token cache across prompts; `onto run --judge-model local:<gguf>` (feature `local-*`); the batcher of parallel suffixes still to build | support-commons on an M4 Mac, flat frame, no network (§4.1) |
+| F4 | `onto-wasm` + wllama; the first PWA (support-commons) with a benchmark screen | the same 22 tickets on iPhone 15 Pro – 18 Pro in Safari: accuracy, p50/p95, cases/s, memory |
+| F5 | `onto-ffi` (UniFFI), iOS and Android shells; incident-response, consent, hospital-discharge / benefits apps | each app's demo test, on device, with no network |
+
+## 6. Not in this layer
+
+How an app looks, what it asks a person, how it stores its library: the
+apps decide (`docs/10` §6). This layer only makes the engine and a local
+judge available on each platform.
