@@ -2,16 +2,17 @@
 # answer from an external model API, with the API key held in the
 # device's secure custody. No server takes part.
 #
-# Compiled by hand from ../osil/secret-custody.osil (SecretCustody) and
-# ../osil/keyed-call.osil (KeyedCall), following the mapping in
-# ../README.md; an `osil -> onto` compiler replaces the hand step later.
+# Draft, written by hand. The OSIL contracts it stands for (SecretCustody,
+# KeyedCall) are not written yet; they belong in the OSIL repository
+# (github.com/cemphlvn/OSIL), and an `osil -> onto` compiler replaces
+# this hand step later.
 #
 # What onto proves here: the order of the steps (presence before release,
 # release before sending), that no route exports the secret, and that no
 # model is ever shown it. What only the platform enforces: that the
 # wrapping key cannot leave secure hardware and that presence was really
-# verified. Each platform's adapter (../onto/adapters/) maps into KeyedCall
-# with a functor; its report is that platform's gap analysis.
+# verified. Each platform's adapter (not written yet) will map into
+# KeyedCall with a functor; its report is that platform's gap analysis.
 
 # ---- contract 1: custody of one secret on this device --------------------
 
@@ -46,6 +47,8 @@ category SecretCustody {
 
     entry Unwrapped: needs Presence;
     invariant via:   Sealed -> Unwrapped through Present;
+    # No arrow enters Exported and admission is sealed, so this holds
+    # trivially today; it refuses any arrow a person later adds into it.
     invariant never: Sealed -> Exported;
 
     state { goal; case: provider, purpose; }
@@ -98,6 +101,7 @@ category KeyedCall {
     entry Sent:     needs KeyReleased;
     invariant via:   Requested -> Sent through Present;
     invariant via:   Requested -> Sent through Released;
+    # As Exported in SecretCustody: it guards against a declared arrow.
     invariant never: Requested -> Leaked;
 
     state { goal; case: provider, purpose; }
@@ -111,7 +115,7 @@ category KeyedCall {
 functor Custody: KeyedCall -> SecretCustody {
     objects: Scoped -> Sealed, Challenged -> Challenged, Present -> Present,
              Released -> Unwrapped, Sent -> Used, Answered -> Used,
-             Forgotten -> Zeroized, Refused -> Denied;
+             Forgotten -> Zeroized, Refused -> Denied, Leaked -> Exported;
     challenge: challenge;
     present: prove_presence;
     decline: deny;
