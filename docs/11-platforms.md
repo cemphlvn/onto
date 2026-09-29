@@ -83,6 +83,10 @@ callers written against the old path keep working.
 Build: the llama.cpp backend is opt-in (D73). `cargo build -p onto-cli
 --features local` (or `local-metal`, `local-cuda`, `local-vulkan`) needs
 cmake and a C/C++ toolchain; a plain `cargo build` builds without it.
+A plain build still needs a C compiler and linker (rustls's `aws-lc-sys`,
+through `cc`). On a Linux machine without gcc, zig can stand in:
+`pip install ziglang && cargo install --locked cargo-zigbuild`, then
+`cargo zigbuild` in place of `cargo build`.
 
 The OpenJev method (SemIf): the frame's state and question are one
 prompt; the options are labelled; **one forward pass**, then the logits
