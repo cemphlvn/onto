@@ -157,7 +157,7 @@ can never authorize a data use or a deployment.
 ## Try it
 
 ```sh
-cargo build
+cargo build                                   # remote models only; add `-p onto-cli --features local` for the llama.cpp judge (needs cmake)
 onto=target/debug/onto
 $onto check   examples/triage.onto
 $onto run     examples/triage.onto --jobs examples/triage.jobs --mock         # offline

@@ -7,7 +7,10 @@ license.workspace = true
 repository.workspace = true
 
 [features]
-default = ["llama"]
+# llama.cpp is opt-in (D73): it needs cmake and a C/C++ toolchain with libclang
+# headers, so a plain `cargo build` of the workspace must not pull it in.
+# onto-cli enables it through its `local*` features.
+default = []
 # llama.cpp through llama-cpp-2: macOS/iOS (Metal), Linux, Windows, Android.
 llama = ["dep:llama-cpp-2"]
 metal = ["llama", "llama-cpp-2/metal"]
