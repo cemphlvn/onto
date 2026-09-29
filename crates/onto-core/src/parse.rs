@@ -33,7 +33,7 @@ use serde_json::Value;
 
 use crate::category::{
     Admission, ArrowMeta, Capability, Category, CategoryBuilder, Entry, Frame, Invariant, Join,
-    PathSpec, Primitive,
+    PathSpec, Primitive, ProposalShape,
 };
 use crate::error::Error;
 use crate::require::Require;
@@ -579,6 +579,14 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
         })?;
         return list(objects).try_for_each(|o| b.admission(Some(o), a));
     }
+    if let Some(rest) = stmt.strip_prefix("propose ") {
+        // `propose A, B: actions | distinctions;` (D74)
+        let (objects, shape) = rest
+            .split_once(':')
+            .ok_or_else(|| perr("expected `propose A, B: actions | distinctions`"))?;
+        let shape = proposal_shape(shape)?;
+        return list(objects).try_for_each(|o| b.propose(Some(o), shape));
+    }
     if let Some(rest) = stmt.strip_prefix("attester ") {
         b.attester(attester(rest)?);
         return Ok(());
@@ -658,6 +666,7 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
             })?;
             b.admission(None, a)
         }
+        ("propose", None) => b.propose(None, proposal_shape(value)?),
         (arrow, Some((src, rest))) => {
             let rest = rest.trim_start();
             let end = rest.find(|c: char| c.is_whitespace()).unwrap_or(rest.len());
@@ -666,7 +675,7 @@ fn statement(b: &mut CategoryBuilder, stmt: &str) -> Result<(), Error> {
                 .map(drop)
         }
         (key, None) => Err(perr(format!(
-            "unknown declaration `{key}:` (expected objects, closed, start, admission, sealed, learnable, world, or `name: A -> B`)"
+            "unknown declaration `{key}:` (expected objects, closed, start, admission, propose, sealed, learnable, world, or `name: A -> B`)"
         ))),
     }
 }
@@ -891,4 +900,13 @@ pub fn path_spec(s: &str) -> Result<PathSpec, Error> {
     }
     names.reverse();
     Ok(PathSpec::Arrows(names))
+}
+
+fn proposal_shape(s: &str) -> Result<ProposalShape, Error> {
+    ProposalShape::parse(s.trim()).ok_or_else(|| {
+        perr(format!(
+            "propose: expected actions or distinctions, got `{}`",
+            s.trim()
+        ))
+    })
 }

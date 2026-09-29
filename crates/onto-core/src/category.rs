@@ -133,6 +133,10 @@ pub struct Object {
     /// `None` for the category's default. Objects the open world created
     /// take the admission of the frame they grew from.
     pub admission: Option<Admission>,
+    /// What a proposer is asked for at this frame (`propose X: …;`), or
+    /// `None` for the category's default. Objects the open world created
+    /// take the shape of the frame they grew from.
+    pub propose: Option<ProposalShape>,
 }
 
 /// How uncertain new structure is admitted at a frame. Independent of
@@ -166,6 +170,39 @@ impl Admission {
             Self::OpenWorld => "open_world",
             Self::Assured => "assured",
             Self::Sealed => "sealed",
+        }
+    }
+}
+
+/// What a proposer is asked for at a frame (D74). It changes only the
+/// proposer's instructions; review, proofs and admission are the same.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
+pub enum ProposalShape {
+    /// Arrows that move a case toward an outcome, named as verbs (a
+    /// routing graph).
+    #[default]
+    Actions,
+    /// Options that say what kind of case this is, at the grain of the
+    /// existing siblings, named as nouns (a classification or discovery
+    /// frame).
+    Distinctions,
+}
+
+impl ProposalShape {
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "actions" => Some(Self::Actions),
+            "distinctions" => Some(Self::Distinctions),
+            _ => None,
+        }
+    }
+
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Actions => "actions",
+            Self::Distinctions => "distinctions",
         }
     }
 }
@@ -311,6 +348,9 @@ pub struct Category {
     /// `admission: …;` (or `world: open|closed;`): the default for frames
     /// that declare none.
     default_admission: Admission,
+    /// `propose: …;`: the default proposal shape for frames that declare
+    /// none.
+    default_propose: ProposalShape,
     out_offsets: Vec<u32>,
     out_arrows: Vec<ArrowId>,
     object_index: HashMap<String, ObjId>,
@@ -373,6 +413,11 @@ impl Category {
     /// The default admission for frames that declare none.
     pub fn default_admission(&self) -> Admission {
         self.default_admission
+    }
+
+    /// What a proposer is asked for at `o` (D74).
+    pub fn proposal_shape(&self, o: ObjId) -> ProposalShape {
+        self.object(o).propose.unwrap_or(self.default_propose)
     }
 
     /// Whether any `state` is declared (otherwise every frame sees
@@ -670,6 +715,8 @@ impl Category {
                         // It grows under the admission of its source frame.
                         let src = cat.object_id(&p.src).expect("checked");
                         cat.objects[dst.0 as usize].admission = Some(cat.admission(src));
+                        // And under its proposal shape.
+                        cat.objects[dst.0 as usize].propose = Some(cat.proposal_shape(src));
                     }
                 }
                 Err(e) => skipped.push((p.arrow.clone(), e.to_string())),
@@ -709,8 +756,12 @@ impl Category {
             if let Some(a) = o.admission {
                 b.admission(Some(&o.name), a)?;
             }
+            if let Some(shape) = o.propose {
+                b.propose(Some(&o.name), shape)?;
+            }
         }
         b.admission(None, self.default_admission)?;
+        b.propose(None, self.default_propose)?;
         if let Some(st) = &self.state_default {
             b.state(None, st.clone())?;
         }
@@ -909,6 +960,7 @@ pub struct CategoryBuilder {
     starts: Vec<ObjId>,
     state_default: Option<crate::state::StateSpec>,
     default_admission: Admission,
+    default_propose: ProposalShape,
     object_index: HashMap<String, ObjId>,
     arrow_index: HashMap<String, ArrowId>,
 }
@@ -952,6 +1004,7 @@ impl CategoryBuilder {
             join: None,
             state: None,
             admission: None,
+            propose: None,
         });
         self.object_index.insert(name.to_owned(), id);
         Ok(id)
@@ -1076,6 +1129,19 @@ impl CategoryBuilder {
         Ok(())
     }
 
+    /// Declares what a proposer is asked for at `object`, or (`None`) the
+    /// default for every frame that declares none (D74).
+    pub fn propose(&mut self, object: Option<&str>, shape: ProposalShape) -> Result<(), Error> {
+        match object {
+            None => self.default_propose = shape,
+            Some(o) => {
+                let id = self.lookup_object(o)?;
+                self.objects[id.0 as usize].propose = Some(shape);
+            }
+        }
+        Ok(())
+    }
+
     /// Declares an application entry point.
     pub fn start(&mut self, object: &str) -> Result<(), Error> {
         let id = self.lookup_object(object)?;
@@ -1173,6 +1239,7 @@ impl CategoryBuilder {
             starts: self.starts,
             state_default: self.state_default,
             default_admission: self.default_admission,
+            default_propose: self.default_propose,
             out_offsets,
             out_arrows,
             object_index: self.object_index,
