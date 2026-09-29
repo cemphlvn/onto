@@ -6,9 +6,9 @@
 
 use std::time::Duration;
 
-use onto_core::Primitive;
 use onto_core::category::NONE_OF_THESE;
 use onto_core::walk::{Answer, Distribution, Proposal};
+use onto_core::{Primitive, ProposalShape};
 use serde_json::{Value, json};
 
 use onto_models::{
@@ -306,6 +306,35 @@ independent aspects: propose arrows for the aspect in `focus` only. `pending_her
 proposed at this object: when one of them fits this case, return it unchanged (same arrow name, target and about) \
 instead of inventing a new name; propose new arrows only for what pending ones do not cover. Reply with JSON only.";
 
+/// The proposer's instructions when the frame asks for distinctions (D74):
+/// the frame classifies cases, so a missing option is a kind of case, not
+/// a step toward an outcome. The rules shared with [`PROPOSER_SYSTEM`]
+/// (cycles, sealed objects, overlap, focus, pending proposals) are the same.
+const PROPOSER_DISTINCTIONS: &str = "You extend a category (objects and arrows) that a fast decision model walks. \
+`state` is everything you may see of the case (declared by policy; fields not in it are withheld on purpose, do not ask for them). \
+The frame at object `at` classifies cases: its `shape` is `distinctions`, its question says what is being classified, \
+and each outgoing arrow (`frame`) is one kind of case. The case fits none of them, for the stated `reason`. \
+Propose 1 to 3 missing kinds of case that this case belongs to and no existing option covers. \
+Keep the grain of the existing options: a new option is a sibling of them, as general as they are, \
+not a detail of one of them, not an action or a step toward handling the case, and not a paraphrase of the question. \
+Name each arrow as a short snake_case noun phrase for the kind (never a verb), and target a new object named for the same kind \
+in PascalCase, or an existing object from `known_objects` when it is that kind. Ignore `outcomes`: this frame is not a route to them. \
+Never target an object on `path_so_far`: a learned arrow may not close a cycle and is refused. \
+Never target an object in `sealed`: sealed objects are reached only by arrows people declared, so such a proposal is refused. \
+Give each arrow an `about`: one sentence saying which cases belong to this kind and how it differs from its nearest existing option. \
+New options must be mutually exclusive with each other and with the existing frame (read each existing arrow's instructions), \
+and must not re-propose an existing option. When `focus` is set, propose kinds for the aspect in `focus` only. `pending_here` lists \
+provisional options other cases already proposed at this object: when one of them fits this case, return it unchanged \
+(same arrow name, target and about) instead of inventing a new name. Reply with JSON only.";
+
+/// The proposer's instructions for a request, by the frame's shape.
+fn proposer_system(req: &ProposalRequest) -> &'static str {
+    match req.shape {
+        ProposalShape::Actions => PROPOSER_SYSTEM,
+        ProposalShape::Distinctions => PROPOSER_DISTINCTIONS,
+    }
+}
+
 impl Proposer for OpenRouter {
     fn name(&self) -> String {
         format!("openrouter:{}", self.model)
@@ -340,7 +369,7 @@ impl Proposer for OpenRouter {
             // Reasoning models otherwise spend the budget before answering.
             "reasoning": {"effort": "low"},
             "messages": [
-                {"role": "system", "content": PROPOSER_SYSTEM},
+                {"role": "system", "content": proposer_system(&req)},
                 {"role": "user", "content": serde_json::to_string(&req).expect("serializable")},
             ],
             "response_format": {
@@ -397,4 +426,48 @@ fn strip_fences(s: &str) -> &str {
         .or_else(|| s.strip_prefix("```"))
         .and_then(|r| r.strip_suffix("```"))
         .map_or(s, str::trim)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn request(shape: ProposalShape) -> ProposalRequest {
+        ProposalRequest {
+            state: json!({"goal": "I worry about most things"}),
+            at: "Statement".into(),
+            about_at: None,
+            path_so_far: String::new(),
+            focus: None,
+            primitive: Primitive::Choice,
+            shape,
+            frame: Vec::new(),
+            reason: "none of these".into(),
+            known_objects: vec!["Statement".into()],
+            sealed: Vec::new(),
+            outcomes: Vec::new(),
+            pending_here: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn the_frame_shape_selects_the_instructions() {
+        let actions = proposer_system(&request(ProposalShape::Actions));
+        assert!(actions.contains("short snake_case verbs"));
+        let distinctions = proposer_system(&request(ProposalShape::Distinctions));
+        assert!(distinctions.contains("kinds of case"));
+        assert!(!distinctions.contains("snake_case verbs"));
+        assert!(!distinctions.contains("arrow INTO the outcome"));
+    }
+
+    #[test]
+    fn the_shape_is_sent_only_for_distinctions() {
+        let actions = serde_json::to_value(request(ProposalShape::Actions)).unwrap();
+        assert!(
+            actions.get("shape").is_none(),
+            "routing requests are unchanged"
+        );
+        let distinctions = serde_json::to_value(request(ProposalShape::Distinctions)).unwrap();
+        assert_eq!(distinctions["shape"], "distinctions");
+    }
 }

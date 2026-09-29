@@ -20,7 +20,7 @@ pub mod walk;
 
 pub use category::{
     Admission, Arrow, ArrowId, ArrowMeta, Capability, Category, CategoryBuilder, Closure, Entry,
-    Frame, Gate, Invariant, Join, ObjId, Object, PathSpec, Primitive,
+    Frame, Gate, Invariant, Join, ObjId, Object, PathSpec, Primitive, ProposalShape,
 };
 pub use equality::{Equality, Verdict};
 pub use error::Error;

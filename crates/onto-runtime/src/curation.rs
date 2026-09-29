@@ -105,6 +105,7 @@ pub fn request(
         path_so_far: String::new(),
         focus: None,
         primitive: object.frame.primitive,
+        shape: cat.proposal_shape(at),
         frame: cat
             .out(at)
             .iter()

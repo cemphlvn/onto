@@ -9,8 +9,8 @@
 
 use std::future::Future;
 
-use onto_core::Primitive;
 use onto_core::walk::{Answer, Proposal};
+use onto_core::{Primitive, ProposalShape};
 use serde::Serialize;
 use serde_json::Value;
 
@@ -108,6 +108,10 @@ pub struct ProposalRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub focus: Option<Focus>,
     pub primitive: Primitive,
+    /// What the frame asks a proposer for (D74). Omitted when `actions`,
+    /// so routing requests are unchanged.
+    #[serde(skip_serializing_if = "is_actions")]
+    pub shape: ProposalShape,
     pub frame: Vec<Candidate>,
     pub reason: String,
     pub known_objects: Vec<String>,
@@ -123,6 +127,10 @@ pub struct ProposalRequest {
     /// Provisional arrows other walks already proposed at this frame. A
     /// proposer should reuse one unchanged when it fits.
     pub pending_here: Vec<Pending>,
+}
+
+fn is_actions(shape: &ProposalShape) -> bool {
+    *shape == ProposalShape::Actions
 }
 
 #[derive(Clone, Debug, Serialize)]

@@ -59,6 +59,7 @@ versions, transport, discovery) and can walk one case together as an
 | potentiality | a logged place where two concurrent walks could meet (node or conceptual) | `frames::Potentiality` |
 | learned layer | structure the open world admitted, kept apart from policy: `<stem>.learned.jsonl`, replayed through the structural proofs on every load | `engine::Learned`, `onto learned` |
 | library state | a learned arrow is `active` (in the graph), `dormant` (out of it, recalled at a gap) or `retired` (a person's decision); never deleted | `engine::ArrowState` |
+| proposal shape | what a proposer is asked for at a frame: `actions` (default: arrows that move a case toward an outcome, named as verbs) or `distinctions` (options that say what kind of case this is, at the grain of the existing siblings, named as nouns) | `ProposalShape` |
 | admission regime | how new structure may enter at a frame: `open_world` (what no hard check refutes), `assured` (only what every check passed; the rest held for a person), `sealed` (nothing) | `Admission` |
 | state policy | what a model is shown at a frame (`state { goal; case: a.b; observed; history; memory; … }`), sectioned asserted / observed / inferred; `invariant unseen` proves a field never reaches a model | `state::StateSpec` |
 | precedent | an earlier decision at the same frame for another case, projected onto the frame's current state policy (`memory: similar N`) | `memory::Precedent` |
@@ -264,7 +265,7 @@ Rules:
     with `learnable: A, B;` (policy) mark where the open world may grow;
     no learned arrow leaves or enters a sealed object, so sealed objects
     are reached only by declared arrows. Objects the open world creates
-    are learnable. A sealed frame escalates to a person in any mode.
+    are learnable. A sealed frame escalates to a person in any mode. **Proposal shape (D74):** per frame, `propose X: actions | distinctions;` (default `propose: …;`, itself `actions`). It changes only what the proposer is *asked* for: `actions` extends a routing graph toward its outcomes; `distinctions` asks for a missing *kind of case* at the frame (a classification or discovery frame: themes, reasons, traits), mutually exclusive with the existing options and at their grain. Review, proofs and admission are the same for both. Objects the open world creates take the shape of the frame they grew from.
 16. **What a model sees is policy.** A System-1 call has no memory: its
     `state` is its whole context. `state { … }` (default) and `state A, B
     { … }` (override) declare it: `goal`, `case` or `case: a.b, …`,
@@ -491,6 +492,8 @@ category Name {
 
     admission: open_world;                     # default regime: open_world | assured | sealed
     admission A: assured;                      # per frame
+    propose: actions;                          # what a proposer is asked for: actions | distinctions
+    propose C: distinctions;                   # per frame: kinds of case, named as nouns
     sealed: B, C;                              # or: world: closed; learnable: A;
 }
 ```
@@ -626,6 +629,7 @@ streaming them is open (§11).
 | D71 | local judges use the OpenJev method (option logits in one forward pass) over GGUF through llama.cpp, natively and as wllama in browsers; one model loaded, parallelism by shared prefixes; thresholds re-measured per model | zero token cost and private; the same model file on every device makes results comparable; copies of a model contend for one GPU; Jev's calibration does not transfer |
 | D72 | Swift and Kotlin through UniFFI (`onto-ffi`), JavaScript through wasm-bindgen (`onto-wasm`); both only convert, as `onto-py` does | one Rust source of truth for every platform (`docs/10` rule 1) |
 | D73 | `onto-local`'s llama.cpp backend is an opt-in feature (`default = []`); `onto-cli --features local` (or `local-metal`, `local-cuda`, `local-vulkan`) turns it on | a plain `cargo build` of the workspace failed on a fresh Linux machine: llama-cpp-sys-2 needs cmake and libclang headers, which a remote-only user does not need; every consumer already opts in explicitly |
+| D74 | a proposal shape per frame, `propose X: actions \| distinctions;`, default `actions`; it changes only the proposer's instructions, never review or admission | live (simulation W6-1), an open-world classification frame (`Which broad personality trait…?`) with no declared options learned 22 routing steps (`clarify_meaning`, `plan_task_approach`) instead of traits: the proposer is told to extend a routing graph toward outcomes with verb-named arrows, and a frame's question alone does not override that; discovery frames need to ask for kinds of case |
 | D36 | `split` frames: an AND-split with no judgment; over budget they escalate (`split_over_budget`) | live, a judged verification frame dropped a mandatory check and an all-join completed without it |
 | D26 | a proposal into a closed frame is a closure challenge (`unknown`), not a falsification | the proposal may be nonsense or a duplicate; only a validated novel arrow revises the claim |
 | D18 | after a fork, every branch (including the walk that continues) carries its focus: the spawning arrow and its condition; judges and proposers are told to handle that aspect only, and records store it | branches otherwise inherit the whole case and propose for each other's aspects (seen live) |

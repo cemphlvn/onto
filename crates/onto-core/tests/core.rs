@@ -1105,3 +1105,67 @@ fn split_frames_parse_and_reject_levels() {
     assert!(parse("category C { objects: A, B; frame A: split; f: A -> B level 0; }").is_err());
     assert!(parse("category C { objects: A, B; frame A: choice parallel; f: A -> B; }").is_err());
 }
+
+mod proposal_shape {
+    use onto_core::walk::Proposal;
+    use onto_core::{ProposalShape, parse};
+
+    const SHAPES: &str = r#"
+    category Traits {
+        objects: Statement, Request, Done;
+        route: Request -> Done;
+        propose: actions;
+        propose Statement: distinctions;
+    }"#;
+
+    #[test]
+    fn default_is_actions_and_per_frame_overrides() {
+        let cat = parse(SHAPES).unwrap();
+        let id = |n: &str| cat.object_id(n).unwrap();
+        assert_eq!(
+            cat.proposal_shape(id("Statement")),
+            ProposalShape::Distinctions
+        );
+        assert_eq!(cat.proposal_shape(id("Request")), ProposalShape::Actions);
+        let plain = parse("category C { objects: A; }").unwrap();
+        let a = plain.object_id("A").unwrap();
+        assert_eq!(plain.proposal_shape(a), ProposalShape::Actions);
+        let default_distinctions =
+            parse("category C { objects: A; propose: distinctions; }").unwrap();
+        let a = default_distinctions.object_id("A").unwrap();
+        assert_eq!(
+            default_distinctions.proposal_shape(a),
+            ProposalShape::Distinctions
+        );
+    }
+
+    #[test]
+    fn an_arrow_named_propose_is_still_an_arrow() {
+        let cat = parse("category C { objects: A, B; propose: A -> B; }").unwrap();
+        assert!(cat.arrow_id("propose").is_ok());
+    }
+
+    #[test]
+    fn unknown_shape_is_an_error() {
+        let err = parse("category C { objects: A; propose A: verbs; }").unwrap_err();
+        assert!(
+            err.to_string().contains("expected actions or distinctions"),
+            "{err}"
+        );
+    }
+
+    #[test]
+    fn objects_the_open_world_creates_keep_the_frames_shape() {
+        let cat = parse(SHAPES).unwrap();
+        let learned = Proposal {
+            arrow: "openness".into(),
+            src: "Statement".into(),
+            dst: "Openness".into(),
+            ..Default::default()
+        };
+        let (cat, skipped) = cat.with_learned(&[learned]);
+        assert!(skipped.is_empty(), "{skipped:?}");
+        let new = cat.object_id("Openness").unwrap();
+        assert_eq!(cat.proposal_shape(new), ProposalShape::Distinctions);
+    }
+}

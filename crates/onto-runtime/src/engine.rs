@@ -2768,6 +2768,7 @@ impl<J: Judge + Critic, P: Proposer> Engine<J, P> {
             path_so_far: path.display(&self.cat()),
             focus: focus.clone(),
             primitive: object.frame.primitive,
+            shape: cat.proposal_shape(path.dst),
             frame: cat
                 .out(path.dst)
                 .iter()

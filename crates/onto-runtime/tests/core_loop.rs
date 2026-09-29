@@ -1871,6 +1871,53 @@ mod routing {
         assert!(r.gaps.is_empty());
     }
 
+    /// Records the proposal shape of every request (D74).
+    struct Shapes(Arc<std::sync::Mutex<Vec<onto_core::ProposalShape>>>);
+    impl Proposer for Shapes {
+        fn name(&self) -> String {
+            "shapes".into()
+        }
+        async fn propose(
+            &self,
+            req: ProposalRequest,
+        ) -> Result<(Vec<Proposal>, Usage), ModelError> {
+            self.0.lock().unwrap().push(req.shape);
+            Ok((Vec::new(), Usage::default()))
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn the_proposer_is_asked_for_the_frames_shape() {
+        for (decl, expected) in [
+            ("", onto_core::ProposalShape::Actions),
+            (
+                "propose A: distinctions;",
+                onto_core::ProposalShape::Distinctions,
+            ),
+        ] {
+            let src = format!(
+                "category C {{\n    objects: A, B;\n    go: A -> B \"go\";\n    closed: A;\n    {decl}\n}}"
+            );
+            let seen = Arc::new(std::sync::Mutex::new(Vec::new()));
+            let cat = Arc::new(onto_core::parse(&src).unwrap());
+            let engine = Engine::new(
+                cat,
+                MockJudge { latency: LATENCY },
+                Shapes(seen.clone()),
+                Config::default(),
+            );
+            let job = Job {
+                from: "A".into(),
+                goal: "something else entirely".into(),
+                case: json!({"id": "K-1"}),
+            };
+            engine.run(vec![job]).await.unwrap();
+            let seen = seen.lock().unwrap();
+            assert!(!seen.is_empty(), "{decl}: the gap asks the proposer");
+            assert!(seen.iter().all(|s| *s == expected), "{decl}: {seen:?}");
+        }
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn a_learnable_structure_gap_still_asks_the_proposer() {
         let src = r#"category C {
