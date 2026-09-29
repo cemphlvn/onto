@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use clap::{Args, ValueEnum};
 use onto_core::walk::{Answer, Proposal};
-use onto_remote::{Jev, OpenRouter, Tkgd};
+use onto_remote::{Jev, OpenAiChat, Tkgd};
 use onto_runtime::engine::StepRecord;
 use onto_runtime::frames::{Mode, PotentialityKind, Resolution};
 use onto_runtime::model::{
@@ -133,20 +133,20 @@ impl Critic for AnyJudge {
 }
 
 pub enum AnyProposer {
-    OpenRouter(OpenRouter),
+    Chat(OpenAiChat),
     Mock(MockProposer),
 }
 
 impl Proposer for AnyProposer {
     fn name(&self) -> String {
         match self {
-            Self::OpenRouter(p) => p.name(),
+            Self::Chat(p) => p.name(),
             Self::Mock(p) => p.name(),
         }
     }
     async fn propose(&self, req: ProposalRequest) -> Result<(Vec<Proposal>, Usage), ModelError> {
         match self {
-            Self::OpenRouter(p) => p.propose(req).await,
+            Self::Chat(p) => p.propose(req).await,
             Self::Mock(p) => p.propose(req).await,
         }
     }
@@ -249,10 +249,7 @@ pub fn models(
             latency: Duration::from_millis(600),
         })
     } else {
-        AnyProposer::OpenRouter(
-            OpenRouter::from_env(http, proposer_model)
-                .ok_or("OPENROUTER_API_KEY is not set (or pass --mock-proposer)")?,
-        )
+        AnyProposer::Chat(OpenAiChat::from_env(http, proposer_model)?)
     };
     Ok((judge, proposer))
 }

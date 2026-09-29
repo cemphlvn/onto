@@ -1,5 +1,6 @@
 //! Remote model clients: Jev (TypeSafe System One) as the judge and
-//! critic, any OpenRouter chat model as the proposer. The engine calls
+//! critic, any OpenRouter chat model as the proposer (or any
+//! OpenAI-compatible chat endpoint, D75). The engine calls
 //! them concurrently, up to `judge_concurrency` / `proposer_concurrency`
 //! requests in flight. `Tkgd` judges through fonto's local TKG server,
 //! for benchmarks.
@@ -36,7 +37,11 @@ async fn post_json(
     let mut attempt = 0;
     loop {
         attempt += 1;
-        let result = http.post(url).bearer_auth(key).json(body).send().await;
+        let mut request = http.post(url).json(body);
+        if !key.is_empty() {
+            request = request.bearer_auth(key);
+        }
+        let result = request.send().await;
         let retry = match result {
             Ok(resp) if resp.status().is_success() => {
                 let v = resp.json::<Value>().await.map_err(transport)?;
@@ -60,6 +65,14 @@ async fn post_json(
     }
 }
 
+/// Jev's endpoint unless `ONTO_JEV_URL` overrides it.
+pub const DEFAULT_JEV_URL: &str = "https://api.typesafe.ai/v1/systemone";
+
+/// An environment variable, `None` when unset or empty.
+fn env_nonempty(name: &str) -> Option<String> {
+    std::env::var(name).ok().filter(|v| !v.trim().is_empty())
+}
+
 pub struct Jev {
     http: reqwest::Client,
     key: String,
@@ -68,13 +81,23 @@ pub struct Jev {
 }
 
 impl Jev {
-    /// Reads `TYPESAFE_API_KEY`; `model` defaults to `jev-latest`.
+    /// Reads `TYPESAFE_API_KEY`; `model` defaults to `jev-latest`. With
+    /// `ONTO_JEV_URL` (D75) it calls that deployment with
+    /// `ONTO_JEV_API_KEY` (none if unset): TypeSafe's key is never sent to
+    /// another host.
     pub fn from_env(http: reqwest::Client, model: Option<String>) -> Option<Self> {
+        let (url, key) = match env_nonempty("ONTO_JEV_URL") {
+            Some(url) => (url, env_nonempty("ONTO_JEV_API_KEY").unwrap_or_default()),
+            None => (
+                DEFAULT_JEV_URL.into(),
+                std::env::var("TYPESAFE_API_KEY").ok()?,
+            ),
+        };
         Some(Self {
             http,
-            key: std::env::var("TYPESAFE_API_KEY").ok()?,
+            key,
             model: model.unwrap_or_else(|| "jev-latest".into()),
-            url: "https://api.typesafe.ai/v1/systemone".into(),
+            url,
         })
     }
 }
@@ -264,26 +287,69 @@ fn read_answer(req: &FrameRequest, answers: &Value) -> Option<Answer> {
     })
 }
 
-pub struct OpenRouter {
+/// The proposer: an OpenAI-compatible chat endpoint, OpenRouter by
+/// default, or any other (vLLM, Ollama, llama-server, a gateway) through
+/// `ONTO_PROPOSER_URL` (D75).
+pub struct OpenAiChat {
     http: reqwest::Client,
     key: String,
     model: String,
+    /// `{base}/chat/completions`.
+    url: String,
+    /// `Some(base)`, without credentials, when the endpoint is not
+    /// OpenRouter's.
+    custom: Option<String>,
 }
+
+/// The proposer's earlier name, from when it could only call OpenRouter.
+pub type OpenRouter = OpenAiChat;
 
 /// Default System-2 model; override with `--proposer-model` or
 /// `ONTO_PROPOSER_MODEL`.
 pub const DEFAULT_PROPOSER_MODEL: &str = "~openai/gpt-luna-latest";
 
-impl OpenRouter {
-    /// Reads `OPENROUTER_API_KEY`.
-    pub fn from_env(http: reqwest::Client, model: Option<String>) -> Option<Self> {
-        Some(Self {
+/// OpenRouter's OpenAI-compatible base URL.
+pub const OPENROUTER_BASE_URL: &str = "https://openrouter.ai/api/v1";
+
+impl OpenAiChat {
+    /// Reads `OPENROUTER_API_KEY`. With `ONTO_PROPOSER_URL` (a base URL
+    /// such as `http://127.0.0.1:11434/v1`) the proposer calls that
+    /// endpoint instead, with `ONTO_PROPOSER_API_KEY` (none if unset) and
+    /// a model that must be named: the default is an OpenRouter model.
+    pub fn from_env(http: reqwest::Client, model: Option<String>) -> Result<Self, String> {
+        let model = model.or_else(|| env_nonempty("ONTO_PROPOSER_MODEL"));
+        match env_nonempty("ONTO_PROPOSER_URL") {
+            Some(base) => {
+                let model = model.ok_or(
+                    "ONTO_PROPOSER_URL is set but no model is: set ONTO_PROPOSER_MODEL or pass --proposer-model",
+                )?;
+                let key = env_nonempty("ONTO_PROPOSER_API_KEY").unwrap_or_default();
+                Ok(Self::with_endpoint(http, &base, key, model))
+            }
+            None => Ok(Self {
+                http,
+                key: std::env::var("OPENROUTER_API_KEY").map_err(|_| {
+                    "OPENROUTER_API_KEY is not set (or set ONTO_PROPOSER_URL, or pass --mock-proposer)"
+                })?,
+                model: model.unwrap_or_else(|| DEFAULT_PROPOSER_MODEL.into()),
+                url: format!("{OPENROUTER_BASE_URL}/chat/completions"),
+                custom: None,
+            }),
+        }
+    }
+
+    /// Any OpenAI-compatible chat endpoint at `base` (the part before
+    /// `/chat/completions`); an empty `key` sends no authorization.
+    pub fn with_endpoint(http: reqwest::Client, base: &str, key: String, model: String) -> Self {
+        let base = base.trim().trim_end_matches('/');
+        let custom = (base != OPENROUTER_BASE_URL).then(|| without_credentials(base));
+        Self {
             http,
-            key: std::env::var("OPENROUTER_API_KEY").ok()?,
-            model: model
-                .or_else(|| std::env::var("ONTO_PROPOSER_MODEL").ok())
-                .unwrap_or_else(|| DEFAULT_PROPOSER_MODEL.into()),
-        })
+            key,
+            model,
+            url: format!("{base}/chat/completions"),
+            custom,
+        }
     }
 }
 
@@ -335,9 +401,24 @@ fn proposer_system(req: &ProposalRequest) -> &'static str {
     }
 }
 
-impl Proposer for OpenRouter {
+/// `base` for records: no user, password, query or fragment.
+fn without_credentials(base: &str) -> String {
+    let Ok(mut url) = reqwest::Url::parse(base) else {
+        return "<invalid url>".into();
+    };
+    let _ = url.set_username("");
+    let _ = url.set_password(None);
+    url.set_query(None);
+    url.set_fragment(None);
+    url.as_str().trim_end_matches('/').to_owned()
+}
+
+impl Proposer for OpenAiChat {
     fn name(&self) -> String {
-        format!("openrouter:{}", self.model)
+        match &self.custom {
+            None => format!("openrouter:{}", self.model),
+            Some(base) => format!("openai:{}@{base}", self.model),
+        }
     }
 
     async fn propose(&self, req: ProposalRequest) -> Result<(Vec<Proposal>, Usage), ModelError> {
@@ -362,12 +443,10 @@ impl Proposer for OpenRouter {
                 }
             }
         });
-        let body = json!({
+        let mut body = json!({
             "model": self.model,
             "temperature": 0.2,
             "max_tokens": 600,
-            // Reasoning models otherwise spend the budget before answering.
-            "reasoning": {"effort": "low"},
             "messages": [
                 {"role": "system", "content": proposer_system(&req)},
                 {"role": "user", "content": serde_json::to_string(&req).expect("serializable")},
@@ -377,8 +456,12 @@ impl Proposer for OpenRouter {
                 "json_schema": {"name": "proposals", "strict": true, "schema": schema}
             }
         });
-        let url = "https://openrouter.ai/api/v1/chat/completions";
-        let (v, attempts) = post_json(&self.http, url, &self.key, &body).await?;
+        if self.custom.is_none() {
+            // Reasoning models otherwise spend the budget before answering.
+            // OpenRouter's field: other servers may refuse unknown fields.
+            body["reasoning"] = json!({"effort": "low"});
+        }
+        let (v, attempts) = post_json(&self.http, &self.url, &self.key, &body).await?;
         let content = v["choices"][0]["message"]["content"]
             .as_str()
             .ok_or_else(|| {
@@ -458,6 +541,37 @@ mod tests {
         assert!(distinctions.contains("kinds of case"));
         assert!(!distinctions.contains("snake_case verbs"));
         assert!(!distinctions.contains("arrow INTO the outcome"));
+    }
+
+    #[test]
+    fn a_custom_endpoint_is_named_and_called_by_its_base() {
+        let http = reqwest::Client::new();
+        let own = OpenRouter::with_endpoint(
+            http.clone(),
+            "http://127.0.0.1:11434/v1/",
+            String::new(),
+            "qwen3:8b".into(),
+        );
+        assert_eq!(own.url, "http://127.0.0.1:11434/v1/chat/completions");
+        assert_eq!(own.name(), "openai:qwen3:8b@http://127.0.0.1:11434/v1");
+        let openrouter =
+            OpenRouter::with_endpoint(http, OPENROUTER_BASE_URL, "k".into(), "m".into());
+        assert_eq!(
+            openrouter.url,
+            "https://openrouter.ai/api/v1/chat/completions"
+        );
+        assert_eq!(openrouter.name(), "openrouter:m");
+    }
+
+    #[test]
+    fn credentials_in_the_base_stay_out_of_the_name() {
+        let own = OpenAiChat::with_endpoint(
+            reqwest::Client::new(),
+            "https://user:secret@llm.example.com/v1?token=abc",
+            String::new(),
+            "m".into(),
+        );
+        assert_eq!(own.name(), "openai:m@https://llm.example.com/v1");
     }
 
     #[test]
