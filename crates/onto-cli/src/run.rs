@@ -249,10 +249,9 @@ pub fn models(
             latency: Duration::from_millis(600),
         })
     } else {
-        AnyProposer::OpenRouter(
-            OpenRouter::from_env(http, proposer_model)
-                .ok_or("OPENROUTER_API_KEY is not set (or pass --mock-proposer)")?,
-        )
+        AnyProposer::OpenRouter(OpenRouter::from_env(http, proposer_model).ok_or(
+            "OPENROUTER_API_KEY is not set (or set ONTO_PROPOSER_URL, or pass --mock-proposer)",
+        )?)
     };
     Ok((judge, proposer))
 }

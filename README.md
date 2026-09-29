@@ -173,7 +173,15 @@ $onto raster  t.jsonl --dispositions d.jsonl --category examples/triage.onto  # 
 
 Live models: Jev (`TYPESAFE_API_KEY`) for judgments, any OpenRouter model
 (`OPENROUTER_API_KEY`) for proposals. `--mock-proposer` keeps Jev live
-without proposal spend.
+without proposal spend. Your own endpoint (D75): `ONTO_PROPOSER_URL` takes
+the base URL of any OpenAI-compatible chat server, with
+`ONTO_PROPOSER_MODEL` and, if it needs one, `ONTO_PROPOSER_API_KEY`;
+`ONTO_JEV_URL` points the judge at another Jev deployment.
+
+```sh
+ONTO_PROPOSER_URL=http://127.0.0.1:11434/v1 ONTO_PROPOSER_MODEL=qwen3:8b \
+  $onto run examples/triage.onto --jobs examples/triage.jobs   # proposals from a local Ollama
+```
 
 ## Demos
 
