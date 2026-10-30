@@ -1,0 +1,7 @@
+{
+  "_source": "ProM's own project communications, no architecture document exists for 6.9: H.M.W. Verbeek's ProM 6 announcement (AISWorld list, 2010-11-27) and ProM forum answers on contexts and the jar layout (promforum.win.tue.nl). Package and class names removed. Written and frozen before any ProM run; the SAEroCon architecture file for ProM was not read (it holds the mapping).",
+  "prom.framework": "The ProM 6 framework: a generic, pluggable toolkit that knows nothing about process mining; it only sees objects, actions, views and their classes, manages the plug-ins and packages, and can distribute plug-in execution over several computers",
+  "prom.domain.contexts": "Contexts: a plug-in's connection to the framework, giving access to the user interface (messages, cancellation, progress), to the relations between objects, and to the package manager for calling other plug-ins; the user interface a person starts lives here",
+  "prom.domain.models": "Models: the objects plug-ins work on and show, such as process models, data models and social networks; detailed knowledge of these classes stays out of the framework",
+  "prom.domain.plugins": "Plug-ins: implement the actions and views on objects"
+}
