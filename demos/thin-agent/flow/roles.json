@@ -1,0 +1,10 @@
+{
+ "_standard": "../../../standards/thin-agent.onto#ThinAgentArchitecture",
+ "blueprint": "Blueprint",
+ "proposal": "Contract",
+ "sources": "Substrate", "deps": "Substrate", "standard": "Substrate",
+ "calibration": "Substrate", "cost": "Substrate", "scored": "Substrate",
+ "accepted": "Substrate", "deferred": "Substrate", "answers": "Substrate",
+ "roles": "Substrate", "verdict": "Substrate",
+ "record": "World", "decision": "World", "view": "World"
+}

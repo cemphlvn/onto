@@ -1,0 +1,26 @@
+# The four rules found on JabRef/TEAMMATES/ArgoUML (../EVALS.md), as
+# path invariants over the flow's data. A path is a route data can take.
+
+# NeverGuess: a deferred mapping enters the roles only through a person's answer.
+invariant via: deferred -> roles through answers;
+
+# MapBeforeCheck: the standard never shapes the proposal (mapping under the
+# path constraint lost recall, EVALS Result 3), and the check runs on the
+# adopted mapping.
+invariant never: standard -> proposal;
+invariant via: proposal -> verdict through roles;
+
+# GateInSubstrate: every proposal is calibrated, then gated, before it
+# becomes a role; the gate's cost comes from the substrate side.
+invariant via: proposal -> roles through scored;
+invariant via: proposal -> roles through accepted | deferred;
+
+# BlueprintFrozenBeforeTest: nothing a run produces flows back into the
+# blueprint. (Freezing in time is a commit's job; this forbids the data
+# route.)
+invariant never: verdict -> blueprint;
+invariant never: decision -> blueprint;
+invariant never: record -> blueprint;
+
+# CI: no merge decision without the functor check.
+invariant via: proposal -> decision through verdict;

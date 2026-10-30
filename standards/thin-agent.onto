@@ -20,6 +20,7 @@ category ThinAgentArchitecture {
     about World:     "anything that outlives the call: recorded decisions, admitted structure, side effects";
 
     instantiate:   Blueprint -> Agent     "an agent is configured only from a declared blueprint";
+    request:       Substrate -> Agent     "the substrate renders the request: the question and the facts the agent may see";
     bind_contract: Agent -> Contract      "the agent answers in the typed contract" ensures Contracted;
     submit:        Contract -> Substrate  "the answer crosses into the substrate";
     act:           Substrate -> World     "the world changes only after the substrate's checks";

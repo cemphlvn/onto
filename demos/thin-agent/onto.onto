@@ -24,6 +24,10 @@ category OntoArchitecture {
     local_answers: LocalJudge -> ModelContract "the local judge answers from one forward pass" ensures Typed;
     llm_proposes:  Proposer -> ModelContract   "the proposer returns a typed proposal" ensures Typed;
 
+    ask_remote:  Engine -> Jev        "the engine renders a frame request from the walk state, as the state policy allows";
+    ask_local:   Engine -> LocalJudge "the same request, for the local judge";
+    ask_gap:     Engine -> Proposer   "a proposal request at a structure gap";
+
     decide:  ModelContract -> Engine "the engine reads the answer and disposes every candidate";
     record:  Engine -> Record        "the visit is recorded with its numbers and reasons";
     admit:   Engine -> Learned       "a reviewed proposal enters the learned layer under the frame's regime";

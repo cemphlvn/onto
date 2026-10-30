@@ -18,6 +18,7 @@ functor Conforms: OntoArchitecture -> ThinAgentArchitecture {
 
     frame_remote: instantiate; frame_local: instantiate; gap: instantiate;
     jev_answers: bind_contract; local_answers: bind_contract; llm_proposes: bind_contract;
+    ask_remote: request; ask_local: request; ask_gap: request;
     decide: submit;
     record: act; admit: act;
 
