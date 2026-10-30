@@ -1,0 +1,18 @@
+{
+ "_source": "Grouping written only from each system's own architecture document, frozen before any walk run (2026-10-31). TEAMMATES: the module table of 'TEAMMATES_5.110 Modular architecture - Final.docx' (UI, Logic and Storage layers; Common and Client subsystems; Test Driver). ArgoUML: the subsystem lists of the Cookbook at trunk@13713 (subsystems.xml: low-level, view and control, top level, loadable); modules the lists do not place hang from the root. A group's description is its document's name for it plus its members' blueprint descriptions, so the walk sees no knowledge the flat discover run did not.",
+ "Teammates": {
+  "UI layer": ["ui.automated", "ui.controller", "ui.view"],
+  "Logic layer": ["logic.core", "logic.api", "logic.backdoor"],
+  "Storage layer": ["storage.entity", "storage.api", "storage.search"],
+  "Common subsystem": ["common.util", "common.exception", "common.dataTransfer"],
+  "Client subsystem": ["client.remoteAPI", "client.scripts"],
+  "Test Driver subsystem": ["testDriver"]
+ },
+ "Argouml": {
+  "Low-level subsystems: infrastructure every other subsystem uses, depending on no other part of ArgoUML": ["internationalization", "taskManagement", "configuration", "swingExtensions", "model"],
+  "View and control subsystems: rely on the model to do their work": ["diagrams", "gui", "explorer", "notation", "codeGeneration", "reverseEngineering", "moduleLoader"],
+  "Top level subsystem: the starting point of the application": ["application"],
+  "Loadable subsystems: connected only through other subsystems' interfaces, enabled and disabled by the module loader": ["javaCodeGeneration", "critics", "ocl"],
+  "Not placed by the Cookbook's lists": ["persistence", "profile", "help"]
+ }
+}
