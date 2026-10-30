@@ -544,3 +544,52 @@ On the 202 decisions all four answered: Gemini 0.851 (Brier 0.058, ECE
   $36 at this prompt size).
 - Contamination is not ruled out: these systems are old and public;
   names hidden reduces it, it does not remove it.
+
+## Result 9: NBAttract re-run on onto's input (2026-10-31)
+
+`evals/baselines/nbattract.py` re-implements NBAttract (Olsson et al.:
+HuGMe orphan adoption, multinomial naive Bayes on term occurrence, one
+document per module plus its name, CDA dependency terms, map at p ≥ 0.9,
+iterate) and runs it on **the same input onto's judge sees**: class
+names (plus package paths when names are visible) and dependencies.
+Initial sets of 0, 1, 5, 10 and 20% of classes, at least one class per
+module, 50 random sets per size, medians. Class level, Olsson et al.'s
+P (over mapped orphans) and R (over all orphans). Seven systems (JabRef's
+gold comes from another format and was not wired in).
+
+F1, names **hidden**:
+
+| system | NBAttract, 0.9 rule, 0–20% labelled | NB always mapping (argmax), 0% / 5% / 20% | **onto + Jev, 0 labels** | **onto + Gemini, 0 labels** |
+|---|---|---|---|---|
+| TEAMMATES | 0.00 … 0.03 | 0.36 / 0.46 / 0.52 | 0.82 | 0.90 |
+| ArgoUML | 0.00 | 0.29 / 0.47 / 0.60 | 0.86 | 0.94 |
+| ProM | 0.00 | 0.12 / 0.48 / 0.66 | 0.68 | 0.84 |
+| Lucene | 0.00 | 0.23 / 0.52 / 0.70 | 0.89 | 1.00 |
+| Commons Imaging | 0.00 | 0.49 / 0.40 / 0.63 | 0.83 | 1.00 |
+| Ant | 0.00 | 0.20 / 0.25 / 0.41 | 0.59 | — |
+| Sweet Home 3D | 0.00 | 0.26 / 0.38 / 0.52 | 1.00 | 1.00 |
+
+F1, names **visible**: NBAttract with the 0.9 rule 0.00–0.24 even at
+20% labelled; NB argmax 0.16–0.99 at 0%, 0.46–0.77 at 20%; onto + Jev
+0.77–1.00 at 0; onto + Gemini 0.83–1.00.
+
+- **On onto's input, NBAttract's 0.9 rule maps almost nothing.** A class
+  described by three to seven terms never gives naive Bayes a 0.9
+  posterior; Olsson et al. reached F1 ≈ 0.9 on JabRef with method,
+  variable and string names from compiled code, hundreds of terms per
+  class. So this row measures the input, not their method at its best.
+- **Without the rule (argmax), the same input carries some signal**:
+  0.41–0.70 with names hidden and a fifth of the classes labelled, still
+  below onto with no labels on every system.
+- Odd but explained: with names visible, NB argmax often gets worse as
+  labels are added (Lucene 0.96 → 0.74). Module documents are unions of
+  term sets; a module with many labelled classes gets a long document,
+  and multinomial smoothing then lowers every term's probability there.
+- **Still owed for fairness**: NBAttract on its native input (all
+  identifiers in each class), which a reviewer will ask for; onto's
+  judge does not see method or field names, so that comparison would be
+  input against input.
+
+Gemini used directly, without onto (`evals/baselines/direct_llm.py`), is
+written and parses every category, but cannot run until the OpenRouter
+key limit is raised.
