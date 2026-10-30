@@ -1,0 +1,10 @@
+{
+  "_source": "Written from the Apache Lucene core javadoc of lucene-solr trunk svn r1074952 (the last trunk commit at or before r1075001; git 65e22c0ce5ca12fedb592de3b3da9b6e5d129791): lucene/src/java/overview.html and the package.html files of the core packages; package, class and file names were removed.",
+  "queryparser": "A simple query parser implemented with the JavaCC parser generator, which parses a query from a string to build a query.",
+  "search": "Code to search indices: provides data structures to represent queries (for individual words, for phrases, and for boolean combinations of queries) and the searcher which turns queries into top-scoring documents, implementing search over a single index reader; it also covers how results are scored.",
+  "index": "Code to maintain and access indices: provides two primary parts, an index writer which creates and adds documents to indices, and an index reader which accesses the data in the index.",
+  "store": "Binary i/o API, used for all index data: defines an abstract directory for storing persistent data, a collection of named files written by an output and read by an input, with implementations that store files in a file system directory or as memory-resident data structures.",
+  "analysis": "API and code to convert text into indexable/searchable tokens: an abstract analyzer API converts text from a reader into a token stream, which can be composed by applying token filters (deletion, stemming, synonym injection, down casing) to the output of a tokenizer.",
+  "util": "Some utility classes: contains a few handy data structures and util classes, such as a bit vector and a priority queue.",
+  "document": "The logical representation of a document for indexing and searching: a document is simply a set of named fields, whose values may be strings or readers, with properties telling Lucene how to treat the content (indexed, tokenized, stored); it also provides utilities for working with documents and fields, such as making dates and numbers searchable and selecting how documents are loaded from storage."
+}
