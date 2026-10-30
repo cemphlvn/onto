@@ -11,6 +11,7 @@ entity level. System-specific: everything in SYSTEM.
 """
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -20,7 +21,7 @@ from pathlib import Path
 import jabref_eval as je
 
 HERE = Path(__file__).parent
-ONTO = str(HERE.parents[3] / "target/release/onto")
+ONTO = os.environ.get("ONTO_BIN", str(HERE.parents[3] / "target/release/onto"))
 
 # The system's own words (JabRef wiki, High Level Documentation, 2016).
 SYSTEM = {

@@ -28,6 +28,7 @@ Platt leave-one-out).
 """
 
 import json
+import os
 import math
 import random
 import re
@@ -37,7 +38,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 HERE = Path(__file__).parent
-ONTO = str(HERE.parents[3] / "target/release/onto")
+ONTO = os.environ.get("ONTO_BIN", str(HERE.parents[3] / "target/release/onto"))
 FRAMING = {
     "goal": "Recover the intended architecture of {src}: find the module of {dst} that the code unit {object} belongs to.",
     "instructions": "Which module of {dst} is responsible for this code unit? Judge by its responsibility, as its name and class names show, against each module's name and description. If none fits, answer none of these.",
