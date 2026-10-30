@@ -276,3 +276,46 @@ What the ablation says about the architecture:
 5. **Calibration measured here is in-sample** (leave-one-out within
    JabRef); fit it on one system and apply it to another before relying
    on it.
+
+## Result 4: TEAMMATES 5.110, names hidden (2026-10-30)
+
+Code: `evals/sysmdl/` (generic over s4rdm3x `.sysmdl`, the expert
+mappings Olsson et al. evaluated). Configuration: meaning only, no
+roles, architecture framing. 812 classes, 34 packages, 15 modules;
+package-level oracle 1.0.
+
+**The benchmark leaks the answer through package names.** In 7 of the 8
+Olsson et al. systems the expert mapping is a package-prefix regex
+(ProM 4/4 rules, Commons Imaging 20/21, TEAMMATES 14/15, Sweet Home 3D
+8/9), and module names are mostly package names. With paths visible, a
+package-level mapper is reading the answer. So each system runs twice:
+**visible** (package path + class names) and **hidden** (shuffled ids,
+class names only), the second standing in for a system whose names do
+not mirror its architecture.
+
+| blueprint (module descriptions) | visible F1 / macro | hidden F1 / macro |
+|---|---|---|
+| module names only | 0.690 / 0.878 | 0.560 / 0.586 |
+| + the expert document, restated (`teammates.doc.json`) | 0.771 / 0.937 | **0.818** / 0.787 |
+| + one convention: all test code is testDriver (`teammates.doctest.json`, marked as ours) | **1.000 / 1.000** | **0.937** / 0.845 |
+| string baseline (package name ↔ module name tokens, sees names) | 0.735 / 0.688 | — |
+
+- With names visible, every error was test code: the expert puts all
+  tests in testDriver, Jev put tests with the module they test. One
+  stated convention takes visible to 1.000. The same lesson as JabRef's
+  "the rest is gui": **convention modules must be written into the
+  blueprint**.
+- With names hidden, the expert's documentation is worth +0.258 F1 and
+  the convention another +0.119: **the blueprint is where the human
+  domain knowledge enters, and on a system without telling names it is
+  the largest lever measured so far.**
+- The 5 remaining hidden errors sit on real boundaries:
+  `common.datatransfer.*` → storage.entity (transfer object vs persisted
+  entity, p 0.62–0.77), `client.scripts.util` → common.util,
+  `client.scripts.scalabilitytests` → testDriver (p 0.93: by our own
+  convention it is a test; the expert says client.scripts, so the
+  blueprint and the gold disagree), and `logic.api` → ui.automated
+  (wrong).
+- Calibration on 34 packages is too few points to fit a map (Platt LOO
+  ECE moves 0.07 → 0.09 hidden); per-system calibration needs labels
+  pooled across systems, or the human answers collected at the gate.

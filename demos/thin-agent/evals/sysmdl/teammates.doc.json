@@ -1,0 +1,18 @@
+{
+ "_source": "TEAMMATES_5.110 Modular architecture - Final.docx (SAEroCon), restated; nothing added",
+ "common.util": "util subsystem of Common: utilities used across the application",
+ "common.exception": "exception subsystem of Common: the application's exceptions",
+ "common.dataTransfer": "datatransfer subsystem of Common: data transfer objects shared by the layers",
+ "ui.automated": "automated subsystem of the UI layer: actions run automatically by the server (cron jobs, task queues), not by a user's request",
+ "ui.controller": "controller subsystem of the UI layer: handles user requests and actions",
+ "ui.view": "view subsystem of the UI layer: page data, templates and UI-specific data transfer for rendering pages",
+ "logic.core": "core component of the Logic layer: the business logic, shielded by a facade; used from outside only via logic.api",
+ "logic.api": "coreFacade: the interface (Facade pattern) of the Logic core component; the only way other modules may use the logic",
+ "logic.backdoor": "backdoor subsystem of the Logic layer: privileged access to the logic for testing and administration",
+ "storage.entity": "entity subsystem of the Storage layer: persistent entities stored in the Datastore",
+ "storage.api": "api subsystem of the Storage layer: the database access interface the logic calls",
+ "storage.search": "search subsystem of the Storage layer: search documents and queries",
+ "testDriver": "Test Driver subsystem",
+ "client.remoteAPI": "remoteapi subsystem of Client: connects to the back-end remotely; not used in production",
+ "client.scripts": "scripts subsystem of Client: administrative scripts for system administrators (data migration, statistics, analytics); not used in production"
+}
