@@ -509,3 +509,38 @@ Ant note: s4rdm3x's Ant jar held no optional tasks (its `.sysmdl` says
 no files match `optional`); our source tree has them, and they are
 graded by the same rules, so Ant here is larger (736 classes) than
 Olsson et al.'s (515 entities).
+
+## Result 8: the judges compared, all behind onto's Judge contract (2026-10-31)
+
+Same frames, same blueprints, same substrate (`--no-roles`, meaning
+only, architecture framing); only `--judge-model` changes
+(`evals/calibration/leaderboard.py`). Package level: one decision, one
+point; a decision counts as right only when the judge's choice is
+adopted and matches the expert. Each judge against Jev on the decisions
+both answered, exact McNemar test:
+
+| judge | decisions | accuracy, judge / Jev | names hidden, judge / Jev | only judge right / only Jev right | p | probabilities | spent |
+|---|---|---|---|---|---|---|---|
+| **Gemini 3.1 Pro** | 410 (6 systems) | **0.907** / 0.846 | **0.878** / 0.776 | 37 / 12 | **0.0005** | stated | $10.25 |
+| Grok 4.3 | 202 (3 systems) | 0.782 / 0.782 | 0.644 / 0.703 | 21 / 21 | 1.0 | stated (no log-probabilities, though listed) | $2.20 |
+| Qwen 3.5 397B | 653 (8 systems) | 0.799 / 0.838 | 0.629 / 0.704 | 26 / 51 | 0.006 | letter log-probabilities | $2.41 |
+
+On the 202 decisions all four answered: Gemini 0.851 (Brier 0.058, ECE
+0.043), Jev 0.782 (0.112, 0.095), Grok 0.782 (0.101, 0.037), Qwen 0.688
+(0.189, 0.166).
+
+- **A general-purpose frontier model beats Jev on this task**, most
+  where names are hidden (+0.10), at about $25 per 1,000 decisions
+  with ~4,900 input tokens each. Jev's price per decision was not known
+  here, so accuracy per dollar is missing for it.
+- **The thin-agent claim held**: the judge was swapped by one flag; the
+  substrate, the gate, the records and the checks did not change.
+  Whichever judge wins, onto keeps the parts that make it usable: the
+  gate, calibration from records, and the functor check.
+- **Incomplete**: the OpenRouter key reached its total limit mid-run.
+  Gemini has 12 of 15 runs (missing Ant visible and hidden, JabRef),
+  Grok 6 of 15. A local judge (Qwen3.5-2B on device) was built and
+  started, then dropped by decision. Claude Fable was not run (about
+  $36 at this prompt size).
+- Contamination is not ruled out: these systems are old and public;
+  names hidden reduces it, it does not remove it.

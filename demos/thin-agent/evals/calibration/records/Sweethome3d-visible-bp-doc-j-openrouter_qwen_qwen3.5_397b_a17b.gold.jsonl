@@ -1,0 +1,9 @@
+{"object": "p_com_eteks_sweethome3d", "target": "m_sweetHome3DApplication", "classes": 5}
+{"object": "p_com_eteks_sweethome3d_applet", "target": "m_sweetHome3DApplet", "classes": 8}
+{"object": "p_com_eteks_sweethome3d_io", "target": "m_sweetHome3DIO", "classes": 8}
+{"object": "p_com_eteks_sweethome3d_j3d", "target": "m_sweetHome3DJava3D", "classes": 12}
+{"object": "p_com_eteks_sweethome3d_model", "target": "m_sweetHome3DModel", "classes": 46}
+{"object": "p_com_eteks_sweethome3d_plugin", "target": "m_sweetHome3DPlugin", "classes": 3}
+{"object": "p_com_eteks_sweethome3d_swing", "target": "m_sweetHome3DSwing", "classes": 47}
+{"object": "p_com_eteks_sweethome3d_tools", "target": "m_sweetHome3DTools", "classes": 5}
+{"object": "p_com_eteks_sweethome3d_viewcontroller", "target": "m_sweetHome3DViewController", "classes": 33}

@@ -3,7 +3,8 @@ runs behind onto's Judge contract on the same frames (8 systems, names
 visible and hidden, documentation blueprints), and is scored from its
 decision records.
 
-    python3 leaderboard.py run JUDGE        # JUDGE as onto discover --judge-model; "jev" for the default
+    python3 leaderboard.py run JUDGE [--jobs=N]   # JUDGE as onto discover --judge-model; "jev" for the default
+    python3 leaderboard.py status [JUDGE ...]     # runs done / total per judge, and runs in flight
     python3 leaderboard.py table [--price JUDGE=IN,OUT ...]   # USD per million tokens
 
 `sources.local.json` (not committed) maps each system to its source
@@ -51,25 +52,48 @@ def record_file(system, cond, judge):
     return RECORDS / f"{tag}.records.jsonl", RECORDS / f"{tag}.gold.jsonl"
 
 
-def run(judge):
+def tasks():
+    return [(system, cond) for system, _, _, _, conds in SYSTEMS for cond in conds]
+
+
+def run(judge, jobs=1):
+    """Each (system, condition) is its own process; up to `jobs` at once.
+    A run writes its records only when it finishes, so a run cut short
+    leaves nothing and is redone."""
+    from concurrent.futures import ThreadPoolExecutor
+
     sources = json.loads((HERE / "sources.local.json").read_text())
-    for system, script, sysmdl, bp, conds in SYSTEMS:
-        for cond in conds:
-            rec, _ = record_file(system, cond, judge)
-            if rec.exists():
-                print(f"{system:15} {cond:8} done already")
-                continue
-            extra = [] if judge == "jev" else [f"--judge={judge}"]
-            if script == "jabref":
-                cmd = ["uv", "run", "-q", "--with", "xlrd", "python", "layer2.py", "meaning", "--no-roles",
-                       "--framing=arch", "--records"] + extra
-                cwd = EVALS / "jabref"
-            else:
-                cmd = ["python3", "sysmdl_eval.py", sysmdl, *sources[system], f"--names={cond}",
-                       f"--blueprint={bp}", "--records"] + extra
-                cwd = EVALS / "sysmdl"
-            r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-            print(f"{system:15} {cond:8} exit {r.returncode}" + ("" if r.returncode == 0 else f"  {r.stderr[-300:]}"))
+    todo = [t for t in tasks() if not record_file(t[0], t[1], judge)[0].exists()]
+    print(f"{judge}: {len(tasks()) - len(todo)} done, {len(todo)} to run, {jobs} at a time", flush=True)
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        for line in pool.map(lambda t: one(judge, t[0], t[1], sources), todo):
+            print(line, flush=True)
+
+
+def one(judge, system, cond, sources):
+    script, sysmdl, bp = next((s[1], s[2], s[3]) for s in SYSTEMS if s[0] == system)
+    extra = [] if judge == "jev" else [f"--judge={judge}"]
+    if script == "jabref":
+        cmd = ["uv", "run", "-q", "--with", "xlrd", "python", "layer2.py", "meaning", "--no-roles",
+               "--framing=arch", "--records"] + extra
+        cwd = EVALS / "jabref"
+    else:
+        cmd = ["python3", "sysmdl_eval.py", sysmdl, *sources[system], f"--names={cond}",
+               f"--blueprint={bp}", "--records"] + extra
+        cwd = EVALS / "sysmdl"
+    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    return f"{system:15} {cond:8} exit {r.returncode}" + ("" if r.returncode == 0 else f"  {(r.stdout + r.stderr)[-300:]}")
+
+
+def status(judges):
+    total = len(tasks())
+    flight = subprocess.run(["pgrep", "-fl", "onto discover"], capture_output=True, text=True).stdout
+    parts = []
+    for j in judges:
+        done = sum(record_file(s, c, j)[0].exists() for s, c in tasks())
+        running = flight.count(j) if j != "jev" else 0
+        parts.append(f"{j.split('/')[-1][:28]} {done}/{total}" + (f" (+{running} running)" if running else ""))
+    print(" | ".join(parts), flush=True)
 
 
 def load(judge):
@@ -139,7 +163,10 @@ def table(prices):
 
 def main():
     if sys.argv[1] == "run":
-        run(sys.argv[2])
+        jobs = next((int(a.split("=")[1]) for a in sys.argv[3:] if a.startswith("--jobs=")), 1)
+        run(sys.argv[2], jobs)
+    elif sys.argv[1] == "status":
+        status(sys.argv[2:] or ["jev"])
     else:
         prices = {}
         for a in sys.argv[2:]:
