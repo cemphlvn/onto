@@ -87,4 +87,19 @@ afterwards, labelled post hoc.
 
 ## Changes
 
-(none)
+Recorded after the sealed test was scored (2026-10-31); none touched the
+candidates, the selection rule or the choice.
+
+- JabRef contributes names-visible records only (its documentation
+  names its packages), as stated in the data table.
+- Lucene r1075001 and Ant r584500 are revisions of other projects in
+  Apache's shared svn; the sources are the trunk trees at those moments
+  (Lucene trunk r1074952, Ant trunk r584145, identical to the trees at
+  the named revisions).
+- Test blueprints for Lucene, Ant, Commons Imaging and Sweet Home 3D
+  were written by agents that never saw the mapping files; ProM's by the
+  session, which had not seen ProM's mapping. Before freezing Ant's, the
+  session removed two statements the agent flagged as unsupported.
+- The run script (`sysmdl_eval.py`) also computes mapping accuracy into
+  files as a side effect; for the sealed systems only the failure count
+  and sizes were read before the test was scored.

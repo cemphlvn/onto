@@ -386,3 +386,69 @@ Across the three systems, hidden names (no help from paths): TEAMMATES
 0.818 (expert document only, the clean equivalent), ArgoUML 0.856
 (clean). With names visible and the documentation: JabRef 0.978,
 TEAMMATES 0.771 (tests unconvened), ArgoUML 0.987.
+
+## Result 6: the sealed test (2026-10-31)
+
+Five systems never touched before: ProM 6.9, Lucene (trunk at
+r1075001), Commons Imaging 1.0-alpha2, Ant (trunk at r584500), Sweet
+Home 3D r2382. Blueprints written blind from each system's own
+documentation (four by agents that never saw the mapping files) and
+frozen before any run; records collected and committed unscored;
+calibration choice frozen before (`evals/calibration/`,
+PREREGISTRATION.md, choice.json, test_result.json).
+
+### Mapping (configuration as Result 5; accuracy at class level)
+
+| system | visible | hidden | macro F1 hidden | string baseline (sees names) | largest hidden confusion |
+|---|---|---|---|---|---|
+| ProM | 0.916 | 0.680 | 0.460 | 1.000 | contexts → framework: 35 |
+| Lucene | 0.992 | 0.886 | 0.927 | 0.972 | util → index: 23 |
+| Commons Imaging | 1.000 | 0.827 | 0.913 | 0.962 | tiff → common: 28 |
+| Ant | 0.973 | 0.577 | 0.770 | 0.974 | taskdefs → ant: 127 |
+| Sweet Home 3D | 1.000 | 1.000 | 1.000 | 0.000* | — |
+| **mean (5)** | **0.976** | **0.794** | 0.814 | | |
+
+\* the string baseline's tokenizer cannot split `sweetHome3DModel`
+into a token matching `model`: an artifact of the baseline, not a
+result.
+
+- With names visible, discover matches the expert on all five
+  (0.92–1.00), but so does the string baseline wherever it can tokenize:
+  on these benchmarks visible names carry the answer.
+- **With names hidden, the blind result is 0.794 on average**, from
+  1.000 (Sweet Home 3D) to 0.577 (Ant). Training systems with clean
+  blueprints scored 0.818–0.856; the sealed mean is lower, with two
+  systems weak: Ant (taskdefs → ant core: the documentation describes
+  tasks and the core in the same terms) and ProM (contexts → framework:
+  its documentation is a forum and an announcement, the thinnest
+  blueprint of all).
+
+### Calibration (pre-registered)
+
+358 sealed decisions, judge right 81.6% (package level, visible and
+hidden pooled).
+
+| map | Brier | log loss | ECE | coverage @0.9 | precision @0.9 | asked |
+|---|---|---|---|---|---|---|
+| **identity (pre-registered choice)** | **0.0994** | 0.319 | 0.074 | 0.360 | **1.000** | 229 |
+| Platt, pull 1 (post hoc) | 0.0955 | 0.298 | 0.021 | 0.587 | 0.986 | 148 |
+| isotonic (post hoc, best Brier) | 0.0950 | 0.293 | 0.019 | 0.497 | 0.989 | 180 |
+| others (post hoc) | 0.095–0.102 | | 0.019–0.034 | | | |
+
+- **The pre-registered choice held up on its own terms**: Brier
+  differences across all twelve maps stay within 0.007, as the training
+  folds predicted; no map is clearly better by Brier.
+- **ECE is where calibration shows** (post hoc): every fitted map cuts
+  ECE from 0.074 to about 0.02, on test as on training (0.080 → 0.057).
+  Brier barely moves because it is dominated by how well the judge
+  separates right from wrong, which a monotone map cannot change.
+- **At the gate the choice has a price** (post hoc): raw p adopts only
+  36% and asks about 229 of 358, never wrong; Platt adopts 59% and asks
+  148, wrong about 3 times. At the 10 : 1 cost the gate itself assumes,
+  Platt costs ≈ 148 + 30 = 178 against 229. On the training folds the
+  same arithmetic favoured identity.
+- **Lesson for the next pre-registration** (not applied here): select
+  on the decision the map serves, the expected cost at the gate's
+  threshold, not on Brier. A map that is better calibrated without
+  being better on Brier can still change how many questions a person
+  gets.

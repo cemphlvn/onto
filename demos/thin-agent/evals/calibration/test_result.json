@@ -1,0 +1,193 @@
+{
+ "choice": "identity",
+ "test_systems": [
+  "Ant",
+  "Commonsimaging",
+  "Lucene",
+  "Prom",
+  "Sweethome3d"
+ ],
+ "decisions": 358,
+ "results": {
+  "identity": {
+   "brier": 0.09940810031323444,
+   "logloss": 0.31935020647872714,
+   "ece": 0.07360337001410142,
+   "coverage": 0.36033519553072624,
+   "precision": 1.0,
+   "asked": 229,
+   "per_system": {
+    "Ant": 0.1315,
+    "Commonsimaging": 0.0428,
+    "Lucene": 0.071,
+    "Prom": 0.1349,
+    "Sweethome3d": 0.0346
+   }
+  },
+  "temperature": {
+   "brier": 0.09568503385490808,
+   "logloss": 0.29648473264442826,
+   "ece": 0.03411132904821436,
+   "coverage": 0.5307262569832403,
+   "precision": 0.9894736842105263,
+   "asked": 168,
+   "per_system": {
+    "Ant": 0.1287,
+    "Commonsimaging": 0.0422,
+    "Lucene": 0.0641,
+    "Prom": 0.129,
+    "Sweethome3d": 0.0297
+   }
+  },
+  "platt_pull1": {
+   "brier": 0.0955368808458313,
+   "logloss": 0.2980563792777894,
+   "ece": 0.020593465486474966,
+   "coverage": 0.5865921787709497,
+   "precision": 0.9857142857142858,
+   "asked": 148,
+   "per_system": {
+    "Ant": 0.1319,
+    "Commonsimaging": 0.0442,
+    "Lucene": 0.0639,
+    "Prom": 0.1245,
+    "Sweethome3d": 0.018
+   }
+  },
+  "platt": {
+   "brier": 0.095769204013626,
+   "logloss": 0.29858054402331985,
+   "ece": 0.02317392761294126,
+   "coverage": 0.5865921787709497,
+   "precision": 0.9857142857142858,
+   "asked": 148,
+   "per_system": {
+    "Ant": 0.1324,
+    "Commonsimaging": 0.0444,
+    "Lucene": 0.064,
+    "Prom": 0.1246,
+    "Sweethome3d": 0.0175
+   }
+  },
+  "platt_none": {
+   "brier": 0.09547410073291608,
+   "logloss": 0.29698087915357346,
+   "ece": 0.028232287123455352,
+   "coverage": 0.5782122905027933,
+   "precision": 0.9806763285024155,
+   "asked": 151,
+   "per_system": {
+    "Ant": 0.1312,
+    "Commonsimaging": 0.0451,
+    "Lucene": 0.0666,
+    "Prom": 0.1241,
+    "Sweethome3d": 0.013
+   }
+  },
+  "platt_margin": {
+   "brier": 0.0951553638417797,
+   "logloss": 0.29664520328892335,
+   "ece": 0.023417213143562234,
+   "coverage": 0.5698324022346368,
+   "precision": 0.9852941176470589,
+   "asked": 154,
+   "per_system": {
+    "Ant": 0.1304,
+    "Commonsimaging": 0.0444,
+    "Lucene": 0.0656,
+    "Prom": 0.1244,
+    "Sweethome3d": 0.0163
+   }
+  },
+  "beta": {
+   "brier": 0.09777302402404593,
+   "logloss": 0.3009614904946048,
+   "ece": 0.0231209538595013,
+   "coverage": 0.5642458100558659,
+   "precision": 0.9900990099009901,
+   "asked": 156,
+   "per_system": {
+    "Ant": 0.1366,
+    "Commonsimaging": 0.0461,
+    "Lucene": 0.0657,
+    "Prom": 0.1244,
+    "Sweethome3d": 0.0176
+   }
+  },
+  "hist5_width": {
+   "brier": 0.09940996661467892,
+   "logloss": 0.3063302660907572,
+   "ece": 0.03181400287197467,
+   "coverage": 0.5642458100558659,
+   "precision": 0.9900990099009901,
+   "asked": 156,
+   "per_system": {
+    "Ant": 0.1417,
+    "Commonsimaging": 0.0428,
+    "Lucene": 0.0702,
+    "Prom": 0.1226,
+    "Sweethome3d": 0.0278
+   }
+  },
+  "hist10_mass": {
+   "brier": 0.10190275379899758,
+   "logloss": 0.31114430046673136,
+   "ece": 0.01918438425055868,
+   "coverage": 0.39664804469273746,
+   "precision": 1.0,
+   "asked": 216,
+   "per_system": {
+    "Ant": 0.1415,
+    "Commonsimaging": 0.0474,
+    "Lucene": 0.0665,
+    "Prom": 0.1315,
+    "Sweethome3d": 0.023
+   }
+  },
+  "isotonic": {
+   "brier": 0.09499075890384204,
+   "logloss": 0.29274354809861114,
+   "ece": 0.01920093274881552,
+   "coverage": 0.4972067039106145,
+   "precision": 0.9887640449438202,
+   "asked": 180,
+   "per_system": {
+    "Ant": 0.129,
+    "Commonsimaging": 0.0402,
+    "Lucene": 0.0627,
+    "Prom": 0.1299,
+    "Sweethome3d": 0.0221
+   }
+  },
+  "isotonic_interp": {
+   "brier": 0.09499075890384204,
+   "logloss": 0.29274354809861114,
+   "ece": 0.01920093274881552,
+   "coverage": 0.4972067039106145,
+   "precision": 0.9887640449438202,
+   "asked": 180,
+   "per_system": {
+    "Ant": 0.129,
+    "Commonsimaging": 0.0402,
+    "Lucene": 0.0627,
+    "Prom": 0.1299,
+    "Sweethome3d": 0.0221
+   }
+  },
+  "venn_abers": {
+   "brier": 0.09539140602859389,
+   "logloss": 0.2990601083016046,
+   "ece": 0.0230676240426491,
+   "coverage": 0.4553072625698324,
+   "precision": 0.9877300613496932,
+   "asked": 195,
+   "per_system": {
+    "Ant": 0.13,
+    "Commonsimaging": 0.0404,
+    "Lucene": 0.0636,
+    "Prom": 0.1292,
+    "Sweethome3d": 0.0234
+   }
+  }
+ }
+}
