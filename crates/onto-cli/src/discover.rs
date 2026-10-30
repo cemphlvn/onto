@@ -139,10 +139,12 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
     );
 
     // Meaning.
+    let mut judge_name: Option<String> = None;
     let judged = if args.no_judge {
         vec![None; n]
     } else {
         let (judge, _) = models(args.mock, true, args.judge_model.clone(), None)?;
+        judge_name = Some(onto_runtime::model::Judge::name(&judge));
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?;
@@ -374,6 +376,11 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
                 "calibrated": gated[i].map(|g| g.2),
                 "threshold": threshold,
                 "none": judged[i].as_ref().map(|j| j.none),
+                "judge": judge_name,
+                "tokens": judged[i].as_ref().map(|j| serde_json::json!({
+                    "input": j.usage.input_tokens, "output": j.usage.output_tokens, "attempts": j.usage.attempts,
+                    "requests": j.usage.questions,
+                })),
                 "candidates": candidates.iter().take(3)
                     .map(|(y, p)| serde_json::json!({"target": b.object(*y).name, "p": p}))
                     .collect::<Vec<_>>(),

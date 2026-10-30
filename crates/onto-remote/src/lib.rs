@@ -2,7 +2,7 @@
 //! critic, any OpenRouter chat model as the proposer. The engine calls
 //! them concurrently, up to `judge_concurrency` / `proposer_concurrency`
 //! requests in flight. `Tkgd` judges through fonto's local TKG server,
-//! for benchmarks.
+//! and `RouterJudge` through any OpenRouter chat model, for benchmarks.
 
 use std::time::Duration;
 
@@ -16,7 +16,9 @@ use onto_models::{
     Usage,
 };
 
+mod router_judge;
 mod tkgd;
+pub use router_judge::RouterJudge;
 pub use tkgd::Tkgd;
 
 const MAX_ATTEMPTS: u32 = 7;

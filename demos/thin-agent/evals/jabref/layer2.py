@@ -198,9 +198,9 @@ def calibration(points):
 def tag():
     mode = next((a for a in sys.argv[1:] if not a.startswith("--")), "structure")
     parts = [mode] + (["noroles"] if "--no-roles" in sys.argv else [])
-    for name, default in (("framing", "default"), ("target", "doc"), ("source", "classes"), ("rep", "1")):
+    for name, default in (("framing", "default"), ("target", "doc"), ("source", "classes"), ("rep", "1"), ("judge", "")):
         if opt(name, default) != default:
-            parts.append(f"{name}-{opt(name, default)}")
+            parts.append(f"{name}-{re.sub(r'[^A-Za-z0-9.]+', '_', opt(name, default))}")
     return "-".join(parts)
 
 
@@ -222,7 +222,8 @@ def main(mode):
              "--non-injective", "--name", "Proposed"] + (["--no-roles"] if roles else [])
             + (["--goal", ARCH_FRAMING["goal"], "--instructions", ARCH_FRAMING["instructions"]]
                if opt("framing", "default") == "arch" else [])
-            + (["--records", str(records)] if records else []),
+            + (["--records", str(records)] if records else [])
+            + (["--judge-model", opt("judge", "")] if opt("judge", "") else []),
             capture_output=True, text=True, timeout=3600,
         )
         saved.write_text(run.stdout + run.stderr)

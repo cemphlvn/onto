@@ -49,6 +49,8 @@ pub struct Judged {
     pub targets: Vec<(ObjId, f32)>,
     pub none: f32,
     pub confidence: Option<f32>,
+    /// The call's tokens and attempts, for cost.
+    pub usage: crate::model::Usage,
 }
 
 /// Every source object's judgment, and the objects whose judge call
@@ -141,7 +143,7 @@ pub async fn judge_objects<J: Judge>(
             };
             Box::pin(async move {
                 let _slot = slots.acquire().await.expect("semaphore never closed");
-                let (answer, _) = judge.judge(req).await?;
+                let (answer, usage) = judge.judge(req).await?;
                 let Answer::Choice(d) = answer else {
                     return Err(ModelError::Decode("expected a choice".into()));
                 };
@@ -149,6 +151,7 @@ pub async fn judge_objects<J: Judge>(
                     targets: targets.into_iter().zip(d.arrows).collect(),
                     none: d.none_of_these,
                     confidence: d.confidence,
+                    usage,
                 })
             })
         })

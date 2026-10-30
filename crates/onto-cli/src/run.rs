@@ -79,6 +79,9 @@ pub enum AnyJudge {
     /// `--judge-model tkgd:<model>`: a TKG model behind fonto's tkgd
     /// server, read by calibrated likelihood (Turkish graphs only).
     Tkgd(Tkgd),
+    /// `--judge-model openrouter:<model>`: any OpenRouter chat model, its
+    /// letter log-probabilities or, without them, stated probabilities.
+    Router(onto_remote::RouterJudge),
     /// `--judge-model local:<file.gguf>` (feature `local`): the OpenJev
     /// method on this machine, no network.
     #[cfg(feature = "local")]
@@ -91,6 +94,7 @@ impl Judge for AnyJudge {
             Self::Jev(j) => Judge::name(j),
             Self::Mock(j) => Judge::name(j),
             Self::Tkgd(j) => Judge::name(j),
+            Self::Router(j) => Judge::name(j),
             #[cfg(feature = "local")]
             Self::Local(j) => Judge::name(j),
         }
@@ -100,6 +104,7 @@ impl Judge for AnyJudge {
             Self::Jev(j) => j.judge(req).await,
             Self::Mock(j) => j.judge(req).await,
             Self::Tkgd(j) => j.judge(req).await,
+            Self::Router(j) => j.judge(req).await,
             #[cfg(feature = "local")]
             Self::Local(j) => j.judge(req).await,
         }
@@ -113,6 +118,7 @@ impl Critic for AnyJudge {
             Self::Jev(j) => Critic::name(j),
             Self::Mock(j) => Critic::name(j),
             Self::Tkgd(j) => Critic::name(j),
+            Self::Router(j) => Judge::name(j),
             #[cfg(feature = "local")]
             Self::Local(j) => Critic::name(j),
         }
@@ -126,6 +132,11 @@ impl Critic for AnyJudge {
             Self::Jev(j) => j.nouls(state, questions).await,
             Self::Mock(j) => j.nouls(state, questions).await,
             Self::Tkgd(j) => j.nouls(state, questions).await,
+            // Choice frames only: it cannot critique proposals.
+            Self::Router(j) => Err(ModelError::Unsupported {
+                model: Judge::name(j),
+                primitive: "noul",
+            }),
             #[cfg(feature = "local")]
             Self::Local(j) => j.nouls(state, questions).await,
         }
@@ -238,6 +249,14 @@ pub fn models(
         .and_then(|m| Tkgd::parse(http.clone(), m))
     {
         AnyJudge::Tkgd(t)
+    } else if let Some(m) = judge_model
+        .as_deref()
+        .filter(|m| m.starts_with("openrouter:"))
+    {
+        AnyJudge::Router(
+            onto_remote::RouterJudge::parse(http.clone(), m)
+                .ok_or("--judge-model openrouter:… needs OPENROUTER_API_KEY")?,
+        )
     } else {
         AnyJudge::Jev(
             Jev::from_env(http.clone(), judge_model)
