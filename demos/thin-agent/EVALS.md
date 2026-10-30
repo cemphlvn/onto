@@ -593,3 +593,22 @@ F1, names **visible**: NBAttract with the 0.9 rule 0.00–0.24 even at
 Gemini used directly, without onto (`evals/baselines/direct_llm.py`), is
 written and parses every category, but cannot run until the OpenRouter
 key limit is raised.
+
+### Comparison rule for NBAttract (fixed before the native-input results were read, 2026-10-31)
+
+Per system and names condition (7 × 2 = 14 pairs), class-level F1 by
+Olsson et al.'s convention, onto at zero labels against NBAttract at k%
+labelled (k = 1, 5, 10, 20), 50 random initial sets:
+
+- **win**: onto's F1 above NBAttract's 75th percentile at k; **loss**:
+  below its 25th; **tie**: between.
+- **label equivalent**: the smallest k at which NBAttract's median
+  reaches onto's zero-label F1; "> 20%" if it never does.
+- A general claim "onto beats NBAttract even at k% labelled" only with
+  at least **12 of 14** wins at that k (sign test, two-sided p ≈ 0.013);
+  otherwise the counts are reported and no general claim is made.
+- Read with two asymmetries stated now: on NBAttract's native input it
+  sees method, field and string names that onto's judge never sees; and
+  onto decides per package, NBAttract per class (both scored per class).
+- Both inputs are reported (onto's input, NBAttract's native input),
+  for onto + Jev and onto + Gemini (where Gemini has the system).
