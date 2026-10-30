@@ -1,0 +1,40 @@
+# A counterexample: a tool agent that writes to the world directly, beside
+# a judge that goes through the contract. The only well-defined image of
+# the shortcut is a path through the contract and the substrate, so the
+# functor has to claim one; the claim does not hold, and loading fails
+# before anything runs. Two checks catch it independently:
+#   authority:  the image issues Contracted, `write_direct` ensures nothing;
+#   invariants: Tool -> Store visits neither Contract nor Engine in the
+#               source, so both `via` invariants of the standard fail.
+# `onto functor demos/thin-agent/shortcut.onto` (expected to fail)
+
+import "../../standards/thin-agent.onto";
+
+category ShortcutAgents {
+    capability Typed { issuers: judge_answers; }
+
+    objects: Prompt, Judge, Tool, Contract, Engine, Store;
+
+    configure_judge: Prompt -> Judge;
+    configure_tool:  Prompt -> Tool;
+    judge_answers:   Judge -> Contract ensures Typed;
+    decide:          Contract -> Engine;
+    persist:         Engine -> Store;
+    write_direct:    Tool -> Store "the tool writes to the store itself";
+
+    entry Engine: needs Typed;
+}
+
+functor Shortcut: ShortcutAgents -> ThinAgentArchitecture {
+    objects: Prompt -> Blueprint, Judge -> Agent, Tool -> Agent,
+             Contract -> Contract, Engine -> Substrate, Store -> World;
+    capabilities: Typed -> Contracted;
+
+    configure_judge: instantiate; configure_tool: instantiate;
+    judge_answers: bind_contract;
+    decide: submit;
+    persist: act;
+    write_direct: act.submit.bind_contract;
+
+    require: authority, contracts, invariants;
+}

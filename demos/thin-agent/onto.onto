@@ -1,0 +1,32 @@
+# onto's own architecture, as a category: how a model's answer travels
+# from a declared category to a recorded decision or an admitted arrow.
+# Not walked; mapped into `standards/thin-agent.onto` by `conforms.onto`.
+
+category OntoArchitecture {
+    capability Typed { issuers: jev_answers, local_answers, llm_proposes; }
+
+    objects: Category, Jev, LocalJudge, Proposer, ModelContract, Engine, Record, Learned;
+
+    about Category:      "a .onto file: objects, arrows, frames and policy, written only by people";
+    about Jev:           "the remote System-1 judge (onto-remote)";
+    about LocalJudge:    "the on-device System-1 judge (onto-local)";
+    about Proposer:      "the System-2 language model that proposes missing structure (onto-remote)";
+    about ModelContract: "requests and answers of onto-models: no engine, no network";
+    about Engine:        "onto-core and onto-runtime: walks, contracts, invariants, review";
+    about Record:        "the frame record: every candidate's disposition and the judge's number";
+    about Learned:       "the learned layer, replayed through the proofs on every load";
+
+    frame_remote:  Category -> Jev        "the walker renders a declared frame for the remote judge";
+    frame_local:   Category -> LocalJudge "the walker renders a declared frame for the local judge";
+    gap:           Category -> Proposer   "a structure gap asks the proposer for a missing arrow";
+
+    jev_answers:   Jev -> ModelContract        "Jev answers Choice, Noul or Score" ensures Typed;
+    local_answers: LocalJudge -> ModelContract "the local judge answers from one forward pass" ensures Typed;
+    llm_proposes:  Proposer -> ModelContract   "the proposer returns a typed proposal" ensures Typed;
+
+    decide:  ModelContract -> Engine "the engine reads the answer and disposes every candidate";
+    record:  Engine -> Record        "the visit is recorded with its numbers and reasons";
+    admit:   Engine -> Learned       "a reviewed proposal enters the learned layer under the frame's regime";
+
+    entry Engine: needs Typed;
+}

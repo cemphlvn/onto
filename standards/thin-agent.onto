@@ -1,0 +1,30 @@
+# Thin agents on a smart shared substrate: a shared category of how an
+# agentic system is allowed to be built. Agents are configured only from
+# declared blueprints, hold no policy of their own, speak a typed
+# contract, and reach the world only through the substrate's checks.
+#
+# A system maps its own architecture into it with a functor
+# (`docs/05-functors.md`); the functor's report is the conformance
+# analysis: an agent route to the world that skips the substrate is a
+# failed invariant, not a review comment.
+
+category ThinAgentArchitecture {
+    capability Contracted { issuers: bind_contract; }
+
+    objects: Blueprint, Agent, Contract, Substrate, World;
+
+    about Blueprint: "declared, human-written structure that says what an agent is asked to do";
+    about Agent:     "a model or tool that holds no policy or durable state and can be replaced without loss";
+    about Contract:  "a typed, serializable request and answer: the agent's whole interface";
+    about Substrate: "owns meaning, rules, provenance and verification; shared by every agent";
+    about World:     "anything that outlives the call: recorded decisions, admitted structure, side effects";
+
+    instantiate:   Blueprint -> Agent     "an agent is configured only from a declared blueprint";
+    bind_contract: Agent -> Contract      "the agent answers in the typed contract" ensures Contracted;
+    submit:        Contract -> Substrate  "the answer crosses into the substrate";
+    act:           Substrate -> World     "the world changes only after the substrate's checks";
+
+    entry Substrate: needs Contracted;
+    invariant via: Agent -> World through Contract;
+    invariant via: Agent -> World through Substrate;
+}

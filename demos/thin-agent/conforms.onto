@@ -1,0 +1,25 @@
+# onto's architecture, mapped into the thin-agent standard.
+# `onto functor demos/thin-agent/conforms.onto`
+#
+# Loading proves the required checks: the standard's Contracted is issued
+# only by arrows that issue Typed (authority), the engine's entry needs a
+# typed answer (contracts), and no model reaches the record or the
+# learned layer except through the contract and the engine (invariants).
+
+import "onto.onto";
+import "../../standards/thin-agent.onto";
+
+functor Conforms: OntoArchitecture -> ThinAgentArchitecture {
+    objects: Category -> Blueprint,
+             Jev -> Agent, LocalJudge -> Agent, Proposer -> Agent,
+             ModelContract -> Contract, Engine -> Substrate,
+             Record -> World, Learned -> World;
+    capabilities: Typed -> Contracted;
+
+    frame_remote: instantiate; frame_local: instantiate; gap: instantiate;
+    jev_answers: bind_contract; local_answers: bind_contract; llm_proposes: bind_contract;
+    decide: submit;
+    record: act; admit: act;
+
+    require: authority, contracts, invariants, cover;
+}
