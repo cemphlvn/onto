@@ -336,3 +336,53 @@ largest confusions.
 - Calibration on 34 packages is too few points to fit a map (Platt LOO
   ECE moves 0.07 → 0.09 hidden); per-system calibration needs labels
   pooled across systems, or the human answers collected at the gate.
+
+## Result 5: ArgoUML r13713, a clean test (2026-10-30)
+
+**Protocol.** Blueprint written only from ArgoUML's Cookbook in the same
+revision (`trunk@13713` = git `00eb8d17d9`), purpose and layer
+statements close to verbatim, package and class names removed, and
+**frozen in commit 1ce6f0b before any ArgoUML run**. Disclosed: before
+writing it I had seen the `.sysmdl` module list and its first 7 mapping
+rules; no rule content went into the blueprint. Anything added after
+seeing errors would be a separate "expertise value" row; none was
+added.
+
+Sources: `src_new` + `src/model` (1503 classes read). The expert mapping
+covers 820 classes in 54 of 78 packages; ungraded classes are left out,
+as in Olsson et al. 19 modules, of which 4 (profile, help,
+taskManagement, configuration) have no classes: distractors. Package-
+level oracle 1.0.
+
+| blueprint | names | accuracy | coverage | macro P | macro R | macro F1 | packages right | largest confusion |
+|---|---|---|---|---|---|---|---|---|
+| **Cookbook (clean)** | **hidden** | **0.856** | 1.000 | 0.681 | 0.718 | 0.663 | 45/54 | model → diagrams: 81 |
+| **Cookbook (clean)** | **visible** | **0.987** | 1.000 | 0.924 | 0.894 | 0.900 | | moduleLoader → application: 6 |
+| module names only | hidden | 0.757 | 1.000 | 0.602 | 0.582 | 0.573 | | model → diagrams: 81 |
+| module names only | visible | 0.943 | 1.000 | 0.866 | 0.863 | 0.829 | | critics → taskManagement: 35 |
+| string baseline (sees names) | — | 0.404 | 0.428 | 0.470 | 0.464 | 0.454 | | |
+
+(Micro P = R = accuracy at full coverage; the string baseline abstains,
+P 0.943 over the 43% it maps.)
+
+- **Blueprint value, clean**: +0.099 accuracy / +0.090 macro F1 hidden,
+  +0.044 / +0.071 visible. Calibration hidden: ECE 0.098 raw, 0.040 after
+  Platt (leave-one-out, in-sample).
+- **One decision is most of the gap**: `org.argouml.model` (81 classes,
+  the model facade) → diagrams at p 0.55. Without it hidden accuracy
+  would be ≈ 0.955. Class-level grading weighs package decisions by
+  size; package accuracy (45/54) shows the decision count.
+- **Errors sit at low p**: 7 of 9 wrong packages were judged at p ≤ 0.55
+  (0.19–0.55); a gate there would send them to a person.
+- **Two errors are the blueprint's, by our own rule**:
+  `uml.reveng.java` → javaCodeGeneration (the Cookbook puts Java reverse
+  engineering in the Java subsystem; the expert puts it in
+  reverseEngineering) and `application.api` → application at p 0.86
+  (the Cookbook ties that package to the module loader by name, which
+  our no-package-names rule removed). Blueprint and gold disagree in
+  the first; the second is a cost of hiding names.
+
+Across the three systems, hidden names (no help from paths): TEAMMATES
+0.818 (expert document only, the clean equivalent), ArgoUML 0.856
+(clean). With names visible and the documentation: JabRef 0.978,
+TEAMMATES 0.771 (tests unconvened), ArgoUML 0.987.
