@@ -130,6 +130,22 @@ def read_sources(dirs):
     return deps
 
 
+def sample(classes, referenced, k=15):
+    """The class names a unit is described by. alpha (the default, and
+    every run before 2026-10-31): the alphabetical head, which for a
+    large unit can be all of one kind (Ant's tasks start with Abstract*,
+    Ant*). referenced: the classes other units reference most, ties
+    broken alphabetically, then the rest evenly spaced."""
+    names = sorted(classes)
+    if opt("sample", "alpha") != "referenced" or len(names) <= k:
+        return [c.rsplit(".", 1)[1] for c in names[:k]]
+    used = [c for c in sorted(names, key=lambda c: (-referenced[c], c)) if referenced[c]][: k * 2 // 3]
+    rest = [c for c in names if c not in used]
+    step = max(1, len(rest) // (k - len(used))) if len(used) < k else 1
+    picked = used + rest[::step][: k - len(used)]
+    return [c.rsplit(".", 1)[1] for c in picked]
+
+
 def module_of(cls, rules):
     for m, rx in rules:
         if rx.search(cls):
@@ -219,6 +235,7 @@ def main():
     name = re.sub(r"\W", "", sysmdl.stem.split("_")[0].split(".")[0]).capitalize()
     blueprint = opt("blueprint", "")
     tag = (f"{name}-{names}" + (f"-bp-{Path(blueprint).stem.split('.')[-1]}" if blueprint else "")
+           + ("-sref" if opt("sample", "alpha") == "referenced" else "")
            + (f"-rep-{opt('rep', '1')}" if opt("rep", "1") != "1" else ""))
     described = json.loads(Path(blueprint).read_text()) if blueprint else {}
     modules, rules, relations = parse_sysmdl(sysmdl)
@@ -239,6 +256,9 @@ def main():
     mid = {m: "m_" + re.sub(r"[^A-Za-z0-9]+", "_", m) for m in modules}
     mback = {v: k for k, v in mid.items()}
 
+    # How often each class is referenced from other packages: the classes
+    # a unit is known by (--sample=referenced).
+    referenced = Counter(r for c, refs in deps.items() for r in refs if pkg_of[r] != pkg_of[c])
     edges = Counter()
     for c, refs in deps.items():
         for r in refs:
@@ -246,8 +266,12 @@ def main():
                 edges[(pkg_of[c], pkg_of[r])] += 1
     lines = [f"category {name}Code {{", f"    objects: {', '.join(ident[p] for p in pkgs)};"]
     for p in pkgs:
-        cls = ", ".join(sorted(c.rsplit(".", 1)[1] for c in classes_in[p])[:15])
-        about = f"package {p}: classes {cls}" if names == "visible" else f"a code unit with classes {cls}"
+        cls = ", ".join(sample(classes_in[p], referenced))
+        if opt("sample", "alpha") == "referenced":
+            size = f"{len(classes_in[p])} classes, the most used of them"
+            about = f"package {p}: {size}: {cls}" if names == "visible" else f"a code unit of {size}: {cls}"
+        else:
+            about = f"package {p}: classes {cls}" if names == "visible" else f"a code unit with classes {cls}"
         lines.append(f'    about {ident[p]}: "{about}";')
     for (a, b), n in sorted(edges.items()):
         lines.append(f'    d_{ident[a]}__{ident[b]}: {ident[a]} -> {ident[b]} "{n} references";')

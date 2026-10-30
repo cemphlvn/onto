@@ -489,14 +489,21 @@ Its description to the judge was its **first 15 class names in
 alphabetical order**: `AbstractCvsTask, AbstractJarSignerTask, Ant,
 AntStructure, Antlib, AntlibDefinition, Apt, Available, ...`: names
 that read like the core, while the tasks that make the package what it
-is (Copy, Javac, Jar) never appear. The error is in how the substrate
-renders the source, not in the blueprint.
+is (Copy, Javac, Jar) never appear. Hypothesis: the error is in how
+the substrate renders the source, not in the blueprint.
+
+**Tested and refuted (same day, post hoc):** described instead by its
+size and the classes other units reference most (`--sample=referenced`:
+"127 classes, the most used of them: Execute, LogStreamHandler,
+MatchingTask, Java, ..."), the package still went to the core (accuracy
+0.577 → 0.572). Its most-used classes read like infrastructure too. The
+cause stays open: Ant's tasks package holds engine-like classes, and
+the core module's description ("the base task class") draws them.
 
 **For the next pre-registered round** (not applied to any result
-above): describe a code unit by its size and a representative sample
-of its classes (e.g. those other units reference most, or evenly
-spaced), not the alphabetical head; and select the calibration map on
-the gate's expected cost (Result 6).
+above): select the calibration map on the gate's expected cost (Result
+6). The referenced sample (`--sample=referenced`) is available but did
+not help where it was tried.
 
 Ant note: s4rdm3x's Ant jar held no optional tasks (its `.sysmdl` says
 no files match `optional`); our source tree has them, and they are

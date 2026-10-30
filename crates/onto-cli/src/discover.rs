@@ -41,6 +41,10 @@ pub struct DiscoverArgs {
     no_judge: bool,
     #[arg(long)]
     mock: bool,
+    /// The judge, as for `onto run`: a Jev model name, `local:<file.gguf>`
+    /// (feature `local`), or `tkgd:<model>`. Default: Jev.
+    #[arg(long)]
+    judge_model: Option<String>,
     /// Longest target path an arrow may map to.
     #[arg(long, default_value_t = 3)]
     max_len: usize,
@@ -138,7 +142,7 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
     let judged = if args.no_judge {
         vec![None; n]
     } else {
-        let (judge, _) = models(args.mock, true, None, None)?;
+        let (judge, _) = models(args.mock, true, args.judge_model.clone(), None)?;
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?;
