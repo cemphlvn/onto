@@ -293,12 +293,29 @@ package-level mapper is reading the answer. So each system runs twice:
 class names only), the second standing in for a system whose names do
 not mirror its architecture.
 
-| blueprint (module descriptions) | visible F1 / macro | hidden F1 / macro |
-|---|---|---|
-| module names only | 0.690 / 0.878 | 0.560 / 0.586 |
-| + the expert document, restated (`teammates.doc.json`) | 0.771 / 0.937 | **0.818** / 0.787 |
-| + one convention: all test code is testDriver (`teammates.doctest.json`, marked as ours) | **1.000 / 1.000** | **0.937** / 0.845 |
-| string baseline (package name ↔ module name tokens, sees names) | 0.735 / 0.688 | — |
+| blueprint (module descriptions) | names | accuracy | coverage | P | R | macro P | macro R | macro F1 | largest confusion |
+|---|---|---|---|---|---|---|---|---|---|
+| module names only | visible | 0.648 | 0.877 | 0.739 | 0.648 | 0.916 | 0.939 | 0.878 | testDriver → ui.automated: 101 |
+| module names only | hidden | 0.560 | 1.000 | 0.560 | 0.560 | 0.593 | 0.692 | 0.586 | testDriver → ui.automated: 206 |
+| + the expert document, restated (`teammates.doc.json`) | visible | 0.708 | 0.837 | 0.846 | 0.708 | 0.964 | 0.949 | 0.937 | testDriver → ui.controller: 85 |
+| + the expert document | hidden | **0.818** | 1.000 | 0.818 | 0.818 | 0.804 | 0.858 | 0.787 | testDriver → ui.automated: 65 |
+| + one convention: all test code is testDriver (`teammates.doctest.json`, marked as ours) | visible | **1.000** | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | — |
+| + the convention | hidden | **0.937** | 1.000 | 0.937 | 0.937 | 0.862 | 0.879 | 0.845 | common.dataTransfer → storage.entity: 37 |
+| string baseline (package name ↔ module name tokens, sees names) | visible | 0.669 | 0.820 | 0.815 | 0.669 | | | 0.688 | |
+
+**Reading the micro numbers.** P is over mapped classes, R over all
+(Olsson et al.). At full coverage each wrong class is one false positive
+(for the module it went to) and one false negative (for its own), so
+micro P = R = F1 = accuracy: hidden + convention has TP 761, FP 51,
+FN 51. Micro P and R separate only when the mapper abstains (visible:
+coverage 0.84–0.88, P > R). The errors show per module: in hidden +
+convention, common.dataTransfer has P 1.000 / R 0.431 and
+storage.entity P 0.245 / R 1.000, the same 37 transfer objects taken
+for entities; logic.api (6 classes, the facade) P = R = 0.
+
+**Reporting standard from here on**: accuracy and coverage; micro P/R
+only next to coverage; per-module P/R/F1; macro P, R and F1; the
+largest confusions.
 
 - With names visible, every error was test code: the expert puts all
   tests in testDriver, Jev put tests with the module they test. One

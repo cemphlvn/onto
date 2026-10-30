@@ -139,10 +139,15 @@ def tokens(s):
 
 
 def score(pred, truth, modules):
+    """Single-label mapping with abstention. Micro P (over mapped) and R
+    (over all) are Olsson et al.'s; at full coverage both equal accuracy
+    (every error is one FP and one FN), so the report leads with
+    accuracy and coverage, and carries per-module P/R, macro P/R/F1 and
+    the largest confusions, where the errors actually show."""
     correct = sum(pred[c] == truth[c] for c in pred)
     P = correct / len(pred) if pred else 0
     R = correct / len(truth)
-    f1s = []
+    per, ps, rs, f1s = {}, [], [], []
     for m in modules:
         gold = {c for c, t in truth.items() if t == m}
         if not gold:
@@ -151,9 +156,19 @@ def score(pred, truth, modules):
         tp = len(gold & got)
         p = tp / len(got) if got else 0
         r = tp / len(gold)
-        f1s.append(2 * p * r / (p + r) if p + r else 0)
-    return dict(coverage=round(len(pred) / len(truth), 3), P=round(P, 3), R=round(R, 3),
-                F1=round(2 * P * R / (P + R), 3) if P + R else 0, macro_F1=round(sum(f1s) / len(f1s), 3))
+        f = 2 * p * r / (p + r) if p + r else 0
+        per[m] = dict(n=len(gold), P=round(p, 3), R=round(r, 3), F1=round(f, 3))
+        ps.append(p)
+        rs.append(r)
+        f1s.append(f)
+    confusions = Counter((truth[c], pred[c]) for c in pred if pred[c] != truth[c])
+    return dict(
+        accuracy=round(correct / len(truth), 3), coverage=round(len(pred) / len(truth), 3),
+        P=round(P, 3), R=round(R, 3), F1=round(2 * P * R / (P + R), 3) if P + R else 0,
+        macro_P=round(sum(ps) / len(ps), 3), macro_R=round(sum(rs) / len(rs), 3),
+        macro_F1=round(sum(f1s) / len(f1s), 3), per_module=per,
+        confusions=[f"{t} -> {p}: {n}" for (t, p), n in confusions.most_common(5)],
+    )
 
 
 def calibration(points):
