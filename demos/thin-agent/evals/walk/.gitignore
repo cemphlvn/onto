@@ -1,0 +1,5 @@
+*.gaps.jsonl
+*.learned.jsonl
+*.memory.jsonl
+__pycache__/
+run-*.log

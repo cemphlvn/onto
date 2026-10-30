@@ -691,3 +691,39 @@ person is simulated by the expert mapping (an upper bound).
   and invariants close routes by logic, in one graph with one record.
   Discovery's gate today has one level; a cascade needs a second judge
   behind it, and Jev's price to complete the cost column.
+
+## Result 11: the inference engine, a hierarchical walk against flat discover (2026-10-31)
+
+Pre-registered in `evals/walk/RULE.md` (commit 3eec3ad, before any walk
+run). onto's walk (frames, the walk's gate, frame records, sealed
+admission, proposer off) routes each package CodeUnit → group → module;
+groups come only from each system's document (`hierarchy.json`), each
+described by its document name plus its members' blueprint text. Jev,
+threshold 0 (gate applied afterwards from the frame records). About 410
+judge calls.
+
+| system | names | walk | flat discover | Δ | wrong at group step | wrong at module step | gate p ≥ 0.7, walk coverage / accuracy | flat coverage / accuracy |
+|---|---|---|---|---|---|---|---|---|
+| ArgoUML | hidden | 0.733 | 0.856 | **−0.123** | 0.110 | 0.150 | 0.31 / 1.00 | 0.40 / 0.98 |
+| ArgoUML | visible | 0.970 | 0.987 | −0.017 | 0.020 | 0.011 | 0.98 / 0.99 | 0.96 / 0.99 |
+| TEAMMATES | hidden | 0.836 | 0.818 | +0.018 | 0.164 | 0.000 | 0.51 / 0.98 | 0.53 / 0.95 |
+| TEAMMATES | visible | 0.916 | 0.708 | **+0.208** | 0.025 | 0.000 | 0.65 / 1.00 | 0.67 / 0.96 |
+
+**Verdict under the rule: the hierarchy hurts** (ArgoUML hidden −0.123;
+TEAMMATES hidden +0.018 is within ±0.05).
+
+- A hierarchy helps where the document's split is the expert's split and
+  hurts where it is not. TEAMMATES' first step separates the test driver,
+  which removes flat discover's largest error (tests sent beside the
+  modules they test): +0.21 with names visible. ArgoUML's Cookbook lists
+  (`model` among low-level subsystems, for instance) do not cut where the
+  expert mapping cuts, and errors compound over two steps (11% at the
+  group step, 15% at the module step, names hidden).
+- **The hierarchy is a blueprint too**: its fit decides the result as
+  much as a module description does.
+- The walk's gate is more conservative: the path probability is a
+  product of step probabilities, so at the same threshold it adopts less
+  and what it adopts is as accurate or more.
+- Confound, stated: the walk sees a package's description and
+  dependencies as its goal text; flat discover saw the same content in
+  its own rendering.

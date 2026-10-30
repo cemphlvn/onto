@@ -1,0 +1,16 @@
+{
+ "system": "Teammates",
+ "names": "visible",
+ "classes": 812,
+ "walk_accuracy": 0.916256157635468,
+ "flat_accuracy": 0.708,
+ "wrong_at_group": 0.024630541871921183,
+ "wrong_at_module": 0.0,
+ "escalated": 0.059113300492610835,
+ "walk_gate_coverage": 0.646551724137931,
+ "walk_gate_accuracy": 1.0,
+ "flat_gate_coverage": 0.6724137931034483,
+ "flat_gate_accuracy": 0.9633699633699634,
+ "judge_calls": 58,
+ "tokens_in": 82815
+}

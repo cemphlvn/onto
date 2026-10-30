@@ -1,0 +1,16 @@
+{
+ "system": "Argouml",
+ "names": "visible",
+ "classes": 820,
+ "walk_accuracy": 0.9695121951219512,
+ "flat_accuracy": 0.987,
+ "wrong_at_group": 0.01951219512195122,
+ "wrong_at_module": 0.01097560975609756,
+ "escalated": 0.0,
+ "walk_gate_coverage": 0.9804878048780488,
+ "walk_gate_accuracy": 0.9875621890547264,
+ "flat_gate_coverage": 0.9573170731707317,
+ "flat_gate_accuracy": 0.9949044585987261,
+ "judge_calls": 149,
+ "tokens_in": 264456
+}

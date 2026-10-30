@@ -1,0 +1,32 @@
+category WalkTeammates {
+    objects: CodeUnit, g0, g1, g2, g3, g4, m_common_util, m_common_exception, m_common_dataTransfer, m_ui_automated, m_ui_controller, m_ui_view, m_logic_core, m_logic_api, m_logic_backdoor, m_storage_entity, m_storage_api, m_storage_search, m_testDriver, m_client_remoteAPI, m_client_scripts;
+    start: CodeUnit;
+    admission: sealed;
+    frame CodeUnit: choice "Which part of the intended architecture is responsible for this code unit?";
+    frame g0: choice "Which module of this part (UI layer) is responsible for the code unit?";
+    frame g1: choice "Which module of this part (Logic layer) is responsible for the code unit?";
+    frame g2: choice "Which module of this part (Storage layer) is responsible for the code unit?";
+    frame g3: choice "Which module of this part (Common subsystem) is responsible for the code unit?";
+    frame g4: choice "Which module of this part (Client subsystem) is responsible for the code unit?";
+    to_g0: CodeUnit -> g0 "UI layer. Its modules: automated subsystem of the UI layer: actions run automatically by the server (cron jobs, task queues), not by a user's request; controller subsystem of the UI layer: handles user requests and actions; view subsystem of the UI layer: page data, templates and UI-specific data transfer for rendering pages";
+    is_m_ui_automated: g0 -> m_ui_automated "automated subsystem of the UI layer: actions run automatically by the server (cron jobs, task queues), not by a user's request";
+    is_m_ui_controller: g0 -> m_ui_controller "controller subsystem of the UI layer: handles user requests and actions";
+    is_m_ui_view: g0 -> m_ui_view "view subsystem of the UI layer: page data, templates and UI-specific data transfer for rendering pages";
+    to_g1: CodeUnit -> g1 "Logic layer. Its modules: core component of the Logic layer: the business logic, shielded by a facade; used from outside only via logic.api; coreFacade: the interface (Facade pattern) of the Logic core component; the only way other modules may use the logic; backdoor subsystem of the Logic layer: privileged access to the logic for testing and administration";
+    is_m_logic_core: g1 -> m_logic_core "core component of the Logic layer: the business logic, shielded by a facade; used from outside only via logic.api";
+    is_m_logic_api: g1 -> m_logic_api "coreFacade: the interface (Facade pattern) of the Logic core component; the only way other modules may use the logic";
+    is_m_logic_backdoor: g1 -> m_logic_backdoor "backdoor subsystem of the Logic layer: privileged access to the logic for testing and administration";
+    to_g2: CodeUnit -> g2 "Storage layer. Its modules: entity subsystem of the Storage layer: persistent entities stored in the Datastore; api subsystem of the Storage layer: the database access interface the logic calls; search subsystem of the Storage layer: search documents and queries";
+    is_m_storage_entity: g2 -> m_storage_entity "entity subsystem of the Storage layer: persistent entities stored in the Datastore";
+    is_m_storage_api: g2 -> m_storage_api "api subsystem of the Storage layer: the database access interface the logic calls";
+    is_m_storage_search: g2 -> m_storage_search "search subsystem of the Storage layer: search documents and queries";
+    to_g3: CodeUnit -> g3 "Common subsystem. Its modules: util subsystem of Common: utilities used across the application; exception subsystem of Common: the application's exceptions; datatransfer subsystem of Common: data transfer objects shared by the layers";
+    is_m_common_util: g3 -> m_common_util "util subsystem of Common: utilities used across the application";
+    is_m_common_exception: g3 -> m_common_exception "exception subsystem of Common: the application's exceptions";
+    is_m_common_dataTransfer: g3 -> m_common_dataTransfer "datatransfer subsystem of Common: data transfer objects shared by the layers";
+    to_g4: CodeUnit -> g4 "Client subsystem. Its modules: remoteapi subsystem of Client: connects to the back-end remotely; not used in production; scripts subsystem of Client: administrative scripts for system administrators (data migration, statistics, analytics); not used in production";
+    is_m_client_remoteAPI: g4 -> m_client_remoteAPI "remoteapi subsystem of Client: connects to the back-end remotely; not used in production";
+    is_m_client_scripts: g4 -> m_client_scripts "scripts subsystem of Client: administrative scripts for system administrators (data migration, statistics, analytics); not used in production";
+    to_m_testDriver: CodeUnit -> m_testDriver "Test Driver subsystem";
+    closed: CodeUnit, g0, g1, g2, g3, g4, m_common_util, m_common_exception, m_common_dataTransfer, m_ui_automated, m_ui_controller, m_ui_view, m_logic_core, m_logic_api, m_logic_backdoor, m_storage_entity, m_storage_api, m_storage_search, m_testDriver, m_client_remoteAPI, m_client_scripts;
+}
