@@ -307,6 +307,37 @@ entry, and a module that may depend on nothing is no terminal: on JabRef
 packages unjudged. `onto discover --no-roles` (`discover::unconstrained`)
 admits every target; the path constraint still prunes.
 
+**A calibrated gate (2026-10-31).** The calibrated switch of
+`docs/12-calibrated-switches.md` (research track), built for discovery
+first. On the architecture evals the judge's errors sit at low p, and
+raw p is under- or over-confident depending on the framing; so each
+object's judgment passes four steps before it may enter the map:
+
+1. **Calibrate.** The judge's p for its chosen target is mapped through a
+   Platt map, `p' = σ(a · logit p + b)`, fitted on labelled decisions
+   (`onto calibrate`). Two parameters, because labels are few (tens to
+   hundreds per system); the fit is pulled towards the identity.
+2. **Gate.** The threshold comes from the developer's costs, not from a
+   guess: acting on a judgment costs `(1 − p')·C_wrong` in expectation,
+   asking costs `C_ask`, so an object is adopted only when
+   `p' ≥ 1 − C_ask / C_wrong` (`--cost-wrong`, `--cost-ask`; a wrong
+   mapping worth ten questions gives 0.9, the threshold Olsson et al.
+   chose by hand). Below it the object is **deferred**: it stays outside
+   the domain, never guessed at.
+3. **Ask.** Deferred objects, with their candidates and p, are written to
+   the decision record. A person's answers (`--answers`, one
+   `{"object", "target"}` per line, `target` null for none) pin those
+   objects before the judge is asked again: a partial functor fixed by
+   people, the initial set of orphan adoption.
+4. **Record.** Every object's decision (`--records`): raw and calibrated
+   p, the threshold, and the disposition (adopted, deferred, answered,
+   failed, structure, outside). Joined with answers, the records are the
+   labels the next calibration is fitted on: the people's answers are
+   collected exactly where the judge was unsure.
+
+Without costs and a calibration file nothing changes. With costs and no
+calibration the gate reads raw p, and says so.
+
 ## 8. Later
 - **Legal mapping (D)**: the machinery is phase 1; the mapping itself
   needs legal review before any claim is made.

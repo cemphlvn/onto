@@ -16,6 +16,7 @@ use std::path::PathBuf;
 
 use clap::Args;
 use onto_core::ObjId;
+use onto_core::calibrate;
 use onto_core::discover;
 use onto_core::functor::Functor;
 use serde_json::Value;
@@ -67,6 +68,27 @@ pub struct DiscoverArgs {
     /// domain and are named; no evidence is not guessed at.
     #[arg(long, default_value_t = 0.05)]
     max_failed: f32,
+    /// The calibration map for the judge's p (`onto calibrate --out`).
+    #[arg(long)]
+    calibration: Option<PathBuf>,
+    /// The cost of adopting a wrong correspondence, in the unit of
+    /// `--cost-ask`. With it the gate is on: an object is adopted only
+    /// when its calibrated p ≥ 1 − cost_ask / cost_wrong; below, it is
+    /// deferred to a person, never guessed at.
+    #[arg(long)]
+    cost_wrong: Option<f64>,
+    /// The cost of asking a person about one object.
+    #[arg(long, default_value_t = 1.0)]
+    cost_ask: f64,
+    /// A person's answers: one `{"object": .., "target": ..}` per line
+    /// (`target` null for none of them). Answered objects are pinned
+    /// before the judge is asked.
+    #[arg(long)]
+    answers: Option<PathBuf>,
+    /// Write one decision record per source object here (JSON lines):
+    /// disposition, target, raw and calibrated p, threshold, candidates.
+    #[arg(long)]
+    records: Option<PathBuf>,
     /// A hand-written functor (`FILE#Name`) to compare with.
     #[arg(long)]
     compare: Option<PathBuf>,
@@ -85,6 +107,24 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
         discover::admissible(&a, &b)
     };
     let mut failed: Vec<Option<String>> = vec![None; n];
+    // A person's answers pin their objects before anything is judged.
+    let mut answered = vec![false; n];
+    if let Some(path) = &args.answers {
+        for (object, target) in read_answers(path)? {
+            let x = a
+                .object_id(&object)
+                .map_err(|_| format!("{}: no object {object} in {}", path.display(), a.name()))?;
+            let i = x.0 as usize;
+            answered[i] = true;
+            adm[i] =
+                match target {
+                    Some(t) => vec![b.object_id(&t).map_err(|_| {
+                        format!("{}: no object {t} in {}", path.display(), b.name())
+                    })?],
+                    None => Vec::new(),
+                };
+        }
+    }
     let pairs: usize = adm.iter().map(Vec::len).sum();
     println!(
         "discover {}: {} -> {}   structure admits {pairs} of {} object pairs",
@@ -153,6 +193,50 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
         out.judged
     };
 
+    // The gate: calibrate the judge's p for its choice, defer what falls
+    // below the threshold the costs give.
+    let calibration = match &args.calibration {
+        Some(path) => read_calibration(path)?,
+        None => calibrate::Platt::identity(),
+    };
+    let threshold = args
+        .cost_wrong
+        .map(|w| calibrate::threshold(w, args.cost_ask));
+    let mut gated: Vec<Option<(ObjId, f64, f64)>> = vec![None; n];
+    for (i, j) in judged.iter().enumerate() {
+        let Some(j) = j else { continue };
+        let Some(&(y, p)) = j.targets.iter().max_by(|l, r| l.1.total_cmp(&r.1)) else {
+            continue;
+        };
+        gated[i] = Some((y, f64::from(p), calibration.apply(f64::from(p))));
+    }
+    let mut deferred = vec![false; n];
+    if let Some(t) = threshold {
+        if args.calibration.is_none() {
+            println!("gate: no --calibration, so it reads the judge's raw p");
+        }
+        for i in 0..n {
+            if let Some((_, _, cal)) = gated[i]
+                && cal < t
+            {
+                deferred[i] = true;
+                adm[i].clear();
+            }
+        }
+        let names: Vec<String> = (0..n)
+            .filter(|i| deferred[*i])
+            .map(|i| format!("{} ({:.2})", a.objects()[i].name, gated[i].unwrap().2))
+            .collect();
+        println!(
+            "gate: adopt at calibrated p ≥ {t:.2} (cost wrong {} : ask {}); {} deferred to a person{}{}",
+            args.cost_wrong.unwrap(),
+            args.cost_ask,
+            names.len(),
+            if names.is_empty() { "" } else { ": " },
+            names.join(", ")
+        );
+    }
+
     // Behaviour.
     let behaviour = match args.runs.as_slice() {
         [] => None,
@@ -215,9 +299,13 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
         let y = found.objects[i]?;
         let mut parts = Vec::new();
         match &judged[i] {
+            _ if answered[i] => parts.push("answered by a person".into()),
             Some(j) => {
                 let p = j.targets.iter().find(|t| t.0 == y).map_or(0.0, |t| t.1);
                 parts.push(format!("judged {p:.2}"));
+                if args.calibration.is_some() {
+                    parts.push(format!("calibrated {:.2}", calibration.apply(f64::from(p))));
+                }
             }
             None if adm[i].len() == 1 => parts.push("structure: the only admissible target".into()),
             None => {}
@@ -237,6 +325,8 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
         .filter(|(_, y)| y.is_none())
         .map(|(i, _)| {
             let why = match (&judged[i], &failed[i]) {
+                _ if answered[i] => " (answered: none of them)".to_owned(),
+                _ if deferred[i] => format!(" (deferred, calibrated {:.2})", gated[i].unwrap().2),
                 (Some(j), _) => format!(" (none of these {:.2})", j.none),
                 (None, Some(_)) => " (judge failed)".to_owned(),
                 (None, None) => String::new(),
@@ -246,6 +336,49 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
         .collect();
     if !outside_names.is_empty() {
         println!("outside the domain: {}", outside_names.join(", "));
+    }
+
+    // The decision records: what the next calibration is fitted on, once
+    // a person has answered.
+    if let Some(path) = &args.records {
+        let mut out = String::new();
+        for i in 0..n {
+            let image = found.objects[i];
+            let disposition = if answered[i] {
+                "answered"
+            } else if failed[i].is_some() {
+                "failed"
+            } else if deferred[i] {
+                "deferred"
+            } else if image.is_some() && judged[i].is_some() {
+                "adopted"
+            } else if image.is_some() {
+                "structure"
+            } else {
+                "outside"
+            };
+            let target = image.or(gated[i].map(|g| g.0));
+            let mut candidates: Vec<(ObjId, f32)> = judged[i]
+                .as_ref()
+                .map_or_else(Vec::new, |j| j.targets.clone());
+            candidates.sort_by(|l, r| r.1.total_cmp(&l.1));
+            let record = serde_json::json!({
+                "object": a.objects()[i].name,
+                "disposition": disposition,
+                "target": target.map(|y| b.object(y).name.clone()),
+                "p": gated[i].map(|g| g.1),
+                "calibrated": gated[i].map(|g| g.2),
+                "threshold": threshold,
+                "none": judged[i].as_ref().map(|j| j.none),
+                "candidates": candidates.iter().take(3)
+                    .map(|(y, p)| serde_json::json!({"target": b.object(*y).name, "p": p}))
+                    .collect::<Vec<_>>(),
+            });
+            out.push_str(&record.to_string());
+            out.push('\n');
+        }
+        std::fs::write(path, out)?;
+        println!("records: {n} decisions written to {}", path.display());
     }
     let ambiguous: Vec<String> = images
         .iter()
@@ -364,6 +497,38 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
 }
 
 /// Case → objects its walks visited, from a telemetry file.
+/// A person's answers: `{"object": .., "target": ..}` per line, `target`
+/// null for none of them.
+pub fn read_answers(path: &PathBuf) -> Result<Vec<(String, Option<String>)>, BoxError> {
+    let text = std::fs::read_to_string(path)?;
+    let mut out = Vec::new();
+    for (k, line) in text
+        .lines()
+        .enumerate()
+        .filter(|(_, l)| !l.trim().is_empty())
+    {
+        let v: Value =
+            serde_json::from_str(line).map_err(|e| format!("{}:{}: {e}", path.display(), k + 1))?;
+        let object = v["object"]
+            .as_str()
+            .ok_or_else(|| format!("{}:{}: no \"object\"", path.display(), k + 1))?;
+        out.push((object.to_owned(), v["target"].as_str().map(str::to_owned)));
+    }
+    Ok(out)
+}
+
+/// A calibration map written by `onto calibrate`.
+pub fn read_calibration(path: &PathBuf) -> Result<calibrate::Platt, BoxError> {
+    let v: Value = serde_json::from_str(&std::fs::read_to_string(path)?)?;
+    match v["method"].as_str() {
+        Some("platt") => Ok(calibrate::Platt {
+            a: v["a"].as_f64().ok_or("calibration: no \"a\"")?,
+            b: v["b"].as_f64().ok_or("calibration: no \"b\"")?,
+        }),
+        other => Err(format!("{}: unknown calibration method {other:?}", path.display()).into()),
+    }
+}
+
 fn visits(path: &PathBuf) -> Result<BTreeMap<String, BTreeSet<String>>, BoxError> {
     let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
     let events: Vec<Value> = text

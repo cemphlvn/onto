@@ -3,6 +3,7 @@
 //! See `docs/00-architecture.md` for the design.
 
 pub mod attest;
+pub mod calibrate;
 pub mod category;
 pub mod discover;
 pub mod ensemble;

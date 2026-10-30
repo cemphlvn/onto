@@ -7,6 +7,7 @@ use onto_core::{Category, Closure, Equality, Verdict, category::resolve, parse::
 
 mod ask;
 mod attest;
+mod calibrate;
 mod curate;
 mod discover;
 mod ensemble;
@@ -105,6 +106,9 @@ enum Cmd {
     /// Find a candidate functor between two categories: structure, then
     /// meaning (the judge) and behaviour (where the same cases went).
     Discover(discover::DiscoverArgs),
+    /// Fit the calibration map discover's gate applies, on decision
+    /// records joined with a person's answers.
+    Calibrate(calibrate::CalibrateArgs),
     /// Carry the learned layer and memory along a version functor.
     Migrate(migrate::MigrateArgs),
     /// Ask the judge again with a recorded state changed (counterfactual):
@@ -121,6 +125,7 @@ fn main() -> ExitCode {
         Cmd::Curate(args) => curate::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Ensemble(args) => ensemble::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Discover(args) => discover::main(args).map(|()| ExitCode::SUCCESS),
+        Cmd::Calibrate(args) => calibrate::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Learned(args) => learned::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Migrate(args) => migrate::main(args).map(|()| ExitCode::SUCCESS),
         Cmd::Replay(args) => replay::main(args).map(|()| ExitCode::SUCCESS),
@@ -304,6 +309,7 @@ fn run(cli: Cli) -> Result<ExitCode, Box<dyn std::error::Error>> {
         | Cmd::Learned(_)
         | Cmd::Ensemble(_)
         | Cmd::Discover(_)
+        | Cmd::Calibrate(_)
         | Cmd::Curate(_)
         | Cmd::Raster(_)
         | Cmd::Migrate(_)
