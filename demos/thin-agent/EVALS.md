@@ -663,3 +663,31 @@ rule (14 pairs) allows no general claim.
 - Against the published curves (their protocol, richer input, read off
   plots), onto + Jev with names visible is level or above on six of
   seven systems, below on TEAMMATES (0.77 against ≈ 0.85).
+
+## Result 10: routing by reliability, simulated from the records (2026-10-31)
+
+The 410 package decisions both Jev and Gemini 3.1 Pro answered (6
+systems, names visible and hidden), no new calls. A decision goes up a
+level when the level below is unsure (raw p under the threshold); the
+person is simulated by the expert mapping (an upper bound).
+
+| route | accuracy | to Gemini | to a person | Gemini USD per 1k decisions |
+|---|---|---|---|---|
+| Jev alone | 0.846 | 0% | 0% | — |
+| Gemini alone | 0.907 | 100% | 0% | 25.0 |
+| Jev; Gemini when Jev p < 0.5 | 0.890 | 14% | 0% | 3.5 |
+| Jev; Gemini when Jev p < 0.9 | 0.907 | 53% | 0% | 13.2 |
+| Jev; Gemini when p < 0.9; a person when Gemini p < 0.9 | 0.973 | 53% | 14% | 13.2 |
+| Jev; a person when Jev p < 0.7 | 0.968 | 0% | 28% | — |
+| Jev; a person when Jev p < 0.9 | 1.000 | 0% | 53% | — |
+
+- Routing the decisions Jev is unsure of to Gemini reaches Gemini's
+  accuracy at half its cost; the most uncertain seventh alone buys most
+  of the gain at a seventh of the cost.
+- A three-level cascade keeps accuracy near 0.97 with a person seeing
+  14% of decisions, against 28% when Jev escalates straight to people.
+- This is the inference-side claim: probability routes by reliability
+  (act, a stronger judge, a person) while `require`, entry contracts
+  and invariants close routes by logic, in one graph with one record.
+  Discovery's gate today has one level; a cascade needs a second judge
+  behind it, and Jev's price to complete the cost column.
