@@ -28,3 +28,35 @@ category ThinAgentArchitecture {
     invariant via: Agent -> World through Contract;
     invariant via: Agent -> World through Substrate;
 }
+
+# The same rule, read from code instead of from a drawing: who can reach
+# whom at build time. An arrow `A -> B` means A's code can call or name
+# B (a dependency), or touch the world (a durable write, a process, a
+# network call). Generated categories map into it; see
+# `demos/thin-agent/derive.py`.
+#
+# Agents reach the substrate only through the contract, and the world
+# only through the substrate. An agent may call its own model endpoint
+# (Remote): from source alone, a network call that is inference cannot
+# be told apart from one that is a side effect, so Remote is kept apart
+# from World and the line between them is a human's to watch.
+
+category ThinAgentDependencies {
+    objects: Host, Agent, Contract, Substrate, World, Remote;
+
+    about Host:   "the composition root: builds the agents and the substrate and wires them";
+    about Remote: "a model endpoint over the network";
+
+    host_agents:        Host -> Agent          "the host constructs the agents";
+    host_substrate:     Host -> Substrate      "the host drives the substrate";
+    host_world:         Host -> World          "the host reads and writes files for people";
+    host_remote:        Host -> Remote         "the host configures network clients";
+    agent_contract:     Agent -> Contract      "an agent names only the contract";
+    agent_remote:       Agent -> Remote        "an agent calls its own model";
+    contract_substrate: Contract -> Substrate  "the contract is stated in the substrate's vocabulary";
+    substrate_contract: Substrate -> Contract  "the substrate holds agents only as contract traits";
+    substrate_world:    Substrate -> World     "the substrate writes records and telemetry";
+
+    invariant via: Agent -> Substrate through Contract;
+    invariant via: Agent -> World through Substrate;
+}

@@ -1,0 +1,15 @@
+# The blueprint for `derive.py`: which role each crate plays in the
+# thin-agent standard. Written by people; the arrows are read from code.
+
+workspace = "../.."
+standard = "../../standards/thin-agent.onto"
+category = "OntoCode"
+out = "code.onto"
+
+[roles]
+onto-cli = "Host"
+onto-remote = "Agent"
+onto-local = "Agent"
+onto-models = "Contract"
+onto-core = "Substrate"
+onto-runtime = "Substrate"
