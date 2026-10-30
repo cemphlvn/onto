@@ -1,0 +1,7 @@
+{
+ "_source": "EXPERTISE ROW, written after seeing the sealed errors: prom.doc.json plus statements an owner of ProM would make (marked [owner]). Not a clean result.",
+ "prom.framework": "The ProM 6 framework: a generic, pluggable toolkit that knows nothing about process mining; it only sees objects, actions, views and their classes, manages the plug-ins and packages, and can distribute plug-in execution over several computers [owner] The framework has no user interface of its own; it also holds the provided objects a session keeps.",
+ "prom.domain.contexts": "Contexts: a plug-in's connection to the framework, giving access to the user interface (messages, cancellation, progress), to the relations between objects, and to the package manager for calling other plug-ins; the user interface a person starts lives here [owner] This includes the whole graphical user interface (its package manager, workspace, views and annotations for plug-in UIs), the command-line context and the test contexts.",
+ "prom.domain.models": "Models: the objects plug-ins work on and show, such as process models, data models and social networks; detailed knowledge of these classes stays out of the framework [owner] Model semantics and graph analyses belong with the models.",
+ "prom.domain.plugins": "Plug-ins: implement the actions and views on objects"
+}

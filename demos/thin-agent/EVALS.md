@@ -452,3 +452,53 @@ hidden pooled).
   threshold, not on Brier. A map that is better calibrated without
   being better on Brier can still change how many questions a person
   gets.
+
+## Result 7: the pipeline end to end, and the expertise rows (2026-10-31)
+
+### Gate + a person (from the records, no new judge calls)
+
+The gate adopts the judge's choice when raw p ≥ t; every other package
+is asked, and the person is simulated by the expert mapping (an upper
+bound: a real person may err). Class-level accuracy, sealed systems,
+names hidden (`evals/calibration/gate_human.py`):
+
+| threshold | accuracy | packages asked |
+|---|---|---|
+| judge alone | 0.794 | 0 |
+| 0.5 | 0.926 | 56 / 179 (31%) |
+| **0.7** | **0.977** | 89 / 179 (50%) |
+| 0.9 | 1.000 | 140 / 179 (78%) |
+
+With names visible the same gate asks far less (Commons Imaging 1 of 41
+at 0.9, Lucene 1 of 23 at 0.7). Against mapping by hand (every package
+asked), the gate at 0.7 halves a person's work on systems whose names
+do not help, and nearly removes it where they do.
+
+### Expertise rows (post hoc; the clean scores stay as in Result 6)
+
+Owner statements added after seeing the sealed errors (`*.expert.json`,
+marked `[owner]`), names hidden:
+
+| system | clean (documentation) | + owner statements | largest confusion left |
+|---|---|---|---|
+| ProM | 0.680 / macro F1 0.460 | **0.840** / 0.727 | contexts → framework: 24 (was 35) |
+| Ant | 0.577 / 0.770 | 0.649 / 0.711 | taskdefs → ant: 127 (unchanged) |
+
+Ant's 127-class package did not move even with an explicit statement.
+Its description to the judge was its **first 15 class names in
+alphabetical order**: `AbstractCvsTask, AbstractJarSignerTask, Ant,
+AntStructure, Antlib, AntlibDefinition, Apt, Available, ...`: names
+that read like the core, while the tasks that make the package what it
+is (Copy, Javac, Jar) never appear. The error is in how the substrate
+renders the source, not in the blueprint.
+
+**For the next pre-registered round** (not applied to any result
+above): describe a code unit by its size and a representative sample
+of its classes (e.g. those other units reference most, or evenly
+spaced), not the alphabetical head; and select the calibration map on
+the gate's expected cost (Result 6).
+
+Ant note: s4rdm3x's Ant jar held no optional tasks (its `.sysmdl` says
+no files match `optional`); our source tree has them, and they are
+graded by the same rules, so Ant here is larger (736 classes) than
+Olsson et al.'s (515 entities).
