@@ -1,6 +1,6 @@
 # onto — Scientific Positioning
 
-Status: **draft 4 — 2026-09-23.** Where onto sits among research fields,
+Status: **draft 5 — 2026-10-31** (row 2, row 11 and §5 after the calibrated gate; draft 4 2026-09-23). Where onto sits among research fields,
 ranked by what the runtime **demonstrably does today** (disposition records included,
 live runs in `demos/`), separated from what it could become. Update this
 file when a capability lands; do not promote a field on intention alone.
@@ -65,7 +65,7 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 | # | field | fit today | what matches | what is missing |
 |---|---|---|---|---|
 | 1 | Guarded transition systems | **direct** | objects = states, arrows = labelled transitions, walks = traces; guards of four kinds: `require` (Boolean), Choice (competitive), Noul (independent), Score (ordinal) | guards are not composable formulas; no temporal-logic properties checked |
-| 2 | Selective prediction, learning to defer, model cascades | **direct** | calibrated System 1 abstains (`none_of_these`, low confidence) and defers to a larger model; threshold gates on the model's own confidence | deferral target is a *generator of structure*, not a better answerer: that twist is onto's, and is untested against deferral theory (no cost model, no deferral policy learned) |
+| 2 | Selective prediction, learning to defer, model cascades | **direct** | calibrated System 1 abstains (`none_of_these`, low confidence) and defers to a larger model; threshold gates on the model's own confidence. **Discovery (2026-10-31):** a cost model: the gate acts only when calibrated p ≥ 1 − C_ask/C_wrong and otherwise defers to a person, whose answers pin objects and become calibration labels (`onto calibrate`). Measured on eight architecture-recovery systems: 0.977 accuracy asking about half the packages, against 0.794 for the judge alone (`demos/thin-agent/EVALS.md`) | deferral target in walks is a *generator of structure*, not a better answerer: that twist is onto's, and is untested against deferral theory; the deferral policy is a threshold, not learned; calibration maps are fitted per switch but chosen on few systems |
 | 3 | Decision provenance | **direct** | every frame visit is a disposition record: every candidate with judgment, disposition and a deterministic reason; judge call and claim metadata; causal `after` links forming a DAG across forks (`--dispositions`, `onto why`) | not yet in W3C PROV vocabulary; records written at run end, not streamed |
 | 4 | Local closed-world reasoning (open/closed-world KR) | **strong** | `closed:` is a local closed-world assertion ("these arrows are all the cases"); open frames are open-world; `none_of_these` at a closed frame is evidence the assertion failed, `open_frame` an expected gap | assertions are not revised on evidence; no aggregation of LCW violations into taxonomy repair |
 | 5 | Workflow nets / Petri nets | **strong** | walk ≈ token, object ≈ place, arrow ≈ transition, `require` ≈ enabling condition, noul fork ≈ AND-split, **structured joins**: all ≈ AND-join, race ≈ discriminator, gate ≈ synchronisation with authority transfer; frame claim ≈ shared-resource constraint | no marking or capacity; joins only for siblings of one fork (no general OR-join); no soundness analysis beyond the deadlock-freedom argument |
@@ -75,7 +75,7 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 | 9 | Supervisory control of discrete-event systems | **strong** | execution: `require` disables transitions, claims restrict interleavings, low confidence withholds a transition; **extension**: a supervisor admits, rejects or defers each proposed transition, proving `via`/`never` invariants with counter-paths and judging rules; a person promotes (live: legitimate-interest and legal-basis bypasses rejected) | no synthesis of a maximally permissive supervisor; invariants are reachability properties only (no temporal logic); semantic checks are conservative |
 | 9b | Typestate, effect systems, capability security | **strong** | walks carry capability tokens; arrows declare effects (`ensures`/`revokes`) under declared **issuance and revocation authority**, validated identically on load, review and promotion; objects declare entry contracts every incoming arrow inherits; `onto laws` derives must/may capabilities per state with exhaustive certificates, witnesses and counterexamples, in application and category scope; starting is entering | tokens are flat names (no parameters, no linearity, no scope such as purpose or recipient); no effect polymorphism; exploration exponential in tokens; case preconditions assumed satisfiable |
 | 10 | Agent-workflow frameworks (graph-of-LLM-calls orchestrators) | **practical neighbour** | graph of nodes, model-driven conditional edges, parallel branches | not a research field; onto's differences are the positioning: typed paths + equations, calibrated abstention, frame-level concurrency claims, potentiality log, governed open-world extension |
-| 11 | Planning under uncertainty | **analogy** | probabilities steer traversal | no reward, utility, transition model or objective; not decision-theoretic |
+| 11 | Planning under uncertainty | **analogy** | probabilities steer traversal; one decision is now decision-theoretic: the gate's act-or-ask choice minimises expected cost given calibrated p and the developer's costs | no reward over sequences, no transition model or objective; walks are not planned |
 | 12 | Truth maintenance (ATMS) | **weak today** | provisional proposals are assumptions; alternatives are logged | no maintained assumption environments or consistent "possible worlds"; would matter for the potentiality-preserving stage |
 | 13 | Computational argumentation | **weak today** | candidates and rationales exist | no attack/support relations between candidates |
 | 14 | Thousand Brains / cortical columns | **inspiration** | "a frame is a local decision unit" | no reference frames, sensorimotor learning or column voting; do not claim a model of cortex |
@@ -110,8 +110,18 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 
 ## 5. Honest boundary (from the live runs)
 
-- **Not decision theory.** Choice probabilities select; nothing maximises
-  expected utility.
+- **Decision theory in one place only.** Choice probabilities select;
+  walks maximise nothing. The exception is discovery's gate, which acts
+  or asks by expected cost (`docs/05` §7). Its pre-registered
+  calibration study found no map better than raw p by Brier; at the
+  gate's own cost a Platt map would have asked 148 questions instead of
+  229 on the sealed test (post hoc), so the choice rule, not the gate,
+  is the open part.
+- **Judges are interchangeable, and Jev is not always the best.** Behind
+  the same contract, Gemini 3.1 Pro beat Jev on architecture mapping
+  (0.907 vs 0.846, p 0.0005, 410 decisions); Grok 4.3 tied, Qwen 3.5
+  397B trailed. The substrate's claim is that swapping is one flag, not
+  that one judge wins.
 - **Not proof-based consent reasoning yet.** After descriptions, 6 of 6
   original consent uses escalated at `Collected` (4 of 6 before). Local
   judgment became stricter and more correct (Jev will not assume a legal
