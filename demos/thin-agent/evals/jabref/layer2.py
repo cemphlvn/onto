@@ -210,6 +210,10 @@ def main(mode):
     path, deps, units, pkg_of, classes_in, n_edges = build(mode)
     print(f"{tag_}: {len(classes_in)} packages, {n_edges} package dependencies")
     saved = HERE / f"l2-{tag_}.out"
+    rec_dir = HERE.parent / "calibration" / "records"
+    records = rec_dir / f"JabRef-{tag_}.records.jsonl" if "--records" in sys.argv else None
+    if records:
+        rec_dir.mkdir(parents=True, exist_ok=True)
     if "--rescore" in sys.argv and saved.exists():
         run = subprocess.CompletedProcess([], 0, saved.read_text(), "")
     else:
@@ -217,7 +221,8 @@ def main(mode):
             [ONTO, "discover", f"{path}#{SYSTEM['name']}Code", f"{path}#Intended",
              "--non-injective", "--name", "Proposed"] + (["--no-roles"] if roles else [])
             + (["--goal", ARCH_FRAMING["goal"], "--instructions", ARCH_FRAMING["instructions"]]
-               if opt("framing", "default") == "arch" else []),
+               if opt("framing", "default") == "arch" else [])
+            + (["--records", str(records)] if records else []),
             capture_output=True, text=True, timeout=3600,
         )
         saved.write_text(run.stdout + run.stderr)
@@ -236,6 +241,13 @@ def main(mode):
     doc_disc = {c: pinned.get(c) or disc.get(c) or SYSTEM["doc_default"] for c in truth}
     doc_sure = {c: pinned.get(c) or sure.get(c) or SYSTEM["doc_default"] for c in truth}
 
+    if records:
+        with open(rec_dir / f"JabRef-{tag_}.gold.jsonl", "w") as g:
+            for p, cls in sorted(classes_in.items()):
+                gold = Counter(truth[c] for c in cls if c in truth)
+                if gold:
+                    g.write(json.dumps({"object": ident(p), "target": gold.most_common(1)[0][0],
+                                        "classes": sum(gold.values())}) + "\n")
     points = []
     for p, cls in classes_in.items():
         gold = Counter(truth[c] for c in cls if c in truth)

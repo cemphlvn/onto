@@ -2,7 +2,11 @@
 (s4rdm3x `.sysmdl`: modules, a regex per module, allowed relations).
 
     python sysmdl_eval.py SYSTEM.sysmdl SRC_DIR [SRC_DIR ...] [--names=visible|hidden]
-        [--blueprint=SYSTEM.blueprint.json] [--rescore] [--rep=N]
+        [--blueprint=SYSTEM.blueprint.json] [--rescore] [--rep=N] [--records]
+
+--records also writes ../calibration/records/TAG.records.jsonl (onto
+discover --records) and TAG.gold.jsonl (the expert's majority module per
+package, as answers) for the calibration study.
 
 --blueprint gives module descriptions (the system's documentation,
 restated); without it a module is described by its name.
@@ -262,12 +266,17 @@ def main():
     path.write_text("\n".join(lines) + "\n")
 
     saved = HERE / f"l2-{tag}.out"
+    rec_dir = HERE.parent / "calibration" / "records"
+    records = rec_dir / f"{tag}.records.jsonl" if "--records" in sys.argv else None
     if "--rescore" in sys.argv and saved.exists():
         out = saved.read_text()
     else:
+        if records:
+            rec_dir.mkdir(parents=True, exist_ok=True)
         run = subprocess.run(
             [ONTO, "discover", f"{path}#{name}Code", f"{path}#Intended", "--non-injective", "--no-roles",
-             "--name", "Proposed", "--goal", FRAMING["goal"], "--instructions", FRAMING["instructions"]],
+             "--name", "Proposed", "--goal", FRAMING["goal"], "--instructions", FRAMING["instructions"]]
+            + (["--records", str(records)] if records else []),
             capture_output=True, text=True, timeout=3600)
         out = run.stdout + run.stderr
         saved.write_text(out)
@@ -293,6 +302,11 @@ def main():
     by_pkg = defaultdict(Counter)
     for c, m in truth.items():
         by_pkg[pkg_of[c]][m] += 1
+    if records:
+        with open(rec_dir / f"{tag}.gold.jsonl", "w") as g:
+            for p, counts in sorted(by_pkg.items()):
+                g.write(json.dumps({"object": ident[p], "target": mid[counts.most_common(1)[0][0]],
+                                    "classes": sum(counts.values())}) + "\n")
     report = dict(
         run=tag, classes=len(truth), classes_read=len(deps), packages=len(pkgs), modules=len(modules),
         oracle_package_level=round(sum(c.most_common(1)[0][1] for c in by_pkg.values()) / len(truth), 3),
