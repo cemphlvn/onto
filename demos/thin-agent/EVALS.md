@@ -612,3 +612,54 @@ labelled (k = 1, 5, 10, 20), 50 random initial sets:
   onto decides per package, NBAttract per class (both scored per class).
 - Both inputs are reported (onto's input, NBAttract's native input),
   for onto + Jev and onto + Gemini (where Gemini has the system).
+
+### Result 9b: NBAttract corrected, the rule applied (2026-10-31)
+
+The first re-implementation built each module's document as the union
+of its classes' term sets and gave modules equal priors; on its native
+input it scored about half of Olsson et al.'s published F1. Corrected to
+their description (term occurrence per class, counted per module; the
+module's share of mapped classes as prior; `--docs=counts`), checked
+against their Figure 7 before the full run (names visible, 10%: Lucene
+0.48 → 0.69 against ≈ 0.90 published, TEAMMATES 0.38 → 0.73 against
+≈ 0.85, Sweet Home 3D 0.54 → 0.57 against ≈ 0.85). A gap remains (their
+11 dependency types against our one; bytecode against source), so the
+published curves are reported beside the re-run.
+
+F1, onto at zero labels; NBAttract medians over 50 random initial sets:
+
+| system | names | onto + Jev | onto + Gemini | NB on onto's input, 20% | NB native input 1 / 5 / 10 / 20% | NB published ≈ (visible) |
+|---|---|---|---|---|---|---|
+| TEAMMATES | visible | 0.77 | 0.83 | 0.90 | 0.44 / 0.65 / 0.72 / 0.75 | 0.85 |
+| TEAMMATES | hidden | 0.82 | 0.90 | 0.66 | 0.34 / 0.58 / 0.65 / 0.71 | |
+| ArgoUML | visible | 0.99 | 0.98 | 0.84 | 0.42 / 0.59 / 0.65 / 0.72 | 0.85 |
+| ArgoUML | hidden | 0.86 | 0.94 | 0.66 | 0.39 / 0.57 / 0.62 / 0.70 | |
+| ProM | visible | 0.93 | 0.99 | 0.97 | 0.52 / 0.73 / 0.78 / 0.84 | 0.92 |
+| ProM | hidden | 0.68 | 0.84 | 0.79 | 0.38 / 0.58 / 0.69 / 0.75 | |
+| Lucene | visible | 1.00 | 1.00 | 0.91 | 0.49 / 0.67 / 0.71 / 0.77 | 0.90 |
+| Lucene | hidden | 0.89 | 1.00 | 0.72 | 0.47 / 0.69 / 0.72 / 0.75 | |
+| Commons Imaging | visible | 1.00 | 1.00 | 0.54 | 0.32 / 0.31 / 0.47 / 0.55 | 0.75 |
+| Commons Imaging | hidden | 0.83 | 1.00 | 0.48 | 0.25 / 0.26 / 0.46 / 0.58 | |
+| Ant | visible | 0.97 | — | 0.64 | 0.21 / 0.44 / 0.50 / 0.57 | 0.75 |
+| Ant | hidden | 0.59 | — | 0.50 | 0.22 / 0.38 / 0.48 / 0.56 | |
+| Sweet Home 3D | visible | 1.00 | 1.00 | 0.77 | 0.40 / 0.36 / 0.58 / 0.65 | 0.85 |
+| Sweet Home 3D | hidden | 1.00 | 1.00 | 0.48 | 0.36 / 0.39 / 0.54 / 0.69 | |
+
+The rule (fixed in dfb8854), onto + Jev at zero labels:
+
+| against | 1% | 5% | 10% | 20% |
+|---|---|---|---|---|
+| NBAttract, native input | 14 W | 14 W | 13 W 1 T | 12 W 1 T 1 L: **general claim allowed** |
+| NBAttract, onto's input | 14 W | 13 W 1 T | 11 W 2 T 1 L: no general claim | 11 W 3 L: no general claim |
+
+onto + Gemini wins 12 of 12 pairs at every k, but lacks Ant, so the
+rule (14 pairs) allows no general claim.
+
+- **Claim the rule allows:** with no labels, onto + Jev beats NBAttract
+  on its own input even when a fifth of the classes are labelled (12 of
+  14 pairs).
+- **Not allowed:** on the same input at 10–20% labelled, NBAttract
+  catches up where names are visible (TEAMMATES, ProM).
+- Against the published curves (their protocol, richer input, read off
+  plots), onto + Jev with names visible is level or above on six of
+  seven systems, below on TEAMMATES (0.77 against ≈ 0.85).

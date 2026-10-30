@@ -39,6 +39,10 @@ SIZES = (0.0, 0.01, 0.05, 0.10, 0.20)
 # onto: class names (and package paths) only, the judge's input; native:
 # every identifier and string in the class, NBAttract's own input.
 INPUT = next((a.split("=")[1] for a in sys.argv[1:] if a.startswith("--input=")), "onto")
+# counts: Olsson et al.'s per-class occurrence counts and size priors (the
+# default from 2026-10-31); union: the first re-implementation, kept to
+# reproduce its numbers.
+DOCS = next((a.split("=")[1] for a in sys.argv[1:] if a.startswith("--docs=")), "counts")
 THRESHOLD = 0.9
 STEM = PorterStemmer().stem
 SYSTEMS = [  # name, sysmdl, sources key
@@ -134,16 +138,36 @@ class Experiment:
     def run(self, initial):
         where = dict(initial)
         while True:
-            docs = {m: set(self.name_terms[m]) for m in self.all_modules}
-            for c, m in where.items():
-                docs[m] |= self.base[c] | self.cda(c, m, where)
-            vocab = {t: i for i, t in enumerate(sorted(set().union(*docs.values())))}
             mods = self.all_modules
-            counts = np.zeros((len(mods), len(vocab)))
-            for k, m in enumerate(mods):
-                for t in docs[m]:
-                    counts[k, vocab[t]] = 1
-            # Multinomial NB, Laplace smoothing, uniform prior over modules.
+            if DOCS == "union":
+                # Every run before 2026-10-31 15:00: a module document is
+                # the set of its classes' terms; a term in fifty classes
+                # counts once, and modules are equally likely a priori.
+                docs = {m: set(self.name_terms[m]) for m in mods}
+                for c, m in where.items():
+                    docs[m] |= self.base[c] | self.cda(c, m, where)
+                vocab = {t: i for i, t in enumerate(sorted(set().union(*docs.values())))}
+                counts = np.zeros((len(mods), len(vocab)))
+                for k, m in enumerate(mods):
+                    for t in docs[m]:
+                        counts[k, vocab[t]] = 1
+                prior = np.zeros(len(mods))
+            else:
+                # Olsson et al.: term occurrence per class, counted per
+                # module (a term in fifty classes counts fifty times), and
+                # the module's share of mapped classes as its prior.
+                per = {m: [set(self.name_terms[m])] for m in mods}
+                for c, m in where.items():
+                    per[m].append(self.base[c] | self.cda(c, m, where))
+                vocab = {t: i for i, t in enumerate(sorted(set().union(*(s for v in per.values() for s in v))))}
+                counts = np.zeros((len(mods), len(vocab)))
+                for k, m in enumerate(mods):
+                    for doc in per[m]:
+                        for t in doc:
+                            counts[k, vocab[t]] += 1
+                sizes = np.array([len(per[m]) for m in mods], dtype=float)
+                prior = np.log(sizes / sizes.sum())
+            # Multinomial NB with Laplace smoothing.
             flp = np.log((counts + 1) / (counts.sum(axis=1, keepdims=True) + len(vocab)))
             newly = {}
             for o in self.classes:
@@ -154,7 +178,7 @@ class Experiment:
                     idx = [vocab[t] for t in self.base[o] | self.cda(o, m, where) if t in vocab]
                     if not idx:
                         continue
-                    ll = flp[:, idx].sum(axis=1)
+                    ll = prior + flp[:, idx].sum(axis=1)
                     p = np.exp(ll - ll.max())
                     p = p[k] / p.sum()
                     if p > best_p:
@@ -217,7 +241,7 @@ def main():
                       f"  P {row[frac]['P']:.3f}  R {row[frac]['R']:.3f}  F1 {row[frac]['F1']:.3f} "
                       f"[{row[frac]['F1_q25']:.3f}, {row[frac]['F1_q75']:.3f}]", flush=True)
             out[f"{system}-{names}-t{thr}"] = row
-    (HERE / f"nbattract-{'' if INPUT == 'onto' else INPUT + '-'}{only or 'all'}.json").write_text(json.dumps(out, indent=1) + "\n")
+    (HERE / f"nbattract-{'' if INPUT == 'onto' else INPUT + '-'}{'' if DOCS == 'union' else 'counts-'}{only or 'all'}.json").write_text(json.dumps(out, indent=1) + "\n")
 
 
 if __name__ == "__main__":
