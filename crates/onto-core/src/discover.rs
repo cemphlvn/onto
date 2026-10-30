@@ -54,6 +54,15 @@ pub fn admissible(a: &Category, b: &Category) -> Vec<Vec<ObjId>> {
         .collect()
 }
 
+/// Every target for every source object: no roles. For categories that
+/// are not walked, such as dependency graphs, where a package nothing
+/// depends on is no entry and a module with no allowed dependencies is
+/// no terminal; the arrow-path constraint in [`search`] still applies.
+pub fn unconstrained(a: &Category, b: &Category) -> Vec<Vec<ObjId>> {
+    let all: Vec<ObjId> = (0..b.objects().len() as u32).map(ObjId).collect();
+    vec![all; a.objects().len()]
+}
+
 /// The object map found, with its total score and how much was searched.
 #[derive(Clone, Debug)]
 pub struct Found {
@@ -348,6 +357,14 @@ mod tests {
         assert_eq!(names("In"), ["Inbox"]);
         assert_eq!(names("Done"), ["Closed"]);
         assert!(!names("Money").contains(&"Closed".to_owned()));
+    }
+
+    #[test]
+    fn without_roles_every_target_is_admissible() {
+        let (a, b) = cats();
+        let adm = unconstrained(&a, &b);
+        assert_eq!(adm.len(), a.objects().len());
+        assert!(adm.iter().all(|t| t.len() == b.objects().len()));
     }
 
     #[test]

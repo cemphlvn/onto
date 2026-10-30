@@ -46,6 +46,27 @@ pub struct DiscoverArgs {
     /// Let two source objects share an image.
     #[arg(long)]
     non_injective: bool,
+    /// No structural roles (entry, terminal, primitive): every target is
+    /// admissible. For categories that are not walked, such as
+    /// dependency graphs; arrows still need a path.
+    #[arg(long)]
+    no_roles: bool,
+    /// Judge calls in flight at once.
+    #[arg(long, default_value_t = 16)]
+    concurrency: usize,
+    /// What the correspondence is for, told to the judge; `{src}`,
+    /// `{dst}`, `{object}` are filled in. Default: two organisations'
+    /// case handling.
+    #[arg(long)]
+    goal: Option<String>,
+    /// The judge's question, same placeholders as `--goal`.
+    #[arg(long)]
+    instructions: Option<String>,
+    /// The share of judge calls that may fail (after retries) before the
+    /// discovery stops. Objects whose call failed stay outside the
+    /// domain and are named; no evidence is not guessed at.
+    #[arg(long, default_value_t = 0.05)]
+    max_failed: f32,
     /// A hand-written functor (`FILE#Name`) to compare with.
     #[arg(long)]
     compare: Option<PathBuf>,
@@ -58,7 +79,12 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
     let a = crate::module::load_category(&args.src)?;
     let b = crate::module::load_category(&args.dst)?;
     let n = a.objects().len();
-    let adm = discover::admissible(&a, &b);
+    let mut adm = if args.no_roles {
+        discover::unconstrained(&a, &b)
+    } else {
+        discover::admissible(&a, &b)
+    };
+    let mut failed: Vec<Option<String>> = vec![None; n];
     let pairs: usize = adm.iter().map(Vec::len).sum();
     println!(
         "discover {}: {} -> {}   structure admits {pairs} of {} object pairs",
@@ -81,7 +107,50 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
             onto_runtime::model::Judge::name(&judge),
             adm.iter().filter(|v| v.len() > 1).count()
         );
-        rt.block_on(onto_runtime::discovery::judge_objects(&judge, &a, &b, &adm))?
+        let defaults = onto_runtime::discovery::Framing::default();
+        let framing = onto_runtime::discovery::Framing {
+            goal: args.goal.clone().unwrap_or(defaults.goal),
+            instructions: args.instructions.clone().unwrap_or(defaults.instructions),
+        };
+        let out = rt.block_on(onto_runtime::discovery::judge_objects(
+            &judge,
+            &a,
+            &b,
+            &adm,
+            args.concurrency,
+            &framing,
+        ));
+        if !out.failed.is_empty() {
+            let share = out.failed.len() as f32 / out.asked.max(1) as f32;
+            if share > args.max_failed {
+                return Err(format!(
+                    "judge failed for {} of {} object(s) ({:.0}% > --max-failed {:.0}%); first: {}",
+                    out.failed.len(),
+                    out.asked,
+                    share * 100.0,
+                    args.max_failed * 100.0,
+                    out.failed[0].1
+                )
+                .into());
+            }
+            println!(
+                "judge failed for {} of {} object(s), kept outside the domain: {}",
+                out.failed.len(),
+                out.asked,
+                out.failed
+                    .iter()
+                    .map(|(x, _)| a.object(*x).name.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            );
+        }
+        // No evidence is not guessed at: an object whose call failed has
+        // no admissible target, so the search leaves it outside.
+        for (x, e) in &out.failed {
+            adm[x.0 as usize].clear();
+            failed[x.0 as usize] = Some(e.to_string());
+        }
+        out.judged
     };
 
     // Behaviour.
@@ -167,9 +236,11 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
         .enumerate()
         .filter(|(_, y)| y.is_none())
         .map(|(i, _)| {
-            let why = judged[i]
-                .as_ref()
-                .map_or(String::new(), |j| format!(" (none of these {:.2})", j.none));
+            let why = match (&judged[i], &failed[i]) {
+                (Some(j), _) => format!(" (none of these {:.2})", j.none),
+                (None, Some(_)) => " (judge failed)".to_owned(),
+                (None, None) => String::new(),
+            };
             format!("{}{why}", a.objects()[i].name)
         })
         .collect();

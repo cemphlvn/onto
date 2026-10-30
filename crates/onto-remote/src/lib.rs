@@ -19,14 +19,32 @@ use onto_models::{
 mod tkgd;
 pub use tkgd::Tkgd;
 
-const MAX_ATTEMPTS: u32 = 4;
+const MAX_ATTEMPTS: u32 = 7;
+const BACKOFF_BASE_MS: u64 = 500;
+const BACKOFF_CAP_MS: u64 = 30_000;
 
 fn transport(e: reqwest::Error) -> ModelError {
     ModelError::Http(e.to_string())
 }
 
-/// POSTs JSON, retrying 429/529/5xx and transport errors with exponential
-/// backoff (250ms, 500ms, 1s).
+/// How long to wait before attempt `attempt + 1`: the server's
+/// `Retry-After` (seconds) when it gives one, else exponential backoff
+/// with full jitter, uniform in [0, min(cap, base · 2^(attempt-1))], so
+/// that calls refused together do not come back together.
+fn backoff(attempt: u32, retry_after: Option<u64>) -> Duration {
+    use std::hash::{BuildHasher, Hasher};
+    if let Some(secs) = retry_after {
+        return Duration::from_secs(secs).min(Duration::from_millis(BACKOFF_CAP_MS));
+    }
+    let ceiling = (BACKOFF_BASE_MS << (attempt - 1).min(16)).min(BACKOFF_CAP_MS);
+    let random = std::collections::hash_map::RandomState::new()
+        .build_hasher()
+        .finish();
+    Duration::from_millis(random % (ceiling + 1))
+}
+
+/// POSTs JSON, retrying 429/529/5xx and transport errors up to
+/// `MAX_ATTEMPTS` times with [`backoff`] (about a minute in all).
 async fn post_json(
     http: &reqwest::Client,
     url: &str,
@@ -37,26 +55,31 @@ async fn post_json(
     loop {
         attempt += 1;
         let result = http.post(url).bearer_auth(key).json(body).send().await;
-        let retry = match result {
+        let (retry, retry_after) = match result {
             Ok(resp) if resp.status().is_success() => {
                 let v = resp.json::<Value>().await.map_err(transport)?;
                 return Ok((v, attempt));
             }
             Ok(resp) => {
                 let status = resp.status().as_u16();
+                let retry_after = resp
+                    .headers()
+                    .get(reqwest::header::RETRY_AFTER)
+                    .and_then(|v| v.to_str().ok())
+                    .and_then(|v| v.trim().parse::<u64>().ok());
                 let body = clip(&resp.text().await.unwrap_or_default());
                 let err = ModelError::Status { status, body };
                 if !(status == 429 || status >= 500) {
                     return Err(err);
                 }
-                err
+                (err, retry_after)
             }
-            Err(e) => transport(e),
+            Err(e) => (transport(e), None),
         };
         if attempt >= MAX_ATTEMPTS {
             return Err(retry);
         }
-        tokio::time::sleep(Duration::from_millis(250 << (attempt - 1))).await;
+        tokio::time::sleep(backoff(attempt, retry_after)).await;
     }
 }
 
@@ -397,4 +420,31 @@ fn strip_fences(s: &str) -> &str {
         .or_else(|| s.strip_prefix("```"))
         .and_then(|r| r.strip_suffix("```"))
         .map_or(s, str::trim)
+}
+
+#[cfg(test)]
+mod backoff_tests {
+    use super::*;
+
+    #[test]
+    fn backoff_is_jittered_within_its_bound_and_capped() {
+        for attempt in 1..=MAX_ATTEMPTS {
+            let ceiling = (BACKOFF_BASE_MS << (attempt - 1)).min(BACKOFF_CAP_MS);
+            for _ in 0..50 {
+                assert!(backoff(attempt, None) <= Duration::from_millis(ceiling));
+            }
+        }
+        // Calls refused together do not all come back together.
+        let waits: std::collections::BTreeSet<_> = (0..20).map(|_| backoff(4, None)).collect();
+        assert!(waits.len() > 1);
+    }
+
+    #[test]
+    fn backoff_follows_retry_after_up_to_the_cap() {
+        assert_eq!(backoff(1, Some(3)), Duration::from_secs(3));
+        assert_eq!(
+            backoff(1, Some(3600)),
+            Duration::from_millis(BACKOFF_CAP_MS)
+        );
+    }
 }

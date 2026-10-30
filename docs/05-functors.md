@@ -299,6 +299,14 @@ is the merger's real policy gap, found by the functor, not by the search.
   where structure, meaning and behaviour leave an object open; natural
   transformations when two functors (hand, discovered) both hold.
 
+**Categories that are not walked (2026-10-30).** The roles (entry to
+entry, terminal to terminal, same primitive) belong to decision
+categories. In a dependency graph a package nothing depends on is no
+entry, and a module that may depend on nothing is no terminal: on JabRef
+3.7 (`demos/thin-agent/EVALS.md`) the terminal rule left 15 of 120
+packages unjudged. `onto discover --no-roles` (`discover::unconstrained`)
+admits every target; the path constraint still prunes.
+
 ## 8. Later
 - **Legal mapping (D)**: the machinery is phase 1; the mapping itself
   needs legal review before any claim is made.
