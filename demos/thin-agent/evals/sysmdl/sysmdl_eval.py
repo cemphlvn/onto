@@ -3,7 +3,7 @@
 
     python sysmdl_eval.py SYSTEM.sysmdl SRC_DIR [SRC_DIR ...] [--names=visible|hidden]
         [--blueprint=SYSTEM.blueprint.json] [--rescore] [--rep=N] [--records]
-        [--sample=alpha|referenced] [--judge=MODEL]   (MODEL as onto discover --judge-model)
+        [--sample=alpha|referenced] [--judge=MODEL] [--brief]   (MODEL as onto discover --judge-model)
 
 --records also writes ../calibration/records/TAG.records.jsonl (onto
 discover --records) and TAG.gold.jsonl (the expert's majority module per
@@ -241,7 +241,8 @@ def main():
            + (f"-j-{re.sub(r'[^A-Za-z0-9.]+', '_', opt('judge', ''))}" if opt("judge", "") else "")
            + (f"-casc-{re.sub(r'[^A-Za-z0-9.]+', '_', opt('escalate', ''))}-{opt('escalate-below', '0.7')}"
               if opt("escalate", "") else "")
-           + (f"-rep-{opt('rep', '1')}" if opt("rep", "1") != "1" else ""))
+           + (f"-rep-{opt('rep', '1')}" if opt("rep", "1") != "1" else "")
+           + ("-brief" if "--brief" in sys.argv else ""))
     described = json.loads(Path(blueprint).read_text()) if blueprint else {}
     modules, rules, relations = parse_sysmdl(sysmdl)
 
@@ -307,6 +308,7 @@ def main():
              "--name", "Proposed", "--goal", FRAMING["goal"], "--instructions", FRAMING["instructions"]]
             + (["--records", str(records)] if records else [])
             + (["--judge-model", opt("judge", "")] if opt("judge", "") else [])
+            + (["--brief"] if "--brief" in sys.argv else [])
             + (["--escalate-to", opt("escalate", ""), "--escalate-below", opt("escalate-below", "0.7")]
                if opt("escalate", "") else []),
             capture_output=True, text=True, timeout=3600)

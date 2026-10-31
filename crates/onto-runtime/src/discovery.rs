@@ -42,6 +42,25 @@ pub fn describe(cat: &Category, o: ObjId) -> Value {
     })
 }
 
+/// An object as its description, and what its arrows lead to, described
+/// (at most `MAX_DEPENDS`): the judge's evidence without the arrow names
+/// and the arrows into it, which [`describe`] carries.
+pub fn brief(cat: &Category, o: ObjId) -> Value {
+    const MAX_DEPENDS: usize = 20;
+    let obj = cat.object(o);
+    let about = |o: ObjId| {
+        let x = cat.object(o);
+        x.about.as_ref().map_or(x.name.clone(), |v| {
+            v.as_str().map_or(v.to_string(), str::to_owned)
+        })
+    };
+    json!({
+        "object": obj.name,
+        "about": about(o),
+        "depends_on": cat.out(o).iter().take(MAX_DEPENDS).map(|a| about(cat.arrow(*a).dst)).collect::<Vec<_>>(),
+    })
+}
+
 /// One source object's judgment: a probability per admissible target,
 /// and the probability that none corresponds.
 #[derive(Clone, Debug)]
@@ -76,6 +95,11 @@ pub struct Judgments {
 pub struct Framing {
     pub goal: String,
     pub instructions: String,
+    /// Show the judge each object's description and, for a source
+    /// object, what it depends on; not the arrows around every candidate
+    /// ([`brief`]). For targets whose arrows do not say what a target is
+    /// (a complete module graph, checked by the functor afterwards).
+    pub brief: bool,
 }
 
 impl Default for Framing {
@@ -83,6 +107,7 @@ impl Default for Framing {
         Self {
             goal: "Two organisations are merging. Find the object of {dst} that plays the same role as {object} of {src} when a case is handled.".into(),
             instructions: "Which object of {dst} corresponds to the source object: the same kind of case, the same step in handling it? Judge by meaning (descriptions, the options it offers, how it is reached), not by name. If none of them does, answer none of these.".into(),
+            brief: false,
         }
     }
 }
@@ -123,7 +148,7 @@ pub async fn judge_objects<J: Judge>(
             let req = FrameRequest {
                 state: json!({
                     "goal": Framing::fill(&framing.goal, a, b, x),
-                    "source": describe(a, x),
+                    "source": if framing.brief { brief(a, x) } else { describe(a, x) },
                 }),
                 at: a.object(x).name.clone(),
                 focus: None,
@@ -134,7 +159,11 @@ pub async fn judge_objects<J: Judge>(
                     .map(|y| Candidate {
                         arrow: b.object(*y).name.clone(),
                         to: b.object(*y).name.clone(),
-                        instructions: Some(describe(b, *y)),
+                        instructions: Some(if framing.brief {
+                            brief(b, *y)["about"].clone()
+                        } else {
+                            describe(b, *y)
+                        }),
                         level: None,
                     })
                     .collect(),

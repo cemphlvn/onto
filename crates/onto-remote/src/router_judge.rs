@@ -8,16 +8,21 @@
 //! thing to Jev's calibrated read; otherwise the model is asked again to
 //! state a probability per letter (a verbalized distribution, usually
 //! less calibrated). `Distribution::confidence` is `None` either way.
-//! Which way an answer came is in its `Usage::questions`: 1 request
-//! (letter log-probabilities) or 2 (stated). The first request turns
+//! `Usage::questions` counts the requests an answer took: 1 (letter
+//! log-probabilities, or stated once the probe is known to fail) or 2
+//! (probed, then stated). The first request turns
 //! reasoning off (a reasoning model spends a short budget thinking and
 //! returns no letter) and asks OpenRouter for a provider that honours
 //! log-probabilities; when there is none it fails and the stated way is
-//! taken.
+//! taken. The judge remembers the first definite answer: once a provider
+//! has refused log-probabilities (a 4xx other than 429) or answered
+//! without them, later frames go straight to the stated way, one request
+//! each.
 
 use onto_core::Primitive;
 use onto_core::walk::{Answer, Distribution};
 use serde_json::{Value, json};
+use std::sync::atomic::{AtomicU8, Ordering};
 
 use onto_models::{FrameRequest, Judge, ModelError, Usage};
 
@@ -31,7 +36,14 @@ pub struct RouterJudge {
     http: reqwest::Client,
     key: String,
     model: String,
+    /// Whether the model has letter log-probabilities: `UNKNOWN` until a
+    /// first answer says, then `YES` or `NO`.
+    logprobs: AtomicU8,
 }
+
+const UNKNOWN: u8 = 0;
+const YES: u8 = 1;
+const NO: u8 = 2;
 
 impl RouterJudge {
     /// `spec` is `openrouter:<model>`; reads `OPENROUTER_API_KEY`.
@@ -41,6 +53,7 @@ impl RouterJudge {
             http,
             key: std::env::var("OPENROUTER_API_KEY").ok()?,
             model: model.to_owned(),
+            logprobs: AtomicU8::new(UNKNOWN),
         })
     }
 
@@ -56,7 +69,7 @@ impl RouterJudge {
         options.push_str(&format!("{NONE_LETTER}. none of the options above fits\n"));
         format!(
             "Situation (JSON):\n{}\n\nQuestion: {}\n\nOptions:\n{options}",
-            serde_json::to_string_pretty(&req.state).unwrap_or_default(),
+            serde_json::to_string(&req.state).unwrap_or_default(),
             req.instructions
                 .as_ref()
                 .map_or("Which option fits?".to_owned(), |v| v
@@ -118,7 +131,10 @@ impl Judge for RouterJudge {
         let prompt = self.prompt(&req);
 
         // 1. One letter, with log-probabilities when the provider has them.
-        let (v, mut usage) = self
+        let mut usage = Usage::default();
+        let probed = self.logprobs.load(Ordering::Relaxed) != NO;
+        if probed {
+            let probe = self
             .call(json!({
                 "model": self.model,
                 "messages": [
@@ -132,21 +148,38 @@ impl Judge for RouterJudge {
                 "reasoning": {"enabled": false},
                 "provider": {"require_parameters": true},
             }))
-            .await
-            .unwrap_or_else(|_| (Value::Null, Usage::default()));
-        if let Some(top) = v["choices"][0]["logprobs"]["content"][0]["top_logprobs"].as_array() {
-            let mut w = vec![0.0f64; letters.len()];
-            for t in top {
-                let token = t["token"].as_str().unwrap_or("").trim().trim_matches('.');
-                if let (Some(k), Some(lp)) = (
-                    letters.iter().position(|l| l == token),
-                    t["logprob"].as_f64(),
-                ) {
-                    w[k] += lp.exp();
+            .await;
+            let v = match probe {
+                Ok((v, u)) => {
+                    usage = u;
+                    v
                 }
-            }
-            if let Some(d) = distribution(&w) {
-                return Ok((Answer::Choice(d), usage));
+                Err(ModelError::Status { status, .. })
+                    if (400..500).contains(&status) && status != 429 =>
+                {
+                    self.logprobs.store(NO, Ordering::Relaxed);
+                    Value::Null
+                }
+                Err(_) => Value::Null,
+            };
+            if let Some(top) = v["choices"][0]["logprobs"]["content"][0]["top_logprobs"].as_array()
+            {
+                let mut w = vec![0.0f64; letters.len()];
+                for t in top {
+                    let token = t["token"].as_str().unwrap_or("").trim().trim_matches('.');
+                    if let (Some(k), Some(lp)) = (
+                        letters.iter().position(|l| l == token),
+                        t["logprob"].as_f64(),
+                    ) {
+                        w[k] += lp.exp();
+                    }
+                }
+                if let Some(d) = distribution(&w) {
+                    self.logprobs.store(YES, Ordering::Relaxed);
+                    return Ok((Answer::Choice(d), usage));
+                }
+            } else if !v.is_null() {
+                self.logprobs.store(NO, Ordering::Relaxed);
             }
         }
 
@@ -165,7 +198,7 @@ impl Judge for RouterJudge {
         usage.input_tokens += more.input_tokens;
         usage.output_tokens += more.output_tokens;
         usage.attempts += more.attempts;
-        usage.questions = 2;
+        usage.questions = if probed { 2 } else { 1 };
         let text = v["choices"][0]["message"]["content"].as_str().unwrap_or("");
         let start = text.find('{').unwrap_or(0);
         let end = text.rfind('}').map_or(text.len(), |e| e + 1);

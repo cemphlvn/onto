@@ -69,12 +69,17 @@ def ask(model, prompt):
     return None, {"error": str(last)}
 
 
-def one(model, onto_file, tag):
+def one(model, onto_file, tag, only=None):
     about, deps, modules, mabout = parse(onto_file)
+    if only is not None:
+        about_all = about
+        about = {o: d for o, d in about_all.items() if o in only}
+    else:
+        about_all = about
     opts = "\n".join(f"{LETTERS[i]}. {m}: {mabout.get(m, m)}" for i, m in enumerate(modules)) + "\nZ. none of these"
     out = []
     for obj, desc in about.items():
-        dep_text = ", ".join(about.get(d, d) for d in deps.get(obj, [])[:20]) or "none"
+        dep_text = ", ".join(about_all.get(d, d) for d in deps.get(obj, [])[:20]) or "none"
         prompt = (f"Code unit: {desc}\nIt depends on: {dep_text}\n\n"
                   f"Which module of the intended architecture is responsible for this code unit?\n{opts}")
         probs, usage = ask(model, prompt)
@@ -92,6 +97,29 @@ def one(model, onto_file, tag):
     return out
 
 
+def retry_failed(model):
+    """Re-asks only the decisions a run recorded as failed, in place; the
+    count retried is printed (the direct baseline has none of onto's
+    resilience, so failures are part of what it measures)."""
+    for f, tag in RUNS:
+        path = record_path(tag, model)
+        if not path.exists():
+            continue
+        recs = [json.loads(l) for l in path.read_text().splitlines()]
+        failed = [i for i, r in enumerate(recs) if r["disposition"] == "failed"]
+        if not failed:
+            continue
+        about, deps, modules, mabout = parse(f)
+        fixed = {}
+        for r in one(model, f, tag, only={recs[i]["object"] for i in failed}):
+            fixed[r["object"]] = r
+        for i in failed:
+            recs[i] = fixed.get(recs[i]["object"], recs[i])
+        path.write_text("".join(json.dumps(r) + "\n" for r in recs))
+        left = sum(r["disposition"] == "failed" for r in recs)
+        print(f"{tag:40} retried {len(failed)}, still failed {left}", flush=True)
+
+
 def record_path(tag, model):
     slug = re.sub(r"[^A-Za-z0-9.]+", "_", f"direct:{model}")
     return RECORDS / (f"{tag}-judge-{slug}.records.jsonl" if tag.startswith("JabRef") else f"{tag}-j-{slug}.records.jsonl")
@@ -99,6 +127,9 @@ def record_path(tag, model):
 
 def main():
     model = sys.argv[1]
+    if "--retry-failed" in sys.argv:
+        retry_failed(model)
+        return
     jobs = next((int(a.split("=")[1]) for a in sys.argv[2:] if a.startswith("--jobs=")), 8)
     todo = [(f, t) for f, t in RUNS if f.exists() and not record_path(t, model).exists()]
     print(f"direct:{model}: {len(todo)} runs to do", flush=True)

@@ -67,6 +67,11 @@ pub struct DiscoverArgs {
     /// The judge's question, same placeholders as `--goal`.
     #[arg(long)]
     instructions: Option<String>,
+    /// Brief frames: each object's description and what a source object
+    /// depends on, not the arrows around every candidate. Fewer tokens
+    /// when the target's arrows say nothing about what a target is.
+    #[arg(long)]
+    brief: bool,
     /// The share of judge calls that may fail (after retries) before the
     /// discovery stops. Objects whose call failed stay outside the
     /// domain and are named; no evidence is not guessed at.
@@ -166,6 +171,7 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
         let framing = onto_runtime::discovery::Framing {
             goal: args.goal.clone().unwrap_or(defaults.goal),
             instructions: args.instructions.clone().unwrap_or(defaults.instructions),
+            brief: args.brief,
         };
         let out = rt.block_on(onto_runtime::discovery::judge_objects(
             &judge,
