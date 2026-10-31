@@ -72,6 +72,15 @@ pub struct DiscoverArgs {
     /// domain and are named; no evidence is not guessed at.
     #[arg(long, default_value_t = 0.05)]
     max_failed: f32,
+    /// A second judge (as --judge-model) for the objects the first was
+    /// unsure of: a cascade. Its answer replaces the first; the gate then
+    /// reads it.
+    #[arg(long)]
+    escalate_to: Option<String>,
+    /// The first judge's top probability below which an object goes to
+    /// --escalate-to.
+    #[arg(long, default_value_t = 0.7)]
+    escalate_below: f32,
     /// The calibration map for the judge's p (`onto calibrate --out`).
     #[arg(long)]
     calibration: Option<PathBuf>,
@@ -139,12 +148,12 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
     );
 
     // Meaning.
-    let mut judge_name: Option<String> = None;
+    let mut answered_by: Vec<Option<String>> = vec![None; n];
     let judged = if args.no_judge {
         vec![None; n]
     } else {
         let (judge, _) = models(args.mock, true, args.judge_model.clone(), None)?;
-        judge_name = Some(onto_runtime::model::Judge::name(&judge));
+        let judge_name = Some(onto_runtime::model::Judge::name(&judge));
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?;
@@ -196,7 +205,53 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
             adm[x.0 as usize].clear();
             failed[x.0 as usize] = Some(e.to_string());
         }
-        out.judged
+        let mut judged = out.judged;
+        for (i, j) in judged.iter().enumerate() {
+            if j.is_some() {
+                answered_by[i] = judge_name.clone();
+            }
+        }
+
+        // A cascade: what the first judge was unsure of goes to a second.
+        if let Some(model) = &args.escalate_to {
+            let unsure: Vec<usize> = (0..n)
+                .filter(|&i| {
+                    judged[i].as_ref().is_some_and(|j| {
+                        j.targets.iter().map(|t| t.1).fold(0.0f32, f32::max) < args.escalate_below
+                    })
+                })
+                .collect();
+            let (second, _) = models(false, true, Some(model.clone()), None)?;
+            let second_name = onto_runtime::model::Judge::name(&second);
+            let mut adm2: Vec<Vec<ObjId>> = vec![Vec::new(); n];
+            for &i in &unsure {
+                adm2[i] = adm[i].clone();
+            }
+            let out2 = rt.block_on(onto_runtime::discovery::judge_objects(
+                &second,
+                &a,
+                &b,
+                &adm2,
+                args.concurrency,
+                &framing,
+            ));
+            let mut moved = 0;
+            for (i, j) in out2.judged.into_iter().enumerate() {
+                if let Some(j) = j {
+                    judged[i] = Some(j);
+                    answered_by[i] = Some(second_name.clone());
+                    moved += 1;
+                }
+            }
+            println!(
+                "cascade: {} of {} judged object(s) below p {:.2} went to {second_name}; {moved} answered, {} failed (the first answer kept)",
+                unsure.len(),
+                judged.iter().filter(|j| j.is_some()).count(),
+                args.escalate_below,
+                out2.failed.len()
+            );
+        }
+        judged
     };
 
     // The gate: calibrate the judge's p for its choice, defer what falls
@@ -376,7 +431,7 @@ pub fn main(args: DiscoverArgs) -> Result<(), BoxError> {
                 "calibrated": gated[i].map(|g| g.2),
                 "threshold": threshold,
                 "none": judged[i].as_ref().map(|j| j.none),
-                "judge": judge_name,
+                "judge": answered_by[i],
                 "tokens": judged[i].as_ref().map(|j| serde_json::json!({
                     "input": j.usage.input_tokens, "output": j.usage.output_tokens, "attempts": j.usage.attempts,
                     "requests": j.usage.questions,
