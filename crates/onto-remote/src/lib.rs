@@ -58,10 +58,11 @@ async fn post_json(
         attempt += 1;
         let result = http.post(url).bearer_auth(key).json(body).send().await;
         let (retry, retry_after) = match result {
-            Ok(resp) if resp.status().is_success() => {
-                let v = resp.json::<Value>().await.map_err(transport)?;
-                return Ok((v, attempt));
-            }
+            // A body cut off in transit is retried like a dropped connection.
+            Ok(resp) if resp.status().is_success() => match resp.json::<Value>().await {
+                Ok(v) => return Ok((v, attempt)),
+                Err(e) => (transport(e), None),
+            },
             Ok(resp) => {
                 let status = resp.status().as_u16();
                 let retry_after = resp

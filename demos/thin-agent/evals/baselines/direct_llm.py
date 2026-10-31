@@ -61,7 +61,13 @@ def ask(model, prompt):
             with urllib.request.urlopen(req, timeout=120) as r:
                 v = json.loads(r.read())
             text = v["choices"][0]["message"]["content"]
-            probs = json.loads(text[text.find("{"): text.rfind("}") + 1])
+            raw = json.loads(text[text.find("{"): text.rfind("}") + 1])
+            # Keys read loosely, as onto's judge reads them (".A" is A).
+            probs = {}
+            for k, v in raw.items():
+                if isinstance(v, (int, float)):
+                    k = re.sub(r"[^A-Za-z0-9]", "", k)
+                    probs[k] = probs.get(k, 0) + v
             return probs, v.get("usage", {})
         except Exception as e:  # noqa: BLE001 - retried, then recorded as failed
             last = e

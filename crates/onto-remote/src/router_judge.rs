@@ -97,6 +97,21 @@ impl RouterJudge {
     }
 }
 
+/// A stated probability per letter. Keys are read loosely ("A", ".A",
+/// "A." all name option A): models decorate them.
+fn stated_weights(stated: &Value, letters: &[String]) -> Vec<f64> {
+    let mut w = vec![0.0f64; letters.len()];
+    if let Some(map) = stated.as_object() {
+        for (key, v) in map {
+            let key = key.trim_matches(|c: char| !c.is_ascii_alphanumeric());
+            if let (Some(k), Some(p)) = (letters.iter().position(|l| l == key), v.as_f64()) {
+                w[k] += p.max(0.0);
+            }
+        }
+    }
+    w
+}
+
 /// Normalizes non-negative weights over the options and "none"; `None`
 /// when they carry no mass.
 fn distribution(weights: &[f64]) -> Option<Distribution> {
@@ -204,10 +219,7 @@ impl Judge for RouterJudge {
         let end = text.rfind('}').map_or(text.len(), |e| e + 1);
         let stated: Value = serde_json::from_str(&text[start..end])
             .map_err(|e| ModelError::Decode(clip(&format!("{e}: {text}"))))?;
-        let w: Vec<f64> = letters
-            .iter()
-            .map(|l| stated[l].as_f64().unwrap_or(0.0).max(0.0))
-            .collect();
+        let w = stated_weights(&stated, &letters);
         let d = distribution(&w)
             .ok_or_else(|| ModelError::Decode(clip(&format!("no probabilities: {text}"))))?;
         Ok((Answer::Choice(d), usage))
@@ -217,6 +229,16 @@ impl Judge for RouterJudge {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn stated_keys_are_read_loosely() {
+        let letters = vec!["A".to_owned(), "B".to_owned(), "Z".to_owned()];
+        let w = stated_weights(
+            &json!({".A": 0.1, "B.": 0.8, "Z": 0.1, "note": 1}),
+            &letters,
+        );
+        assert_eq!(w, vec![0.1, 0.8, 0.1]);
+    }
 
     #[test]
     fn weights_become_a_distribution_with_none_last() {
