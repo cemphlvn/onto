@@ -727,3 +727,16 @@ TEAMMATES hidden +0.018 is within ±0.05).
 - Confound, stated: the walk sees a package's description and
   dependencies as its goal text; flat discover saw the same content in
   its own rendering.
+
+### Update (key limit raised, 2026-10-31): Gemini complete on all eight systems
+
+- Gemini 3.1 Pro behind onto against Jev, all 8 systems, 653 package
+  decisions: **0.925 vs 0.838**; names hidden **0.880 vs 0.704**; only
+  Gemini right 69, only Jev right 12; exact McNemar p < 0.00001.
+- Ant, names hidden (class level): Gemini **0.95**, Jev 0.59: the
+  largest gap is on the hardest system.
+- The NBAttract rule (dfb8854) now has 14 pairs for onto + Gemini too:
+  against NBAttract on its native input **14 of 14 wins at 1, 5, 10 and
+  20% labelled**; on onto's input 14 / 14 / 13 / 13. **General claim
+  allowed at every k**: with no labels, onto + Gemini beats NBAttract
+  with a fifth of the classes labelled.

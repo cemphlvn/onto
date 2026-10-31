@@ -239,6 +239,8 @@ def main():
     tag = (f"{name}-{names}" + (f"-bp-{Path(blueprint).stem.split('.')[-1]}" if blueprint else "")
            + ("-sref" if opt("sample", "alpha") == "referenced" else "")
            + (f"-j-{re.sub(r'[^A-Za-z0-9.]+', '_', opt('judge', ''))}" if opt("judge", "") else "")
+           + (f"-casc-{re.sub(r'[^A-Za-z0-9.]+', '_', opt('escalate', ''))}-{opt('escalate-below', '0.7')}"
+              if opt("escalate", "") else "")
            + (f"-rep-{opt('rep', '1')}" if opt("rep", "1") != "1" else ""))
     described = json.loads(Path(blueprint).read_text()) if blueprint else {}
     modules, rules, relations = parse_sysmdl(sysmdl)
@@ -304,7 +306,9 @@ def main():
             [ONTO, "discover", f"{path}#{name}Code", f"{path}#Intended", "--non-injective", "--no-roles",
              "--name", "Proposed", "--goal", FRAMING["goal"], "--instructions", FRAMING["instructions"]]
             + (["--records", str(records)] if records else [])
-            + (["--judge-model", opt("judge", "")] if opt("judge", "") else []),
+            + (["--judge-model", opt("judge", "")] if opt("judge", "") else [])
+            + (["--escalate-to", opt("escalate", ""), "--escalate-below", opt("escalate-below", "0.7")]
+               if opt("escalate", "") else []),
             capture_output=True, text=True, timeout=3600)
         out = run.stdout + run.stderr
         saved.write_text(out)
