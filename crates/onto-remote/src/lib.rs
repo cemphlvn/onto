@@ -17,6 +17,17 @@ use onto_models::{
 };
 
 mod router_judge;
+
+/// The OpenRouter chat endpoint. Its origin, like Jev's, can be replaced
+/// (`ONTO_OPENROUTER_URL`, `ONTO_TYPESAFE_URL`) by a gateway that adds the
+/// key itself, so the process never holds the real one.
+pub(crate) fn openrouter_url() -> String {
+    origin("ONTO_OPENROUTER_URL", "https://openrouter.ai") + "/api/v1/chat/completions"
+}
+
+fn origin(var: &str, default: &str) -> String {
+    std::env::var(var).map_or_else(|_| default.to_owned(), |v| v.trim_end_matches('/').to_owned())
+}
 mod tkgd;
 pub use router_judge::RouterJudge;
 pub use tkgd::Tkgd;
@@ -100,7 +111,7 @@ impl Jev {
             http,
             key: std::env::var("TYPESAFE_API_KEY").ok()?,
             model: model.unwrap_or_else(|| "jev-latest".into()),
-            url: "https://api.typesafe.ai/v1/systemone".into(),
+            url: origin("ONTO_TYPESAFE_URL", "https://api.typesafe.ai") + "/v1/systemone",
         })
     }
 }
@@ -374,8 +385,7 @@ impl Proposer for OpenRouter {
                 "json_schema": {"name": "proposals", "strict": true, "schema": schema}
             }
         });
-        let url = "https://openrouter.ai/api/v1/chat/completions";
-        let (v, attempts) = post_json(&self.http, url, &self.key, &body).await?;
+        let (v, attempts) = post_json(&self.http, &openrouter_url(), &self.key, &body).await?;
         let content = v["choices"][0]["message"]["content"]
             .as_str()
             .ok_or_else(|| {

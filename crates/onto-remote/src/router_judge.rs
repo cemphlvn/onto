@@ -26,9 +26,8 @@ use std::sync::atomic::{AtomicU8, Ordering};
 
 use onto_models::{FrameRequest, Judge, ModelError, Usage};
 
-use super::{clip, post_json};
+use super::{clip, openrouter_url, post_json};
 
-const URL: &str = "https://openrouter.ai/api/v1/chat/completions";
 const LETTERS: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXY";
 const NONE_LETTER: &str = "Z";
 
@@ -79,7 +78,7 @@ impl RouterJudge {
     }
 
     async fn call(&self, body: Value) -> Result<(Value, Usage), ModelError> {
-        let (v, attempts) = post_json(&self.http, URL, &self.key, &body).await?;
+        let (v, attempts) = post_json(&self.http, &openrouter_url(), &self.key, &body).await?;
         let usage = Usage {
             input_tokens: v["usage"]["prompt_tokens"].as_u64().unwrap_or(0),
             output_tokens: v["usage"]["completion_tokens"].as_u64().unwrap_or(0),
