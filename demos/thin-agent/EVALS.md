@@ -740,3 +740,31 @@ TEAMMATES hidden +0.018 is within ±0.05).
   20% labelled**; on onto's input 14 / 14 / 13 / 13. **General claim
   allowed at every k**: with no labels, onto + Gemini beats NBAttract
   with a fifth of the classes labelled.
+
+## Result 12: the cascade, run for real inside onto (2026-10-31)
+
+`onto discover --judge-model jev --escalate-to openrouter:google/gemini-3.1-pro-preview --escalate-below 0.7`
+(commit 107f8ec): Jev judges every package; the ones whose top p is
+below 0.7 go to Gemini, whose answer replaces Jev's; records name the
+judge per object. 7 systems (JabRef's script does not pass the flags
+yet), names visible and hidden, 534 package decisions.
+
+| route (same 534 decisions) | accuracy | to Gemini | Gemini USD per 1k decisions |
+|---|---|---|---|
+| Jev alone | 0.815 | 0% | — |
+| **cascade: Jev, Gemini when p < 0.7** | **0.903** | **31%** | **7.9** |
+| Gemini alone | 0.912 | 100% | 25.6 |
+
+- **The cascade buys almost all of Gemini's accuracy (0.903 of 0.912) at
+  a third of its cost**, as the simulation of Result 10 predicted
+  (0.893 at 28%).
+- The gain is largest where the first judge is weakest: Ant names hidden
+  0.468 → 0.855, Lucene hidden 0.783 → 0.957, ArgoUML hidden 0.833 →
+  0.926.
+- One loss: TEAMMATES names hidden 0.735 → 0.647; Gemini moves packages
+  Jev had right (the test-driver convention again).
+- **The gate after the cascade reads Gemini's stated p and lets 95%
+  through at 0.939**, sending 5% to a person: the second judge's p is
+  overconfident. A cascade needs each level calibrated, which is the
+  substrate's job (records per judge, `onto calibrate` per switch), not
+  the judges'.
