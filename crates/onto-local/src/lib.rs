@@ -32,10 +32,13 @@ pub struct Scored {
 }
 
 /// Scores prompts: one probability vector per prompt, over its labels.
-pub type Scorer<'a> = Box<dyn FnMut(&[Prompt]) -> Result<Vec<Scored>, String> + 'a>;
+/// The second argument is the thread count the request asks for (0: the
+/// engine's default); a scorer may rebuild its context when it changes.
+pub type Scorer<'a> = Box<dyn FnMut(&[Prompt], u32) -> Result<Vec<Scored>, String> + 'a>;
 
 struct Job {
     prompts: Vec<Prompt>,
+    threads: u32,
     reply: oneshot::Sender<Result<Vec<Scored>, String>>,
 }
 
@@ -44,6 +47,9 @@ struct Job {
 pub struct LocalJudge {
     name: String,
     jobs: Option<mpsc::Sender<Job>>,
+    /// Threads the next requests run with (0: default). An engine serving
+    /// several apps sets it from the asking app's situation.
+    threads: std::sync::Arc<std::sync::atomic::AtomicU32>,
     worker: Option<std::thread::JoinHandle<()>>,
 }
 
@@ -75,7 +81,7 @@ impl LocalJudge {
                 let mut serve = move |mut score: Scorer<'_>| {
                     let _ = ready.send(Ok(()));
                     while let Ok(job) = rx.recv() {
-                        let _ = job.reply.send(score(&job.prompts));
+                        let _ = job.reply.send(score(&job.prompts, job.threads));
                     }
                 };
                 if let Err(e) = load(&mut serve) {
@@ -89,8 +95,15 @@ impl LocalJudge {
         Ok(Self {
             name,
             jobs: Some(tx),
+            threads: std::sync::Arc::new(std::sync::atomic::AtomicU32::new(0)),
             worker: Some(worker),
         })
+    }
+
+    /// Sets the thread count for the requests that follow (0: default).
+    pub fn set_threads(&self, threads: u32) {
+        self.threads
+            .store(threads, std::sync::atomic::Ordering::Relaxed);
     }
 
     async fn ask(&self, prompts: Vec<Prompt>) -> Result<Vec<Scored>, ModelError> {
@@ -99,7 +112,11 @@ impl LocalJudge {
         self.jobs
             .as_ref()
             .ok_or_else(stopped)?
-            .send(Job { prompts, reply })
+            .send(Job {
+                prompts,
+                reply,
+                threads: self.threads.load(std::sync::atomic::Ordering::Relaxed),
+            })
             .map_err(|_| stopped())?;
         answer
             .await

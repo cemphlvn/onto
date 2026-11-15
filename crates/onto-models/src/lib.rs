@@ -11,11 +11,11 @@ use std::future::Future;
 
 use onto_core::walk::{Answer, Proposal};
 use onto_core::{Primitive, ProposalShape};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 /// One hop already taken, so judges can reason about the walk so far.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Hop {
     pub from: String,
     pub arrow: String,
@@ -24,7 +24,7 @@ pub struct Hop {
     pub p: f32,
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Candidate {
     pub arrow: String,
     pub to: String,
@@ -61,7 +61,7 @@ impl Candidate {
 
 /// The one aspect of a case a branch handles after a fork: the arrow that
 /// spawned it and that arrow's condition.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Focus {
     pub arrow: String,
     pub to: String,
@@ -70,7 +70,7 @@ pub struct Focus {
 }
 
 /// What a System-1 judge sees for one frame.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FrameRequest {
     /// Everything the model may see of the case and the walk, built from
     /// the frame's `state` declaration (`onto_core::state`). Providers
@@ -142,7 +142,7 @@ pub struct Pending {
 }
 
 /// Call metadata reported alongside every answer, for telemetry.
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct Usage {
     pub input_tokens: u64,
     pub output_tokens: u64,
@@ -190,7 +190,7 @@ pub trait Proposer: Send + Sync + 'static {
 
 /// One yes/no question for a [`Critic`]: instructions (text or JSON) and
 /// optional descriptions of what yes and no mean.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NoulQuestion {
     pub instructions: Value,
     #[serde(skip_serializing_if = "Option::is_none")]

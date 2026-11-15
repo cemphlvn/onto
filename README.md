@@ -154,6 +154,26 @@ can never authorize a data use or a deployment.
 | person decides | `onto review`, `onto promote` (into declared policy, atomically, snapshot-checked) |
 | rejected / held | on the step and frame record: `not learned …` / `held for a person …` |
 
+### In the recognition literature
+
+How onto meets an unknown, in the terms the recognition literature uses:
+
+| onto mechanism | field concept | what it means there |
+|---|---|---|
+| `none_of_these` at a `closed:` frame (the claim that the options are complete has failed) | **open-set recognition** | reject an input that fits no known class, instead of forcing it into one |
+| structure gap → library → catalogue → LLM proposal → proofs → learned layer | **open-world recognition** | detect the unknown, label it, add it to the known set, and keep going |
+| proposed structure named in language by a model | **open-vocabulary learning** | classes given by text, not by a fixed label set |
+| `admission: sealed`, `world: closed`, `--closed-world` | **closed-set recognition**, chosen deliberately | every input maps to a declared option; nothing new is learned |
+
+"Open world" in onto also carries its knowledge-representation sense
+(the open-world assumption: what is not stated is unknown, not false);
+see [`docs/01`](docs/01-positioning.md).
+
+References: Scheirer, Rocha, Sapkota & Boult, *Toward Open Set
+Recognition*, IEEE TPAMI 35(7), 2013 · Bendale & Boult, *Towards Open
+World Recognition*, CVPR 2015 · Zareian et al., *Open-Vocabulary Object
+Detection Using Captions*, CVPR 2021.
+
 ## Try it
 
 ```sh

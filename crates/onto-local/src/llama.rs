@@ -47,18 +47,14 @@ pub fn judge(opts: LlamaOptions) -> Result<LocalJudge, String> {
         let params = LlamaModelParams::default().with_n_gpu_layers(opts.gpu_layers);
         let model = LlamaModel::load_from_file(&backend, &opts.model, &params)
             .map_err(|e| format!("{}: {e}", opts.model.display()))?;
-        let ctx_params = LlamaContextParams::default()
-            .with_n_ctx(NonZeroU32::new(opts.n_ctx))
-            .with_n_batch(opts.n_ctx)
-            .with_n_ubatch(512)
-            // Option suffixes run as parallel sequences sharing the prompt.
-            .with_n_seq_max(SUFFIX_CHUNK as u32 + 1)
-            .with_kv_unified(true);
         let ctx = model
-            .new_context(&backend, ctx_params)
+            .new_context(&backend, ctx_params(opts.n_ctx, 0))
             .map_err(|e| e.to_string())?;
-        let mut session = Session::new(&model, ctx, opts.n_ctx as usize)?;
-        serve(Box::new(move |prompts| session.score(prompts)));
+        let mut session = Session::new(&model, &backend, ctx, opts.n_ctx)?;
+        serve(Box::new(move |prompts, threads| {
+            session.threads(threads)?;
+            session.score(prompts)
+        }));
         Ok(())
     })
 }
@@ -75,8 +71,29 @@ const CHECKPOINTS: usize = 4;
 /// Option suffixes decoded together (each its own sequence).
 const SUFFIX_CHUNK: usize = 32;
 
+/// Context parameters; `threads` 0 keeps llama.cpp's default.
+fn ctx_params(n_ctx: u32, threads: u32) -> LlamaContextParams {
+    let p = LlamaContextParams::default()
+        .with_n_ctx(NonZeroU32::new(n_ctx))
+        .with_n_batch(n_ctx)
+        .with_n_ubatch(512)
+        // Option suffixes run as parallel sequences sharing the prompt.
+        .with_n_seq_max(SUFFIX_CHUNK as u32 + 1)
+        .with_kv_unified(true);
+    if threads == 0 {
+        p
+    } else {
+        p.with_n_threads(threads as i32)
+            .with_n_threads_batch(threads as i32)
+    }
+}
+
 struct Session<'m> {
     model: &'m LlamaModel,
+    backend: &'m LlamaBackend,
+    n_ctx: u32,
+    /// Threads the current context was built with (0: default).
+    ctx_threads: u32,
     ctx: LlamaContext<'m>,
     /// Tokens whose keys and values are in the cache, in order.
     cached: Vec<LlamaToken>,
@@ -100,7 +117,12 @@ fn common(a: &[LlamaToken], b: &[LlamaToken]) -> usize {
 }
 
 impl<'m> Session<'m> {
-    fn new(model: &'m LlamaModel, ctx: LlamaContext<'m>, n_ctx: usize) -> Result<Self, String> {
+    fn new(
+        model: &'m LlamaModel,
+        backend: &'m LlamaBackend,
+        ctx: LlamaContext<'m>,
+        n_ctx: u32,
+    ) -> Result<Self, String> {
         let template = model.chat_template(None).map_err(|e| e.to_string())?;
         let thinks = template.to_str().is_ok_and(|t| t.contains("<think>"));
         let answer_lead = if thinks {
@@ -110,16 +132,37 @@ impl<'m> Session<'m> {
         };
         Ok(Self {
             model,
+            backend,
+            n_ctx,
+            ctx_threads: 0,
             ctx,
             cached: Vec::new(),
             last: Vec::new(),
             rigid: false,
             checkpoints: Vec::new(),
             baselines: std::collections::HashMap::new(),
-            batch: LlamaBatch::new(n_ctx, SUFFIX_CHUNK as i32 + 1),
+            batch: LlamaBatch::new(n_ctx as usize, SUFFIX_CHUNK as i32 + 1),
             answer_lead,
             template,
         })
+    }
+
+    /// Rebuilds the context when a request asks for another thread count:
+    /// threads are fixed per context in llama.cpp. The model stays loaded;
+    /// the token cache and checkpoints start empty.
+    fn threads(&mut self, threads: u32) -> Result<(), String> {
+        if threads == self.ctx_threads {
+            return Ok(());
+        }
+        self.ctx = self
+            .model
+            .new_context(self.backend, ctx_params(self.n_ctx, threads))
+            .map_err(|e| e.to_string())?;
+        self.ctx_threads = threads;
+        self.cached.clear();
+        self.last.clear();
+        self.checkpoints.clear();
+        Ok(())
     }
 
     fn tokens(&self, p: &Prompt) -> Result<Vec<LlamaToken>, String> {

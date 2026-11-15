@@ -1,6 +1,6 @@
 # onto — Scientific Positioning
 
-Status: **draft 4 — 2026-09-23.** Where onto sits among research fields,
+Status: **draft 5 — 2026-11-15.** Where onto sits among research fields,
 ranked by what the runtime **demonstrably does today** (disposition records included,
 live runs in `demos/`), separated from what it could become. Update this
 file when a capability lands; do not promote a field on intention alone.
@@ -68,6 +68,7 @@ theory not yet respected), **analogy** / **inspiration** / **not yet**.
 | 2 | Selective prediction, learning to defer, model cascades | **direct** | calibrated System 1 abstains (`none_of_these`, low confidence) and defers to a larger model; threshold gates on the model's own confidence | deferral target is a *generator of structure*, not a better answerer: that twist is onto's, and is untested against deferral theory (no cost model, no deferral policy learned) |
 | 3 | Decision provenance | **direct** | every frame visit is a disposition record: every candidate with judgment, disposition and a deterministic reason; judge call and claim metadata; causal `after` links forming a DAG across forks (`--dispositions`, `onto why`) | not yet in W3C PROV vocabulary; records written at run end, not streamed |
 | 4 | Local closed-world reasoning (open/closed-world KR) | **strong** | `closed:` is a local closed-world assertion ("these arrows are all the cases"); open frames are open-world; `none_of_these` at a closed frame is evidence the assertion failed, `open_frame` an expected gap | assertions are not revised on evidence; no aggregation of LCW violations into taxonomy repair |
+| 4b | Open-set and open-world recognition | **strong** | open-set: `none_of_these` at a `closed:` frame rejects an input that fits no declared option instead of forcing it into one; open-world: a structure gap goes library → catalogue → LLM proposal → proofs → learned layer, i.e. detect, label, add, continue (Bendale & Boult's loop); proposals are named in language, which is the open-vocabulary side; `admission: sealed` / `--closed-world` is closed-set by choice | the reject decision is Jev's calibrated abstention, not an open-space-risk bound; labels come from an LLM or catalogue, not an oracle; no evaluation on open-set benchmarks; the learned layer grows structure (arrows, objects), not a classifier's label set |
 | 5 | Workflow nets / Petri nets | **strong** | walk ≈ token, object ≈ place, arrow ≈ transition, `require` ≈ enabling condition, noul fork ≈ AND-split, **structured joins**: all ≈ AND-join, race ≈ discriminator, gate ≈ synchronisation with authority transfer; frame claim ≈ shared-resource constraint | no marking or capacity; joins only for siblings of one fork (no general OR-join); no soundness analysis beyond the deadlock-freedom argument |
 | 6 | Neurosymbolic AI | **strong (classification)** | Kautz's *Symbolic[Neuro]*: a symbolic control loop (typed graph, code guards, path equality) that calls neural judgments as subroutines | no learning flows back into the symbolic side yet (M2 promotion would be the first) |
 | 7 | Category theory, rewriting, coalgebra | **structural foundation** | a category presented by generators and relations; typed composition; path equality by equality saturation (egg), answering Unknown where the word problem is undecidable; frames form an F-coalgebra, and `onto quotient` computes the coarsest bisimulation (exact and structure-only) | no functors or universal constructions; the judged layer is history-indexed and only testable empirically |
@@ -130,7 +131,9 @@ Reject option: Chow 1970; selective classification: Geifman & El-Yaniv
 2017; learning to defer: Madras, Pitassi & Zemel 2018; LLM cascades:
 Chen, Zaharia & Zou 2023 (FrugalGPT). Decision provenance: Singh, Cobbe &
 Norval 2019; W3C PROV: Moreau & Groth 2013. Local closed-world reasoning:
-Etzioni, Golden & Weld 1994. Workflow nets: van der Aalst 1997.
+Etzioni, Golden & Weld 1994. Open-set recognition: Scheirer, Rocha,
+Sapkota & Boult 2013 (TPAMI); open-world recognition: Bendale & Boult
+2015 (CVPR); open-vocabulary detection: Zareian et al. 2021. Workflow nets: van der Aalst 1997.
 Neurosymbolic taxonomy: Kautz 2020/2022. Ologs: Spivak & Kent 2012.
 Equality saturation / egg: Willsey et al. 2021. Event structures:
 Nielsen, Plotkin & Winskel 1981; Winskel 1987. Supervisory control:

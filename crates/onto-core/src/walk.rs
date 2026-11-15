@@ -35,6 +35,7 @@ pub struct WalkState {
 
 /// A probability per candidate arrow, plus one for "none of these".
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Distribution {
     pub arrows: Vec<f32>,
     pub none_of_these: f32,
@@ -60,6 +61,7 @@ impl Distribution {
 /// A System-1 answer for one frame, shaped by the frame's primitive.
 /// Indices refer to the candidate arrows in the order they were given.
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Answer {
     Choice(Distribution),
     Noul {
